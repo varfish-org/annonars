@@ -42,7 +42,7 @@ pub struct Args {
     #[arg(long, default_value = "0")]
     pub skip_row_count: usize,
     /// Windows size for TBI-based parallel import.
-    #[arg(long, default_value = "1_000_000")]
+    #[arg(long, default_value = "1000000")]
     pub tbi_window_size: usize,
     /// Name of the column family to import into.
     #[arg(long, default_value = "tsv_data")]
