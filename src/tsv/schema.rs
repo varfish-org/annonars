@@ -74,6 +74,19 @@ pub struct ColumnSchema {
     pub typ: ColumnType,
 }
 
+impl ColumnSchema {
+    /// Create from given name and type.
+    pub fn from<N>(name: N, typ: ColumnType) -> Self
+    where
+        N: AsRef<str>,
+    {
+        Self {
+            name: name.as_ref().to_string(),
+            typ,
+        }
+    }
+}
+
 impl FileSchema {
     /// Ensure that all column names are the same and return an error if not.
     /// Otherwise, perform a column-wise extension of the column type.
@@ -109,10 +122,17 @@ impl FileSchema {
 }
 
 /// Schema description for a table.
-#[derive(Debug, Default, Clone, PartialEq, Eq, serde::Serialize, serde::Deserialize)]
+#[derive(Debug, Clone, PartialEq, Eq, serde::Serialize, serde::Deserialize)]
 pub struct FileSchema {
     /// The columns.
     pub columns: Vec<ColumnSchema>,
+}
+
+impl FileSchema {
+    /// Create a new schema from the given columns.
+    pub fn from(columns: Vec<ColumnSchema>) -> Self {
+        Self { columns }
+    }
 }
 
 /// Schema inference.
@@ -157,7 +177,7 @@ pub mod infer {
             Self {
                 field_delimiter: '\t',
                 flexible: false,
-                null_values: vec![String::from(""), String::from("."), String::from("NA")],
+                null_values: vec![String::from("."), String::from("NA"), String::new()],
                 header_prefix: String::from("#"),
                 num_rows: 10_000,
                 skip_rows: 0,
@@ -214,7 +234,7 @@ pub mod infer {
                 .config
                 .null_values
                 .iter()
-                .map(|s| s.as_str())
+                .map(std::string::String::as_str)
                 .collect::<Vec<_>>();
             let mut columns: Option<Vec<ColumnSchema>> = None;
             let mut seen_rows = 0;
@@ -249,7 +269,7 @@ pub mod infer {
 
                                 ColumnSchema {
                                     name: val.to_string(),
-                                    typ: self.default_column_config(&val),
+                                    typ: self.default_column_config(val),
                                 }
                             })
                             .collect::<Vec<_>>(),

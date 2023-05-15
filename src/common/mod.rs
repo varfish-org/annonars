@@ -6,7 +6,7 @@ pub mod rocks_utils {
 
     use crate::error;
 
-    /// Tune RocksDB options for bulk insertion.
+    /// Tune `RocksDB` options for bulk insertion.
     ///
     /// Example:
     ///
@@ -18,12 +18,12 @@ pub mod rocks_utils {
     ///
     /// # Arguments
     ///
-    /// * `options` - RocksDB options to tune.
+    /// * `options` - `RocksDB` options to tune.
     /// * `wal_dir` - Optional directory for write-ahead log files.
     ///
     /// # Returns
     ///
-    /// Tuned RocksDB options.
+    /// Tuned `RocksDB` options.
     pub fn tune_options(options: rocksdb::Options, wal_dir: Option<String>) -> rocksdb::Options {
         let mut options = options;
 
@@ -71,8 +71,8 @@ pub mod rocks_utils {
     ///
     /// # Arguments
     ///
-    /// * `path` - Path to the RocksDB database.
-    /// * `options` - RocksDB options to use for opening database and column families.
+    /// * `path` - Path to the `RocksDB` database.
+    /// * `options` - `RocksDB` options to use for opening database and column families.
     /// * `wait_msg_prefix` - Optional prefix for the wait message.
     pub fn force_compaction<P>(
         path: P,
@@ -91,8 +91,8 @@ pub mod rocks_utils {
         let db = rocksdb::DB::open_cf_with_opts(options, path.as_ref(), cfs)
             .map_err(|e| error::Error::RocksDBOpen(path.as_ref().to_owned(), e))?;
 
-        let cf_names_str = cf_names.iter().map(|s| s.as_str()).collect::<Vec<_>>();
-        force_compaction_cf(&db, &cf_names_str, wait_msg_prefix)
+        let cf_names_str = cf_names.iter().map(std::string::String::as_str).collect::<Vec<_>>();
+        force_compaction_cf(&db, cf_names_str, wait_msg_prefix)
     }
 
     /// Force manual compaction of the given column families in the given database.
@@ -103,7 +103,7 @@ pub mod rocks_utils {
     ///
     /// # Arguments
     ///
-    /// * `db` - RocksDB database to compact.
+    /// * `db` - `RocksDB` database to compact.
     /// * `cf_names` - Names of the column families to compact.
     /// * `wait_msg_prefix` - Optional prefix for the wait message.
     pub fn force_compaction_cf<I, N>(
@@ -206,7 +206,7 @@ mod test {
         options.create_if_missing(true);
         options.create_missing_column_families(true);
         let cf_names = &["foo", "bar"];
-        let db = rocksdb::DB::open_cf(&options, &path_db, cf_names)?;
+        let db = rocksdb::DB::open_cf(&options, path_db, cf_names)?;
 
         rocks_utils::force_compaction_cf(&db, cf_names, Some("msg"))?;
 

@@ -1,0 +1,9 @@
+---
+source: src/tsv/coding.rs
+expression: res
+---
+- NA
+- 1
+- 2.0999999046325684
+- "hello\u0000"
+

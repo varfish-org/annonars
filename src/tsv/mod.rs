@@ -1,4 +1,4 @@
 //! Storage of tabular data in TSV format.
 
-pub(crate) mod code;
+pub mod coding;
 pub mod schema;

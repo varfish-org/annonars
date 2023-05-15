@@ -7,6 +7,24 @@ use thiserror::Error;
 /// Error type for `annonars`
 #[derive(Error, Debug)]
 pub enum Error {
+    /// Invalid integer value.
+    #[error("invalid integer value: {0}")]
+    InvalidInt(#[from] std::num::ParseIntError),
+    /// Invalid float value.
+    #[error("invalid float value: {0}")]
+    InvalidFloat(#[from] std::num::ParseFloatError),
+    /// No null value defined.
+    #[error("no null value defined")]
+    NoNullValue,
+    /// Invalid UTF-8 in string.
+    #[error("invalid UTF-8 in string: {0}")]
+    InvalidUtf8(#[from] std::string::FromUtf8Error),
+    /// Cannot deserialize "Unknown" type.
+    #[error("cannot deserialize \"Unknown\" type")]
+    UnknownType,
+    /// Unsupported value from `serde_json::Value`.
+    #[error("unsupported value: {0}")]
+    UnsupportedValue(serde_json::Value),
     /// Header missing in TSV file.
     #[error("header missing in TSV file")]
     HeaderMissing,
