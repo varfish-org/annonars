@@ -59,8 +59,9 @@ pub mod rocks_utils {
             options.set_wal_dir(wal_dir);
         }
 
-        options.set_bottommost_compression_options(-14, 2, 0, 0, true);
+        options.set_bottommost_compression_options(-14, 2, 0, 1 << 14, true);
         options.set_bottommost_compression_type(rocksdb::DBCompressionType::Zstd);
+        options.set_bottommost_zstd_max_train_bytes(1 << 22, true);
 
         options.set_disable_auto_compactions(true);
         options.optimize_for_point_lookup(1 << 26);

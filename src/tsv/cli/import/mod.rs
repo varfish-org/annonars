@@ -122,7 +122,7 @@ pub fn run(common: &common::cli::Args, args: &Args) -> Result<(), anyhow::Error>
         col_alt: args.col_alt.clone(),
         ..Default::default()
     };
-    tracing::info!("using infer config: {:#?}", &infer_config);
+    tracing::info!("  using infer config: {:#?}", &infer_config);
     let infer_ctx = tsv::schema::infer::Context::new(&infer_config);
     let mut schema: Option<tsv::schema::FileSchema> =
         if let Some(path_json_schema) = &args.path_schema_json {
