@@ -1,0 +1,24 @@
+---
+source: src/tsv/schema.rs
+expression: record
+---
+FileSchema {
+    columns: [
+        ColumnSchema {
+            name: "a",
+            typ: String,
+        },
+        ColumnSchema {
+            name: "b",
+            typ: String,
+        },
+        ColumnSchema {
+            name: "c",
+            typ: Float,
+        },
+        ColumnSchema {
+            name: "d",
+            typ: Integer,
+        },
+    ],
+}
