@@ -13,6 +13,7 @@ name = "annonars"
 path = "src/lib.rs"
 
 [dependencies]
+rocksdb = { version = "0.21.0", features = ["multi-threaded-cf"] }
 thiserror = "1.0"
 tracing = "0.1"
 

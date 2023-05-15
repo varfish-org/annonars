@@ -2,7 +2,7 @@
 [![Crates.io](https://img.shields.io/crates/v/annonars.svg)](https://crates.io/crates/annonars)
 [![Crates.io](https://img.shields.io/crates/l/annonars.svg)](https://crates.io/crates/annonars)
 [![CI](https://github.com/bihealth/annona-rs/actions/workflows/rust.yml/badge.svg)](https://github.com/bihealth/annona-rs/actions/workflows/rust.yml)
-[![codecov](https://codecov.io/gh/bihealth/annonars/branch/main/graph/badge.svg?token=aZchhLWdzt)](https://codecov.io/gh/bihealth/annonars)
+[![codecov](https://codecov.io/gh/bihealth/annona-rs/branch/main/graph/badge.svg?token=UjTNKN6kCI)](https://codecov.io/gh/bihealth/annona-rs)
 
 <a href="https://commons.wikimedia.org/wiki/File:Annona_squamosa_Blanco1.192.png"><img src="utils/img/annona-wikimedia.jpg" width="200px" height="321px" align="right"></a>
 
