@@ -1,0 +1,12 @@
+---
+source: src/common/keys.rs
+expression: buf
+---
+[
+    48,
+    49,
+    0,
+    0,
+    0,
+    123,
+]

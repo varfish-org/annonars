@@ -1,0 +1,9 @@
+---
+source: src/tsv/coding.rs
+expression: res
+---
+- ~
+- 1
+- 2.1
+- hello
+

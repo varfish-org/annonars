@@ -2,7 +2,7 @@
 [![Crates.io](https://img.shields.io/crates/v/annonars.svg)](https://crates.io/crates/annonars)
 [![Crates.io](https://img.shields.io/crates/l/annonars.svg)](https://crates.io/crates/annonars)
 [![CI](https://github.com/bihealth/annona-rs/actions/workflows/rust.yml/badge.svg)](https://github.com/bihealth/annona-rs/actions/workflows/rust.yml)
-[![codecov](https://codecov.io/gh/bihealth/annonars/branch/main/graph/badge.svg?token=aZchhLWdzt)](https://codecov.io/gh/bihealth/annonars)
+[![codecov](https://codecov.io/gh/bihealth/annona-rs/branch/main/graph/badge.svg?token=UjTNKN6kCI)](https://codecov.io/gh/bihealth/annona-rs)
 
 <a href="https://commons.wikimedia.org/wiki/File:Annona_squamosa_Blanco1.192.png"><img src="utils/img/annona-wikimedia.jpg" width="200px" height="321px" align="right"></a>
 
@@ -16,12 +16,12 @@ Also:
 >
 > [Annona -- Wikipedia](https://en.wikipedia.org/wiki/Annona)
 
-## Running the CLI Example
+## Running the CLI
 
-The library ships with an example called `cli` that you can use to run from the command line.
+You can enable the annonars CLI by building the project with the `cli` feature:
 
 ```
-# cargo run --example cli -- --help
+# cargo run --all-features cli -- --help
 ```
 
 ## Managing GitHub Project with Terraform

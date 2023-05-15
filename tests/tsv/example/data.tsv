@@ -1,0 +1,3 @@
+CHROM	POS	REF	ALT	payload
+1	1000	A	T	0.1
+1	1001	A	T	0.2

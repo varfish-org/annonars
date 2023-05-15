@@ -1,0 +1,10 @@
+---
+source: src/tsv/coding.rs
+assertion_line: 341
+expression: res
+---
+- ~
+- 1
+- 2.1
+- "hello\u0000"
+

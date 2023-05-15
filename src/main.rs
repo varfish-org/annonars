@@ -1,19 +1,9 @@
-//! Example for running code from the `annonars` crate.
-
+use annonars::{common, tsv};
 use anyhow::Error;
-use clap::{arg, command, Args, Parser, Subcommand};
-use clap_verbosity_flag::{InfoLevel, Verbosity};
-
-/// Commonly used command line arguments.
-#[derive(Parser, Debug)]
-pub struct CommonArgs {
-    /// Verbosity of the program
-    #[clap(flatten)]
-    pub verbose: Verbosity<InfoLevel>,
-}
+use clap::{command, Args, Parser, Subcommand};
 
 /// CLI parser based on clap.
-#[derive(Debug, Parser)]
+#[derive(Debug, Clone, Parser)]
 #[command(
     author,
     version,
@@ -23,7 +13,7 @@ pub struct CommonArgs {
 struct Cli {
     /// Commonly used arguments
     #[command(flatten)]
-    common: CommonArgs,
+    common: common::cli::Args,
 
     /// The sub command to run
     #[command(subcommand)]
@@ -31,29 +21,25 @@ struct Cli {
 }
 
 /// Enum supporting the parsing of top-level commands.
-#[allow(clippy::large_enum_variant)]
-#[derive(Debug, Subcommand)]
+#[derive(Debug, Subcommand, Clone)]
 enum Commands {
-    /// "foo" sub command
-    Foo(FooArgs),
+    /// "tsv" sub command
+    Tsv(Tsv),
 }
 
-/// Parsing of "foo" subcommand
-#[derive(Debug, Args)]
-struct FooArgs {
-    /// The arguments.
-    #[arg()]
-    pub args: Vec<String>,
+/// Parsing of "tsv" subcommand
+#[derive(Debug, Args, Clone)]
+struct Tsv {
+    /// The sub command to run
+    #[command(subcommand)]
+    command: TsvCommands,
 }
 
-/// Implementation of "export" command.
-fn main_foo(common_args: &CommonArgs, args: &FooArgs) -> Result<(), Error> {
-    tracing::debug!("common_args = {:?}", &common_args);
-    tracing::debug!("args = {:?}", &args);
-
-    tracing::info!("args = {:#?}", &args);
-
-    Ok(())
+/// Enum supporting the parsing of "tsv *" subcommands.
+#[derive(Debug, Subcommand, Clone)]
+enum TsvCommands {
+    /// "import" sub command
+    Import(tsv::cli::import::Args),
 }
 
 pub fn main() -> Result<(), anyhow::Error> {
@@ -77,9 +63,9 @@ pub fn main() -> Result<(), anyhow::Error> {
 
     tracing::subscriber::with_default(collector, || {
         match &cli.command {
-            Commands::Foo(args) => {
-                main_foo(&cli.common, args)?;
-            }
+            Commands::Tsv(args) => match &args.command {
+                TsvCommands::Import(args) => tsv::cli::import::run(&cli.common, args)?,
+            },
         }
 
         Ok::<(), Error>(())
@@ -88,26 +74,6 @@ pub fn main() -> Result<(), anyhow::Error> {
     tracing::info!("All done! Have a nice day.");
 
     Ok(())
-}
-
-#[cfg(test)]
-mod test {
-    use clap_verbosity_flag::Verbosity;
-
-    use super::main_foo;
-    use crate::{CommonArgs, FooArgs};
-
-    #[test]
-    fn run_cmd() -> Result<(), Error> {
-        main_foo(
-            &CommonArgs {
-                verbose: Verbosity::new(0, 0),
-            },
-            &FooArgs {
-                args: vec![String::from("foo")],
-            },
-        )
-    }
 }
 
 // <LICENSE>

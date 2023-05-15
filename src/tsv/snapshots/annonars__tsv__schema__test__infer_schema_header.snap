@@ -1,0 +1,24 @@
+---
+source: src/tsv/schema.rs
+expression: record
+---
+FileSchema {
+    columns: [
+        ColumnSchema {
+            name: "a",
+            typ: Unknown,
+        },
+        ColumnSchema {
+            name: "b",
+            typ: Unknown,
+        },
+        ColumnSchema {
+            name: "c",
+            typ: Unknown,
+        },
+        ColumnSchema {
+            name: "d",
+            typ: Unknown,
+        },
+    ],
+}
