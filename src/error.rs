@@ -11,11 +11,11 @@ pub enum Error {
     #[error("invalid type for {0}: {1}")]
     InvalidType(String, String),
     /// Invalid integer value.
-    #[error("invalid integer value: {0}")]
-    InvalidInt(#[from] std::num::ParseIntError),
+    #[error("invalid integer value for {0}: {1}")]
+    InvalidInt(String, #[source] std::num::ParseIntError),
     /// Invalid float value.
-    #[error("invalid float value: {0}")]
-    InvalidFloat(#[from] std::num::ParseFloatError),
+    #[error("invalid float value for {0}: {1}")]
+    InvalidFloat(String, #[source] std::num::ParseFloatError),
     /// No null value defined.
     #[error("no null value defined")]
     NoNullValue,

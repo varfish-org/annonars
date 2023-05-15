@@ -42,11 +42,15 @@ impl Context {
                     res.push(val.into());
                 }
                 schema::ColumnType::Float => {
-                    let val: f64 = val.parse().map_err(error::Error::InvalidFloat)?;
+                    let val: f64 = val
+                        .parse()
+                        .map_err(|e| error::Error::InvalidFloat(val.to_string(), e))?;
                     res.push(val.into());
                 }
                 schema::ColumnType::Integer => {
-                    let val: i32 = val.parse().map_err(error::Error::InvalidInt)?;
+                    let val: i32 = val
+                        .parse()
+                        .map_err(|e| error::Error::InvalidInt(val.to_string(), e))?;
                     res.push(val.into());
                 }
                 schema::ColumnType::Unknown => return Err(error::Error::UnknownType),
