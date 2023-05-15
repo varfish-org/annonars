@@ -18,9 +18,9 @@ pub enum GenomeRelease {
     Grch38,
 }
 
-impl Into<hgvs::static_data::Assembly> for GenomeRelease {
-    fn into(self) -> hgvs::static_data::Assembly {
-        match self {
+impl From<GenomeRelease> for hgvs::static_data::Assembly {
+    fn from(val: GenomeRelease) -> Self {
+        match val {
             GenomeRelease::Grch37 => hgvs::static_data::Assembly::Grch37,
             GenomeRelease::Grch38 => hgvs::static_data::Assembly::Grch38,
         }

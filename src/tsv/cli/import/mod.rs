@@ -80,14 +80,14 @@ pub fn process_tsv_line(
     cf_data: &std::sync::Arc<rocksdb::BoundColumnFamily>,
 ) -> Result<(), anyhow::Error> {
     let line = line;
-    let values = ctx.line_to_values(&line)?;
-    let values = values.iter().map(|v| v).collect::<Vec<_>>();
+    let values = ctx.line_to_values(line)?;
+    let values = values.iter().collect::<Vec<_>>();
     let var = ctx.values_to_var(&values)?;
 
     let key: Vec<u8> = var.into();
     let value = ctx.encode_values(&values)?;
 
-    db.put_cf(cf_data, &key, &value)?;
+    db.put_cf(cf_data, key, value)?;
 
     Ok(())
 }
@@ -108,7 +108,7 @@ pub fn run(common: &common::cli::Args, args: &Args) -> Result<(), anyhow::Error>
     if args.add_default_null_values {
         null_values.extend_from_slice(DEFAULT_NULL_VALUES);
     }
-    args.null_values.iter().for_each(|s| null_values.push(&s));
+    args.null_values.iter().for_each(|s| null_values.push(s));
     let infer_config = tsv::schema::infer::Config {
         null_values: null_values
             .iter()
@@ -126,7 +126,7 @@ pub fn run(common: &common::cli::Args, args: &Args) -> Result<(), anyhow::Error>
     let mut schema: Option<tsv::schema::FileSchema> =
         if let Some(path_json_schema) = &args.path_schema_json {
             tracing::info!("  loading initial schema from JSON: {}", path_json_schema);
-            let json_string = std::fs::read_to_string(&path_json_schema)
+            let json_string = std::fs::read_to_string(path_json_schema)
                 .map_err(|e| anyhow::anyhow!("failed to read schema JSON: {}", e))?;
             serde_json::from_str(&json_string)
                 .map_err(|e| anyhow::anyhow!("failed to parse schema JSON: {}", e))?
@@ -135,7 +135,7 @@ pub fn run(common: &common::cli::Args, args: &Args) -> Result<(), anyhow::Error>
         };
     for path_in_tsv in &args.path_in_tsv {
         tracing::info!("  infer schema from TSV: {}", path_in_tsv);
-        let other = infer_ctx.infer_from_path(&path_in_tsv)?;
+        let other = infer_ctx.infer_from_path(path_in_tsv)?;
         schema = if let Some(schema) = &schema {
             Some(schema.merge(&other)?)
         } else {
@@ -201,7 +201,7 @@ pub fn run(common: &common::cli::Args, args: &Args) -> Result<(), anyhow::Error>
         // If we have TBI files then we can import the files them using window-based
         // parallelism.  We should import them one after another, though.
         for path_in_tsv in &args.path_in_tsv {
-            par_tbi::tsv_import(&db, &args, &infer_config, &schema, path_in_tsv)?;
+            par_tbi::tsv_import(&db, args, &infer_config, &schema, path_in_tsv)?;
         }
     } else {
         // If we don't have TBI files then we have to import them sequentially but
@@ -210,7 +210,7 @@ pub fn run(common: &common::cli::Args, args: &Args) -> Result<(), anyhow::Error>
             .par_iter()
             .progress_with_style(common::cli::indicatif_style())
             .for_each(|path_in_tsv| {
-                no_tbi::tsv_import(&db, &args, &infer_config, &schema, path_in_tsv)
+                no_tbi::tsv_import(&db, args, &infer_config, &schema, path_in_tsv)
                     .unwrap_or_else(|_| panic!("failed processing file {}", path_in_tsv));
             });
     }

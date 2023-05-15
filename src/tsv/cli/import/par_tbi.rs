@@ -102,7 +102,7 @@ pub fn tsv_import_window(
     for result in query.lines() {
         let line = result?;
 
-        if intersects(header, &line, &region)? {
+        if intersects(header, &line, region)? {
             super::process_tsv_line(&line, &ctx, db, &cf_data)?;
         }
     }
@@ -142,7 +142,7 @@ pub fn tsv_import(
                     .expect("could not convert to position");
                 let region = noodles_core::Region::new(chrom, start..=stop);
                 let tid = resolve_region(header, &region)
-                    .expect(&format!("could not resolve region: {:?}", region));
+                    .unwrap_or_else(|_| panic!("could not resolve region: {:?}", region));
                 (tid, region)
             })
             .collect::<Vec<_>>();
@@ -154,7 +154,7 @@ pub fn tsv_import(
         .progress_with_style(common::cli::indicatif_style())
         .for_each(|region| {
             tsv_import_window(db, args, config, schema, path_in_tsv, region)
-                .expect(&format!("processing region failed, {:?}", region));
+                .unwrap_or_else(|_| panic!("processing region failed, {:?}", region));
         });
 
     Ok(())

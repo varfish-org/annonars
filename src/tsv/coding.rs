@@ -133,7 +133,7 @@ impl Context {
                         let val = n
                             .as_f64()
                             .ok_or_else(|| error::Error::UnsupportedValue((*val).clone()))?;
-                        let val = val as f64;
+                        let val = val;
                         let mut buf = [0; 8];
                         BigEndian::write_f64(&mut buf, val);
                         buf.into_iter().for_each(|b| res.push(b));
@@ -207,7 +207,7 @@ impl Context {
     ) -> Result<common::keys::Var, error::Error> {
         let mut res = common::keys::Var::default();
 
-        for (val, col) in values.into_iter().zip(self.schema.columns.iter()) {
+        for (val, col) in values.iter().zip(self.schema.columns.iter()) {
             if col.name == self.config.col_chrom {
                 if let serde_json::Value::String(chrom) = val {
                     res.chrom = chrom.clone();

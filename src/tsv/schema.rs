@@ -412,7 +412,7 @@ mod test {
             ..Default::default()
         };
         let mut reader = BufReader::new(std::fs::File::open("tests/tsv/schema/empty.tsv")?);
-        let res = infer::Context::new(config).infer_from_reader(&mut reader);
+        let res = infer::Context::new(&config).infer_from_reader(&mut reader);
 
         assert!(res.is_err());
 
@@ -431,7 +431,7 @@ mod test {
             ..Default::default()
         };
         let mut reader = BufReader::new(std::fs::File::open("tests/tsv/schema/header.tsv")?);
-        let record = infer::Context::new(config).infer_from_reader(&mut reader)?;
+        let record = infer::Context::new(&config).infer_from_reader(&mut reader)?;
 
         insta::assert_debug_snapshot!(record);
 
@@ -450,7 +450,7 @@ mod test {
             ..Default::default()
         };
         let mut reader = BufReader::new(std::fs::File::open("tests/tsv/schema/values.tsv")?);
-        let record = infer::Context::new(config).infer_from_reader(&mut reader)?;
+        let record = infer::Context::new(&config).infer_from_reader(&mut reader)?;
 
         insta::assert_debug_snapshot!(record);
 
