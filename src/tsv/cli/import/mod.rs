@@ -182,7 +182,10 @@ pub fn run(common: &common::cli::Args, args: &Args) -> Result<(), anyhow::Error>
     // Check whether a TBI index file exists for all input files.
     tracing::info!("Checking whether TBI index files exist ...");
     let before_checking_tbi = std::time::Instant::now();
-    let have_tbi = false;
+    let have_tbi = args
+        .path_in_tsv
+        .iter()
+        .all(|p| std::path::Path::new(&format!("{}.tbi", &p)).exists());
     if have_tbi {
         tracing::info!(
             "  have TBI files, will import one after the other with parallel processing"
