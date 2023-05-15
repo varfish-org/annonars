@@ -1,5 +1,9 @@
 //! Common and utility code.
 
+#[cfg(feature = "cli")]
+pub mod cli;
+pub mod keys;
+
 /// Utility code for rocksdb access.
 pub mod rocks_utils {
     use std::{path::Path, time::Instant};
@@ -24,7 +28,7 @@ pub mod rocks_utils {
     /// # Returns
     ///
     /// Tuned `RocksDB` options.
-    pub fn tune_options(options: rocksdb::Options, wal_dir: Option<String>) -> rocksdb::Options {
+    pub fn tune_options(options: rocksdb::Options, wal_dir: Option<&str>) -> rocksdb::Options {
         let mut options = options;
 
         options.create_if_missing(true);

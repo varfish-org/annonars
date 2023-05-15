@@ -137,7 +137,7 @@ impl FileSchema {
 
 /// Schema inference.
 pub mod infer {
-    use std::io::BufRead;
+    use std::{io::BufRead, path::Path};
 
     use crate::error;
 
@@ -163,13 +163,13 @@ pub mod infer {
         pub skip_rows: usize,
 
         /// Column name for chromosome.
-        pub col_chromosome: String,
+        pub col_chrom: String,
         /// Column name for (start) position.
         pub col_start: String,
         /// Column name for reference allele.
-        pub col_reference: String,
+        pub col_ref: String,
         /// Column name for alternative allele.
-        pub col_alternative: String,
+        pub col_alt: String,
     }
 
     impl Default for Config {
@@ -181,10 +181,10 @@ pub mod infer {
                 header_prefix: String::from("#"),
                 num_rows: 10_000,
                 skip_rows: 0,
-                col_chromosome: String::from("CHROM"),
+                col_chrom: String::from("CHROM"),
                 col_start: String::from("POS"),
-                col_reference: String::from("REF"),
-                col_alternative: String::from("ALT"),
+                col_ref: String::from("REF"),
+                col_alt: String::from("ALT"),
             }
         }
     }
@@ -202,15 +202,17 @@ pub mod infer {
         /// # Arguments
         ///
         /// * `config` - Configuration for schema inference.
-        pub fn with_config(config: Config) -> Self {
-            Self { config }
+        pub fn new(config: &Config) -> Self {
+            Self {
+                config: config.clone(),
+            }
         }
 
         /// Get default configuration for the given row.
         fn default_column_config(&self, name: &str) -> ColumnType {
-            if name == self.config.col_chromosome
-                || name == self.config.col_reference
-                || name == self.config.col_alternative
+            if name == self.config.col_chrom
+                || name == self.config.col_ref
+                || name == self.config.col_alt
             {
                 ColumnType::String
             } else if name == self.config.col_start {
@@ -220,8 +222,30 @@ pub mod infer {
             }
         }
 
+        /// Run the schema inference from path.
+        pub fn infer_from_path<P: AsRef<Path>>(&self, path: P) -> Result<FileSchema, error::Error> {
+            let p = format!("{}", path.as_ref().display());
+            let reader: Box<dyn BufRead> = if p.ends_with(".gz") || p.ends_with(".bgz") {
+                if let Ok(reader) =
+                    bgzip::BGZFReader::new(std::fs::File::open(&path).map_err(error::Error::Io)?)
+                {
+                    Box::new(reader)
+                } else {
+                    Box::new(std::io::BufReader::new(flate2::read::GzDecoder::new(
+                        std::fs::File::open(&path).map_err(error::Error::Io)?,
+                    )))
+                }
+            } else {
+                Box::new(std::io::BufReader::new(
+                    std::fs::File::open(&path).map_err(error::Error::Io)?,
+                ))
+            };
+
+            self.infer_from_reader(reader)
+        }
+
         /// Run the schema inference algorithm.
-        pub fn infer_schema<R: BufRead>(&self, reader: R) -> Result<FileSchema, error::Error> {
+        pub fn infer_from_reader<R: BufRead>(&self, reader: R) -> Result<FileSchema, error::Error> {
             // Skip the first few rows, as configured.
             let mut reader = reader;
             for _i in 0..self.config.skip_rows {
@@ -308,6 +332,7 @@ mod test {
     use std::io::BufReader;
 
     use super::*;
+    use pretty_assertions::assert_eq;
 
     #[test]
     fn column_type_extend() {
@@ -328,6 +353,54 @@ mod test {
     }
 
     #[test]
+    fn fileschema_merge() -> Result<(), anyhow::Error> {
+        let schema1 = FileSchema {
+            columns: vec![
+                ColumnSchema {
+                    name: String::from("a"),
+                    typ: ColumnType::Integer,
+                },
+                ColumnSchema {
+                    name: String::from("b"),
+                    typ: ColumnType::String,
+                },
+            ],
+        };
+        let schema2 = FileSchema {
+            columns: vec![
+                ColumnSchema {
+                    name: String::from("a"),
+                    typ: ColumnType::String,
+                },
+                ColumnSchema {
+                    name: String::from("b"),
+                    typ: ColumnType::Integer,
+                },
+            ],
+        };
+
+        let merged = schema1.merge(&schema2)?;
+
+        assert_eq!(
+            merged,
+            FileSchema {
+                columns: vec![
+                    ColumnSchema {
+                        name: String::from("a"),
+                        typ: ColumnType::String,
+                    },
+                    ColumnSchema {
+                        name: String::from("b"),
+                        typ: ColumnType::String,
+                    },
+                ],
+            }
+        );
+
+        Ok(())
+    }
+
+    #[test]
     fn infer_schema_empty() -> Result<(), anyhow::Error> {
         let config = infer::Config {
             field_delimiter: '\t',
@@ -339,7 +412,7 @@ mod test {
             ..Default::default()
         };
         let mut reader = BufReader::new(std::fs::File::open("tests/tsv/schema/empty.tsv")?);
-        let res = infer::Context::with_config(config).infer_schema(&mut reader);
+        let res = infer::Context::new(config).infer_from_reader(&mut reader);
 
         assert!(res.is_err());
 
@@ -358,7 +431,7 @@ mod test {
             ..Default::default()
         };
         let mut reader = BufReader::new(std::fs::File::open("tests/tsv/schema/header.tsv")?);
-        let record = infer::Context::with_config(config).infer_schema(&mut reader)?;
+        let record = infer::Context::new(config).infer_from_reader(&mut reader)?;
 
         insta::assert_debug_snapshot!(record);
 
@@ -377,7 +450,7 @@ mod test {
             ..Default::default()
         };
         let mut reader = BufReader::new(std::fs::File::open("tests/tsv/schema/values.tsv")?);
-        let record = infer::Context::with_config(config).infer_schema(&mut reader)?;
+        let record = infer::Context::new(config).infer_from_reader(&mut reader)?;
 
         insta::assert_debug_snapshot!(record);
 

@@ -2,7 +2,7 @@
 
 use byteorder::{BigEndian, ByteOrder};
 
-use crate::error;
+use crate::{common, error};
 
 use super::schema;
 
@@ -22,7 +22,7 @@ impl Context {
     }
 
     /// Create a new context for coding and decoding.
-    pub fn new(config: schema::infer::Config, schema: schema::FileSchema) -> Self {
+    pub fn from(config: schema::infer::Config, schema: schema::FileSchema) -> Self {
         Self { config, schema }
     }
 
@@ -199,6 +199,65 @@ impl Context {
 
         Ok(res)
     }
+
+    /// Extract `common::keys::Var` from a vector of `serde_json::Value`s.
+    pub fn values_to_var(
+        &self,
+        values: &[&serde_json::Value],
+    ) -> Result<common::keys::Var, error::Error> {
+        let mut res = common::keys::Var::default();
+
+        for (val, col) in values.into_iter().zip(self.schema.columns.iter()) {
+            if col.name == self.config.col_chrom {
+                if let serde_json::Value::String(chrom) = val {
+                    res.chrom = chrom.clone();
+                } else {
+                    return Err(error::Error::InvalidType(
+                        self.config.col_chrom.clone(),
+                        format!("{}", val),
+                    ));
+                }
+            } else if col.name == self.config.col_start {
+                if let serde_json::Value::Number(n) = val {
+                    if n.is_i64() && n.as_i64().is_some() {
+                        res.pos = n.as_i64().unwrap() as i32;
+                    } else if n.is_u64() && n.as_u64().is_some() {
+                        res.pos = n.as_u64().unwrap() as i32;
+                    } else {
+                        return Err(error::Error::InvalidType(
+                            self.config.col_start.clone(),
+                            format!("{}", val),
+                        ));
+                    }
+                } else {
+                    return Err(error::Error::InvalidType(
+                        self.config.col_start.clone(),
+                        format!("{}", val),
+                    ));
+                }
+            } else if col.name == self.config.col_ref {
+                if let serde_json::Value::String(chrom) = val {
+                    res.chrom = chrom.clone();
+                } else {
+                    return Err(error::Error::InvalidType(
+                        self.config.col_ref.clone(),
+                        format!("{}", val),
+                    ));
+                }
+            } else if col.name == self.config.col_alt {
+                if let serde_json::Value::String(chrom) = val {
+                    res.chrom = chrom.clone();
+                } else {
+                    return Err(error::Error::InvalidType(
+                        self.config.col_alt.clone(),
+                        format!("{}", val),
+                    ));
+                }
+            }
+        }
+
+        Ok(res)
+    }
 }
 
 #[cfg(test)]
@@ -216,7 +275,7 @@ mod test {
             schema::ColumnSchema::from("c", schema::ColumnType::Float),
             schema::ColumnSchema::from("d", schema::ColumnType::String),
         ]);
-        Context::new(config, schema)
+        Context::from(config, schema)
     }
 
     fn example_values() -> Vec<serde_json::Value> {

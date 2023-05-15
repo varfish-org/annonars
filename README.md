@@ -16,12 +16,12 @@ Also:
 >
 > [Annona -- Wikipedia](https://en.wikipedia.org/wiki/Annona)
 
-## Running the CLI Example
+## Running the CLI
 
-The library ships with an example called `cli` that you can use to run from the command line.
+You can enable the annonars CLI by building the project with the `cli` feature:
 
 ```
-# cargo run --example cli -- --help
+# cargo run --all-features cli -- --help
 ```
 
 ## Managing GitHub Project with Terraform

@@ -1,0 +1,10 @@
+---
+source: src/common/keys.rs
+expression: var
+---
+Var {
+    chrom: "chr1",
+    pos: 123,
+    reference: "A",
+    alternative: "T",
+}

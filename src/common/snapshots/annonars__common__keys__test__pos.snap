@@ -1,0 +1,8 @@
+---
+source: src/common/keys.rs
+expression: pos
+---
+Pos {
+    chrom: "chr1",
+    pos: 123,
+}

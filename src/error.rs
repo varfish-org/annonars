@@ -7,6 +7,9 @@ use thiserror::Error;
 /// Error type for `annonars`
 #[derive(Error, Debug)]
 pub enum Error {
+    /// Invalid type.
+    #[error("invalid type for {0}: {1}")]
+    InvalidType(String, String),
     /// Invalid integer value.
     #[error("invalid integer value: {0}")]
     InvalidInt(#[from] std::num::ParseIntError),
