@@ -174,6 +174,7 @@ pub fn run(common: &common::cli::Args, args: &Args) -> Result<(), anyhow::Error>
     db.put_cf(&cf_meta, "db-name", &args.db_name)?;
     db.put_cf(&cf_meta, "db-version", &args.db_version)?;
     db.put_cf(&cf_meta, "db-schema", serde_json::to_string(&schema)?)?;
+    tracing::info!("  putting schema: {}", serde_json::to_string(&schema)?);
     tracing::info!(
         "... done opening RocksDB for writing in {:?}",
         before_opening_rocksdb.elapsed()

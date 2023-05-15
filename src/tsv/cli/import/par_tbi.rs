@@ -142,7 +142,7 @@ pub fn tsv_import(
                     .expect("could not convert to position");
                 let region = noodles_core::Region::new(chrom, start..=stop);
                 let tid = resolve_region(header, &region)
-                    .unwrap_or_else(|_| panic!("could not resolve region: {:?}", region));
+                    .unwrap_or_else(|e| panic!("could not resolve region {:?}: {}", region, e));
                 (tid, region)
             })
             .collect::<Vec<_>>();
@@ -154,7 +154,7 @@ pub fn tsv_import(
         .progress_with_style(common::cli::indicatif_style())
         .for_each(|region| {
             tsv_import_window(db, args, config, schema, path_in_tsv, region)
-                .unwrap_or_else(|_| panic!("processing region failed, {:?}", region));
+                .unwrap_or_else(|e| panic!("failed processing of region {:?}: {}", region, e));
         });
 
     Ok(())

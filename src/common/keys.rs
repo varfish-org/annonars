@@ -82,7 +82,7 @@ pub fn chrom_name_to_key(name: &str) -> String {
     } else {
         String::from(chrom)
     };
-    assert!(chrom.len() <= 2);
+    assert!(chrom.len() <= 2, "chrom = {:?}", chrom);
     assert!(!chrom.is_empty());
     if chrom.len() == 1 {
         format!("0{chrom}")

@@ -21,7 +21,7 @@ pub enum GenomeRelease {
 impl From<GenomeRelease> for hgvs::static_data::Assembly {
     fn from(val: GenomeRelease) -> Self {
         match val {
-            GenomeRelease::Grch37 => hgvs::static_data::Assembly::Grch37,
+            GenomeRelease::Grch37 => hgvs::static_data::Assembly::Grch37p10,
             GenomeRelease::Grch38 => hgvs::static_data::Assembly::Grch38,
         }
     }
