@@ -30,7 +30,7 @@ impl From<GenomeRelease> for hgvs::static_data::Assembly {
 /// Construct the `indicatif` style for progress bars.
 pub fn indicatif_style() -> indicatif::ProgressStyle {
     let tpl = "{spinner:.green} [{elapsed_precise}] [{wide_bar:.cyan/blue}] \
-    {human_pos}/{human_len} ({eta})";
+    {human_pos}/{human_len} ({per_sec})";
     indicatif::ProgressStyle::with_template(tpl)
         .unwrap()
         .with_key(
