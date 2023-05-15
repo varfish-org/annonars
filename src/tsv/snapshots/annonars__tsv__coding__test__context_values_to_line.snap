@@ -2,5 +2,5 @@
 source: src/tsv/coding.rs
 expression: res
 ---
-"NA\t1\t2.0999999046325684\thello"
+"NA\t1\t2.1\thello"
 

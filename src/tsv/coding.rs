@@ -42,7 +42,7 @@ impl Context {
                     res.push(val.into());
                 }
                 schema::ColumnType::Float => {
-                    let val: f32 = val.parse().map_err(error::Error::InvalidFloat)?;
+                    let val: f64 = val.parse().map_err(error::Error::InvalidFloat)?;
                     res.push(val.into());
                 }
                 schema::ColumnType::Integer => {
@@ -133,9 +133,9 @@ impl Context {
                         let val = n
                             .as_f64()
                             .ok_or_else(|| error::Error::UnsupportedValue((*val).clone()))?;
-                        let val = val as f32;
-                        let mut buf = [0; 4];
-                        BigEndian::write_f32(&mut buf, val);
+                        let val = val as f64;
+                        let mut buf = [0; 8];
+                        BigEndian::write_f64(&mut buf, val);
                         buf.into_iter().for_each(|b| res.push(b));
                     } else {
                         return Err(error::Error::UnsupportedValue((*val).clone()));
@@ -184,9 +184,9 @@ impl Context {
                     res.push(val.into());
                 }
                 schema::ColumnType::Float => {
-                    let val = BigEndian::read_f32(&bytes[offset..offset + 4]);
+                    let val = BigEndian::read_f64(&bytes[offset..offset + 8]);
                     res.push(val.into());
-                    offset += 4;
+                    offset += 8;
                 }
                 schema::ColumnType::Integer => {
                     let val = BigEndian::read_i32(&bytes[offset..offset + 4]);
@@ -223,7 +223,7 @@ mod test {
         vec![
             serde_json::Value::Null,
             1i32.into(),
-            2.1f32.into(),
+            2.1f64.into(),
             "hello".into(),
         ]
     }

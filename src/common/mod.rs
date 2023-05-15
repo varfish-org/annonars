@@ -91,7 +91,10 @@ pub mod rocks_utils {
         let db = rocksdb::DB::open_cf_with_opts(options, path.as_ref(), cfs)
             .map_err(|e| error::Error::RocksDBOpen(path.as_ref().to_owned(), e))?;
 
-        let cf_names_str = cf_names.iter().map(std::string::String::as_str).collect::<Vec<_>>();
+        let cf_names_str = cf_names
+            .iter()
+            .map(std::string::String::as_str)
+            .collect::<Vec<_>>();
         force_compaction_cf(&db, cf_names_str, wait_msg_prefix)
     }
 

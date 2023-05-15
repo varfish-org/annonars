@@ -23,7 +23,7 @@ use crate::error;
 pub enum ColumnType {
     /// String type.
     String,
-    /// Float type; will be store as `f32`.
+    /// Float type; will be store as `f64`.
     Float,
     /// Integer type; will be stored as `i32`.
     Integer,
