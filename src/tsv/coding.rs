@@ -37,6 +37,10 @@ impl Context {
 
         let mut res = Vec::new();
         for (val, col_schema) in entries.into_iter().zip(self.schema.columns.iter()) {
+            if self.config.null_values.iter().any(|nv| nv == &val) {
+                res.push(serde_json::Value::Null);
+                continue;
+            }
             match col_schema.typ {
                 schema::ColumnType::String => {
                     res.push(val.into());
