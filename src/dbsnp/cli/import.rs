@@ -201,7 +201,7 @@ pub fn run(common: &common::cli::Args, args: &Args) -> Result<(), anyhow::Error>
         "genome-release",
         format!("{}", args.genome_release),
     )?;
-    db.put_cf(&cf_meta, "db-version", &dbsnp_build_id)?;
+    db.put_cf(&cf_meta, "db-version", dbsnp_build_id)?;
     db.put_cf(&cf_meta, "db-name", "dbsnp")?;
     tracing::info!(
         "... done opening RocksDB for writing in {:?}",

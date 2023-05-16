@@ -60,7 +60,7 @@ fn tsv_import(
         let pos = keys::Pos::from(&record.chrom, record.start);
         let key: Vec<u8> = pos.into();
 
-        let record: cons::pbs::Record = record.into();
+        let record: cons::pbs::Record = record;
         let mut buf: Vec<u8> = Vec::with_capacity(record.encoded_len());
         record.encode(&mut buf)?;
 

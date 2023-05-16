@@ -88,19 +88,19 @@ fn open_rocksdb(
 }
 
 fn print_values(
-    out_writer: &dyn Write,
-    out_format: common::cli::OutputFormat,
-    meta: &Meta,
-    value: &dbsnp::pbs::Record,
+    _out_writer: &dyn Write,
+    _out_format: common::cli::OutputFormat,
+    _meta: &Meta,
+    _value: &dbsnp::pbs::Record,
 ) -> Result<(), anyhow::Error> {
     todo!()
 }
 
 fn query_for_variant(
-    variant: &common::spdi::Var,
-    meta: &Meta,
-    db: &rocksdb::DBWithThreadMode<rocksdb::MultiThreaded>,
-    cf_data: &Arc<rocksdb::BoundColumnFamily>,
+    _variant: &common::spdi::Var,
+    _meta: &Meta,
+    _db: &rocksdb::DBWithThreadMode<rocksdb::MultiThreaded>,
+    _cf_data: &Arc<rocksdb::BoundColumnFamily>,
 ) -> Result<dbsnp::pbs::Record, anyhow::Error> {
     todo!()
 }
