@@ -1,22 +1,22 @@
-//! Query for variants, positions, or ranges.
+//! Query of dbSNP annotation data.
 
-use std::sync::Arc;
+use std::{io::Write, sync::Arc};
 
 use crate::{
     common::{self, keys, spdi},
     cons::cli::args::vars::ArgsQuery,
-    tsv::{coding, schema},
+    dbsnp,
 };
 
 /// Command line arguments for `tsv query` sub command.
 #[derive(clap::Parser, Debug, Clone)]
-#[command(about = "query TSV data stored in RocksDB", long_about = None)]
+#[command(about = "query dbSNP data stored in RocksDB", long_about = None)]
 pub struct Args {
     /// Path to RocksDB directory with data.
     #[arg(long)]
     pub path_rocksdb: String,
     /// Name of the column family to import into.
-    #[arg(long, default_value = "tsv_data")]
+    #[arg(long, default_value = "dbsnp_data")]
     pub cf_name: String,
     /// Output file (default is stdout == "-").
     #[arg(long, default_value = "-")]
@@ -39,10 +39,6 @@ struct Meta {
     pub db_name: String,
     /// Version of the database.
     pub db_version: String,
-    /// Schema of the database.
-    pub db_schema: schema::FileSchema,
-    /// Inference configuration.
-    pub db_infer_config: schema::infer::Config,
 }
 
 /// Open RocksDB database.
@@ -73,20 +69,10 @@ fn open_rocksdb(
             db.get_cf(&cf_meta, "db-version")?
                 .ok_or_else(|| anyhow::anyhow!("missing value meta:db-schema"))?,
         )?;
-        let meta_db_schema = String::from_utf8(
-            db.get_cf(&cf_meta, "db-schema")?
-                .ok_or_else(|| anyhow::anyhow!("missing value meta:db-schema"))?,
-        )?;
-        let meta_db_infer_config = String::from_utf8(
-            db.get_cf(&cf_meta, "db-infer-config")?
-                .ok_or_else(|| anyhow::anyhow!("missing value meta:db-infer-config"))?,
-        )?;
         Meta {
             genome_release: meta_genome_release,
             db_name: meta_db_name,
             db_version: meta_db_version,
-            db_schema: serde_json::from_str(&meta_db_schema)?,
-            db_infer_config: serde_json::from_str(&meta_db_infer_config)?,
         }
     };
 
@@ -94,19 +80,29 @@ fn open_rocksdb(
     tracing::info!("  meta:genome-release = {}", &meta.genome_release);
     tracing::info!("  meta:db-version = {}", &meta.db_version);
     tracing::info!(
-        "  meta:db-schema = {}",
-        &serde_json::to_string(&meta.db_schema)?
-    );
-    tracing::info!(
-        "  meta:db-infer-config = {}",
-        &serde_json::to_string(&meta.db_infer_config)?
-    );
-    tracing::info!(
         "... opening RocksDB database took {:?}",
         before_open.elapsed()
     );
 
     Ok((db, meta))
+}
+
+fn print_values(
+    out_writer: &dyn Write,
+    out_format: common::cli::OutputFormat,
+    meta: &Meta,
+    value: &dbsnp::pbs::Record,
+) -> Result<(), anyhow::Error> {
+    todo!()
+}
+
+fn query_for_variant(
+    variant: &common::spdi::Var,
+    meta: &Meta,
+    db: &rocksdb::DBWithThreadMode<rocksdb::MultiThreaded>,
+    cf_data: &Arc<rocksdb::BoundColumnFamily>,
+) -> Result<dbsnp::pbs::Record, anyhow::Error> {
+    todo!()
 }
 
 /// Get chromosome from the SPDI variant.
@@ -176,65 +172,14 @@ fn extract_chrom_range(range: &spdi::Range, meta: &Meta) -> Result<String, anyho
     }
 }
 
-/// Print values to `out_writer`.
-fn print_values(
-    out_writer: &mut Box<dyn std::io::Write>,
-    output_format: common::cli::OutputFormat,
-    meta: &Meta,
-    values: Vec<serde_json::Value>,
-) -> Result<(), anyhow::Error> {
-    match output_format {
-        common::cli::OutputFormat::Jsonl => {
-            let mut map = serde_json::Map::new();
-            for (col, value) in meta.db_schema.columns.iter().zip(values.iter()) {
-                if !value.is_null() {
-                    map.insert(col.name.clone(), value.clone());
-                }
-            }
-            writeln!(
-                out_writer,
-                "{}",
-                serde_json::to_string(&serde_json::Value::Object(map))?
-            )?;
-        }
-    }
-
-    Ok(())
-}
-
-/// Perform query for variant.
-fn query_for_variant(
-    variant: &spdi::Var,
-    meta: &Meta,
-    db: &Arc<rocksdb::DBWithThreadMode<rocksdb::MultiThreaded>>,
-    cf_data: Arc<rocksdb::BoundColumnFamily>,
-    ctx: coding::Context,
-) -> Result<Vec<serde_json::Value>, anyhow::Error> {
-    // Split off the genome release (checked) and convert to key as used in database.
-    let query = spdi::Var {
-        sequence: extract_chrom_var(variant, meta)?,
-        ..variant.clone()
-    };
-    tracing::debug!("query = {:?}", &query);
-    let var: keys::Var = query.into();
-    let key: Vec<u8> = var.into();
-    let raw_value = db
-        .get_cf(&cf_data, key)?
-        .ok_or_else(|| anyhow::anyhow!("could not find variant in database"))?;
-    let values = ctx.decode_values(&raw_value)?;
-
-    Ok(values)
-}
-
 /// Implementation of `tsv query` sub command.
 pub fn run(common: &common::cli::Args, args: &Args) -> Result<(), anyhow::Error> {
-    tracing::info!("Starting 'tsv query' command");
+    tracing::info!("Starting 'dbsnp query' command");
     tracing::info!("common = {:#?}", &common);
     tracing::info!("args = {:#?}", &args);
 
     let (db, meta) = open_rocksdb(args)?;
     let cf_data = db.cf_handle(&args.cf_name).unwrap();
-    let ctx = coding::Context::new(meta.db_infer_config.clone(), meta.db_schema.clone());
 
     // Obtain writer to output.
     let mut out_writer = match args.out_file.as_ref() {
@@ -252,7 +197,7 @@ pub fn run(common: &common::cli::Args, args: &Args) -> Result<(), anyhow::Error>
             &mut out_writer,
             args.out_format,
             &meta,
-            query_for_variant(variant, &meta, &db, cf_data, ctx)?,
+            &query_for_variant(variant, &meta, &db, &cf_data)?,
         )?;
     } else {
         let (start, stop) = if let Some(position) = args.query.position.as_ref() {
@@ -307,8 +252,8 @@ pub fn run(common: &common::cli::Args, args: &Args) -> Result<(), anyhow::Error>
                     }
                 }
 
-                let values = ctx.decode_values(value)?;
-                print_values(&mut out_writer, args.out_format, &meta, values)?;
+                // let values = ctx.decode_values(value)?;
+                // print_values(&mut out_writer, args.out_format, &meta, values)?;
                 iter.next();
             } else {
                 break;
@@ -319,133 +264,4 @@ pub fn run(common: &common::cli::Args, args: &Args) -> Result<(), anyhow::Error>
 
     tracing::info!("All done. Have a nice day!");
     Ok(())
-}
-
-#[cfg(test)]
-mod test {
-    use std::str::FromStr;
-
-    use super::*;
-
-    use temp_testdir::TempDir;
-
-    fn args(query: ArgsQuery) -> (common::cli::Args, Args, TempDir) {
-        let temp = TempDir::default();
-        let common = common::cli::Args {
-            verbose: clap_verbosity_flag::Verbosity::new(1, 0),
-        };
-        let args = Args {
-            path_rocksdb: String::from("tests/tsv/example/data.tsv.gz.db"),
-            cf_name: String::from("tsv_data"),
-            out_file: temp.join("out").to_string_lossy().to_string(),
-            out_format: common::cli::OutputFormat::Jsonl,
-            query,
-        };
-
-        (common, args, temp)
-    }
-
-    #[test]
-    fn smoke_query_all() -> Result<(), anyhow::Error> {
-        let (common, args, _temp) = args(ArgsQuery {
-            all: true,
-            ..Default::default()
-        });
-        run(&common, &args)?;
-        let out_data = std::fs::read_to_string(&args.out_file)?;
-        insta::assert_snapshot!(&out_data);
-
-        Ok(())
-    }
-
-    #[test]
-    fn smoke_query_var() -> Result<(), anyhow::Error> {
-        let (common, args, _temp) = args(ArgsQuery {
-            variant: Some(spdi::Var::from_str("GRCh37:1:1000:A:T")?),
-            ..Default::default()
-        });
-        run(&common, &args)?;
-        let out_data = std::fs::read_to_string(&args.out_file)?;
-        insta::assert_snapshot!(&out_data);
-
-        Ok(())
-    }
-
-    #[test]
-    fn smoke_query_pos() -> Result<(), anyhow::Error> {
-        let (common, args, _temp) = args(ArgsQuery {
-            position: Some(spdi::Pos::from_str("GRCh37:1:1000")?),
-            ..Default::default()
-        });
-        run(&common, &args)?;
-        let out_data = std::fs::read_to_string(&args.out_file)?;
-        insta::assert_snapshot!(&out_data);
-
-        Ok(())
-    }
-
-    #[test]
-    fn smoke_query_range_find_all() -> Result<(), anyhow::Error> {
-        let (common, args, _temp) = args(ArgsQuery {
-            range: Some(spdi::Range::from_str("GRCh37:1:1000:1001")?),
-            ..Default::default()
-        });
-        run(&common, &args)?;
-        let out_data = std::fs::read_to_string(&args.out_file)?;
-        insta::assert_snapshot!(&out_data);
-
-        Ok(())
-    }
-
-    #[test]
-    fn smoke_query_range_find_first() -> Result<(), anyhow::Error> {
-        let (common, args, _temp) = args(ArgsQuery {
-            range: Some(spdi::Range::from_str("GRCh37:1:1000:1000")?),
-            ..Default::default()
-        });
-        run(&common, &args)?;
-        let out_data = std::fs::read_to_string(&args.out_file)?;
-        insta::assert_snapshot!(&out_data);
-
-        Ok(())
-    }
-
-    #[test]
-    fn smoke_query_range_find_second() -> Result<(), anyhow::Error> {
-        let (common, args, _temp) = args(ArgsQuery {
-            range: Some(spdi::Range::from_str("GRCh37:1:1001:1001")?),
-            ..Default::default()
-        });
-        run(&common, &args)?;
-        let out_data = std::fs::read_to_string(&args.out_file)?;
-        insta::assert_snapshot!(&out_data);
-
-        Ok(())
-    }
-
-    #[test]
-    fn smoke_query_range_find_none_smaller() -> Result<(), anyhow::Error> {
-        let (common, args, _temp) = args(ArgsQuery {
-            range: Some(spdi::Range::from_str("GRCh37:1:1:999")?),
-            ..Default::default()
-        });
-        run(&common, &args)?;
-        let out_data = std::fs::read_to_string(&args.out_file)?;
-        insta::assert_snapshot!(&out_data);
-
-        Ok(())
-    }
-
-    #[test]
-    fn smoke_query_range_find_none_larger() -> Result<(), anyhow::Error> {
-        let (common, args, _temp) = args(ArgsQuery {
-            range: Some(spdi::Range::from_str("GRCh37:1:1002:2000")?),
-            ..Default::default()
-        });
-        run(&common, &args)?;
-        let out_data = std::fs::read_to_string(&args.out_file)?;
-        insta::assert_snapshot!(&out_data);
-
-        Ok(())
-    }
 }

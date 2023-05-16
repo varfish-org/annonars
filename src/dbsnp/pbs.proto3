@@ -1,0 +1,12 @@
+syntax = "proto3";
+
+package annonars.dbsnp.pbs;
+
+// Protocol buffer for the dbSNP VCF record.
+message Record {
+    // Chromosome name.
+    string chrom = 1;
+    // 1-based start position.
+    int32 start = 2;
+    // TODO
+}
