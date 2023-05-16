@@ -113,7 +113,7 @@ fn extract_chrom_range(range: &spdi::Range, meta: &Meta) -> Result<String, anyho
 fn print_values(
     out_writer: &mut Box<dyn std::io::Write>,
     output_format: common::cli::OutputFormat,
-    record: &cons::models::Record,
+    record: &cons::pbs::Record,
 ) -> Result<(), anyhow::Error> {
     match output_format {
         common::cli::OutputFormat::Jsonl => {

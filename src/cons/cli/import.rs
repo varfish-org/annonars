@@ -56,7 +56,7 @@ fn tsv_import(
 
     // Read through all records, inserting them into the database.
     for result in csv_reader.deserialize() {
-        let record: cons::models::Record = result?;
+        let record: cons::pbs::Record = result?;
         let pos = keys::Pos::from(&record.chrom, record.start);
         let key: Vec<u8> = pos.into();
 
