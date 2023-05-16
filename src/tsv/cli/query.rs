@@ -7,11 +7,9 @@ use crate::{
     tsv::{coding, schema},
 };
 
-///
-
 /// Command line arguments for `tsv query` sub command.
 #[derive(clap::Parser, Debug, Clone)]
-#[command(about = "import tsv data into rocksdb", long_about = None)]
+#[command(about = "query TSV data stored in RocksDB", long_about = None)]
 pub struct Args {
     /// Path to RocksDB directory with data.
     #[arg(long)]
@@ -195,7 +193,7 @@ fn extract_chrom_range(range: &spdi::Range, meta: &Meta) -> Result<String, anyho
     }
 }
 
-/// Print values to stdout.
+/// Print values to `out_writer`.
 fn print_values(
     out_writer: &mut Box<dyn std::io::Write>,
     output_format: common::cli::OutputFormat,

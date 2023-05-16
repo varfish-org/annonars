@@ -1,4 +1,4 @@
-use annonars::{common, tsv};
+use annonars::{common, cons, tsv};
 use anyhow::Error;
 use clap::{command, Args, Parser, Subcommand};
 
@@ -25,6 +25,8 @@ struct Cli {
 enum Commands {
     /// "tsv" sub command
     Tsv(Tsv),
+    /// "cons" sub command
+    Cons(Cons),
 }
 
 /// Parsing of "tsv" subcommand
@@ -42,6 +44,23 @@ enum TsvCommands {
     Import(tsv::cli::import::Args),
     /// "query" sub command
     Query(tsv::cli::query::Args),
+}
+
+/// Parsing of "cons" subcommand
+#[derive(Debug, Args, Clone)]
+struct Cons {
+    /// The sub command to run
+    #[command(subcommand)]
+    command: ConsCommands,
+}
+
+/// Enum supporting the parsing of "cons *" subcommands.
+#[derive(Debug, Subcommand, Clone)]
+enum ConsCommands {
+    /// "import" sub command
+    Import(cons::cli::import::Args),
+    /// "query" sub command
+    Query(cons::cli::query::Args),
 }
 
 pub fn main() -> Result<(), anyhow::Error> {
@@ -68,6 +87,10 @@ pub fn main() -> Result<(), anyhow::Error> {
             Commands::Tsv(args) => match &args.command {
                 TsvCommands::Import(args) => tsv::cli::import::run(&cli.common, args)?,
                 TsvCommands::Query(args) => tsv::cli::query::run(&cli.common, args)?,
+            },
+            Commands::Cons(args) => match &args.command {
+                ConsCommands::Import(args) => cons::cli::import::run(&cli.common, args)?,
+                ConsCommands::Query(args) => cons::cli::query::run(&cli.common, args)?,
             },
         }
 

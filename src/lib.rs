@@ -4,6 +4,7 @@
 //! Genome annotation stored in `RocksDB`.
 
 pub mod common;
+pub mod cons;
 mod error;
 pub mod tsv;
 

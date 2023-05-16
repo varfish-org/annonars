@@ -26,6 +26,11 @@ jobs:
           toolchain: stable
           override: true
 
+      - name: Setup protoc
+        uses: arduino/setup-protoc@v1.1.2
+        with:
+          repo-token: ${{ secrets.GITHUB_TOKEN }}
+
       - uses: Swatinem/rust-cache@v2
         if: ${{ steps.release.outputs.release_created }}
 

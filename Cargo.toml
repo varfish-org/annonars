@@ -44,6 +44,11 @@ noodles-tabix = { version = "0.20", optional = true }
 noodles-csi = "0.17.0"
 noodles-core = "0.11.0"
 hgvs = { version = "0.7", optional = true }
+prost = "0.11"
+csv = "1.2.1"
+
+[build-dependencies]
+prost-build = "0.11"
 
 [dev-dependencies]
 env_logger = "0.10"
