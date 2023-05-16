@@ -174,11 +174,7 @@ pub fn run(common: &common::cli::Args, args: &Args) -> Result<(), anyhow::Error>
     )?);
     tracing::info!("  writing meta information");
     let cf_meta = db.cf_handle("meta").unwrap();
-    db.put_cf(
-        &cf_meta,
-        "annona-rs-version",
-        &format!("{}", crate::VERSION),
-    )?;
+    db.put_cf(&cf_meta, "annona-rs-version", crate::VERSION)?;
     db.put_cf(
         &cf_meta,
         "genome-release",
@@ -291,8 +287,9 @@ mod test {
             add_default_null_values: true,
         };
 
-        super::run(&common, &args).unwrap();
+        run(&common, &args).unwrap();
     }
+
     /// Smoke test for running with a TBI file.
     #[test]
     fn smoke_test_import_tsv_with_tbi() {
@@ -320,6 +317,6 @@ mod test {
             add_default_null_values: true,
         };
 
-        super::run(&common, &args).unwrap();
+        run(&common, &args).unwrap();
     }
 }
