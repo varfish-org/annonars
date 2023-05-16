@@ -133,8 +133,8 @@ fn open_rocksdb(
 /// If the optional genome release was given then it is compared to the one specified
 /// in `meta` and stripped (comparision is case insensitive).
 fn extract_chrom_var(variant: &spdi::Var, meta: &Meta) -> Result<String, anyhow::Error> {
-    if variant.sequence.contains(":") {
-        let mut iter = variant.sequence.rsplitn(2, ":");
+    if variant.sequence.contains(':') {
+        let mut iter = variant.sequence.rsplitn(2, ':');
         let chromosome = iter.next().unwrap();
         if let Some(genome_release) = iter.next() {
             if genome_release.to_lowercase() != meta.genome_release.to_lowercase() {
@@ -155,8 +155,8 @@ fn extract_chrom_var(variant: &spdi::Var, meta: &Meta) -> Result<String, anyhow:
 ///
 /// See `extract_chrom_var` for details.
 fn extract_chrom_pos(pos: &spdi::Pos, meta: &Meta) -> Result<String, anyhow::Error> {
-    if pos.sequence.contains(":") {
-        let mut iter = pos.sequence.rsplitn(2, ":");
+    if pos.sequence.contains(':') {
+        let mut iter = pos.sequence.rsplitn(2, ':');
         let chromosome = iter.next().unwrap();
         if let Some(genome_release) = iter.next() {
             if genome_release.to_lowercase() != meta.genome_release.to_lowercase() {
@@ -177,8 +177,8 @@ fn extract_chrom_pos(pos: &spdi::Pos, meta: &Meta) -> Result<String, anyhow::Err
 ///
 /// See `extract_chrom_var` for details.
 fn extract_chrom_range(range: &spdi::Range, meta: &Meta) -> Result<String, anyhow::Error> {
-    if range.sequence.contains(":") {
-        let mut iter = range.sequence.rsplitn(2, ":");
+    if range.sequence.contains(':') {
+        let mut iter = range.sequence.rsplitn(2, ':');
         let chromosome = iter.next().unwrap();
         if let Some(genome_release) = iter.next() {
             if genome_release.to_lowercase() != meta.genome_release.to_lowercase() {
@@ -238,7 +238,7 @@ fn query_for_variant(
     let var: keys::Var = query.into();
     let key: Vec<u8> = var.into();
     let raw_value = db
-        .get_cf(&cf_data, &key)?
+        .get_cf(&cf_data, key)?
         .ok_or_else(|| anyhow::anyhow!("could not find variant in database"))?;
     let values = ctx.decode_values(&raw_value)?;
 
@@ -260,7 +260,7 @@ pub fn run(common: &common::cli::Args, args: &Args) -> Result<(), anyhow::Error>
         "-" => Box::new(std::io::stdout()) as Box<dyn std::io::Write>,
         out_file => {
             let path = std::path::Path::new(out_file);
-            Box::new(std::fs::File::create(&path).unwrap()) as Box<dyn std::io::Write>
+            Box::new(std::fs::File::create(path).unwrap()) as Box<dyn std::io::Write>
         }
     };
 
@@ -279,13 +279,13 @@ pub fn run(common: &common::cli::Args, args: &Args) -> Result<(), anyhow::Error>
                 sequence: extract_chrom_pos(position, &meta)?,
                 ..position.clone()
             };
-            (Some(position.clone()), Some(position.clone()))
+            (Some(position.clone()), Some(position))
         } else if let Some(range) = args.query.range.as_ref() {
             let range = spdi::Range {
                 sequence: extract_chrom_range(range, &meta)?,
                 ..range.clone()
             };
-            let (start, stop) = range.clone().into();
+            let (start, stop) = range.into();
             (Some(start), Some(stop))
         } else if args.query.all {
             (None, None)
@@ -303,7 +303,7 @@ pub fn run(common: &common::cli::Args, args: &Args) -> Result<(), anyhow::Error>
             tracing::debug!("seeking to key {:?}", &key);
             iter.seek(&key);
         } else {
-            iter.seek(&b"")
+            iter.seek(b"")
         }
 
         // Cast stop to `keys::Pos`.
@@ -326,7 +326,7 @@ pub fn run(common: &common::cli::Args, args: &Args) -> Result<(), anyhow::Error>
                     }
                 }
 
-                let values = ctx.decode_values(&value)?;
+                let values = ctx.decode_values(value)?;
                 print_values(&mut out_writer, args.out_format, &meta, values)?;
                 iter.next();
             } else {

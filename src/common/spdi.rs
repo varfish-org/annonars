@@ -191,11 +191,11 @@ impl Display for Range {
     }
 }
 
-impl Into<(Pos, Pos)> for Range {
-    fn into(self) -> (Pos, Pos) {
+impl From<Range> for (Pos, Pos) {
+    fn from(val: Range) -> Self {
         (
-            Pos::new(self.sequence.clone(), self.start),
-            Pos::new(self.sequence, self.end),
+            Pos::new(val.sequence.clone(), val.start),
+            Pos::new(val.sequence, val.end),
         )
     }
 }

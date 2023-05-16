@@ -139,7 +139,7 @@ pub fn chrom_key_to_name(key: &[u8]) -> String {
             .expect("could not decode UTF-8")
             .to_string()
     } else {
-        std::str::from_utf8(&key)
+        std::str::from_utf8(key)
             .expect("could not decode UTF-8")
             .to_string()
     }
