@@ -57,7 +57,7 @@ pub fn tune_options(options: rocksdb::Options, wal_dir: Option<&str>) -> rocksdb
     options.set_bottommost_compression_type(rocksdb::DBCompressionType::Zstd);
     options.set_bottommost_zstd_max_train_bytes(1 << 22, true);
 
-    options.set_disable_auto_compactions(true);
+    // options.set_disable_auto_compactions(true);
     options.optimize_for_point_lookup(1 << 26);
 
     options
