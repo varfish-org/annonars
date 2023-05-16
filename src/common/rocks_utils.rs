@@ -30,15 +30,6 @@ pub fn tune_options(options: rocksdb::Options, wal_dir: Option<&str>) -> rocksdb
 
     options.prepare_for_bulk_load();
 
-    // compress all files with Zstandard
-    options.set_compression_per_level(&[]);
-    options.set_compression_type(rocksdb::DBCompressionType::Zstd);
-    // We only want to set level to 2 but have to set the rest as well using the
-    // Rust interface. The (default) values for the other levels were taken from
-    // the output of a RocksDB output folder created with default settings.
-    options.set_compression_options(-14, 2, 0, 0);
-    // options.set_zstd_max_train_bytes(100 * 1024);
-
     options.set_max_background_jobs(16);
     options.set_max_subcompactions(8);
     options.increase_parallelism(8);
@@ -53,11 +44,11 @@ pub fn tune_options(options: rocksdb::Options, wal_dir: Option<&str>) -> rocksdb
         options.set_wal_dir(wal_dir);
     }
 
-    options.set_bottommost_compression_options(-14, 3, 0, 1 << 14, true);
+    // Compress everything with zstd.
+    options.set_compression_per_level(&[]);
+    options.set_bottommost_compression_options(-14, 10, 0, 1 << 14, true);
     options.set_bottommost_compression_type(rocksdb::DBCompressionType::Zstd);
     options.set_bottommost_zstd_max_train_bytes(1 << 22, true);
-
-    // options.set_disable_auto_compactions(true);
     options.optimize_for_point_lookup(1 << 26);
 
     options
