@@ -84,8 +84,15 @@ pub fn process_tsv_line(
     let values = values.iter().collect::<Vec<_>>();
     let var = ctx.values_to_var(&values)?;
 
-    let key: Vec<u8> = var.into();
+    let key: Vec<u8> = var.clone().into();
     let value = ctx.encode_values(&values)?;
+
+    tracing::trace!(
+        "putting for var = {:?}, key = {:?}, value = {:?}",
+        &var,
+        &key,
+        &value
+    );
 
     db.put_cf(cf_data, key, value)?;
 
@@ -169,12 +176,26 @@ pub fn run(common: &common::cli::Args, args: &Args) -> Result<(), anyhow::Error>
     let cf_meta = db.cf_handle("meta").unwrap();
     db.put_cf(
         &cf_meta,
+        "annona-rs-version",
+        &format!("{}", crate::VERSION),
+    )?;
+    db.put_cf(
+        &cf_meta,
         "genome-release",
         &format!("{}", args.genome_release),
     )?;
     db.put_cf(&cf_meta, "db-name", &args.db_name)?;
     db.put_cf(&cf_meta, "db-version", &args.db_version)?;
     db.put_cf(&cf_meta, "db-schema", serde_json::to_string(&schema)?)?;
+    db.put_cf(
+        &cf_meta,
+        "db-infer-config",
+        serde_json::to_string(&infer_config)?,
+    )?;
+    tracing::info!(
+        "  putting infer config: {}",
+        serde_json::to_string(&infer_config)?
+    );
     tracing::info!("  putting schema: {}", serde_json::to_string(&schema)?);
     tracing::info!(
         "... done opening RocksDB for writing in {:?}",

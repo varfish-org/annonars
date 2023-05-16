@@ -98,7 +98,7 @@ pub fn tsv_import_window(
     let query = noodles_csi::io::Query::new(&mut reader, chunks);
 
     // Read through the overlapping lines.
-    let ctx = tsv::coding::Context::from(config.clone(), schema.clone());
+    let ctx = tsv::coding::Context::new(config.clone(), schema.clone());
     for result in query.lines() {
         let line = result?;
 

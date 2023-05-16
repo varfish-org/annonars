@@ -10,6 +10,11 @@ pub struct Pos {
 }
 
 impl Pos {
+    /// Create new position.
+    pub fn new(chrom: String, pos: i32) -> Self {
+        Self { chrom, pos }
+    }
+
     /// Create from the given chrom/pos pair.
     pub fn from(chrom: &str, pos: i32) -> Self {
         Pos {
@@ -30,6 +35,20 @@ impl From<Pos> for Vec<u8> {
     }
 }
 
+impl From<&[u8]> for Pos {
+    fn from(value: &[u8]) -> Self {
+        let chrom = chrom_key_to_name(&value[0..2]);
+        let pos = i32::from_be_bytes(value[2..6].try_into().unwrap());
+        Self { chrom, pos }
+    }
+}
+
+impl From<super::spdi::Pos> for Pos {
+    fn from(other: super::spdi::Pos) -> Self {
+        Self::new(other.sequence, other.position)
+    }
+}
+
 /// A chromosomal change `CHROM-POS-REF-ALT`.
 #[derive(Debug, Default, PartialEq, Eq, PartialOrd, Ord, Clone)]
 pub struct Var {
@@ -44,6 +63,16 @@ pub struct Var {
 }
 
 impl Var {
+    /// Create new VCF-style variant.
+    pub fn new(chrom: String, pos: i32, reference: String, alternative: String) -> Self {
+        Self {
+            chrom,
+            pos,
+            reference,
+            alternative,
+        }
+    }
+
     /// Create from the given VCF-style variant.
     pub fn from(chrom: &str, pos: i32, reference: &str, alternative: &str) -> Self {
         Self {
@@ -65,6 +94,17 @@ impl From<Var> for Vec<u8> {
         result.extend_from_slice(val.alternative.as_bytes());
 
         result
+    }
+}
+
+impl From<super::spdi::Var> for Var {
+    fn from(other: super::spdi::Var) -> Self {
+        Self::new(
+            other.sequence,
+            other.position,
+            other.deletion,
+            other.insertion,
+        )
     }
 }
 
@@ -92,12 +132,16 @@ pub fn chrom_name_to_key(name: &str) -> String {
 }
 
 /// Convert from RocksDB chromosome key part to chromosome name.
-pub fn chrom_key_to_name(key: &str) -> String {
+pub fn chrom_key_to_name(key: &[u8]) -> String {
     assert!(key.len() == 2);
-    if key.starts_with('0') || key.starts_with(' ') {
-        key[1..].to_string()
+    if key.starts_with(b"0") || key.starts_with(b" ") {
+        std::str::from_utf8(&key[1..])
+            .expect("could not decode UTF-8")
+            .to_string()
     } else {
-        key.to_string()
+        std::str::from_utf8(key)
+            .expect("could not decode UTF-8")
+            .to_string()
     }
 }
 
@@ -147,10 +191,10 @@ mod test {
 
     #[test]
     fn test_chrom_key_to_name() {
-        assert_eq!(chrom_key_to_name("01"), "1");
-        assert_eq!(chrom_key_to_name("21"), "21");
-        assert_eq!(chrom_key_to_name(" X"), "X");
-        assert_eq!(chrom_key_to_name(" Y"), "Y");
-        assert_eq!(chrom_key_to_name("MT"), "MT");
+        assert_eq!(chrom_key_to_name(b"01"), "1");
+        assert_eq!(chrom_key_to_name(b"21"), "21");
+        assert_eq!(chrom_key_to_name(b" X"), "X");
+        assert_eq!(chrom_key_to_name(b" Y"), "Y");
+        assert_eq!(chrom_key_to_name(b"MT"), "MT");
     }
 }

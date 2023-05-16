@@ -1,0 +1,5 @@
+---
+source: src/tsv/cli/query.rs
+expression: "&out_data"
+---
+

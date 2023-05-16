@@ -32,7 +32,7 @@ pub fn tsv_import(
         Box::new(BufReader::new(std::fs::File::open(path_in_tsv)?))
     };
 
-    let ctx = tsv::coding::Context::from(config.clone(), schema.clone());
+    let ctx = tsv::coding::Context::new(config.clone(), schema.clone());
 
     // Read the file line by line, decode the values, extract position, and insert into RocksDB
     // instance.

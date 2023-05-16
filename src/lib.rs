@@ -8,3 +8,6 @@ mod error;
 pub mod tsv;
 
 pub use crate::error::*;
+
+/// The version of the `annona-rs` package.
+pub const VERSION: &str = env!("CARGO_PKG_VERSION");

@@ -1,0 +1,7 @@
+---
+source: src/tsv/cli/query.rs
+assertion_line: 427
+expression: "&out_data"
+---
+{"CHROM":"chr1","POS":1000,"REF":"A","ALT":"T","payload":0.1}
+
