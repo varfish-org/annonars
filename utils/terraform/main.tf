@@ -9,6 +9,7 @@ resource "github_repository" "annona-rs" {
 
   allow_rebase_merge = false
   allow_merge_commit = false
+  delete_branch_on_merge = true
 
   template {
     owner                = "bihealth"
