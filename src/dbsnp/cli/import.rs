@@ -1,13 +1,16 @@
 //! Import dbSNP annotation data.
 
-use std::sync::Arc;
+use std::{str::FromStr, sync::Arc};
 
 use clap::Parser;
-use prost::Message;
+use hgvs::static_data::Assembly;
+use indicatif::ParallelProgressIterator;
+use noodles_vcf::header::record;
+use rayon::prelude::{IntoParallelRefIterator, ParallelIterator};
 
 use crate::{
-    common::{self, keys},
-    cons,
+    common::{self, cli::indicatif_style},
+    dbsnp,
 };
 
 /// Command line arguments for `dbsnp import` sub command.
@@ -17,12 +20,16 @@ pub struct Args {
     /// Genome build to use in the build.
     #[arg(long, value_enum)]
     pub genome_release: common::cli::GenomeRelease,
-    /// Path to input TSV file(s).
+    /// Path to input VCF file(s).
     #[arg(long, required = true)]
-    pub path_in_tsv: String,
+    pub path_in_vcf: String,
     /// Path to output RocksDB directory.
     #[arg(long)]
     pub path_out_rocksdb: String,
+
+    /// Windows size for TBI-based parallel import.
+    #[arg(long, default_value = "1000000")]
+    pub tbi_window_size: usize,
 
     /// Name of the column family to import into.
     #[arg(long, default_value = "dbsnp_data")]
@@ -34,14 +41,90 @@ pub struct Args {
 
 /// Perform TBI-parallel import of the data.
 fn tsv_import(
-    db: &rocksdb::DBWithThreadMode<rocksdb::MultiThreaded>,
+    db: Arc<rocksdb::DBWithThreadMode<rocksdb::MultiThreaded>>,
     args: &Args,
+    header: &noodles_vcf::Header,
 ) -> Result<(), anyhow::Error> {
-    let cf_data = db.cf_handle(&args.cf_name).unwrap();
+    // Get list of contigs from the header.
+    let contigs: std::collections::HashSet<String> = std::collections::HashSet::from_iter(
+        header.contigs().iter().map(|(name, _)| name.to_string()),
+    );
 
-    todo!();
+    // Generate list of regions on canonical chromosomes, limited to those present in header.
+    let windows =
+        common::cli::build_genome_windows(args.genome_release.into(), Some(args.tbi_window_size))?
+            .into_iter()
+            .filter(|(chrom, _, _)| contigs.contains(chrom))
+            .collect::<Vec<_>>();
+
+    tracing::info!("Loading dbSNP VCF file into RocksDB...");
+    let before_loading = std::time::Instant::now();
+    let style = indicatif_style();
+    windows
+        .par_iter()
+        .progress_with_style(style)
+        .for_each(|(chrom, begin, end)| {
+            process_window(db.clone(), chrom, *begin, *end, args)
+                .unwrap_or_else(|_| panic!("failed to process window {}:{}-{}", chrom, begin, end));
+        });
+    tracing::info!(
+        "... done loading dbSNP VCF file into RocksDB in {:?}",
+        before_loading.elapsed()
+    );
 
     Ok(())
+}
+
+/// Process one window.
+fn process_window(
+    db: Arc<rocksdb::DBWithThreadMode<rocksdb::MultiThreaded>>,
+    chrom: &str,
+    begin: usize,
+    end: usize,
+    args: &Args,
+) -> Result<(), anyhow::Error> {
+    let cf_dbsnp = db.cf_handle(&args.cf_name).unwrap();
+    let mut reader =
+        noodles_vcf::indexed_reader::Builder::default().build_from_path(&args.path_in_vcf)?;
+    let header = reader.read_header()?;
+
+    let raw_region = format!("{}:{}-{}", chrom, begin + 1, end);
+    let region = raw_region.parse()?;
+
+    // Jump to the selected region.  In the case of errors, allow for the window not
+    // to exist in the reference sequence (just return).  Otherwise, fail on
+    // errors.
+    let query = match reader.query(&header, &region) {
+        Ok(result) => Ok(Some(result)),
+        Err(e) => {
+            let needle = "region reference sequence does not exist in reference sequences";
+            if e.to_string().contains(needle) {
+                Ok(None)
+            } else {
+                Err(e)
+            }
+        }
+    }?;
+
+    // Process the result (skip if determined above that the sequence does not
+    // exist).
+    if let Some(query) = query {
+        for result in query {
+            let vcf_record = result?;
+
+            // Skip if there are no alternate alleles in `vcf_record`.
+            if let Some(key_var) = common::keys::Var::from_vcf(&vcf_record) {
+                let key_buf: Vec<u8> = key_var.into();
+
+                let dbsnp_record: dbsnp::pbs::Record = vcf_record.try_into()?;
+                let record_json = serde_json::to_string(&dbsnp_record)?;
+
+                db.put_cf(&cf_dbsnp, &key_buf, record_json.as_bytes())?;
+            }
+        }
+    }
+
+    todo!()
 }
 
 /// Implementation of `cons import` sub command.
@@ -49,6 +132,50 @@ pub fn run(common: &common::cli::Args, args: &Args) -> Result<(), anyhow::Error>
     tracing::info!("Starting 'dbsnp import' command");
     tracing::info!("common = {:#?}", &common);
     tracing::info!("args = {:#?}", &args);
+
+    tracing::info!("Opening dbSNP VCF file...");
+    let before_loading = std::time::Instant::now();
+    let mut reader_vcf =
+        noodles_vcf::indexed_reader::Builder::default().build_from_path(&args.path_in_vcf)?;
+    let header = reader_vcf.read_header()?;
+    let dbsnp_reference = if let record::value::Collection::Unstructured(values) = header
+        .other_records()
+        .get(&record::key::Other::from_str("reference")?)
+        .expect("no ##reference header")
+    {
+        values.first().expect("no reference value").to_owned()
+    } else {
+        anyhow::bail!("invalid type of ##reference header");
+    };
+    let dbsnp_build_id = if let record::value::Collection::Unstructured(values) = header
+        .other_records()
+        .get(&record::key::Other::from_str("dbSNP_BUILD_ID")?)
+        .expect("no ##dbSNP_BUILD_ID header")
+    {
+        values.first().expect("no reference value").to_owned()
+    } else {
+        anyhow::bail!("invalid type of ##dbSNP_BUILD_ID header");
+    };
+    tracing::info!(
+        "...done opening dbSNP VCF file in {:?}",
+        before_loading.elapsed()
+    );
+
+    // Check that the dbSNP reference from the matches the genome release.
+    let assembly = if dbsnp_reference.starts_with("GRCh37") {
+        Assembly::Grch37p10
+    } else if dbsnp_reference.starts_with("GRCh38") {
+        Assembly::Grch38
+    } else {
+        anyhow::bail!("unknown assembly in dbSNP reference: {}", dbsnp_reference);
+    };
+    if assembly != args.genome_release.into() {
+        anyhow::bail!(
+            "dbSNP reference assembly ({}) does not match genome release from args ({})",
+            dbsnp_reference,
+            args.genome_release
+        );
+    }
 
     // Open the RocksDB for writing.
     tracing::info!("Opening RocksDB for writing ...");
@@ -74,8 +201,7 @@ pub fn run(common: &common::cli::Args, args: &Args) -> Result<(), anyhow::Error>
         "genome-release",
         format!("{}", args.genome_release),
     )?;
-    db.put_cf(&cf_meta, "db-version", "")?;
-    todo!(); // above
+    db.put_cf(&cf_meta, "db-version", &dbsnp_build_id)?;
     db.put_cf(&cf_meta, "db-name", "dbsnp")?;
     tracing::info!(
         "... done opening RocksDB for writing in {:?}",
@@ -84,7 +210,7 @@ pub fn run(common: &common::cli::Args, args: &Args) -> Result<(), anyhow::Error>
 
     tracing::info!("Importing dbSNP file ...");
     let before_import = std::time::Instant::now();
-    tsv_import(&db, args)?;
+    tsv_import(db.clone(), args, &header)?;
     tracing::info!(
         "... done importing dbSNP file in {:?}",
         before_import.elapsed()
@@ -117,10 +243,11 @@ mod test {
         };
         let args = Args {
             genome_release: common::cli::GenomeRelease::Grch37,
-            path_in_tsv: String::from("tests/dbsnp/example/dbsnp.brca1.vcf.bgz"),
+            path_in_vcf: String::from("tests/dbsnp/example/dbsnp.brca1.vcf.bgz"),
             path_out_rocksdb: format!("{}", tmp_dir.join("out-rocksdb").display()),
             cf_name: String::from("dbsnp_data"),
             path_wal_dir: None,
+            tbi_window_size: 1_000_000,
         };
 
         run(&common, &args).unwrap();
