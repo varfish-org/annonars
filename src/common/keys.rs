@@ -85,8 +85,8 @@ impl Var {
         }
     }
 
-    /// Create from the given VCF record.
-    pub fn from_vcf(value: &noodles_vcf::Record) -> Option<Self> {
+    /// Create for all alternate alleles from the given VCF record.
+    pub fn from_vcf_alleles(value: &noodles_vcf::Record) -> Vec<Self> {
         let chrom = match value.chromosome() {
             noodles_vcf::record::Chromosome::Name(name)
             | noodles_vcf::record::Chromosome::Symbol(name) => name.to_owned(),
@@ -95,17 +95,21 @@ impl Var {
         let pos = pos as i32;
         let reference = value.reference_bases().to_string();
         let alternate_bases = value.alternate_bases().deref();
-        if alternate_bases.is_empty() {
-            return None;
-        }
-        let alternative = alternate_bases[0].to_string();
-
-        Some(Var {
+        let tpl = Var {
             chrom,
             pos,
             reference,
-            alternative,
-        })
+            alternative: Default::default(),
+        };
+        alternate_bases
+            .iter()
+            .map(|alt| {
+                Var {
+                    alternative: alt.to_string(),
+                    ..tpl.clone()
+                }
+            })
+            .collect::<Vec<_>>()
     }
 }
 

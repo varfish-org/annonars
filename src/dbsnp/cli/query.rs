@@ -2,6 +2,8 @@
 
 use std::{io::Write, sync::Arc};
 
+use prost::Message;
+
 use crate::{
     common::{self, keys, spdi},
     cons::cli::args::vars::ArgsQuery,
@@ -88,21 +90,40 @@ fn open_rocksdb(
 }
 
 fn print_values(
-    _out_writer: &dyn Write,
-    _out_format: common::cli::OutputFormat,
-    _meta: &Meta,
-    _value: &dbsnp::pbs::Record,
+    out_writer: &mut Box<dyn std::io::Write>,
+    output_format: common::cli::OutputFormat,
+    value: &dbsnp::pbs::Record,
 ) -> Result<(), anyhow::Error> {
-    todo!()
+    match output_format {
+        common::cli::OutputFormat::Jsonl => {
+            writeln!(out_writer, "{}", serde_json::to_string(value)?)?;
+        }
+    }
+
+    Ok(())
 }
 
 fn query_for_variant(
-    _variant: &common::spdi::Var,
-    _meta: &Meta,
-    _db: &rocksdb::DBWithThreadMode<rocksdb::MultiThreaded>,
-    _cf_data: &Arc<rocksdb::BoundColumnFamily>,
+    variant: &common::spdi::Var,
+    meta: &Meta,
+    db: &rocksdb::DBWithThreadMode<rocksdb::MultiThreaded>,
+    cf_data: &Arc<rocksdb::BoundColumnFamily>,
 ) -> Result<dbsnp::pbs::Record, anyhow::Error> {
-    todo!()
+    // Split off the genome release (checked) and convert to key as used in database.
+    let query = spdi::Var {
+        sequence: extract_chrom_var(variant, meta)?,
+        ..variant.clone()
+    };
+    // Execute query.
+    tracing::debug!("query = {:?}", &query);
+    let var: keys::Var = query.into();
+    let key: Vec<u8> = var.into();
+    let raw_value = db
+        .get_cf(cf_data, key)?
+        .ok_or_else(|| anyhow::anyhow!("could not find variant in database"))?;
+    // Decode via prost.
+    dbsnp::pbs::Record::decode(&mut std::io::Cursor::new(&raw_value))
+        .map_err(|e| anyhow::anyhow!("failed to decode record: {}", e))
 }
 
 /// Get chromosome from the SPDI variant.
@@ -196,7 +217,6 @@ pub fn run(common: &common::cli::Args, args: &Args) -> Result<(), anyhow::Error>
         print_values(
             &mut out_writer,
             args.out_format,
-            &meta,
             &query_for_variant(variant, &meta, &db, &cf_data)?,
         )?;
     } else {
@@ -264,4 +284,133 @@ pub fn run(common: &common::cli::Args, args: &Args) -> Result<(), anyhow::Error>
 
     tracing::info!("All done. Have a nice day!");
     Ok(())
+}
+
+#[cfg(test)]
+mod test {
+    use std::str::FromStr;
+
+    use super::*;
+
+    use temp_testdir::TempDir;
+
+    fn args(query: ArgsQuery) -> (common::cli::Args, Args, TempDir) {
+        let temp = TempDir::default();
+        let common = common::cli::Args {
+            verbose: clap_verbosity_flag::Verbosity::new(1, 0),
+        };
+        let args = Args {
+            path_rocksdb: String::from("tests/dbsnp/example/dbsnp.brca1.vcf.bgz.db"),
+            cf_name: String::from("dbsnp_data"),
+            out_file: temp.join("out").to_string_lossy().to_string(),
+            out_format: common::cli::OutputFormat::Jsonl,
+            query,
+        };
+
+        (common, args, temp)
+    }
+
+    #[test]
+    fn smoke_query_all() -> Result<(), anyhow::Error> {
+        let (common, args, _temp) = args(ArgsQuery {
+            all: true,
+            ..Default::default()
+        });
+        run(&common, &args)?;
+        let out_data = std::fs::read_to_string(&args.out_file)?;
+        insta::assert_snapshot!(&out_data);
+
+        Ok(())
+    }
+
+    #[test]
+    fn smoke_query_var() -> Result<(), anyhow::Error> {
+        let (common, args, _temp) = args(ArgsQuery {
+            variant: Some(spdi::Var::from_str("GRCh37:17:41267746:C:CA")?),
+            ..Default::default()
+        });
+        run(&common, &args)?;
+        let out_data = std::fs::read_to_string(&args.out_file)?;
+        insta::assert_snapshot!(&out_data);
+
+        Ok(())
+    }
+
+    #[test]
+    fn smoke_query_pos() -> Result<(), anyhow::Error> {
+        let (common, args, _temp) = args(ArgsQuery {
+            position: Some(spdi::Pos::from_str("GRCh37:17:41267746")?),
+            ..Default::default()
+        });
+        run(&common, &args)?;
+        let out_data = std::fs::read_to_string(&args.out_file)?;
+        insta::assert_snapshot!(&out_data);
+
+        Ok(())
+    }
+
+    #[test]
+    fn smoke_query_range_find_all() -> Result<(), anyhow::Error> {
+        let (common, args, _temp) = args(ArgsQuery {
+            range: Some(spdi::Range::from_str("GRCh37:17:41267746:41267792")?),
+            ..Default::default()
+        });
+        run(&common, &args)?;
+        let out_data = std::fs::read_to_string(&args.out_file)?;
+        insta::assert_snapshot!(&out_data);
+
+        Ok(())
+    }
+
+    #[test]
+    fn smoke_query_range_find_first() -> Result<(), anyhow::Error> {
+        let (common, args, _temp) = args(ArgsQuery {
+            range: Some(spdi::Range::from_str("GRCh37:17:41267746:41267746")?),
+            ..Default::default()
+        });
+        run(&common, &args)?;
+        let out_data = std::fs::read_to_string(&args.out_file)?;
+        insta::assert_snapshot!(&out_data);
+
+        Ok(())
+    }
+
+    #[test]
+    fn smoke_query_range_find_second() -> Result<(), anyhow::Error> {
+        let (common, args, _temp) = args(ArgsQuery {
+            range: Some(spdi::Range::from_str("GRCh37:1:41267747:41267747")?),
+            ..Default::default()
+        });
+        run(&common, &args)?;
+        let out_data = std::fs::read_to_string(&args.out_file)?;
+        insta::assert_snapshot!(&out_data);
+
+        Ok(())
+    }
+
+    #[test]
+    fn smoke_query_range_find_none_smaller() -> Result<(), anyhow::Error> {
+        let (common, args, _temp) = args(ArgsQuery {
+            range: Some(spdi::Range::from_str("GRCh37:1:1:41267745")?),
+            ..Default::default()
+        });
+        run(&common, &args)?;
+        let out_data = std::fs::read_to_string(&args.out_file)?;
+        insta::assert_snapshot!(&out_data);
+
+        Ok(())
+    }
+
+    #[test]
+    fn smoke_query_range_find_none_larger() -> Result<(), anyhow::Error> {
+        let (common, args, _temp) = args(ArgsQuery {
+            range: Some(spdi::Range::from_str("GRCh37:1:41267793:41268000")?),
+            ..Default::default()
+        });
+        run(&common, &args)?;
+        let out_data = std::fs::read_to_string(&args.out_file)?;
+        insta::assert_snapshot!(&out_data);
+
+        Ok(())
+    }
 }

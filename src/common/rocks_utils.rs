@@ -6,14 +6,6 @@ use crate::error;
 
 /// Tune `RocksDB` options for bulk insertion.
 ///
-/// Example:
-///
-/// ```
-/// use annonars::common::rocks_utils::tune_options;
-///
-/// let options = tune_options(rocksdb::Options::default(), None);
-/// ```
-///
 /// # Arguments
 ///
 /// * `options` - `RocksDB` options to tune.

@@ -6,6 +6,7 @@ use clap::Parser;
 use hgvs::static_data::Assembly;
 use indicatif::ParallelProgressIterator;
 use noodles_vcf::header::record;
+use prost::Message;
 use rayon::prelude::{IntoParallelRefIterator, ParallelIterator};
 
 use crate::{
@@ -43,18 +44,24 @@ pub struct Args {
 fn tsv_import(
     db: Arc<rocksdb::DBWithThreadMode<rocksdb::MultiThreaded>>,
     args: &Args,
-    header: &noodles_vcf::Header,
 ) -> Result<(), anyhow::Error> {
-    // Get list of contigs from the header.
-    let contigs: std::collections::HashSet<String> = std::collections::HashSet::from_iter(
-        header.contigs().iter().map(|(name, _)| name.to_string()),
-    );
+    // Load tabix header and create BGZF reader with tabix index.
+    let tabix_src = format!("{}.tbi", args.path_in_vcf);
+    let index = noodles_tabix::read(tabix_src)?;
+    let header = index.header().ok_or_else(|| {
+        std::io::Error::new(std::io::ErrorKind::InvalidInput, "missing tabix header")
+    })?;
 
     // Generate list of regions on canonical chromosomes, limited to those present in header.
     let windows =
         common::cli::build_genome_windows(args.genome_release.into(), Some(args.tbi_window_size))?
             .into_iter()
-            .filter(|(chrom, _, _)| contigs.contains(chrom))
+            .filter(|(chrom, _, _)| {
+                header
+                    .reference_sequence_names()
+                    .get_index_of(chrom)
+                    .is_some()
+            })
             .collect::<Vec<_>>();
 
     tracing::info!("Loading dbSNP VCF file into RocksDB...");
@@ -113,18 +120,20 @@ fn process_window(
             let vcf_record = result?;
 
             // Skip if there are no alternate alleles in `vcf_record`.
-            if let Some(key_var) = common::keys::Var::from_vcf(&vcf_record) {
-                let key_buf: Vec<u8> = key_var.into();
+            for key_var in &common::keys::Var::from_vcf_alleles(&vcf_record) {
+                let key_buf: Vec<u8> = key_var.clone().into();
 
+                // Convert the VCF record into a prost record, encode it
+                // as a protocol buffer and write to the database.
                 let dbsnp_record: dbsnp::pbs::Record = vcf_record.try_into()?;
-                let record_json = serde_json::to_string(&dbsnp_record)?;
-
-                db.put_cf(&cf_dbsnp, &key_buf, record_json.as_bytes())?;
+                let mut record_buf = Vec::new();
+                dbsnp_record.encode(&mut record_buf)?;
+                db.put_cf(&cf_dbsnp, &key_buf, &record_buf)?;
             }
         }
     }
 
-    todo!()
+    Ok(())
 }
 
 /// Implementation of `cons import` sub command.
@@ -210,7 +219,7 @@ pub fn run(common: &common::cli::Args, args: &Args) -> Result<(), anyhow::Error>
 
     tracing::info!("Importing dbSNP file ...");
     let before_import = std::time::Instant::now();
-    tsv_import(db.clone(), args, &header)?;
+    tsv_import(db.clone(), args)?;
     tracing::info!(
         "... done importing dbSNP file in {:?}",
         before_import.elapsed()
