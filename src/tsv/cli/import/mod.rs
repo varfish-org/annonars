@@ -176,6 +176,11 @@ pub fn run(common: &common::cli::Args, args: &Args) -> Result<(), anyhow::Error>
     let cf_meta = db.cf_handle("meta").unwrap();
     db.put_cf(
         &cf_meta,
+        "annona-rs-version",
+        &format!("{}", crate::VERSION),
+    )?;
+    db.put_cf(
+        &cf_meta,
         "genome-release",
         &format!("{}", args.genome_release),
     )?;
