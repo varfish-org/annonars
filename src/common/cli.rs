@@ -8,6 +8,14 @@ pub struct Args {
     pub verbose: clap_verbosity_flag::Verbosity<clap_verbosity_flag::InfoLevel>,
 }
 
+/// Output format to write.
+#[derive(Copy, Clone, PartialEq, Eq, PartialOrd, Ord, Debug, clap::ValueEnum, strum::Display)]
+#[strum(serialize_all = "lowercase")]
+pub enum OutputFormat {
+    /// JSONL format.
+    Jsonl,
+}
+
 /// Local genome release for command line arguments.
 #[derive(Copy, Clone, PartialEq, Eq, PartialOrd, Ord, Debug, clap::ValueEnum, strum::Display)]
 #[strum(serialize_all = "lowercase")]

@@ -1,0 +1,6 @@
+---
+source: src/tsv/cli/query.rs
+expression: "&out_data"
+---
+{"CHROM":"chr1","POS":1001,"REF":"A","ALT":"T","payload":0.2}
+

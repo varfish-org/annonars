@@ -22,7 +22,7 @@ impl Context {
     }
 
     /// Create a new context for coding and decoding.
-    pub fn from(config: schema::infer::Config, schema: schema::FileSchema) -> Self {
+    pub fn new(config: schema::infer::Config, schema: schema::FileSchema) -> Self {
         Self { config, schema }
     }
 
@@ -188,6 +188,7 @@ impl Context {
                         val.push(bytes[offset]);
                         offset += 1;
                     }
+                    offset += 1;
                     let val = String::from_utf8(val).map_err(error::Error::InvalidUtf8)?;
                     res.push(val.into());
                 }
@@ -277,13 +278,16 @@ mod test {
             null_values: vec![String::from("NA")],
             ..schema::infer::Config::default()
         };
-        let schema = schema::FileSchema::from(vec![
-            schema::ColumnSchema::from("a", schema::ColumnType::String),
-            schema::ColumnSchema::from("b", schema::ColumnType::Integer),
-            schema::ColumnSchema::from("c", schema::ColumnType::Float),
-            schema::ColumnSchema::from("d", schema::ColumnType::String),
-        ]);
-        Context::from(config, schema)
+        let schema = schema::FileSchema::from(
+            vec![
+                schema::ColumnSchema::from("a", schema::ColumnType::String),
+                schema::ColumnSchema::from("b", schema::ColumnType::Integer),
+                schema::ColumnSchema::from("c", schema::ColumnType::Float),
+                schema::ColumnSchema::from("d", schema::ColumnType::String),
+            ],
+            vec![String::from(".")],
+        );
+        Context::new(config, schema)
     }
 
     fn example_values() -> Vec<serde_json::Value> {

@@ -37,7 +37,10 @@ pub enum Error {
     /// Mismatching column counts.
     #[error("mismatching number of columns: {0} != {1}")]
     ColumnCount(usize, usize),
-    /// Mismatching column names..
+    /// Mismatching null values.
+    #[error("mismatching of null values: {0} != {1}")]
+    NullValues(String, String),
+    /// Mismatching column names.
     #[error("mismatching number of column names: {0} != {1}")]
     ColumnName(String, String),
     /// Problem opening RocksDB.

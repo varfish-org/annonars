@@ -88,7 +88,7 @@ impl ColumnSchema {
 }
 
 impl FileSchema {
-    /// Ensure that all column names are the same and return an error if not.
+    /// Ensure that all null values and column names are the same and return an error if not.
     /// Otherwise, perform a column-wise extension of the column type.
     pub fn merge(&self, other: &FileSchema) -> Result<FileSchema, error::Error> {
         // Check that the column names are the same and in the same order.
@@ -106,6 +106,14 @@ impl FileSchema {
                 ));
             }
         }
+        // Check that the null values are the same.
+        if self.null_values != other.null_values {
+            return Err(error::Error::NullValues(
+                self.null_values.join(","),
+                other.null_values.join(","),
+            ));
+        }
+
         // Now merge the column types.
         let columns = self
             .columns
@@ -117,7 +125,10 @@ impl FileSchema {
             })
             .collect();
 
-        Ok(FileSchema { columns })
+        Ok(FileSchema {
+            columns,
+            null_values: self.null_values.clone(),
+        })
     }
 }
 
@@ -126,12 +137,17 @@ impl FileSchema {
 pub struct FileSchema {
     /// The columns.
     pub columns: Vec<ColumnSchema>,
+    /// The null values.
+    pub null_values: Vec<String>,
 }
 
 impl FileSchema {
     /// Create a new schema from the given columns.
-    pub fn from(columns: Vec<ColumnSchema>) -> Self {
-        Self { columns }
+    pub fn from(columns: Vec<ColumnSchema>, null_values: Vec<String>) -> Self {
+        Self {
+            columns,
+            null_values,
+        }
     }
 }
 
@@ -147,7 +163,7 @@ pub mod infer {
     ///
     /// The `Default` trait provides appropriate defaults that could be used using
     /// VCF-style headers.
-    #[derive(Debug, Clone, PartialEq, Eq)]
+    #[derive(Debug, Clone, PartialEq, Eq, serde::Serialize, serde::Deserialize)]
     pub struct Config {
         /// Field delimiter to use.
         pub field_delimiter: char,
@@ -316,9 +332,13 @@ pub mod infer {
                                 typ: self.default_column_config(&c.name),
                             })
                             .collect(),
+                        null_values: self.config.null_values.clone(),
                     })
                 } else {
-                    Ok(FileSchema { columns })
+                    Ok(FileSchema {
+                        columns,
+                        null_values: self.config.null_values.clone(),
+                    })
                 }
             } else {
                 Err(error::Error::HeaderMissing)
@@ -365,6 +385,7 @@ mod test {
                     typ: ColumnType::String,
                 },
             ],
+            null_values: vec![String::from(".")],
         };
         let schema2 = FileSchema {
             columns: vec![
@@ -377,6 +398,7 @@ mod test {
                     typ: ColumnType::Integer,
                 },
             ],
+            null_values: vec![String::from(".")],
         };
 
         let merged = schema1.merge(&schema2)?;
@@ -394,6 +416,7 @@ mod test {
                         typ: ColumnType::String,
                     },
                 ],
+                null_values: vec![String::from(".")],
             }
         );
 

@@ -21,4 +21,7 @@ FileSchema {
             typ: Integer,
         },
     ],
+    null_values: [
+        ".",
+    ],
 }

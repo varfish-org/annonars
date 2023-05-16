@@ -40,6 +40,8 @@ struct Tsv {
 enum TsvCommands {
     /// "import" sub command
     Import(tsv::cli::import::Args),
+    /// "query" sub command
+    Query(tsv::cli::query::Args),
 }
 
 pub fn main() -> Result<(), anyhow::Error> {
@@ -65,6 +67,7 @@ pub fn main() -> Result<(), anyhow::Error> {
         match &cli.command {
             Commands::Tsv(args) => match &args.command {
                 TsvCommands::Import(args) => tsv::cli::import::run(&cli.common, args)?,
+                TsvCommands::Query(args) => tsv::cli::query::run(&cli.common, args)?,
             },
         }
 
@@ -75,19 +78,3 @@ pub fn main() -> Result<(), anyhow::Error> {
 
     Ok(())
 }
-
-// <LICENSE>
-// Copyright 2023 annonars Contributors
-//
-// Licensed under the Apache License, Version 2.0 (the "License");
-// you may not use this file except in compliance with the License.
-// You may obtain a copy of the License at
-//
-//     http://www.apache.org/licenses/LICENSE-2.0
-//
-// Unless required by applicable law or agreed to in writing, software
-// distributed under the License is distributed on an "AS IS" BASIS,
-// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-// See the License for the specific language governing permissions and
-// limitations under the License.
-// </LICENSE>
