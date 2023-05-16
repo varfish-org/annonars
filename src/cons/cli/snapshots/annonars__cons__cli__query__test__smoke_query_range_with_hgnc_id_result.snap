@@ -2,5 +2,5 @@
 source: src/cons/cli/query.rs
 expression: "&out_data"
 ---
-{"chromosome":"13","start":95227036,"end":95227038,"hgnc_id":"HGNC:20324","enst_id":"ENST00000261296","alignment":"ZZZZZZZZZZZQQZZQQVQQQQQQQ-QQQZZQQQQQQQQZQQQQQQQQQZZQQQQQQQEEETTTTTTTTAAATTTTTRT-DP------------------"}
+{"chromosome":"13","start":95227036,"stop":95227038,"hgnc_id":"HGNC:20324","enst_id":"ENST00000261296","alignment":"ZZZZZZZZZZZQQZZQQVQQQQQQQ-QQQZZQQQQQQQQZQQQQQQQQQZZQQQQQQQEEETTTTTTTTAAATTTTTRT-DP------------------"}
 
