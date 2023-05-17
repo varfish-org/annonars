@@ -82,7 +82,25 @@ impl Var {
             alternative: alternative.to_string(),
         }
     }
+
+    /// Create for all alternate alleles from the given VCF record.
+    pub fn from_vcf_allele(value: &noodles_vcf::Record, allele_no: usize) -> Self {
+        let chrom = match value.chromosome() {
+            noodles_vcf::record::Chromosome::Name(name)
+            | noodles_vcf::record::Chromosome::Symbol(name) => name.to_owned(),
+        };
+        let pos: usize = value.position().into();
+        let pos = pos as i32;
+        let reference = value.reference_bases().to_string();
+        Var {
+            chrom,
+            pos,
+            reference,
+            alternative: value.alternate_bases()[allele_no].to_string(),
+        }
+    }
 }
+
 impl From<Var> for Vec<u8> {
     fn from(val: Var) -> Self {
         let mut result = Vec::new();

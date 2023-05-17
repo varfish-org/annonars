@@ -1,0 +1,5 @@
+---
+source: src/dbsnp/cli/query.rs
+expression: "&out_data"
+---
+

@@ -1,4 +1,4 @@
-use annonars::{common, cons, tsv};
+use annonars::{common, cons, dbsnp, tsv};
 use anyhow::Error;
 use clap::{command, Args, Parser, Subcommand};
 
@@ -23,10 +23,12 @@ struct Cli {
 /// Enum supporting the parsing of top-level commands.
 #[derive(Debug, Subcommand, Clone)]
 enum Commands {
-    /// "tsv" sub command
+    /// "tsv" sub commands
     Tsv(Tsv),
-    /// "cons" sub command
+    /// "cons" sub commands
     Cons(Cons),
+    /// "dbsnp" sub commands
+    Dbsnp(Dbsnp),
 }
 
 /// Parsing of "tsv" subcommand
@@ -46,7 +48,7 @@ enum TsvCommands {
     Query(tsv::cli::query::Args),
 }
 
-/// Parsing of "cons" subcommand
+/// Parsing of "cons" subcommand.
 #[derive(Debug, Args, Clone)]
 struct Cons {
     /// The sub command to run
@@ -54,13 +56,29 @@ struct Cons {
     command: ConsCommands,
 }
 
-/// Enum supporting the parsing of "cons *" subcommands.
+/// Enum supporting the parsing of "dbsnp *" subcommands.
 #[derive(Debug, Subcommand, Clone)]
 enum ConsCommands {
     /// "import" sub command
     Import(cons::cli::import::Args),
     /// "query" sub command
     Query(cons::cli::query::Args),
+}
+/// Parsing of "dbsnp" subcommands.
+#[derive(Debug, Args, Clone)]
+struct Dbsnp {
+    /// The sub command to run
+    #[command(subcommand)]
+    command: DbsnpCommands,
+}
+
+/// Enum supporting the parsing of "dbsnp *" subcommands.
+#[derive(Debug, Subcommand, Clone)]
+enum DbsnpCommands {
+    /// "import" sub command
+    Import(dbsnp::cli::import::Args),
+    /// "query" sub command
+    Query(dbsnp::cli::query::Args),
 }
 
 pub fn main() -> Result<(), anyhow::Error> {
@@ -91,6 +109,10 @@ pub fn main() -> Result<(), anyhow::Error> {
             Commands::Cons(args) => match &args.command {
                 ConsCommands::Import(args) => cons::cli::import::run(&cli.common, args)?,
                 ConsCommands::Query(args) => cons::cli::query::run(&cli.common, args)?,
+            },
+            Commands::Dbsnp(args) => match &args.command {
+                DbsnpCommands::Import(args) => dbsnp::cli::import::run(&cli.common, args)?,
+                DbsnpCommands::Query(args) => dbsnp::cli::query::run(&cli.common, args)?,
             },
         }
 

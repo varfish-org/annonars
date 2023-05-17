@@ -1,6 +1,5 @@
 //! Common and utility code.
 
-#[cfg(feature = "cli")]
 pub mod cli;
 pub mod keys;
 pub mod rocks_utils;
