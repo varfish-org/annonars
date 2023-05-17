@@ -6,23 +6,25 @@ use noodles_vcf::record::info::field;
 
 include!(concat!(env!("OUT_DIR"), "/annonars.dbsnp.pbs.rs"));
 
-impl TryFrom<noodles_vcf::record::Record> for Record {
-    type Error = anyhow::Error;
-
-    fn try_from(value: noodles_vcf::record::Record) -> Result<Self, Self::Error> {
-        let chrom = value.chromosome().to_string();
-        let pos: usize = value.position().into();
+impl Record {
+    /// Creates a new `Record` from a VCF record and allele number.
+    pub fn from_vcf_allele(
+        record: &noodles_vcf::record::Record,
+        allele_no: usize,
+    ) -> Result<Self, anyhow::Error> {
+        let chrom = record.chromosome().to_string();
+        let pos: usize = record.position().into();
         let pos: i32 = pos.try_into()?;
-        let ref_allele = value.reference_bases().to_string();
-        let alt_allele = value
+        let ref_allele = record.reference_bases().to_string();
+        let alt_allele = record
             .alternate_bases()
-            .get(0)
+            .get(allele_no)
             .expect("no alternate allele?")
             .to_string();
         let rs_id = if let Some(Some(field::Value::Integer(rs))) =
-            value.info().get(&field::Key::from_str("RS")?)
+            record.info().get(&field::Key::from_str("RS")?)
         {
-            format!("RS{}", rs)
+            *rs
         } else {
             anyhow::bail!("no rs id in dbSNP record")
         };

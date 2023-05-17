@@ -89,7 +89,7 @@ fn open_rocksdb(
     Ok((db, meta))
 }
 
-fn print_values(
+fn print_record(
     out_writer: &mut Box<dyn std::io::Write>,
     output_format: common::cli::OutputFormat,
     value: &dbsnp::pbs::Record,
@@ -121,6 +121,7 @@ fn query_for_variant(
     let raw_value = db
         .get_cf(cf_data, key)?
         .ok_or_else(|| anyhow::anyhow!("could not find variant in database"))?;
+    eprintln!("raw_value = {:?}", &raw_value);
     // Decode via prost.
     dbsnp::pbs::Record::decode(&mut std::io::Cursor::new(&raw_value))
         .map_err(|e| anyhow::anyhow!("failed to decode record: {}", e))
@@ -214,7 +215,7 @@ pub fn run(common: &common::cli::Args, args: &Args) -> Result<(), anyhow::Error>
     tracing::info!("Running query...");
     let before_query = std::time::Instant::now();
     if let Some(variant) = args.query.variant.as_ref() {
-        print_values(
+        print_record(
             &mut out_writer,
             args.out_format,
             &query_for_variant(variant, &meta, &db, &cf_data)?,
@@ -261,8 +262,8 @@ pub fn run(common: &common::cli::Args, args: &Args) -> Result<(), anyhow::Error>
 
         // Iterate over all variants until we are behind stop.
         while iter.valid() {
-            if let Some(value) = iter.value() {
-                tracing::trace!("iterator at {:?} => {:?}", &iter.key(), &value);
+            if let Some(raw_value) = iter.value() {
+                tracing::trace!("iterator at {:?} => {:?}", &iter.key(), &raw_value);
                 if let Some(stop) = stop.as_ref() {
                     let iter_key = iter.key().unwrap();
                     let iter_pos: keys::Pos = iter_key.into();
@@ -272,8 +273,9 @@ pub fn run(common: &common::cli::Args, args: &Args) -> Result<(), anyhow::Error>
                     }
                 }
 
-                // let values = ctx.decode_values(value)?;
-                // print_values(&mut out_writer, args.out_format, &meta, values)?;
+                let record = dbsnp::pbs::Record::decode(&mut std::io::Cursor::new(&raw_value))
+                    .map_err(|e| anyhow::anyhow!("failed to decode record: {}", e))?;
+                print_record(&mut out_writer, args.out_format, &record)?;
                 iter.next();
             } else {
                 break;
@@ -324,7 +326,7 @@ mod test {
     }
 
     #[test]
-    fn smoke_query_var() -> Result<(), anyhow::Error> {
+    fn smoke_query_var_single() -> Result<(), anyhow::Error> {
         let (common, args, _temp) = args(ArgsQuery {
             variant: Some(spdi::Var::from_str("GRCh37:17:41267746:C:CA")?),
             ..Default::default()
@@ -337,9 +339,22 @@ mod test {
     }
 
     #[test]
-    fn smoke_query_pos() -> Result<(), anyhow::Error> {
+    fn smoke_query_pos_single() -> Result<(), anyhow::Error> {
         let (common, args, _temp) = args(ArgsQuery {
-            position: Some(spdi::Pos::from_str("GRCh37:17:41267746")?),
+            position: Some(spdi::Pos::from_str("GRCh37:17:41267752")?),
+            ..Default::default()
+        });
+        run(&common, &args)?;
+        let out_data = std::fs::read_to_string(&args.out_file)?;
+        insta::assert_snapshot!(&out_data);
+
+        Ok(())
+    }
+
+    #[test]
+    fn smoke_query_pos_multi() -> Result<(), anyhow::Error> {
+        let (common, args, _temp) = args(ArgsQuery {
+            position: Some(spdi::Pos::from_str("GRCh37:17:41267747")?),
             ..Default::default()
         });
         run(&common, &args)?;
@@ -352,7 +367,7 @@ mod test {
     #[test]
     fn smoke_query_range_find_all() -> Result<(), anyhow::Error> {
         let (common, args, _temp) = args(ArgsQuery {
-            range: Some(spdi::Range::from_str("GRCh37:17:41267746:41267792")?),
+            range: Some(spdi::Range::from_str("GRCh37:17:40000000:50000000")?),
             ..Default::default()
         });
         run(&common, &args)?;

@@ -119,15 +119,12 @@ fn process_window(
         for result in query {
             let vcf_record = result?;
 
-            // Skip if there are no alternate alleles in `vcf_record`.
-            for key_var in &common::keys::Var::from_vcf_alleles(&vcf_record) {
-                let key_buf: Vec<u8> = key_var.clone().into();
-
-                // Convert the VCF record into a prost record, encode it
-                // as a protocol buffer and write to the database.
-                let dbsnp_record: dbsnp::pbs::Record = vcf_record.try_into()?;
-                let mut record_buf = Vec::new();
-                dbsnp_record.encode(&mut record_buf)?;
+            // Process each alternate allele into one record.
+            for allele_no in 0..vcf_record.alternate_bases().len() {
+                let key_buf: Vec<u8> =
+                    common::keys::Var::from_vcf_allele(&vcf_record, allele_no).into();
+                let record = dbsnp::pbs::Record::from_vcf_allele(&vcf_record, allele_no)?;
+                let record_buf = record.encode_to_vec();
                 db.put_cf(&cf_dbsnp, &key_buf, &record_buf)?;
             }
         }

@@ -1,7 +1,5 @@
 //! RocksDB keys and their encoding.
 
-use std::ops::Deref;
-
 /// A chromosomal position `CHROM-POS`.
 #[derive(Debug, Default, PartialEq, Eq, PartialOrd, Ord, Clone)]
 pub struct Pos {
@@ -86,7 +84,7 @@ impl Var {
     }
 
     /// Create for all alternate alleles from the given VCF record.
-    pub fn from_vcf_alleles(value: &noodles_vcf::Record) -> Vec<Self> {
+    pub fn from_vcf_allele(value: &noodles_vcf::Record, allele_no: usize) -> Self {
         let chrom = match value.chromosome() {
             noodles_vcf::record::Chromosome::Name(name)
             | noodles_vcf::record::Chromosome::Symbol(name) => name.to_owned(),
@@ -94,22 +92,12 @@ impl Var {
         let pos: usize = value.position().into();
         let pos = pos as i32;
         let reference = value.reference_bases().to_string();
-        let alternate_bases = value.alternate_bases().deref();
-        let tpl = Var {
+        Var {
             chrom,
             pos,
             reference,
-            alternative: Default::default(),
-        };
-        alternate_bases
-            .iter()
-            .map(|alt| {
-                Var {
-                    alternative: alt.to_string(),
-                    ..tpl.clone()
-                }
-            })
-            .collect::<Vec<_>>()
+            alternative: value.alternate_bases()[allele_no].to_string(),
+        }
     }
 }
 

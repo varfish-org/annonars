@@ -9,9 +9,6 @@ homepage = "https://github.com/bihealth/annonars"
 readme = "README.md"
 autobins = false
 
-[features]
-cli = ["dep:clap", "dep:clap-verbosity-flag", "dep:log", "dep:strum", "dep:tracing-subscriber", "dep:rayon", "dep:indicatif", "dep:noodles-bgzf", "dep:noodles-tabix", "dep:hgvs"]
-
 [lib]
 name = "annonars"
 path = "src/lib.rs"
@@ -19,31 +16,30 @@ path = "src/lib.rs"
 [[bin]]
 name = "annonars"
 path = "src/main.rs"
-required-features = ["cli"]
 
 [dependencies]
 boolvec = "0.2.6"
 byteorder = "1.4.3"
-log = { version = "0.4", optional = true}
+log = { version = "0.4"}
 rocksdb = { version = "0.21.0", features = ["multi-threaded-cf"] }
 serde = { version = "1.0.163", features = ["derive"] }
 serde_json = { version = "1.0.96", features=["preserve_order"] }
 thiserror = "1.0"
 tracing = "0.1"
-tracing-subscriber = {version = "0.3", optional = true}
-clap = { version = "4.1", features = ["derive", "env"], optional = true }
-clap-verbosity-flag = {version = "2.0", optional = true}
+tracing-subscriber = {version = "0.3"}
+clap = { version = "4.1", features = ["derive", "env"] }
+clap-verbosity-flag = {version = "2.0"}
 anyhow = { version = "1.0" }
-strum = { version = "0.24", features = ["strum_macros", "derive"], optional = true }
-rayon = { version = "1.7", optional = true }
-indicatif = { version = "0.17", features = ["rayon"], optional = true }
+strum = { version = "0.24", features = ["strum_macros", "derive"] }
+rayon = { version = "1.7" }
+indicatif = { version = "0.17", features = ["rayon"] }
 flate2 = { version = "1.0" }
 bgzip = { version = "0.3" }
-noodles-bgzf = { version = "0.21", optional = true }
-noodles-tabix = { version = "0.20", optional = true }
+noodles-bgzf = { version = "0.21" }
+noodles-tabix = { version = "0.20" }
 noodles-csi = "0.17.0"
 noodles-core = "0.11.0"
-hgvs = { version = "0.7", optional = true }
+hgvs = { version = "0.7" }
 prost = "0.11"
 csv = "1.2.1"
 noodles-vcf = "0.29.0"

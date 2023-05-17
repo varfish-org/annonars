@@ -13,5 +13,5 @@ message Record {
     /// Alternate allele.
     string alt_allele = 4;
     /// The rs ID.
-    string rs_id = 5;
+    int32 rs_id = 5;
 }
