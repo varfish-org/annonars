@@ -9,7 +9,7 @@ use rayon::prelude::{IntoParallelRefIterator, ParallelIterator};
 
 use crate::{
     common::{self, cli::indicatif_style},
-    gnomad_mtdna,
+    gnomad_mtdna::{self, pbs::DetailsOptions},
 };
 
 /// Command line arguments for `gnomad_mtdna import` sub command.
@@ -36,6 +36,10 @@ pub struct Args {
     /// Optional path to RocksDB WAL directory.
     #[arg(long)]
     pub path_wal_dir: Option<String>,
+    /// JSON formatted configuration of which fields to import from gnomAD-mtDNA.  If not
+    /// specified, the default fields are configured.
+    #[arg(long)]
+    pub import_fields_json: Option<String>,
 }
 
 /// Perform TBI-parallel import of the data.
@@ -136,7 +140,11 @@ fn process_window(
             let vcf_record = result?;
 
             // Process each alternate allele into one record.
-            let details_options = gnomad_mtdna::pbs::DetailsOptions::with_all_enabled();
+            let details_options = serde_json::from_str(
+                args.import_fields_json
+                    .as_ref()
+                    .expect("has been set earlier"),
+            )?;
             for allele_no in 0..vcf_record.alternate_bases().len() {
                 let key_buf: Vec<u8> =
                     common::keys::Var::from_vcf_allele(&vcf_record, allele_no).into();
@@ -157,6 +165,17 @@ fn process_window(
 
 /// Implementation of `gnomad_mtdna import` sub command.
 pub fn run(common: &common::cli::Args, args: &Args) -> Result<(), anyhow::Error> {
+    // Put defaults for fields to serialize into args.
+    let args = Args {
+        import_fields_json: args
+            .import_fields_json
+            .clone()
+            .map(|v| serde_json::to_string(&serde_json::from_str::<DetailsOptions>(&v)?))
+            .or_else(|| Some(serde_json::to_string(&DetailsOptions::default())))
+            .transpose()?,
+        ..args.clone()
+    };
+
     tracing::info!("Starting 'gnomad_mtdna import' command");
     tracing::info!("common = {:#?}", &common);
     tracing::info!("args = {:#?}", &args);
@@ -190,7 +209,7 @@ pub fn run(common: &common::cli::Args, args: &Args) -> Result<(), anyhow::Error>
         before_opening_rocksdb.elapsed()
     );
 
-    tsv_import(db.clone(), args)?;
+    tsv_import(db.clone(), &args)?;
 
     tracing::info!("Running RocksDB compaction ...");
     let before_compaction = std::time::Instant::now();
@@ -206,13 +225,15 @@ pub fn run(common: &common::cli::Args, args: &Args) -> Result<(), anyhow::Error>
 
 #[cfg(test)]
 mod test {
+    use crate::gnomad_mtdna::pbs::DetailsOptions;
+
     use super::*;
 
     use clap_verbosity_flag::Verbosity;
     use temp_testdir::TempDir;
 
     #[test]
-    fn smoke_test_import_gnomad_mtdna() {
+    fn smoke_test_import_gnomad_mtdna() -> Result<(), anyhow::Error> {
         let tmp_dir = TempDir::default();
         let common = common::cli::Args {
             verbose: Verbosity::new(1, 0),
@@ -224,8 +245,9 @@ mod test {
             cf_name: String::from("gnomad_mtdna_data"),
             path_wal_dir: None,
             tbi_window_size: 1_000_000,
+            import_fields_json: Some(serde_json::to_string(&DetailsOptions::with_all_enabled())?),
         };
 
-        run(&common, &args).unwrap();
+        run(&common, &args)
     }
 }
