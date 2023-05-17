@@ -3,10 +3,10 @@
 set -euo pipefail
 set -x
 
-rm -rf tests/helixmtdb/example/helixmtdb.vcf.bgz.db
+rm -rf tests/gnomad_mtdna/example/gnomad_mtdna.vcf.bgz.db
 cargo run --all-features -- \
-    helixmtdb import \
+    gnomad-mtdna import \
     --genome-release grch37 \
-    --path-in-vcf tests/helixmtdb/example/helixmtdb.vcf.bgz \
-    --path-out-rocksdb tests/helixmtdb/example/helixmtdb.vcf.bgz.db
-rm -f tests/helixmtdb/example/helixmtdb.vcf.bgz.db/*.log
+    --path-in-vcf tests/gnomad_mtdna/example/gnomad_mtdna.vcf.bgz \
+    --path-out-rocksdb tests/gnomad_mtdna/example/gnomad_mtdna.vcf.bgz.db
+rm -f tests/gnomad_mtdna/example/gnomad_mtdna.vcf.bgz.db/*.log
