@@ -54,196 +54,180 @@ message Vep {
     optional string amino_acids = 16;
     // Codons, e.g., `"gCg/gGg"`.
     optional string codons = 17;
+    // Existing variation info.
+    optional string existing_variation = 18;
     // dbSNP ID, e.g., `"rs28942080"`.
-    optional string dbsnp_id = 18;
+    optional string dbsnp_id = 19;
     // Distance output of VEP.
-    optional string distance = 19;
+    optional string distance = 20;
     // Strand, e.g., `"1"`.
-    optional string strand = 20;
+    optional string strand = 21;
+    // Flags, e.g., `"cds_end_NF"`.
+    optional string flags = 22;
     // Variant class, e.g., `"SNV"`.
-    optional string variant_class = 21;
+    optional string variant_class = 23;
     // Minimised output of VEP.
-    optional string minimised = 22;
+    optional string minimised = 24;
     // Symbol source, e.g., `"HGNC"`.
-    optional string symbol_source = 23;
+    optional string symbol_source = 25;
     // HGNC ID, e.g., `"HGNC:8706"`.
-    optional string hgnc_id = 24;
+    optional string hgnc_id = 26;
     // Whether this is the canonical transcript.
-    optional bool canonical = 25;
+    bool canonical = 27;
     // Transcript support level, e.g., `"1"`.
-    optional int32 tsl = 26;
+    optional int32 tsl = 28;
     // APPRIS annotation, e.g. `"P1"`.
-    optional string appris = 27;
+    optional string appris = 29;
     // CCDS ID, e.g., `"CCDS30547.1"`.
-    optional string ccds = 28;
+    optional string ccds = 30;
     // Ensembl protein ID, e.g., `"ENSP00000302118"`.
-    optional string ensp = 29;
+    optional string ensp = 31;
     // SwissProt ID, e.g., `"P04114"`.
-    optional string swissprot = 30;
+    optional string swissprot = 32;
     // TREMBL ID, e.g., `"Q5T4W7"`.
-    optional string trembl = 31;
+    optional string trembl = 33;
     // UniParc ID, e.g., `"UPI000002D4B2"`.
-    optional string uniparc = 32;
+    optional string uniparc = 34;
     // Gene phenotype from VEP.
-    optional string gene_pheno = 33;
+    optional string gene_pheno = 35;
     // SIFT prediction, e.g., `"tolerated(0.06)"`.
-    optional Prediction sift = 34;
+    optional Prediction sift = 36;
     // PolyPhen prediction, e.g., `"benign(0.001)"`.
-    optional Prediction polyphen = 35;
+    optional Prediction polyphen = 37;
     // Protein domains, e.g., `[["2p4e", "ENSP_mappings"], ["2qtw", "ENSP_mappings"]]`.
-    repeated Domain domains = 36;
+    repeated Domain domains = 38;
     // HGVS offset.
-    optional string hgvs_offset = 37;
+    optional string hgvs_offset = 39;
+
+    // Overall minor allele frequency.
+    optional float gmaf = 40;
+    // Minor allele frequency in AFR population.
+    optional float afr_maf = 41;
+    // Minor allele frequency in AMR population.
+    optional float amr_maf = 42;
+    // Minor allele frequency in EAS population.
+    optional float eas_maf = 43;
+    // Minor allele frequency in EUR population.
+    optional float eur_maf = 44;
+    // Minor allele frequency in SAS population.
+    optional float sas_maf = 45;
+    // Minor allele frequency in AA population.
+    optional float aa_maf = 46;
+    // Minor allele frequency in EA population.
+    optional float ea_maf = 47;
+    // Minor allele frequency in ExAC.
+    optional float exac_maf = 48;
+    // Minor allele frequency EXAC ADJ population.
+    optional float exac_adj_maf = 49;
+    // Minor allele frequency in ExAC AFR population.
+    optional float exac_afr_maf = 50;
+    // Minor allele frequency in ExAC AMR population.
+    optional float exac_amr_maf = 51;
+    // Minor allele frequency in ExAC EAS population.
+    optional float exac_eas_maf = 52;
+    // Minor allele frequency in ExAC FIN population.
+    optional float exac_fin_maf = 53;
+    // Minor allele frequency in ExAC NFE population.
+    optional float exac_nfe_maf = 54;
+    // Minor allele frequency in ExAC OTH population.
+    optional float exac_oth_maf = 55;
+    // Minor allele frequency in ExAC SAS population.
+    optional float exac_sas_maf = 56;
+
+    // Clinical significance.
+    optional string clin_sig = 57;
+    // Whether the variant is somatic.
+    optional string somatic = 58;
+    // Phenotype.
+    optional string pheno = 59;
+    // Pubmed ID.
+    optional string pubmed = 60;
     // Motif name.
-    optional string motif_name = 38;
-    // Motif name.
-    optional string motif_pos = 39;
+    optional string motif_name = 61;
+    // Motif pos.
+    optional string motif_pos = 62;
     // "high inf pos" from VEP.
-    optional string high_inf_pos = 40;
+    optional string high_inf_pos = 63;
     // Motif score change.
-    optional string motif_score_change = 41;
+    optional string motif_score_change = 64;
     // Loss of function prediction.
-    optional string lof = 42;
+    optional string lof = 65;
     // Loss of function filter.
-    optional string lof_filter = 43;
+    optional string lof_filter = 66;
     // Loss of function flags.
-    optional string lof_flags = 44;
+    optional string lof_flags = 67;
     // Loss of function info.
-    optional string lof_info = 45;
+    optional string lof_info = 68;
 }
 
 // Protocol buffer enum for site-level filters.
 enum Filter {
-    // Variant overlaps site that is commonly reported in literature to be artifact prone.
-    ARTIFACT_PRONE_SITE = 0;
-    // Allele where all samples with the variant call had at least 2 different heteroplasmic indels
-    // called at the position.
-    INDEL_STACK = 1;
-    // No-pass-genotypes site (no individuals were PASS for the variant).
-    NO_PASS_GENOTYPE = 2;
+    // Allele count is zero after filtering out low-confidence genotypes (GQ < 20; DP < 10; and AB < 0.2 for het calls).
+    ALLELE_COUNT_IS_ZERO = 0;
+    // InbreedingCoeff < -0.3.
+    INBREEDING_COEFF = 1;
+    // Passed all variant filters
+    PASS = 2;
+    // Failed random forest filtering thresholds of 0.055272738028512555, 0.20641025579497013 (probabilities of being a true positive variant) for SNPs, indels
+    RANDOM_FOREST = 3;
 }
 
-// Encapsulate VCF INFO fields related to quality.
-message QualityInfo {
-    // Mean depth across all individuals for the site.
-    optional float dp_mean = 1;
-    // Mean MMQ (median mapping quality) across individuals with a variant for the site.
-    optional float mq_mean = 2;
-    // Mean TLOD (Log 10 likelihood ratio score of variant existing versus not existing) across
-    // individuals with a variant for the site.
-    optional float tlod_mean = 3;
+// Store the relevant allele counts and frequencies in a given sub cohort.
+message AlleleCounts {
+    // Number of alternate alleles in sub cohort.
+    int32 ac = 1;
+    // Total number of alleles in the sub cohort.
+    int32 an = 2;
+    // Number of homozygous alternate alleles in the sub cohort.
+    int32 nhomalt = 3;
+    // Alternate allele frequency in the sub cohort.
+    float af = 4;
 }
 
-// Encapsulate VCF INFO fields related to heteroplasmy levels.
-message HeteroplasmyInfo {
-    // Histogram of number of individuals with a heteroplasmy level below 0.1, bin edges are: [0.0,
-    // 0.1, 0.2, 0.30000000000000004, 0.4, 0.5, 0.6000000000000001, 0.7000000000000001, 0.8, 0.9,
-    // 1.0]
-    repeated int32 heteroplasmy_below_min_het_threshold_hist = 1;
-    // Histogram of heteroplasmy levels; bin edges are: [0.0, 0.1, 0.2, 0.30000000000000004, 0.4,
-    // 0.5, 0.6000000000000001, 0.7000000000000001, 0.8, 0.9, 1.0].
-    repeated int32 hl_hist = 2;
-    // Present if variant is found at an overall frequency of .001 across all samples with a
-    // heteroplasmy level > 0 and < 0.50 (includes variants <0.01 heteroplasmy which are
-    // subsequently filtered)
-    bool common_low_heteroplasmy = 3;
-    // Maximum heteroplasmy level observed among all samples for that variant.
-    float max_hl = 4;
+// Store the allele counts for the given sub cohort and sub cohort factored by sex.
+message AlleleCountsBySex {
+    // Overall allele counts in the sub cohort.
+    AlleleCounts overall = 1;
+    // Allele counts in female individuals of sub cohort.
+    AlleleCounts female = 2;
+    // Allele counts in male individuals of sub cohort.
+    AlleleCounts male = 3;
 }
 
-// Encapsulate VCF INFO fields related to filter failure histograms.
-message FilterHistograms {
-    // Histogram of number of individuals failing the base_qual filter (alternate allele median base
-    // quality) across heteroplasmy levels, bin edges are: [0.0, 0.1, 0.2, 0.30000000000000004, 0.4,
-    // 0.5, 0.6000000000000001, 0.7000000000000001, 0.8, 0.9, 1.0]
-    repeated int32 base_qual_hist = 1;
-    // Histogram of number of individuals failing the position filter (median distance of alternate
-    // variants from end of reads) across heteroplasmy levels, bin edges are: [0.0, 0.1, 0.2, 0.
-    // 30000000000000004, 0.4, 0.5, 0.6000000000000001, 0.7000000000000001, 0.8, 0.9, 1.0]
-    repeated int32 position_hist = 2;
-    // Histogram of number of individuals failing the strand_bias filter (evidence for alternate
-    // allele comes from one read direction only) across heteroplasmy levels, bin edges are: [0.0,
-    // 0.1, 0.2, 0.30000000000000004, 0.4, 0.5, 0.6000000000000001, 0.7000000000000001, 0.8, 0.9,
-    // 1.0]
-    repeated int32 strand_bias_hist = 3;
-    // Histogram of number of individuals failing the weak_evidence filter (mutation does not meet
-    // likelihood threshold) across heteroplasmy levels, bin edges are: [0.0, 0.1, 0.2,
-    // 0.30000000000000004, 0.4, 0.5, 0.6000000000000001, 0.7000000000000001, 0.8, 0.9, 1.0]
-    repeated int32 weak_evidence_hist = 4;
-    // Histogram of number of individuals failing the contamination filter across heteroplasmy
-    // levels, bin edges are: [0.0, 0.1, 0.2, 0.30000000000000004, 0.4, 0.5, 0.6000000000000001,
-    // 0.7000000000000001, 0.8, 0.9, 1.0]
-    repeated int32 contamination_hist = 5;
+// Store the allele counts for the given sub cohort in the given population.
+message PopulationAlleleCounts {
+    // Name of the population.
+    string population = 1;
+    // The overall allele counts and the one by sex.
+    AlleleCountsBySex counts = 2;
+
+    // The filtering allele frequency (using Poisson 95% CI).
+    float faf95 = 3;
+    // The filtering allele frequency (using Poisson 99% CI).
+    float faf99 = 4;
+    // The population with maximum AF.
+    string popmax = 5;
+    // Maximum allele frequency across populations (excluding samples of Ashkenazi,
+    // Finnish, and indeterminate ancestry).
+    float af_popmax = 6;
+    // Allele count in population with maximum AF.
+    int32 ac_popmax = 7;
+    // Total number of alleles in population with maximum AF.
+    int32 an_popmax = 8;
+    // Total number of homozygous individuals in population with maximum AF.
+    int32 nhomalt_popmax = 9;
 }
 
-// Encapsulate VCF INFO fields related to populations.
-message PopulationInfo {
-    // List of overall allele number for each population, population order: ['afr', 'ami', 'amr',
-    // 'asj', 'eas', 'fin', 'nfe', 'oth', 'sas', 'mid']
-    repeated int32 pop_an = 1;
-    // List of AC_het for each population, population order: ['afr', 'ami', 'amr', 'asj', 'eas',
-    // 'fin', 'nfe', 'oth', 'sas', 'mid']
-    repeated int32 pop_ac_het = 2;
-    // List of AC_hom for each population, population order: ['afr', 'ami', 'amr', 'asj', 'eas',
-    // 'fin', 'nfe', 'oth', 'sas', 'mid']
-    repeated int32 pop_ac_hom = 3;
-    // List of AF_hom for each population, population order: ['afr', 'ami', 'amr', 'asj', 'eas',
-    // 'fin', 'nfe', 'oth', 'sas', 'mid']
-    repeated float pop_af_hom = 4;
-    // List of AF_het for each population, population order: ['afr', 'ami', 'amr', 'asj', 'eas',
-    // 'fin', 'nfe', 'oth', 'sas', 'mid']
-    repeated float pop_af_het = 5;
-    // Histogram of heteroplasmy levels for each population; bin edges are: [0.0, 0.1, 0.2,
-    // 0.30000000000000004, 0.4, 0.5, 0.6000000000000001, 0.7000000000000001, 0.8, 0.9, 1.0],
-    // population order: ['afr', 'ami', 'amr', 'asj', 'eas', 'fin', 'nfe', 'oth', 'sas', 'mid']
-    //
-    // Note that we encode this by concatenating all lists here because of limitations in
-    // protocolbuffers (no native nested repeated fields).
-    repeated int32 pop_hl_hist = 6;
-}
-
-// Encapsulate VCF INFO fields related to haplogroups.
-message HaplogroupInfo {
-    // Present if variant is present as a haplogroup defining variant in PhyloTree build 17.
-    bool hap_defining_variant = 1;
-    // List of overall allele number for each haplogroup, haplogroup order: ['A', 'B', 'C', 'D',
-    // 'E', 'F', 'G', 'H', 'HV', 'I', 'J', 'K', 'L0', 'L1', 'L2', 'L3', 'L4', 'L5', 'M', 'N', 'P',
-    // 'R', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z']
-    repeated int32 hap_an = 2;
-    // List of AC_het for each haplogroup, haplogroup order: ['A', 'B', 'C', 'D', 'E', 'F', 'G',
-    // 'H', 'HV', 'I', 'J', 'K', 'L0', 'L1', 'L2', 'L3', 'L4', 'L5', 'M', 'N', 'P', 'R', 'T', 'U',
-    // 'V', 'W', 'X', 'Y', 'Z']
-    repeated int32 hap_ac_het = 3;
-    // List of AC_hom for each haplogroup, haplogroup order: ['A', 'B', 'C', 'D', 'E', 'F', 'G',
-    // 'H', 'HV', 'I', 'J', 'K', 'L0', 'L1', 'L2', 'L3', 'L4', 'L5', 'M', 'N', 'P', 'R', 'T', 'U',
-    // 'V', 'W', 'X', 'Y', 'Z']
-    repeated int32 hap_ac_hom = 4;
-    // List of AF_het for each haplogroup, haplogroup order: ['A', 'B', 'C', 'D', 'E', 'F', 'G',
-    // 'H', 'HV', 'I', 'J', 'K', 'L0', 'L1', 'L2', 'L3', 'L4', 'L5', 'M', 'N', 'P', 'R', 'T', 'U',
-    // 'V', 'W', 'X', 'Y', 'Z']
-    repeated float hap_af_het = 5;
-    // List of AF_hom for each haplogroup, haplogroup order: ['A', 'B', 'C', 'D', 'E', 'F', 'G',
-    // 'H', 'HV', 'I', 'J', 'K', 'L0', 'L1', 'L2', 'L3', 'L4', 'L5', 'M', 'N', 'P', 'R', 'T', 'U',
-    // 'V', 'W', 'X', 'Y', 'Z']
-    repeated float hap_af_hom = 6;
-    // Histogram of heteroplasmy levels for each haplogroup; bin edges are: [0.0, 0.1, 0.2,
-    // 0.30000000000000004, 0.4, 0.5, 0.6000000000000001, 0.7000000000000001, 0.8, 0.9, 1.0],
-    // haplogroup order: ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'HV', 'I', 'J', 'K', 'L0', 'L1',
-    // 'L2', 'L3', 'L4', 'L5', 'M', 'N', 'P', 'R', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z']
-    //
-    // Note that we encode this by concatenating all lists here because of limitations in
-    // protocolbuffers (no native nested repeated fields).
-    repeated int32 hap_hl_hist = 7;
-    // List of filtering allele frequency for each haplogroup restricted to homoplasmic variants,
-    // haplogroup order: ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'HV', 'I', 'J', 'K', 'L0', 'L1',
-    // 'L2', 'L3', 'L4', 'L5', 'M', 'N', 'P', 'R', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z']
-    repeated float hap_faf_hom = 8;
-    // Haplogroup with maximum AF_hom.
-    optional string hapmax_af_hom = 9;
-    // Haplogroup with maximum AF_het.
-    optional string hapmax_af_het = 10;
-    // Maximum filtering allele frequency across haplogroups restricted to homoplasmic variants.
-    optional float faf_hapmax_hom = 11;
+// Store the allele counts for the given cohort.
+message CohortAlleleCounts {
+    // Name of the cohort.
+    optional string cohort = 1;
+    // Allele counts for each population.
+    repeated PopulationAlleleCounts by_population = 2;
+    // Allele counts by sex.
+    AlleleCountsBySex by_sex = 3;
+    // Raw allele counts.
+    AlleleCounts raw = 4;
 }
 
 // Encapsulate VCF INFO fields related to age.
@@ -283,10 +267,79 @@ message DepthInfo {
     repeated int32 dp_hist_alt_bin_freq = 4;
 }
 
+// Encapsulate quality-related information.
+message QualityInfo {
+    // Phred-scaled p-value of Fisher's exact test for strand bias.
+    optional float fs = 1;
+    // Inbreeding coefficient as estimated from the genotype likelihoods per-sample when compared against the Hardy-Weinberg expectation.
+    optional float inbreeding_coeff = 2;
+    // Root mean square of the mapping quality of reads across all samples.
+    optional float mq = 3;
+    // Z-score from Wilcoxon rank sum test of alternate vs. reference read mapping qualities.
+    optional float mq_rank_sum = 4;
+    // Variant call confidence normalized by depth of sample reads supporting a variant.
+    optional float qd = 5;
+    // Z-score from Wilcoxon rank sum test of alternate vs. reference read position bias.
+    optional float read_pos_ranksum = 6;
+    // Strand bias estimated by the symmetric odds ratio test.
+    optional float sor = 7;
+    // Variant was used to build the positive training set of high-quality variants for VQSR.
+    bool vqsr_positive_train_site = 8;
+    // Variant was used to build the negative training set of low-quality variants for VQSR.
+    bool vqsr_negative_train_site = 9;
+    // Z-score from Wilcoxon rank sum test of alternate vs. reference base qualities.
+    optional float baseqranksum = 10;
+    // Z-score from Wilcoxon rank sum test of alternate vs. reference number of hard clipped bases.
+    optional float clipping_rank_sum = 11;
+    // Depth of informative coverage for each sample; reads with MQ=255 or with bad mates are filtered.
+    optional int32 dp = 12;
+    // Log-odds ratio of being a true variant versus being a false positive under the trained VQSR Gaussian mixture model.
+    optional float vqslod = 13;
+    // Worst-performing annotation in the VQSR Gaussian mixture model.
+    optional string vqsr_culprit = 14;
+    // Variant falls within a segmental duplication region.
+    bool segdup = 15;
+    // Variant falls within a low complexity region.
+    bool lcr = 16;
+    // Variant falls within a reference decoy region.
+    bool decoy = 17;
+    // Variant was a callset-wide doubleton that was transmitted within a family (i.e., a singleton amongst unrelated sampes in cohort).
+    bool transmitted_singleton = 18;
+    // Maximum p-value over callset for binomial test of observed allele balance for a heterozygous genotype, given expectation of AB=0.5.
+    optional float pab_max = 19;
+}
+
+// Random forest related information.
+message RandomForestInfo {
+    // Random forest prediction probability for a site being a true variant.
+    optional float rf_tp_probability = 1;
+    // Variant was labelled as a positive example for training of random forest model.
+    bool rf_positive_label = 2;
+    // Variant was labelled as a negative example for training of random forest model.
+    bool rf_negative_label = 3;
+    // Random forest training label.
+    optional string rf_label = 4;
+    // Variant was used in training random forest model.
+    bool rf_train = 5;
+}
+
+// Variant type related information.
+message VariantInfo {
+    // Variant type (snv, indel, multi-snv, multi-indel, or mixed).
+    optional string variant_type = 1;
+    // Allele type (snv, ins, del, or mixed).
+    optional string allele_type = 2;
+    // Total number of alternate alleles observed at variant locus.
+    optional int32 n_alt_alleles = 3;
+    // Variant type was mixed.
+    bool was_mixed = 4;
+    // Variant locus coincides with a spanning deletion (represented by a star) observed elsewhere in the callset.
+    bool has_star = 5;
+}
+
 // Protocol buffer for the gnomAD-mtDNA VCF record.
 //
-// The more specialized fields from the INFO column are stored in separate, optional fields such
-// that we don't end up with a humongous message.
+// The more specialized fields from the INFO column are stored in separate, optional fields such that we don't end up with a humongous message.
 message Record {
     // Chromosome name.
     string chrom = 1;
@@ -297,48 +350,27 @@ message Record {
     // Alternate allele.
     string alt_allele = 4;
 
-    // Variant in format of RefPosAlt
-    string variant_collapsed = 5;
-
-    // Excluded allele count (number of individuals in which the variant was filtered out).
-    int32 excluded_ac = 6;
-    // Overall allele number (number of samples with non-missing genotype).
-    int32 an = 7;
-    // Allele count restricted to variants with a heteroplasmy level >= 0.95.
-    int32 ac_hom = 8;
-    // Allele count restricted to variants with a heteroplasmy level >= 0.10 and < 0.95.
-    int32 ac_het = 9;
-    // Allele frequency restricted to variants with a heteroplasmy level >= 0.95.
-    float af_hom = 10;
-    // Allele frequency restricted to variants with a heteroplasmy level >= 0.10 and < 0.95.
-    float af_het = 11;
-
     // Site-level filters.
-    repeated Filter filters = 12;
+    repeated Filter filters = 5;
+    // Consequence annotation from ENSEMBL VEP.
+    repeated Vep vep = 6;
 
-    // MitoTip raw score
-    optional float mitotip_score = 14;
-    // MitoTip score interpretation
-    optional string mitotip_trna_prediction = 15;
-    // tRNA pathogenicity classification from PON-mt-tRNA
-    optional string pon_mt_trna_prediction = 16;
-    // tRNA ML_probability_of_pathogenicity from PON-mt-tRNA
-    optional string pon_ml_probability_of_pathogenicity = 17;
+    // Variant allele counts in the different cohorts and population.
+    //
+    // The populations in gnomAD v2/3 are: empty for global, "controls", "non_cancer", "non_neuro",
+    // and "non_topmed".
+    CohortAlleleCounts allele_counts = 7;
+    // Variant (on sex chromosome) falls outside a pseudoautosomal region
+    bool nonpar = 8;
 
-    // VEP annotation records.
-    repeated Vep vep = 13;
+    // Random forest related information.
+    optional RandomForestInfo random_forest_info = 9;
+    // Variant-related information details.
+    optional VariantInfo variant_info = 10;
     // Summary information for variant quality interpretation.
-    optional QualityInfo quality_info = 18;
-    // Information related to heteroplasmy levels.
-    optional HeteroplasmyInfo heteroplasmy_info = 19;
-    // Histograms related to variant quality filters.
-    optional FilterHistograms filter_histograms = 20;
-    // Population-related information.
-    optional PopulationInfo population_info = 21;
-    // Haplogroup-related information.
-    optional HaplogroupInfo haplogroup_info = 22;
+    optional QualityInfo quality_info = 11;
     // Age-related information.
-    optional AgeInfo age_info = 23;
+    optional AgeInfo age_info = 12;
     // Depth of coverage-related information.
-    optional DepthInfo depth_info = 24;
+    optional DepthInfo depth_info = 13;
 }
