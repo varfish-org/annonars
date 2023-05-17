@@ -162,13 +162,15 @@ message Vep {
 
 // Protocol buffer enum for site-level filters.
 enum Filter {
-    // Allele count is zero after filtering out low-confidence genotypes (GQ < 20; DP < 10; and AB < 0.2 for het calls).
+    // Allele count is zero after filtering out low-confidence genotypes (GQ < 20; DP < 10; and AB <
+    // 0.2 for het calls).
     ALLELE_COUNT_IS_ZERO = 0;
     // InbreedingCoeff < -0.3.
     INBREEDING_COEFF = 1;
     // Passed all variant filters
     PASS = 2;
-    // Failed random forest filtering thresholds of 0.055272738028512555, 0.20641025579497013 (probabilities of being a true positive variant) for SNPs, indels
+    // Failed random forest filtering thresholds of 0.055272738028512555, 0.20641025579497013
+    // (probabilities of being a true positive variant) for SNPs, indels
     RANDOM_FOREST = 3;
 }
 
@@ -205,17 +207,6 @@ message PopulationAlleleCounts {
     float faf95 = 3;
     // The filtering allele frequency (using Poisson 99% CI).
     float faf99 = 4;
-    // The population with maximum AF.
-    string popmax = 5;
-    // Maximum allele frequency across populations (excluding samples of Ashkenazi,
-    // Finnish, and indeterminate ancestry).
-    float af_popmax = 6;
-    // Allele count in population with maximum AF.
-    int32 ac_popmax = 7;
-    // Total number of alleles in population with maximum AF.
-    int32 an_popmax = 8;
-    // Total number of homozygous individuals in population with maximum AF.
-    int32 nhomalt_popmax = 9;
 }
 
 // Store the allele counts for the given cohort.
@@ -228,6 +219,18 @@ message CohortAlleleCounts {
     AlleleCountsBySex by_sex = 3;
     // Raw allele counts.
     AlleleCounts raw = 4;
+
+    // The population with maximum AF.
+    string popmax = 5;
+    // Maximum allele frequency across populations (excluding samples of Ashkenazi, Finnish, and
+    // indeterminate ancestry).
+    float af_popmax = 6;
+    // Allele count in population with maximum AF.
+    int32 ac_popmax = 7;
+    // Total number of alleles in population with maximum AF.
+    int32 an_popmax = 8;
+    // Total number of homozygous individuals in population with maximum AF.
+    int32 nhomalt_popmax = 9;
 }
 
 // Encapsulate VCF INFO fields related to age.
@@ -270,55 +273,60 @@ message DepthInfo {
 // Encapsulate quality-related information.
 message QualityInfo {
     // Phred-scaled p-value of Fisher's exact test for strand bias.
-    optional float fs = 1;
-    // Inbreeding coefficient as estimated from the genotype likelihoods per-sample when compared against the Hardy-Weinberg expectation.
-    optional float inbreeding_coeff = 2;
+    float fs = 1;
+    // Inbreeding coefficient as estimated from the genotype likelihoods per-sample when compared
+    // against the Hardy-Weinberg expectation.
+    float inbreeding_coeff = 2;
     // Root mean square of the mapping quality of reads across all samples.
-    optional float mq = 3;
+    float mq = 3;
     // Z-score from Wilcoxon rank sum test of alternate vs. reference read mapping qualities.
-    optional float mq_rank_sum = 4;
+    float mq_rank_sum = 4;
     // Variant call confidence normalized by depth of sample reads supporting a variant.
-    optional float qd = 5;
+    float qd = 5;
     // Z-score from Wilcoxon rank sum test of alternate vs. reference read position bias.
-    optional float read_pos_ranksum = 6;
+    float read_pos_ranksum = 6;
     // Strand bias estimated by the symmetric odds ratio test.
-    optional float sor = 7;
+    float sor = 7;
     // Variant was used to build the positive training set of high-quality variants for VQSR.
     bool vqsr_positive_train_site = 8;
     // Variant was used to build the negative training set of low-quality variants for VQSR.
     bool vqsr_negative_train_site = 9;
     // Z-score from Wilcoxon rank sum test of alternate vs. reference base qualities.
-    optional float baseqranksum = 10;
+    float base_q_rank_sum = 10;
     // Z-score from Wilcoxon rank sum test of alternate vs. reference number of hard clipped bases.
-    optional float clipping_rank_sum = 11;
-    // Depth of informative coverage for each sample; reads with MQ=255 or with bad mates are filtered.
-    optional int32 dp = 12;
-    // Log-odds ratio of being a true variant versus being a false positive under the trained VQSR Gaussian mixture model.
-    optional float vqslod = 13;
+    float clipping_rank_sum = 11;
+    // Depth of informative coverage for each sample; reads with MQ=255 or with bad mates are
+    // filtered.
+    int32 dp = 12;
+    // Log-odds ratio of being a true variant versus being a false positive under the trained VQSR
+    // Gaussian mixture model.
+    float vqslod = 13;
     // Worst-performing annotation in the VQSR Gaussian mixture model.
-    optional string vqsr_culprit = 14;
+    string vqsr_culprit = 14;
     // Variant falls within a segmental duplication region.
     bool segdup = 15;
     // Variant falls within a low complexity region.
     bool lcr = 16;
     // Variant falls within a reference decoy region.
     bool decoy = 17;
-    // Variant was a callset-wide doubleton that was transmitted within a family (i.e., a singleton amongst unrelated sampes in cohort).
+    // Variant was a callset-wide doubleton that was transmitted within a family (i.e., a singleton
+    // amongst unrelated sampes in cohort).
     bool transmitted_singleton = 18;
-    // Maximum p-value over callset for binomial test of observed allele balance for a heterozygous genotype, given expectation of AB=0.5.
-    optional float pab_max = 19;
+    // Maximum p-value over callset for binomial test of observed allele balance for a heterozygous
+    // genotype, given expectation of AB=0.5.
+    float pab_max = 19;
 }
 
 // Random forest related information.
 message RandomForestInfo {
     // Random forest prediction probability for a site being a true variant.
-    optional float rf_tp_probability = 1;
+    float rf_tp_probability = 1;
     // Variant was labelled as a positive example for training of random forest model.
     bool rf_positive_label = 2;
     // Variant was labelled as a negative example for training of random forest model.
     bool rf_negative_label = 3;
     // Random forest training label.
-    optional string rf_label = 4;
+    string rf_label = 4;
     // Variant was used in training random forest model.
     bool rf_train = 5;
 }
@@ -326,20 +334,22 @@ message RandomForestInfo {
 // Variant type related information.
 message VariantInfo {
     // Variant type (snv, indel, multi-snv, multi-indel, or mixed).
-    optional string variant_type = 1;
+    string variant_type = 1;
     // Allele type (snv, ins, del, or mixed).
-    optional string allele_type = 2;
+    string allele_type = 2;
     // Total number of alternate alleles observed at variant locus.
-    optional int32 n_alt_alleles = 3;
+    int32 n_alt_alleles = 3;
     // Variant type was mixed.
     bool was_mixed = 4;
-    // Variant locus coincides with a spanning deletion (represented by a star) observed elsewhere in the callset.
+    // Variant locus coincides with a spanning deletion (represented by a star) observed elsewhere
+    // in the callset.
     bool has_star = 5;
 }
 
 // Protocol buffer for the gnomAD-mtDNA VCF record.
 //
-// The more specialized fields from the INFO column are stored in separate, optional fields such that we don't end up with a humongous message.
+// The more specialized fields from the INFO column are stored in separate, optional fields such
+// that we don't end up with a humongous message.
 message Record {
     // Chromosome name.
     string chrom = 1;
@@ -359,12 +369,12 @@ message Record {
     //
     // The populations in gnomAD v2/3 are: empty for global, "controls", "non_cancer", "non_neuro",
     // and "non_topmed".
-    CohortAlleleCounts allele_counts = 7;
+    repeated CohortAlleleCounts allele_counts = 7;
     // Variant (on sex chromosome) falls outside a pseudoautosomal region
     bool nonpar = 8;
 
     // Random forest related information.
-    optional RandomForestInfo random_forest_info = 9;
+    optional RandomForestInfo rf_info = 9;
     // Variant-related information details.
     optional VariantInfo variant_info = 10;
     // Summary information for variant quality interpretation.

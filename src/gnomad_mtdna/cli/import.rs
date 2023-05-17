@@ -180,7 +180,6 @@ pub fn run(common: &common::cli::Args, args: &Args) -> Result<(), anyhow::Error>
     tracing::info!("common = {:#?}", &common);
     tracing::info!("args = {:#?}", &args);
 
-
     // Open the RocksDB for writing.
     tracing::info!("Opening RocksDB for writing ...");
     let before_opening_rocksdb = std::time::Instant::now();

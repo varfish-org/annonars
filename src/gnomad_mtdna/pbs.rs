@@ -3,6 +3,8 @@
 use noodles_vcf::record::info::field;
 use std::str::FromStr;
 
+use crate::common;
+
 include!(concat!(env!("OUT_DIR"), "/annonars.gnomad_mtdna.pbs.rs"));
 
 /// Options struct that allows to specify which details fields are to be extracted from
@@ -175,19 +177,21 @@ impl Record {
             .get(allele_no)
             .ok_or_else(|| anyhow::anyhow!("no such allele: {}", allele_no))?
             .to_string();
-        let variant_collapsed = Self::get_string(record, "variant_collapsed")?;
-        let excluded_ac = Self::get_i32(record, "excluded_AC")?;
-        let an = Self::get_i32(record, "AN")?;
-        let ac_hom = Self::get_i32(record, "AC_hom")?;
-        let ac_het = Self::get_i32(record, "AC_het")?;
-        let af_hom = Self::get_f32(record, "AF_hom")?;
-        let af_het = Self::get_f32(record, "AF_het")?;
-        let filters = Self::get_filters(record)?;
-        let mitotip_score = Self::get_f32(record, "mitotip_score").ok();
-        let mitotip_trna_prediction = Self::get_string(record, "mitotip_trna_prediction").ok();
-        let pon_mt_trna_prediction = Self::get_string(record, "pon_mt_trna_prediction").ok();
+        let variant_collapsed = common::noodles::get_string(record, "variant_collapsed")?;
+        let excluded_ac = common::noodles::get_i32(record, "excluded_AC")?;
+        let an = common::noodles::get_i32(record, "AN")?;
+        let ac_hom = common::noodles::get_i32(record, "AC_hom")?;
+        let ac_het = common::noodles::get_i32(record, "AC_het")?;
+        let af_hom = common::noodles::get_f32(record, "AF_hom")?;
+        let af_het = common::noodles::get_f32(record, "AF_het")?;
+        let filters = Self::extract_filters(record)?;
+        let mitotip_score = common::noodles::get_f32(record, "mitotip_score").ok();
+        let mitotip_trna_prediction =
+            common::noodles::get_string(record, "mitotip_trna_prediction").ok();
+        let pon_mt_trna_prediction =
+            common::noodles::get_string(record, "pon_mt_trna_prediction").ok();
         let pon_ml_probability_of_pathogenicity =
-            Self::get_string(record, "pon_ml_probability_of_pathogenicity").ok();
+            common::noodles::get_string(record, "pon_ml_probability_of_pathogenicity").ok();
 
         // Extract optional fields.
         let vep = options
@@ -270,13 +274,13 @@ impl Record {
         record: &noodles_vcf::record::Record,
     ) -> Result<HeteroplasmyInfo, anyhow::Error> {
         Ok(HeteroplasmyInfo {
-            heteroplasmy_below_min_het_threshold_hist: Self::get_vec::<i32>(
+            heteroplasmy_below_min_het_threshold_hist: common::noodles::get_vec::<i32>(
                 record,
                 "heteroplasmy_below_min_het_threshold_hist",
             )?,
-            hl_hist: Self::get_vec::<i32>(record, "hl_hist")?,
-            common_low_heteroplasmy: Self::get_flag(record, "common_low_heteroplasmy")?,
-            max_hl: Self::get_f32(record, "max_hl")?,
+            hl_hist: common::noodles::get_vec::<i32>(record, "hl_hist")?,
+            common_low_heteroplasmy: common::noodles::get_flag(record, "common_low_heteroplasmy")?,
+            max_hl: common::noodles::get_f32(record, "max_hl")?,
         })
     }
 
@@ -285,12 +289,15 @@ impl Record {
         record: &noodles_vcf::record::Record,
     ) -> Result<FilterHistograms, anyhow::Error> {
         Ok(FilterHistograms {
-            base_qual_hist: Self::get_vec::<i32>(record, "base_qual_hist").unwrap_or_default(),
-            position_hist: Self::get_vec::<i32>(record, "position_hist").unwrap_or_default(),
-            strand_bias_hist: Self::get_vec::<i32>(record, "strand_bias_hist").unwrap_or_default(),
-            weak_evidence_hist: Self::get_vec::<i32>(record, "weak_evidence_hist")
+            base_qual_hist: common::noodles::get_vec::<i32>(record, "base_qual_hist")
                 .unwrap_or_default(),
-            contamination_hist: Self::get_vec::<i32>(record, "contamination_hist")
+            position_hist: common::noodles::get_vec::<i32>(record, "position_hist")
+                .unwrap_or_default(),
+            strand_bias_hist: common::noodles::get_vec::<i32>(record, "strand_bias_hist")
+                .unwrap_or_default(),
+            weak_evidence_hist: common::noodles::get_vec::<i32>(record, "weak_evidence_hist")
+                .unwrap_or_default(),
+            contamination_hist: common::noodles::get_vec::<i32>(record, "contamination_hist")
                 .unwrap_or_default(),
         })
     }
@@ -300,12 +307,13 @@ impl Record {
         record: &noodles_vcf::record::Record,
     ) -> Result<PopulationInfo, anyhow::Error> {
         Ok(PopulationInfo {
-            pop_an: Self::get_vec::<i32>(record, "pop_AN")?,
-            pop_ac_het: Self::get_vec::<i32>(record, "pop_AC_het").unwrap_or_default(),
-            pop_ac_hom: Self::get_vec::<i32>(record, "pop_AC_hom").unwrap_or_default(),
-            pop_af_hom: Self::get_vec::<f32>(record, "pop_AF_hom").unwrap_or_default(),
-            pop_af_het: Self::get_vec::<f32>(record, "pop_AF_het").unwrap_or_default(),
-            pop_hl_hist: Self::get_vec_vec::<i32>(record, "pop_hl_hist").unwrap_or_default(),
+            pop_an: common::noodles::get_vec::<i32>(record, "pop_AN")?,
+            pop_ac_het: common::noodles::get_vec::<i32>(record, "pop_AC_het").unwrap_or_default(),
+            pop_ac_hom: common::noodles::get_vec::<i32>(record, "pop_AC_hom").unwrap_or_default(),
+            pop_af_hom: common::noodles::get_vec::<f32>(record, "pop_AF_hom").unwrap_or_default(),
+            pop_af_het: common::noodles::get_vec::<f32>(record, "pop_AF_het").unwrap_or_default(),
+            pop_hl_hist: common::noodles::get_vec_vec::<i32>(record, "pop_hl_hist")
+                .unwrap_or_default(),
         })
     }
 
@@ -314,42 +322,43 @@ impl Record {
         record: &noodles_vcf::record::Record,
     ) -> Result<HaplogroupInfo, anyhow::Error> {
         Ok(HaplogroupInfo {
-            hap_defining_variant: Self::get_flag(record, "hap_defining_variant")?,
-            hap_an: Self::get_vec::<i32>(record, "hap_AN").unwrap_or_default(),
-            hap_ac_het: Self::get_vec::<i32>(record, "hap_AC_het").unwrap_or_default(),
-            hap_ac_hom: Self::get_vec::<i32>(record, "hap_AC_hom").unwrap_or_default(),
-            hap_af_het: Self::get_vec::<f32>(record, "hap_AF_het").unwrap_or_default(),
-            hap_af_hom: Self::get_vec::<f32>(record, "hap_AF_hom").unwrap_or_default(),
-            hap_hl_hist: Self::get_vec_vec::<i32>(record, "hap_hl_hist").unwrap_or_default(),
-            hap_faf_hom: Self::get_vec::<f32>(record, "hap_faf_hom").unwrap_or_default(),
-            hapmax_af_hom: Self::get_string(record, "hapmax_AF_hom").ok(),
-            hapmax_af_het: Self::get_string(record, "hapmax_AF_het").ok(),
-            faf_hapmax_hom: Self::get_f32(record, "faf_hapmax_hom").ok(),
+            hap_defining_variant: common::noodles::get_flag(record, "hap_defining_variant")?,
+            hap_an: common::noodles::get_vec::<i32>(record, "hap_AN").unwrap_or_default(),
+            hap_ac_het: common::noodles::get_vec::<i32>(record, "hap_AC_het").unwrap_or_default(),
+            hap_ac_hom: common::noodles::get_vec::<i32>(record, "hap_AC_hom").unwrap_or_default(),
+            hap_af_het: common::noodles::get_vec::<f32>(record, "hap_AF_het").unwrap_or_default(),
+            hap_af_hom: common::noodles::get_vec::<f32>(record, "hap_AF_hom").unwrap_or_default(),
+            hap_hl_hist: common::noodles::get_vec_vec::<i32>(record, "hap_hl_hist")
+                .unwrap_or_default(),
+            hap_faf_hom: common::noodles::get_vec::<f32>(record, "hap_faf_hom").unwrap_or_default(),
+            hapmax_af_hom: common::noodles::get_string(record, "hapmax_AF_hom").ok(),
+            hapmax_af_het: common::noodles::get_string(record, "hapmax_AF_het").ok(),
+            faf_hapmax_hom: common::noodles::get_f32(record, "faf_hapmax_hom").ok(),
         })
     }
 
     /// Extract the age related fields from the VCF record.
     fn extract_age(record: &noodles_vcf::record::Record) -> Result<AgeInfo, anyhow::Error> {
         Ok(AgeInfo {
-            age_hist_hom_bin_freq: Self::get_vec::<i32>(record, "age_hist_hom_bin_freq")
+            age_hist_hom_bin_freq: common::noodles::get_vec::<i32>(record, "age_hist_hom_bin_freq")
                 .unwrap_or_default(),
-            age_hist_hom_n_smaller: Self::get_i32(record, "age_hist_hom_n_smaller").ok(),
-            age_hist_hom_n_larger: Self::get_i32(record, "age_hist_hom_n_larger").ok(),
-            age_hist_het_bin_freq: Self::get_vec::<i32>(record, "age_hist_het_bin_freq")
+            age_hist_hom_n_smaller: common::noodles::get_i32(record, "age_hist_hom_n_smaller").ok(),
+            age_hist_hom_n_larger: common::noodles::get_i32(record, "age_hist_hom_n_larger").ok(),
+            age_hist_het_bin_freq: common::noodles::get_vec::<i32>(record, "age_hist_het_bin_freq")
                 .unwrap_or_default(),
-            age_hist_het_n_smaller: Self::get_i32(record, "age_hist_het_n_smaller").ok(),
-            age_hist_het_n_larger: Self::get_i32(record, "age_hist_het_n_larger").ok(),
+            age_hist_het_n_smaller: common::noodles::get_i32(record, "age_hist_het_n_smaller").ok(),
+            age_hist_het_n_larger: common::noodles::get_i32(record, "age_hist_het_n_larger").ok(),
         })
     }
 
     /// Extract the depth related fields from the VCF record.
     fn extract_depth(record: &noodles_vcf::record::Record) -> Result<DepthInfo, anyhow::Error> {
         Ok(DepthInfo {
-            dp_hist_all_n_larger: Self::get_i32(record, "dp_hist_all_n_larger").ok(),
-            dp_hist_alt_n_larger: Self::get_i32(record, "dp_hist_alt_n_larger").ok(),
-            dp_hist_all_bin_freq: Self::get_vec::<i32>(record, "dp_hist_all_bin_freq")
+            dp_hist_all_n_larger: common::noodles::get_i32(record, "dp_hist_all_n_larger").ok(),
+            dp_hist_alt_n_larger: common::noodles::get_i32(record, "dp_hist_alt_n_larger").ok(),
+            dp_hist_all_bin_freq: common::noodles::get_vec::<i32>(record, "dp_hist_all_bin_freq")
                 .unwrap_or_default(),
-            dp_hist_alt_bin_freq: Self::get_vec::<i32>(record, "dp_hist_alt_bin_freq")
+            dp_hist_alt_bin_freq: common::noodles::get_vec::<i32>(record, "dp_hist_alt_bin_freq")
                 .unwrap_or_default(),
         })
     }
@@ -357,105 +366,14 @@ impl Record {
     /// Extract the quality-related fields from the VCF record.
     fn extract_quality(record: &noodles_vcf::record::Record) -> Result<QualityInfo, anyhow::Error> {
         Ok(QualityInfo {
-            dp_mean: Self::get_f32(record, "dp_mean").ok(),
-            mq_mean: Self::get_f32(record, "mq_mean").ok(),
-            tlod_mean: Self::get_f32(record, "tlod_mean").ok(),
+            dp_mean: common::noodles::get_f32(record, "dp_mean").ok(),
+            mq_mean: common::noodles::get_f32(record, "mq_mean").ok(),
+            tlod_mean: common::noodles::get_f32(record, "tlod_mean").ok(),
         })
     }
 
-    /// Extract a `String` field from a record.
-    fn get_string(record: &noodles_vcf::Record, name: &str) -> Result<String, anyhow::Error> {
-        if let Some(Some(field::Value::String(v))) = record.info().get(&field::Key::from_str(name)?)
-        {
-            Ok(v.to_string())
-        } else {
-            anyhow::bail!("missing INFO/{} in gnomAD-mtDNA record", name)
-        }
-    }
-
-    /// Extract a flag field from a record.
-    fn get_flag(record: &noodles_vcf::Record, name: &str) -> Result<bool, anyhow::Error> {
-        Ok(matches!(
-            record.info().get(&field::Key::from_str(name)?),
-            Some(Some(field::Value::Flag))
-        ))
-    }
-
-    /// Extract an `i32` field from a record.
-    fn get_i32(record: &noodles_vcf::Record, name: &str) -> Result<i32, anyhow::Error> {
-        if let Some(Some(field::Value::Integer(v))) =
-            record.info().get(&field::Key::from_str(name)?)
-        {
-            Ok(*v)
-        } else {
-            anyhow::bail!("missing INFO/{} in gnomAD-mtDNA record", name)
-        }
-    }
-
-    /// Extract an `f32` field from a record.
-    fn get_f32(record: &noodles_vcf::Record, name: &str) -> Result<f32, anyhow::Error> {
-        if let Some(Some(field::Value::Float(v))) = record.info().get(&field::Key::from_str(name)?)
-        {
-            Ok(*v)
-        } else {
-            anyhow::bail!("missing INFO/{} in gnomAD-mtDNA record", name)
-        }
-    }
-
-    /// Extract an `Vec<FromStr>` field from a record encoded as a pipe symbol separated string.
-    fn get_vec<T>(record: &noodles_vcf::Record, name: &str) -> Result<Vec<T>, anyhow::Error>
-    where
-        T: FromStr,
-    {
-        if let Some(Some(field::Value::String(v))) = record.info().get(&field::Key::from_str(name)?)
-        {
-            v.split('|')
-                .map(|s| s.parse())
-                .collect::<Result<Vec<_>, _>>()
-                .map_err(|_| anyhow::anyhow!("failed to parse INFO/{} as Vec<_>", name))
-        } else {
-            anyhow::bail!("missing INFO/{} in gnomAD-mtDNA record", name)
-        }
-    }
-
-    /// Extract an `Vec<Vec<FromStr>>` field from a record encoded as a list of pipe symbol
-    /// separated string.
-    fn get_vec_vec<T>(record: &noodles_vcf::Record, name: &str) -> Result<Vec<T>, anyhow::Error>
-    where
-        T: FromStr,
-    {
-        if let Some(Some(field::Value::Array(field::value::Array::String(value)))) =
-            record.info().get(&field::Key::from_str(name)?)
-        {
-            Ok(value
-                .iter()
-                .map(|s| {
-                    s.as_ref()
-                        .ok_or(anyhow::anyhow!("missing value in INFO/hap_hl_hist"))
-                        .map(|s| {
-                            s.split('|')
-                                .map(|s| s.parse())
-                                .collect::<Result<Vec<T>, _>>()
-                        })
-                })
-                .map(|r| match r {
-                    Ok(Ok(v)) => Ok(v),
-                    _ => anyhow::bail!("missing value in INFO/hap_hl_hist"),
-                })
-                .collect::<Result<Vec<_>, _>>()
-                .map_err(|e| {
-                    anyhow::anyhow!("failed to parse INFO/{} as Vec<Vec<_>>: {}", name, e)
-                })?
-                .into_iter()
-                .flatten()
-                .collect())
-        } else {
-            anyhow::bail!("missing INFO/{} in gnomAD-mtDNA record", name)
-        }
-    }
-
     /// Extract the filters fields.
-    fn get_filters(record: &noodles_vcf::Record) -> Result<Vec<i32>, anyhow::Error> {
+    fn extract_filters(record: &noodles_vcf::Record) -> Result<Vec<i32>, anyhow::Error> {
         Ok(
             if let Some(Some(field::Value::Array(field::value::Array::String(value)))) =
                 record.info().get(&field::Key::from_str("filters")?)

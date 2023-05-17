@@ -116,7 +116,6 @@ pub fn run(common: &common::cli::Args, args: &Args) -> Result<(), anyhow::Error>
     tracing::info!("common = {:#?}", &common);
     tracing::info!("args = {:#?}", &args);
 
-
     let (db, meta) = open_rocksdb(args)?;
     let cf_data = db.cf_handle(&args.cf_name).unwrap();
 
