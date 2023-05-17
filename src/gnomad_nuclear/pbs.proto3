@@ -204,9 +204,9 @@ message PopulationAlleleCounts {
     AlleleCountsBySex counts = 2;
 
     // The filtering allele frequency (using Poisson 95% CI).
-    float faf95 = 3;
+    optional float faf95 = 3;
     // The filtering allele frequency (using Poisson 99% CI).
-    float faf99 = 4;
+    optional float faf99 = 4;
 }
 
 // Store the allele counts for the given cohort.
@@ -221,16 +221,16 @@ message CohortAlleleCounts {
     AlleleCounts raw = 4;
 
     // The population with maximum AF.
-    string popmax = 5;
+    optional string popmax = 5;
     // Maximum allele frequency across populations (excluding samples of Ashkenazi, Finnish, and
     // indeterminate ancestry).
-    float af_popmax = 6;
+    optional float af_popmax = 6;
     // Allele count in population with maximum AF.
-    int32 ac_popmax = 7;
+    optional int32 ac_popmax = 7;
     // Total number of alleles in population with maximum AF.
-    int32 an_popmax = 8;
+    optional int32 an_popmax = 8;
     // Total number of homozygous individuals in population with maximum AF.
-    int32 nhomalt_popmax = 9;
+    optional int32 nhomalt_popmax = 9;
 }
 
 // Encapsulate VCF INFO fields related to age.
@@ -280,11 +280,11 @@ message QualityInfo {
     // Root mean square of the mapping quality of reads across all samples.
     float mq = 3;
     // Z-score from Wilcoxon rank sum test of alternate vs. reference read mapping qualities.
-    float mq_rank_sum = 4;
+    optional float mq_rank_sum = 4;
     // Variant call confidence normalized by depth of sample reads supporting a variant.
     float qd = 5;
     // Z-score from Wilcoxon rank sum test of alternate vs. reference read position bias.
-    float read_pos_ranksum = 6;
+    optional float read_pos_rank_sum = 6;
     // Strand bias estimated by the symmetric odds ratio test.
     float sor = 7;
     // Variant was used to build the positive training set of high-quality variants for VQSR.
@@ -292,9 +292,9 @@ message QualityInfo {
     // Variant was used to build the negative training set of low-quality variants for VQSR.
     bool vqsr_negative_train_site = 9;
     // Z-score from Wilcoxon rank sum test of alternate vs. reference base qualities.
-    float base_q_rank_sum = 10;
+    optional float base_q_rank_sum = 10;
     // Z-score from Wilcoxon rank sum test of alternate vs. reference number of hard clipped bases.
-    float clipping_rank_sum = 11;
+    optional float clipping_rank_sum = 11;
     // Depth of informative coverage for each sample; reads with MQ=255 or with bad mates are
     // filtered.
     int32 dp = 12;
@@ -314,7 +314,7 @@ message QualityInfo {
     bool transmitted_singleton = 18;
     // Maximum p-value over callset for binomial test of observed allele balance for a heterozygous
     // genotype, given expectation of AB=0.5.
-    float pab_max = 19;
+    optional float pab_max = 19;
 }
 
 // Random forest related information.
@@ -326,7 +326,7 @@ message RandomForestInfo {
     // Variant was labelled as a negative example for training of random forest model.
     bool rf_negative_label = 3;
     // Random forest training label.
-    string rf_label = 4;
+    optional string rf_label = 4;
     // Variant was used in training random forest model.
     bool rf_train = 5;
 }

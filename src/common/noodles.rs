@@ -8,8 +8,12 @@ use noodles_vcf::record::info::field;
 pub fn get_string(record: &noodles_vcf::Record, name: &str) -> Result<String, anyhow::Error> {
     if let Some(Some(field::Value::String(v))) = record.info().get(&field::Key::from_str(name)?) {
         Ok(v.to_string())
+    } else if let Some(Some(field::Value::Array(field::value::Array::String(vs)))) =
+        record.info().get(&field::Key::from_str(name)?)
+    {
+        Ok(vs.get(0).unwrap().as_ref().unwrap().to_string())
     } else {
-        anyhow::bail!("missing INFO/{} in gnomAD-mtDNA record", name)
+        anyhow::bail!("missing INFO/{} in gnomAD record", name)
     }
 }
 
@@ -25,8 +29,12 @@ pub fn get_flag(record: &noodles_vcf::Record, name: &str) -> Result<bool, anyhow
 pub fn get_i32(record: &noodles_vcf::Record, name: &str) -> Result<i32, anyhow::Error> {
     if let Some(Some(field::Value::Integer(v))) = record.info().get(&field::Key::from_str(name)?) {
         Ok(*v)
+    } else if let Some(Some(field::Value::Array(field::value::Array::Integer(vs)))) =
+        record.info().get(&field::Key::from_str(name)?)
+    {
+        Ok(vs.get(0).unwrap().unwrap())
     } else {
-        anyhow::bail!("missing INFO/{} in gnomAD-mtDNA record", name)
+        anyhow::bail!("missing INFO/{} in gnomAD record", name)
     }
 }
 
@@ -34,8 +42,12 @@ pub fn get_i32(record: &noodles_vcf::Record, name: &str) -> Result<i32, anyhow::
 pub fn get_f32(record: &noodles_vcf::Record, name: &str) -> Result<f32, anyhow::Error> {
     if let Some(Some(field::Value::Float(v))) = record.info().get(&field::Key::from_str(name)?) {
         Ok(*v)
+    } else if let Some(Some(field::Value::Array(field::value::Array::Float(vs)))) =
+        record.info().get(&field::Key::from_str(name)?)
+    {
+        Ok(vs.get(0).unwrap().unwrap())
     } else {
-        anyhow::bail!("missing INFO/{} in gnomAD-mtDNA record", name)
+        anyhow::bail!("missing INFO/{} in gnomAD record", name)
     }
 }
 
@@ -50,7 +62,7 @@ where
             .collect::<Result<Vec<_>, _>>()
             .map_err(|_| anyhow::anyhow!("failed to parse INFO/{} as Vec<_>", name))
     } else {
-        anyhow::bail!("missing INFO/{} in gnomAD-mtDNA record", name)
+        anyhow::bail!("missing INFO/{} in gnomAD record", name)
     }
 }
 
@@ -84,6 +96,6 @@ where
             .flatten()
             .collect())
     } else {
-        anyhow::bail!("missing INFO/{} in gnomAD-mtDNA record", name)
+        anyhow::bail!("missing INFO/{} in gnomAD record", name)
     }
 }

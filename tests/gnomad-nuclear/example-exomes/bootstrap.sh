@@ -12,9 +12,16 @@ fi
 
 rm -rf tests/gnomad-nuclear/example-exomes/gnomad-exomes.vcf.bgz.db
 cargo run --all-features -- \
-    gnomad-mtdna import \
+    gnomad-nuclear import \
     --import-fields-json '{
         "vep": true,
+        "var_info": true,
+        "global_cohort_pops": true,
+        "all_cohorts": true,
+        "rf_info": true,
+        "quality": true,
+        "age_hists": true,
+        "depth_details": true
     }' \
     --genome-release grch37 \
     --gnomad-kind exomes \
