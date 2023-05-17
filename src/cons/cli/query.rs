@@ -108,16 +108,6 @@ pub fn run(common: &common::cli::Args, args: &Args) -> Result<(), anyhow::Error>
     tracing::info!("common = {:#?}", &common);
     tracing::info!("args = {:#?}", &args);
 
-    if let Some(level) = common.verbose.log_level() {
-        match level {
-            log::Level::Trace | log::Level::Debug => {
-                std::env::set_var("RUST_LOG", "debug");
-                env_logger::init_from_env(env_logger::Env::new().default_filter_or("info"));
-            }
-            _ => (),
-        }
-    }
-
     // Open the RocksDB database.
     let (db, meta) = open_rocksdb(args)?;
     let cf_data = db.cf_handle(&args.cf_name).unwrap();

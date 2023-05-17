@@ -136,8 +136,8 @@ impl FromStr for Vep {
                         .map(|p| {
                             let tmp = p.split(':').collect::<Vec<_>>();
                             Domain {
-                                id: tmp[0].to_string(),
-                                source: tmp[1].to_string(),
+                                source: tmp[0].to_string(),
+                                id: tmp[1].to_string(),
                             }
                         })
                         .collect::<Vec<_>>()
