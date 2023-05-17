@@ -1,4 +1,4 @@
-//! Query of gnomAD-mtDNA annotation data.
+//! Query of gnomAD-exomes and genomes annotation data.
 
 use std::{io::Write, sync::Arc};
 
@@ -7,18 +7,18 @@ use prost::Message;
 use crate::{
     common::{self, cli::extract_chrom, keys, spdi},
     cons::cli::args::vars::ArgsQuery,
-    gnomad_mtdna,
+    gnomad_nuclear,
 };
 
 /// Command line arguments for `tsv query` sub command.
 #[derive(clap::Parser, Debug, Clone)]
-#[command(about = "query gnomAD-mtDNA data stored in RocksDB", long_about = None)]
+#[command(about = "query gnomAD-nuclear data stored in RocksDB", long_about = None)]
 pub struct Args {
     /// Path to RocksDB directory with data.
     #[arg(long)]
     pub path_rocksdb: String,
     /// Name of the column family to import into.
-    #[arg(long, default_value = "gnomad_mtdna_data")]
+    #[arg(long, default_value = "gnomad_nuclear_data")]
     pub cf_name: String,
     /// Output file (default is stdout == "-").
     #[arg(long, default_value = "-")]
@@ -76,7 +76,7 @@ fn open_rocksdb(
 fn print_record(
     out_writer: &mut Box<dyn std::io::Write>,
     output_format: common::cli::OutputFormat,
-    value: &gnomad_mtdna::pbs::Record,
+    value: &gnomad_nuclear::pbs::Record,
 ) -> Result<(), anyhow::Error> {
     match output_format {
         common::cli::OutputFormat::Jsonl => {
@@ -92,7 +92,7 @@ fn query_for_variant(
     meta: &Meta,
     db: &rocksdb::DBWithThreadMode<rocksdb::MultiThreaded>,
     cf_data: &Arc<rocksdb::BoundColumnFamily>,
-) -> Result<gnomad_mtdna::pbs::Record, anyhow::Error> {
+) -> Result<gnomad_nuclear::pbs::Record, anyhow::Error> {
     // Split off the genome release (checked) and convert to key as used in database.
     let query = spdi::Var {
         sequence: extract_chrom::from_var(variant, Some(&meta.genome_release))?,
@@ -106,13 +106,13 @@ fn query_for_variant(
         .get_cf(cf_data, key)?
         .ok_or_else(|| anyhow::anyhow!("could not find variant in database"))?;
     // Decode via prost.
-    gnomad_mtdna::pbs::Record::decode(&mut std::io::Cursor::new(&raw_value))
+    gnomad_nuclear::pbs::Record::decode(&mut std::io::Cursor::new(&raw_value))
         .map_err(|e| anyhow::anyhow!("failed to decode record: {}", e))
 }
 
 /// Implementation of `tsv query` sub command.
 pub fn run(common: &common::cli::Args, args: &Args) -> Result<(), anyhow::Error> {
-    tracing::info!("Starting 'gnomad-mtdna query' command");
+    tracing::info!("Starting 'gnomad-nuclear query' command");
     tracing::info!("common = {:#?}", &common);
     tracing::info!("args = {:#?}", &args);
 
@@ -200,7 +200,7 @@ pub fn run(common: &common::cli::Args, args: &Args) -> Result<(), anyhow::Error>
                 }
 
                 let record =
-                    gnomad_mtdna::pbs::Record::decode(&mut std::io::Cursor::new(&raw_value))
+                    gnomad_nuclear::pbs::Record::decode(&mut std::io::Cursor::new(&raw_value))
                         .map_err(|e| anyhow::anyhow!("failed to decode record: {}", e))?;
                 print_record(&mut out_writer, args.out_format, &record)?;
                 iter.next();
@@ -229,8 +229,10 @@ mod test {
             verbose: clap_verbosity_flag::Verbosity::new(1, 0),
         };
         let args = Args {
-            path_rocksdb: String::from("tests/gnomad-mtdna/example/gnomad-mtdna.vcf.bgz.db"),
-            cf_name: String::from("gnomad_mtdna_data"),
+            path_rocksdb: String::from(
+                "tests/gnomad-nuclear/example-exomes/gnomad-exomes.vcf.bgz.db",
+            ),
+            cf_name: String::from("gnomad_nuclear_data"),
             out_file: temp.join("out").to_string_lossy().to_string(),
             out_format: common::cli::OutputFormat::Jsonl,
             query,

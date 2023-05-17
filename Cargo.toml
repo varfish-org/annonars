@@ -44,6 +44,7 @@ prost = "0.11"
 csv = "1.2.1"
 noodles-vcf = "0.29.0"
 noodles-util = { version = "0.10.0", features = ["variant"] }
+env_logger = "0.10.0"
 
 [build-dependencies]
 prost-build = "0.11"

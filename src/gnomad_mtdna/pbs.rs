@@ -5,6 +5,61 @@ use std::str::FromStr;
 
 include!(concat!(env!("OUT_DIR"), "/annonars.gnomad_mtdna.pbs.rs"));
 
+/// Options struct that allows to specify which details fields are to be extracted from
+/// gnomAD-mtDNA VCF records.
+///
+/// The only field that has `true` as its default is `vep`.
+#[derive(Debug, Clone, Copy, PartialEq, Eq, serde::Serialize, serde::Deserialize)]
+pub struct DetailsOptions {
+    /// Enable extraction of `Vep` records.
+    pub vep: bool,
+    /// Enable creation of `QualityInfo`.
+    pub quality: bool,
+    /// Enable creation of `HeteroplasmyInfo`.
+    pub heteroplasmy: bool,
+    /// Enable creation of `FilterHistograms`.
+    pub filter_hists: bool,
+    /// Enable creation of `PopulationInfo`.
+    pub pop_details: bool,
+    /// Enable creation of `HaplogroupInfo`.
+    pub haplogroups_details: bool,
+    /// Enable creation of `AgeInfo`.
+    pub age_hists: bool,
+    /// Enable creation of `DepthInfo`.
+    pub depth_details: bool,
+}
+
+impl Default for DetailsOptions {
+    fn default() -> Self {
+        Self {
+            vep: true,
+            quality: false,
+            heteroplasmy: false,
+            filter_hists: false,
+            pop_details: false,
+            haplogroups_details: false,
+            age_hists: false,
+            depth_details: false,
+        }
+    }
+}
+
+impl DetailsOptions {
+    /// Create a new `DetailsOptions` with all fields enabled.
+    pub fn with_all_enabled() -> Self {
+        Self {
+            vep: true,
+            quality: true,
+            heteroplasmy: true,
+            filter_hists: true,
+            pop_details: true,
+            haplogroups_details: true,
+            age_hists: true,
+            depth_details: true,
+        }
+    }
+}
+
 impl From<(String, f32)> for Prediction {
     fn from((prediction, score): (String, f32)) -> Self {
         Self { prediction, score }
@@ -98,61 +153,6 @@ impl FromStr for Vep {
             lof_flags: (!values[43].is_empty()).then(|| values[43].to_string()),
             lof_info: (!values[44].is_empty()).then(|| values[44].to_string()),
         })
-    }
-}
-
-/// Options struct that allows to specify which details fields are to be extracted from
-/// gnomAD-mtDNA VCF records.
-///
-/// The only field that has `true` as its default is `vep`.
-#[derive(Debug, Clone, Copy, PartialEq, Eq, serde::Serialize, serde::Deserialize)]
-pub struct DetailsOptions {
-    /// Enable extraction of `Vep` records.
-    pub vep: bool,
-    /// Enable creation of `QualityInfo`.
-    pub quality: bool,
-    /// Enable creation of `HeteroplasmyInfo`.
-    pub heteroplasmy: bool,
-    /// Enable creation of `FilterHistograms`.
-    pub filter_hists: bool,
-    /// Enable creation of `PopulationInfo`.
-    pub pop_details: bool,
-    /// Enable creation of `HaplogroupInfo`.
-    pub haplogroups_details: bool,
-    /// Enable creation of `AgeInfo`.
-    pub age_hists: bool,
-    /// Enable creation of `DepthInfo`.
-    pub depth_details: bool,
-}
-
-impl Default for DetailsOptions {
-    fn default() -> Self {
-        Self {
-            vep: true,
-            quality: false,
-            heteroplasmy: false,
-            filter_hists: false,
-            pop_details: false,
-            haplogroups_details: false,
-            age_hists: false,
-            depth_details: false,
-        }
-    }
-}
-
-impl DetailsOptions {
-    /// Create a new `DetailsOptions` with all fields enabled.
-    pub fn with_all_enabled() -> Self {
-        Self {
-            vep: true,
-            quality: true,
-            heteroplasmy: true,
-            filter_hists: true,
-            pop_details: true,
-            haplogroups_details: true,
-            age_hists: true,
-            depth_details: true,
-        }
     }
 }
 

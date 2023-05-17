@@ -4,6 +4,7 @@ fn main() {
     println!("cargo:rerun-if-changed=src/cons/pbs.proto3");
     println!("cargo:rerun-if-changed=src/dbsnp/pbs.proto3");
     println!("cargo:rerun-if-changed=src/gnomad_mtdna/pbs.proto3");
+    println!("cargo:rerun-if-changed=src/gnomad_nuclear/pbs.proto3");
     println!("cargo:rerun-if-changed=src/helixmtdb/pbs.proto3");
     prost_build::Config::new()
         // Add serde serialization and deserialization to the generated
@@ -29,6 +30,7 @@ fn main() {
                 "src/cons/pbs.proto3",
                 "src/dbsnp/pbs.proto3",
                 "src/gnomad_mtdna/pbs.proto3",
+                "src/gnomad_nuclear/pbs.proto3",
                 "src/helixmtdb/pbs.proto3",
             ],
             &["src/"],

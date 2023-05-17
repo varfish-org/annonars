@@ -1,9 +1,8 @@
-//! Import dbSNP annotation data.
+//! Import gnomAD-exomes and genomes annotation data.
 
 use std::{str::FromStr, sync::Arc};
 
 use clap::Parser;
-use hgvs::static_data::Assembly;
 use indicatif::ParallelProgressIterator;
 use noodles_vcf::header::record;
 use prost::Message;
@@ -11,42 +10,65 @@ use rayon::prelude::{IntoParallelRefIterator, ParallelIterator};
 
 use crate::{
     common::{self, cli::indicatif_style},
-    dbsnp,
+    gnomad_nuclear::{self, pbs::DetailsOptions},
 };
 
-/// Command line arguments for `dbsnp import` sub command.
+/// Select the type of gnomAD data to import.
+#[derive(strum::Display, clap::ValueEnum, Debug, Clone, Copy, PartialEq, Eq, Hash)]
+pub enum GnomadKind {
+    /// gnomAD exomes
+    #[strum(serialize = "exomes")]
+    Exomes,
+    /// gnomAD genomes
+    #[strum(serialize = "genomes")]
+    Genomes,
+}
+
+/// Command line arguments for `gnomad_nuclear import` sub command.
 #[derive(Parser, Debug, Clone)]
-#[command(about = "import dbsNP data into RocksDB", long_about = None)]
+#[command(about = "import gnomAD-mtDNA data into RocksDB", long_about = None)]
 pub struct Args {
-    /// Genome build to use in the build.
-    #[arg(long, value_enum)]
-    pub genome_release: common::cli::GenomeRelease,
     /// Path to input VCF file(s).
     #[arg(long, required = true)]
-    pub path_in_vcf: String,
+    pub path_in_vcf: Vec<String>,
     /// Path to output RocksDB directory.
     #[arg(long)]
     pub path_out_rocksdb: String,
+
+    /// Exomes or genomes.
+    #[arg(long)]
+    pub gnomad_kind: GnomadKind,
+    /// The data version to write out.
+    #[arg(long, default_value = "3.1")]
+    pub gnomad_version: String,
+    /// Genome build to use in the build.
+    #[arg(long, value_enum)]
+    pub genome_release: common::cli::GenomeRelease,
 
     /// Windows size for TBI-based parallel import.
     #[arg(long, default_value = "1000000")]
     pub tbi_window_size: usize,
 
     /// Name of the column family to import into.
-    #[arg(long, default_value = "dbsnp_data")]
+    #[arg(long, default_value = "gnomad_nuclear_data")]
     pub cf_name: String,
     /// Optional path to RocksDB WAL directory.
     #[arg(long)]
     pub path_wal_dir: Option<String>,
+    /// JSON formatted configuration of which fields to import from gnomAD-mtDNA.  If not
+    /// specified, the default fields are configured.
+    #[arg(long)]
+    pub import_fields_json: Option<String>,
 }
 
-/// Perform TBI-parallel import of the data.
+/// Perform TBI-parallel import of one file.
 fn tsv_import(
     db: Arc<rocksdb::DBWithThreadMode<rocksdb::MultiThreaded>>,
     args: &Args,
+    path_in_vcf: &str,
 ) -> Result<(), anyhow::Error> {
     // Load tabix header and create BGZF reader with tabix index.
-    let tabix_src = format!("{}.tbi", args.path_in_vcf);
+    let tabix_src = format!("{}.tbi", path_in_vcf);
     let index = noodles_tabix::read(tabix_src)?;
     let header = index.header().ok_or_else(|| {
         std::io::Error::new(std::io::ErrorKind::InvalidInput, "missing tabix header")
@@ -77,20 +99,20 @@ fn tsv_import(
             })
             .collect::<Vec<_>>();
 
-    tracing::info!("Loading dbSNP VCF file into RocksDB...");
-    let before_loading = std::time::Instant::now();
     let style = indicatif_style();
     windows
         .par_iter()
         .progress_with_style(style)
         .for_each(|(chrom, begin, end)| {
-            process_window(db.clone(), chrom, *begin, *end, args)
-                .unwrap_or_else(|_| panic!("failed to process window {}:{}-{}", chrom, begin, end));
+            process_window(db.clone(), chrom, *begin, *end, args, path_in_vcf).unwrap_or_else(
+                |e| {
+                    panic!(
+                        "failed to process window {}:{}-{} of {}: {}",
+                        chrom, begin, end, path_in_vcf, e
+                    )
+                },
+            );
         });
-    tracing::info!(
-        "... done loading dbSNP VCF file into RocksDB in {:?}",
-        before_loading.elapsed()
-    );
 
     Ok(())
 }
@@ -102,13 +124,15 @@ fn process_window(
     begin: usize,
     end: usize,
     args: &Args,
+    path_in_vcf: &str,
 ) -> Result<(), anyhow::Error> {
-    let cf_dbsnp = db.cf_handle(&args.cf_name).unwrap();
+    let cf_gnomad = db.cf_handle(&args.cf_name).unwrap();
     let mut reader =
-        noodles_vcf::indexed_reader::Builder::default().build_from_path(&args.path_in_vcf)?;
+        noodles_vcf::indexed_reader::Builder::default().build_from_path(&path_in_vcf)?;
     let header = reader.read_header()?;
 
     let raw_region = format!("{}:{}-{}", chrom, begin + 1, end);
+    tracing::debug!("  processing region: {}", raw_region);
     let region = raw_region.parse()?;
 
     // Jump to the selected region.  In the case of errors, allow for the window not
@@ -133,12 +157,22 @@ fn process_window(
             let vcf_record = result?;
 
             // Process each alternate allele into one record.
+            let details_options = serde_json::from_str(
+                args.import_fields_json
+                    .as_ref()
+                    .expect("has been set earlier"),
+            )?;
             for allele_no in 0..vcf_record.alternate_bases().len() {
                 let key_buf: Vec<u8> =
                     common::keys::Var::from_vcf_allele(&vcf_record, allele_no).into();
-                let record = dbsnp::pbs::Record::from_vcf_allele(&vcf_record, allele_no)?;
+                let record = gnomad_nuclear::pbs::Record::from_vcf_allele(
+                    &vcf_record,
+                    allele_no,
+                    &details_options,
+                )?;
+                tracing::trace!("  record: {:?}", &record);
                 let record_buf = record.encode_to_vec();
-                db.put_cf(&cf_dbsnp, &key_buf, &record_buf)?;
+                db.put_cf(&cf_gnomad, &key_buf, &record_buf)?;
             }
         }
     }
@@ -146,9 +180,20 @@ fn process_window(
     Ok(())
 }
 
-/// Implementation of `dbsnp import` sub command.
+/// Implementation of `gnomad_nuclear import` sub command.
 pub fn run(common: &common::cli::Args, args: &Args) -> Result<(), anyhow::Error> {
-    tracing::info!("Starting 'dbsnp import' command");
+    // Put defaults for fields to serialize into args.
+    let args = Args {
+        import_fields_json: args
+            .import_fields_json
+            .clone()
+            .map(|v| serde_json::to_string(&serde_json::from_str::<DetailsOptions>(&v)?))
+            .or_else(|| Some(serde_json::to_string(&DetailsOptions::default())))
+            .transpose()?,
+        ..args.clone()
+    };
+
+    tracing::info!("Starting 'gnomad-nuclear import' command");
     tracing::info!("common = {:#?}", &common);
     tracing::info!("args = {:#?}", &args);
 
@@ -162,49 +207,40 @@ pub fn run(common: &common::cli::Args, args: &Args) -> Result<(), anyhow::Error>
         }
     }
 
-    tracing::info!("Opening dbSNP VCF file...");
+    tracing::info!("Opening gnomAD-nuclear VCF file...");
     let before_loading = std::time::Instant::now();
     let mut reader_vcf =
-        noodles_vcf::indexed_reader::Builder::default().build_from_path(&args.path_in_vcf)?;
+        noodles_vcf::reader::Builder::default().build_from_path(&args.path_in_vcf[0])?;
     let header = reader_vcf.read_header()?;
-    let dbsnp_reference = if let record::value::Collection::Unstructured(values) = header
+
+    let vep_version = if let Some(record::value::Collection::Unstructured(values)) = header
         .other_records()
-        .get(&record::key::Other::from_str("reference")?)
-        .expect("no ##reference header")
+        .get(&record::key::Other::from_str("VEP version")?)
     {
-        values.first().expect("no reference value").to_owned()
+        Some(values.first().expect("no VEP version value").to_owned())
     } else {
-        anyhow::bail!("invalid type of ##reference header");
+        None
     };
-    let dbsnp_build_id = if let record::value::Collection::Unstructured(values) = header
+    let dbsnp_version = if let Some(record::value::Collection::Unstructured(values)) = header
         .other_records()
-        .get(&record::key::Other::from_str("dbSNP_BUILD_ID")?)
-        .expect("no ##dbSNP_BUILD_ID header")
+        .get(&record::key::Other::from_str("dbSNP version")?)
     {
-        values.first().expect("no reference value").to_owned()
+        Some(values.first().expect("no reference value").to_owned())
     } else {
-        anyhow::bail!("invalid type of ##dbSNP_BUILD_ID header");
+        None
+    };
+    let age_distributions = if let Some(record::value::Collection::Unstructured(values)) = header
+        .other_records()
+        .get(&record::key::Other::from_str("age distributions")?)
+    {
+        Some(values.first().expect("no reference value").to_owned())
+    } else {
+        None
     };
     tracing::info!(
-        "...done opening dbSNP VCF file in {:?}",
+        "...done opening gnomAD-nuclear VCF file in {:?}",
         before_loading.elapsed()
     );
-
-    // Check that the dbSNP reference from the matches the genome release.
-    let assembly = if dbsnp_reference.starts_with("GRCh37") {
-        Assembly::Grch37p10
-    } else if dbsnp_reference.starts_with("GRCh38") {
-        Assembly::Grch38
-    } else {
-        anyhow::bail!("unknown assembly in dbSNP reference: {}", dbsnp_reference);
-    };
-    if assembly != args.genome_release.into() {
-        anyhow::bail!(
-            "dbSNP reference assembly ({}) does not match genome release from args ({})",
-            dbsnp_reference,
-            args.genome_release
-        );
-    }
 
     // Open the RocksDB for writing.
     tracing::info!("Opening RocksDB for writing ...");
@@ -230,19 +266,45 @@ pub fn run(common: &common::cli::Args, args: &Args) -> Result<(), anyhow::Error>
         "genome-release",
         format!("{}", args.genome_release),
     )?;
-    db.put_cf(&cf_meta, "db-version", dbsnp_build_id)?;
-    db.put_cf(&cf_meta, "db-name", "dbsnp")?;
+    db.put_cf(
+        &cf_meta,
+        format!("gnomad-{}-version", args.gnomad_kind),
+        &args.gnomad_version,
+    )?;
+    if let Some(vep_version) = vep_version {
+        db.put_cf(
+            &cf_meta,
+            format!("gnomad-{}-vep-version", args.gnomad_kind),
+            &vep_version,
+        )?;
+    }
+    if let Some(dbsnp_version) = dbsnp_version {
+        db.put_cf(
+            &cf_meta,
+            format!("gnomad-{}-dbsnp-version", args.gnomad_kind),
+            &dbsnp_version,
+        )?;
+    }
+    if let Some(age_distributions) = age_distributions {
+        db.put_cf(
+            &cf_meta,
+            &format!("gnomad-{}-age-distributions", args.gnomad_kind),
+            &age_distributions,
+        )?;
+    }
     tracing::info!(
         "... done opening RocksDB for writing in {:?}",
         before_opening_rocksdb.elapsed()
     );
 
-    tracing::info!("Importing dbSNP file ...");
-    let before_import = std::time::Instant::now();
-    tsv_import(db.clone(), args)?;
+    tracing::info!("Loading gnomad_nuclear VCF file into RocksDB...");
+    let before_loading = std::time::Instant::now();
+    for path_in_tsv in &args.path_in_vcf {
+        tsv_import(db.clone(), &args, path_in_tsv)?;
+    }
     tracing::info!(
-        "... done importing dbSNP file in {:?}",
-        before_import.elapsed()
+        "... done loading gnomad_nuclear VCF file into RocksDB in {:?}",
+        before_loading.elapsed()
     );
 
     tracing::info!("Running RocksDB compaction ...");
@@ -259,26 +321,56 @@ pub fn run(common: &common::cli::Args, args: &Args) -> Result<(), anyhow::Error>
 
 #[cfg(test)]
 mod test {
+    use crate::gnomad_nuclear::pbs::DetailsOptions;
+
     use super::*;
 
     use clap_verbosity_flag::Verbosity;
     use temp_testdir::TempDir;
 
     #[test]
-    fn smoke_test_import_dbsnp() {
+    fn smoke_test_import_gnomad_exomes() -> Result<(), anyhow::Error> {
         let tmp_dir = TempDir::default();
         let common = common::cli::Args {
             verbose: Verbosity::new(1, 0),
         };
         let args = Args {
             genome_release: common::cli::GenomeRelease::Grch37,
-            path_in_vcf: String::from("tests/dbsnp/example/dbsnp.brca1.vcf.bgz"),
+            path_in_vcf: vec![String::from(
+                "tests/gnomad-nuclear/example-exomes/gnomad-exomes.vcf.bgz",
+            )],
             path_out_rocksdb: format!("{}", tmp_dir.join("out-rocksdb").display()),
-            cf_name: String::from("dbsnp_data"),
+            cf_name: String::from("gnomad_nuclear_data"),
             path_wal_dir: None,
             tbi_window_size: 1_000_000,
+            import_fields_json: Some(serde_json::to_string(&DetailsOptions::with_all_enabled())?),
+            gnomad_kind: GnomadKind::Exomes,
+            gnomad_version: String::from("2.1"),
         };
 
-        run(&common, &args).unwrap();
+        run(&common, &args)
+    }
+
+    #[test]
+    fn smoke_test_import_gnomad_genomes() -> Result<(), anyhow::Error> {
+        let tmp_dir = TempDir::default();
+        let common = common::cli::Args {
+            verbose: Verbosity::new(1, 0),
+        };
+        let args = Args {
+            genome_release: common::cli::GenomeRelease::Grch37,
+            path_in_vcf: vec![String::from(
+                "tests/gnomad-nuclear/example-genomes/gnomad-genomes.vcf.bgz",
+            )],
+            path_out_rocksdb: format!("{}", tmp_dir.join("out-rocksdb").display()),
+            cf_name: String::from("gnomad_nuclear_data"),
+            path_wal_dir: None,
+            tbi_window_size: 1_000_000,
+            import_fields_json: Some(serde_json::to_string(&DetailsOptions::with_all_enabled())?),
+            gnomad_kind: GnomadKind::Genomes,
+            gnomad_version: String::from("2.1"),
+        };
+
+        run(&common, &args)
     }
 }

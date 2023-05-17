@@ -3,17 +3,21 @@
 set -euo pipefail
 set -x
 
-if [[ tests/helixmtdb/example/helixmtdb.vcf \
-        -nt tests/helixmtdb/example/helixmtdb.vcf.bgz ]]; then
-    bgzip -c tests/helixmtdb/example/helixmtdb.vcf \
-    > tests/helixmtdb/example/helixmtdb.vcf.bgz
-    tabix -f tests/helixmtdb/example/helixmtdb.vcf.bgz
+if [[ tests/gnomad-nuclear/example-genomes/gnomad-genomes.vcf \
+        -nt tests/gnomad-nuclear/example-genomes/gnomad-genomes.vcf.bgz ]]; then
+    bgzip -c tests/gnomad-nuclear/example-genomes/gnomad-genomes.vcf \
+    > tests/gnomad-nuclear/example-genomes/gnomad-genomes.vcf.bgz
+    tabix -f tests/gnomad-nuclear/example-genomes/gnomad-genomes.vcf.bgz
 fi
 
-rm -rf tests/helixmtdb/example/helixmtdb.vcf.bgz.db
+rm -rf tests/gnomad-nuclear/example-genomes/gnomad-genomes.vcf.bgz.db
 cargo run --all-features -- \
-    helixmtdb import \
+    gnomad-mtdna import \
+    --import-fields-json '{
+        "vep": true,
+    }' \
     --genome-release grch37 \
-    --path-in-vcf tests/helixmtdb/example/helixmtdb.vcf.bgz \
-    --path-out-rocksdb tests/helixmtdb/example/helixmtdb.vcf.bgz.db
-rm -f tests/helixmtdb/example/helixmtdb.vcf.bgz.db/*.log
+    --gnomad-kind genomes \
+    --path-in-vcf tests/gnomad-nuclear/example-genomes/gnomad-genomes.vcf.bgz \
+    --path-out-rocksdb tests/gnomad-nuclear/example-genomes/gnomad-genomes.vcf.bgz.db
+rm -f tests/gnomad-nuclear/example-genomes/gnomad-genomes.vcf.bgz.db/*.log
