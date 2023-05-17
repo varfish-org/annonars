@@ -223,7 +223,7 @@ mod test {
 
     use temp_testdir::TempDir;
 
-    fn args(query: ArgsQuery) -> (common::cli::Args, Args, TempDir) {
+    fn args_exomes(query: ArgsQuery) -> (common::cli::Args, Args, TempDir) {
         let temp = TempDir::default();
         let common = common::cli::Args {
             verbose: clap_verbosity_flag::Verbosity::new(1, 0),
@@ -242,8 +242,8 @@ mod test {
     }
 
     #[test]
-    fn smoke_query_all() -> Result<(), anyhow::Error> {
-        let (common, args, _temp) = args(ArgsQuery {
+    fn smoke_query_exomes_all() -> Result<(), anyhow::Error> {
+        let (common, args, _temp) = args_exomes(ArgsQuery {
             all: true,
             ..Default::default()
         });
@@ -255,9 +255,9 @@ mod test {
     }
 
     #[test]
-    fn smoke_query_var_single() -> Result<(), anyhow::Error> {
-        let (common, args, _temp) = args(ArgsQuery {
-            variant: Some(spdi::Var::from_str("GRCh37:M:12544:A:G")?),
+    fn smoke_query_exomes_var_single() -> Result<(), anyhow::Error> {
+        let (common, args, _temp) = args_exomes(ArgsQuery {
+            variant: Some(spdi::Var::from_str("GRCh37:1:55516888:G:GA")?),
             ..Default::default()
         });
         run(&common, &args)?;
@@ -268,9 +268,9 @@ mod test {
     }
 
     #[test]
-    fn smoke_query_pos_single() -> Result<(), anyhow::Error> {
-        let (common, args, _temp) = args(ArgsQuery {
-            position: Some(spdi::Pos::from_str("GRCh37:M:12544")?),
+    fn smoke_query_exomes_pos_single() -> Result<(), anyhow::Error> {
+        let (common, args, _temp) = args_exomes(ArgsQuery {
+            position: Some(spdi::Pos::from_str("GRCh37:1:55516888")?),
             ..Default::default()
         });
         run(&common, &args)?;
@@ -281,9 +281,9 @@ mod test {
     }
 
     #[test]
-    fn smoke_query_range_find_all() -> Result<(), anyhow::Error> {
-        let (common, args, _temp) = args(ArgsQuery {
-            range: Some(spdi::Range::from_str("GRCh37:M:1:16569")?),
+    fn smoke_query_exomes_range_find_all_chr1() -> Result<(), anyhow::Error> {
+        let (common, args, _temp) = args_exomes(ArgsQuery {
+            range: Some(spdi::Range::from_str("GRCh37:1:1:249250621")?),
             ..Default::default()
         });
         run(&common, &args)?;
@@ -294,9 +294,9 @@ mod test {
     }
 
     #[test]
-    fn smoke_query_range_find_first() -> Result<(), anyhow::Error> {
-        let (common, args, _temp) = args(ArgsQuery {
-            range: Some(spdi::Range::from_str("GRCh37:M:3:3")?),
+    fn smoke_query_exomes_range_find_first() -> Result<(), anyhow::Error> {
+        let (common, args, _temp) = args_exomes(ArgsQuery {
+            range: Some(spdi::Range::from_str("GRCh37:1:55505599:55505599")?),
             ..Default::default()
         });
         run(&common, &args)?;
@@ -307,9 +307,9 @@ mod test {
     }
 
     #[test]
-    fn smoke_query_range_find_second() -> Result<(), anyhow::Error> {
-        let (common, args, _temp) = args(ArgsQuery {
-            range: Some(spdi::Range::from_str("GRCh37:M:6:6")?),
+    fn smoke_query_exomes_range_find_second() -> Result<(), anyhow::Error> {
+        let (common, args, _temp) = args_exomes(ArgsQuery {
+            range: Some(spdi::Range::from_str("GRCh37:1:55505615:55505615")?),
             ..Default::default()
         });
         run(&common, &args)?;
@@ -320,9 +320,9 @@ mod test {
     }
 
     #[test]
-    fn smoke_query_range_find_none_smaller() -> Result<(), anyhow::Error> {
-        let (common, args, _temp) = args(ArgsQuery {
-            range: Some(spdi::Range::from_str("GRCh37:M:1:2")?),
+    fn smoke_query_exomes_range_find_none_smaller() -> Result<(), anyhow::Error> {
+        let (common, args, _temp) = args_exomes(ArgsQuery {
+            range: Some(spdi::Range::from_str("GRCh37:1:1:55505598")?),
             ..Default::default()
         });
         run(&common, &args)?;
@@ -333,9 +333,9 @@ mod test {
     }
 
     #[test]
-    fn smoke_query_range_find_none_larger() -> Result<(), anyhow::Error> {
-        let (common, args, _temp) = args(ArgsQuery {
-            range: Some(spdi::Range::from_str("GRCh37:M:12545:16569")?),
+    fn smoke_query_exomes_range_find_none_larger() -> Result<(), anyhow::Error> {
+        let (common, args, _temp) = args_exomes(ArgsQuery {
+            range: Some(spdi::Range::from_str("GRCh37:1:55516889:249250621")?),
             ..Default::default()
         });
         run(&common, &args)?;
