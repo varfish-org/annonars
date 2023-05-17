@@ -3,8 +3,8 @@
 set -euo pipefail
 set -x
 
-if [[ tests/gnomad-mtdna/example/gnomad-mtdna.vcf.bgz \
-        -nt tests/gnomad-mtdna/example/gnomad-mtdna.vcf ]]; then
+if [[ tests/gnomad-mtdna/example/gnomad-mtdna.vcf \
+        -nt tests/gnomad-mtdna/example/gnomad-mtdna.vcf.bgz ]]; then
     bgzip -c tests/gnomad-mtdna/example/gnomad-mtdna.vcf \
     > tests/gnomad-mtdna/example/gnomad-mtdna.vcf.bgz
     tabix -f tests/gnomad-mtdna/example/gnomad-mtdna.vcf.bgz

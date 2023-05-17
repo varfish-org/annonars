@@ -87,9 +87,9 @@ message Vep {
     // Gene phenotype from VEP.
     optional string gene_pheno = 33;
     // SIFT prediction, e.g., `"tolerated(0.06)"`.
-    repeated Prediction sift = 34;
+    optional Prediction sift = 34;
     // PolyPhen prediction, e.g., `"benign(0.001)"`.
-    repeated Prediction polyphen = 35;
+    optional Prediction polyphen = 35;
     // Protein domains, e.g., `[["2p4e", "ENSP_mappings"], ["2qtw", "ENSP_mappings"]]`.
     repeated Domain domains = 36;
     // HGVS offset.
@@ -114,8 +114,12 @@ message Vep {
 
 // Protocol buffer enum for site-level filters.
 enum Filter {
+    // Variant overlaps site that is commonly reported in literature to be artifact prone.
     ARTIFACT_PRONE_SITE = 0;
+    // Allele where all samples with the variant call had at least 2 different heteroplasmic indels
+    // called at the position.
     INDEL_STACK = 1;
+    // No-pass-genotypes site (no individuals were PASS for the variant).
     NO_PASS_GENOTYPE = 2;
 }
 
@@ -192,6 +196,9 @@ message PopulationInfo {
     // Histogram of heteroplasmy levels for each population; bin edges are: [0.0, 0.1, 0.2,
     // 0.30000000000000004, 0.4, 0.5, 0.6000000000000001, 0.7000000000000001, 0.8, 0.9, 1.0],
     // population order: ['afr', 'ami', 'amr', 'asj', 'eas', 'fin', 'nfe', 'oth', 'sas', 'mid']
+    //
+    // Note that we encode this by concatenating all lists here because of limitations in
+    // protocolbuffers (no native nested repeated fields).
     repeated int32 pop_hl_hist = 6;
 }
 
@@ -223,6 +230,9 @@ message HaplogroupInfo {
     // 0.30000000000000004, 0.4, 0.5, 0.6000000000000001, 0.7000000000000001, 0.8, 0.9, 1.0],
     // haplogroup order: ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'HV', 'I', 'J', 'K', 'L0', 'L1',
     // 'L2', 'L3', 'L4', 'L5', 'M', 'N', 'P', 'R', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z']
+    //
+    // Note that we encode this by concatenating all lists here because of limitations in
+    // protocolbuffers (no native nested repeated fields).
     repeated int32 hap_hl_hist = 7;
     // List of filtering allele frequency for each haplogroup restricted to homoplasmic variants,
     // haplogroup order: ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'HV', 'I', 'J', 'K', 'L0', 'L1',
@@ -243,28 +253,28 @@ message AgeInfo {
     repeated int32 age_hist_hom_bin_freq = 1;
     // Count of age values falling below lowest histogram bin edge for individuals with a
     // homoplasmic variant.
-    int32 age_hist_hom_n_smaller = 2;
+    optional int32 age_hist_hom_n_smaller = 2;
     // Count of age values falling above highest histogram bin edge for individuals with a
     // homoplasmic variant.
-    int32 age_hist_hom_n_larger = 3;
+    optional int32 age_hist_hom_n_larger = 3;
     // Histogram of ages of individuals with a heteroplasmic variant; bin edges are: [30.0, 35.0,
     // 40.0, 45.0, 50.0, 55.0, 60.0, 65.0, 70.0, 75.0, 80.0]
     repeated int32 age_hist_het_bin_freq = 4;
     // Count of age values falling below lowest histogram bin edge for individuals with a
     // heteroplasmic variant.
-    int32 age_hist_het_n_smaller = 5;
+    optional int32 age_hist_het_n_smaller = 5;
     // Count of age values falling above highest histogram bin edge for individuals with a
     // heteroplasmic variant.
-    int32 age_hist_het_n_larger = 6;
+    optional int32 age_hist_het_n_larger = 6;
 }
 
 // Encapsulate VCF INFO fields related to depth.
 message DepthInfo {
     // Count of dp values falling above highest histogram bin edge for all individuals.
-    int32 dp_hist_all_n_larger = 1;
+    optional int32 dp_hist_all_n_larger = 1;
     // Count of dp values falling above highest histogram bin edge for individuals with the
     // alternative allele
-    int32 dp_hist_alt_n_larger = 2;
+    optional int32 dp_hist_alt_n_larger = 2;
     // Histogram of dp values for all individuals; bin edges are: [0.0, 200.0, 400.0, 600.0, 800.0,
     // 1000.0, 1200.0, 1400.0, 1600.0, 1800.0, 2000.0]
     repeated int32 dp_hist_all_bin_freq = 3;
@@ -305,8 +315,6 @@ message Record {
 
     // Site-level filters.
     repeated Filter filters = 12;
-    // VEP annotation records.
-    repeated Vep vep = 13;
 
     // MitoTip raw score
     optional float mitotip_score = 14;
@@ -317,6 +325,8 @@ message Record {
     // tRNA ML_probability_of_pathogenicity from PON-mt-tRNA
     optional string pon_ml_probability_of_pathogenicity = 17;
 
+    // VEP annotation records.
+    repeated Vep vep = 13;
     // Summary information for variant quality interpretation.
     optional QualityInfo quality_info = 18;
     // Information related to heteroplasmy levels.

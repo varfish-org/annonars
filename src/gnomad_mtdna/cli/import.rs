@@ -82,8 +82,12 @@ fn tsv_import(
         .par_iter()
         .progress_with_style(style)
         .for_each(|(chrom, begin, end)| {
-            process_window(db.clone(), chrom, *begin, *end, args)
-                .unwrap_or_else(|_| panic!("failed to process window {}:{}-{}", chrom, begin, end));
+            process_window(db.clone(), chrom, *begin, *end, args).unwrap_or_else(|e| {
+                panic!(
+                    "failed to process window {}:{}-{}: {}",
+                    chrom, begin, end, e
+                )
+            });
         });
     tracing::info!(
         "... done loading gnomad_mtdna VCF file into RocksDB in {:?}",
@@ -132,10 +136,15 @@ fn process_window(
             let vcf_record = result?;
 
             // Process each alternate allele into one record.
+            let details_options = gnomad_mtdna::pbs::DetailsOptions::with_all_enabled();
             for allele_no in 0..vcf_record.alternate_bases().len() {
                 let key_buf: Vec<u8> =
                     common::keys::Var::from_vcf_allele(&vcf_record, allele_no).into();
-                let record = gnomad_mtdna::pbs::Record::from_vcf_allele(&vcf_record, allele_no)?;
+                let record = gnomad_mtdna::pbs::Record::from_vcf_allele(
+                    &vcf_record,
+                    allele_no,
+                    &details_options,
+                )?;
                 tracing::trace!("  record: {:?}", &record);
                 let record_buf = record.encode_to_vec();
                 db.put_cf(&cf_gnomad, &key_buf, &record_buf)?;
@@ -203,7 +212,7 @@ mod test {
     use temp_testdir::TempDir;
 
     #[test]
-    fn smoke_test_import_helix() {
+    fn smoke_test_import_gnomad_mtdna() {
         let tmp_dir = TempDir::default();
         let common = common::cli::Args {
             verbose: Verbosity::new(1, 0),

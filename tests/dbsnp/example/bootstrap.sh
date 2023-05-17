@@ -3,8 +3,8 @@
 set -euo pipefail
 set -x
 
-if [[ tests/dbsnp/example/dbsnp.brca1.vcf.bgz \
-        -nt tests/dbsnp/example/dbsnp.brca1.vcf ]]; then
+if [[ tests/dbsnp/example/dbsnp.brca1.vcf \
+        -nt tests/dbsnp/example/dbsnp.brca1.vcf.bgz ]]; then
     bgzip -c tests/dbsnp/example/dbsnp.brca1.vcf \
     > tests/dbsnp/example/dbsnp.brca1.vcf.bgz
     tabix -f tests/dbsnp/example/dbsnp.brca1.vcf.bgz

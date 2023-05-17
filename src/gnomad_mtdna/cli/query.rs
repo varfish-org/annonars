@@ -245,7 +245,7 @@ mod test {
     #[test]
     fn smoke_query_var_single() -> Result<(), anyhow::Error> {
         let (common, args, _temp) = args(ArgsQuery {
-            variant: Some(spdi::Var::from_str("GRCh37:M:11:C:T")?),
+            variant: Some(spdi::Var::from_str("GRCh37:M:12544:A:G")?),
             ..Default::default()
         });
         run(&common, &args)?;
@@ -258,7 +258,7 @@ mod test {
     #[test]
     fn smoke_query_pos_single() -> Result<(), anyhow::Error> {
         let (common, args, _temp) = args(ArgsQuery {
-            position: Some(spdi::Pos::from_str("GRCh37:M:11")?),
+            position: Some(spdi::Pos::from_str("GRCh37:M:12544")?),
             ..Default::default()
         });
         run(&common, &args)?;
@@ -284,7 +284,7 @@ mod test {
     #[test]
     fn smoke_query_range_find_first() -> Result<(), anyhow::Error> {
         let (common, args, _temp) = args(ArgsQuery {
-            range: Some(spdi::Range::from_str("GRCh37:M:4:5")?),
+            range: Some(spdi::Range::from_str("GRCh37:M:3:3")?),
             ..Default::default()
         });
         run(&common, &args)?;
@@ -297,7 +297,7 @@ mod test {
     #[test]
     fn smoke_query_range_find_second() -> Result<(), anyhow::Error> {
         let (common, args, _temp) = args(ArgsQuery {
-            range: Some(spdi::Range::from_str("GRCh37:M:10:10")?),
+            range: Some(spdi::Range::from_str("GRCh37:M:6:6")?),
             ..Default::default()
         });
         run(&common, &args)?;
@@ -310,7 +310,7 @@ mod test {
     #[test]
     fn smoke_query_range_find_none_smaller() -> Result<(), anyhow::Error> {
         let (common, args, _temp) = args(ArgsQuery {
-            range: Some(spdi::Range::from_str("GRCh37:M:1:4")?),
+            range: Some(spdi::Range::from_str("GRCh37:M:1:2")?),
             ..Default::default()
         });
         run(&common, &args)?;
@@ -323,7 +323,7 @@ mod test {
     #[test]
     fn smoke_query_range_find_none_larger() -> Result<(), anyhow::Error> {
         let (common, args, _temp) = args(ArgsQuery {
-            range: Some(spdi::Range::from_str("GRCh37:M:13:16569")?),
+            range: Some(spdi::Range::from_str("GRCh37:M:12545:16569")?),
             ..Default::default()
         });
         run(&common, &args)?;
