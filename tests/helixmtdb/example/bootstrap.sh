@@ -3,6 +3,13 @@
 set -euo pipefail
 set -x
 
+if [[ tests/helixmtdb/example/helixmtdb.vcf \
+        -nt tests/helixmtdb/example/helixmtdb.vcf.bgz ]]; then
+    bgzip -c tests/helixmtdb/example/helixmtdb.vcf \
+    > tests/helixmtdb/example/helixmtdb.vcf.bgz
+    tabix -f tests/helixmtdb/example/helixmtdb.vcf.bgz
+fi
+
 rm -rf tests/helixmtdb/example/helixmtdb.vcf.bgz.db
 cargo run --all-features -- \
     helixmtdb import \

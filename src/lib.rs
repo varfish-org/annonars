@@ -7,6 +7,7 @@ pub mod common;
 pub mod cons;
 pub mod dbsnp;
 mod error;
+pub mod gnomad_mtdna;
 pub mod helixmtdb;
 pub mod tsv;
 

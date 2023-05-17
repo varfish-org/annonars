@@ -1,0 +1,5 @@
+---
+source: src/gnomad_mtdna/cli/query.rs
+expression: "&out_data"
+---
+
