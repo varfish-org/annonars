@@ -3,6 +3,7 @@
 fn main() {
     println!("cargo:rerun-if-changed=src/cons/pbs.proto3");
     println!("cargo:rerun-if-changed=src/dbsnp/pbs.proto3");
+    println!("cargo:rerun-if-changed=src/helixmtdb/pbs.proto3");
     prost_build::Config::new()
         // Add serde serialization and deserialization to the generated
         // code.
@@ -22,6 +23,13 @@ fn main() {
             "#[serde(rename = \"stop\")]",
         )
         // Define the protobuf files to compile.
-        .compile_protos(&["src/cons/pbs.proto3", "src/dbsnp/pbs.proto3"], &["src/"])
+        .compile_protos(
+            &[
+                "src/cons/pbs.proto3",
+                "src/dbsnp/pbs.proto3",
+                "src/helixmtdb/pbs.proto3",
+            ],
+            &["src/"],
+        )
         .unwrap();
 }

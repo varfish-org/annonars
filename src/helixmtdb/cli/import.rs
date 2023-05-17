@@ -1,22 +1,20 @@
-//! Import dbSNP annotation data.
+//! Import HelixMtDb annotation data.
 
-use std::{str::FromStr, sync::Arc};
+use std::sync::Arc;
 
 use clap::Parser;
-use hgvs::static_data::Assembly;
 use indicatif::ParallelProgressIterator;
-use noodles_vcf::header::record;
 use prost::Message;
 use rayon::prelude::{IntoParallelRefIterator, ParallelIterator};
 
 use crate::{
     common::{self, cli::indicatif_style},
-    dbsnp,
+    helixmtdb,
 };
 
-/// Command line arguments for `dbsnp import` sub command.
+/// Command line arguments for `helixmtdb import` sub command.
 #[derive(Parser, Debug, Clone)]
-#[command(about = "import dbsNP data into RocksDB", long_about = None)]
+#[command(about = "import HelixMtDb data into RocksDB", long_about = None)]
 pub struct Args {
     /// Genome build to use in the build.
     #[arg(long, value_enum)]
@@ -33,7 +31,7 @@ pub struct Args {
     pub tbi_window_size: usize,
 
     /// Name of the column family to import into.
-    #[arg(long, default_value = "dbsnp_data")]
+    #[arg(long, default_value = "helixmtdb_data")]
     pub cf_name: String,
     /// Optional path to RocksDB WAL directory.
     #[arg(long)]
@@ -77,7 +75,7 @@ fn tsv_import(
             })
             .collect::<Vec<_>>();
 
-    tracing::info!("Loading dbSNP VCF file into RocksDB...");
+    tracing::info!("Loading HelixMtDB VCF file into RocksDB...");
     let before_loading = std::time::Instant::now();
     let style = indicatif_style();
     windows
@@ -88,7 +86,7 @@ fn tsv_import(
                 .unwrap_or_else(|_| panic!("failed to process window {}:{}-{}", chrom, begin, end));
         });
     tracing::info!(
-        "... done loading dbSNP VCF file into RocksDB in {:?}",
+        "... done loading HelixMtDB VCF file into RocksDB in {:?}",
         before_loading.elapsed()
     );
 
@@ -103,12 +101,13 @@ fn process_window(
     end: usize,
     args: &Args,
 ) -> Result<(), anyhow::Error> {
-    let cf_dbsnp = db.cf_handle(&args.cf_name).unwrap();
+    let cf_helix = db.cf_handle(&args.cf_name).unwrap();
     let mut reader =
         noodles_vcf::indexed_reader::Builder::default().build_from_path(&args.path_in_vcf)?;
     let header = reader.read_header()?;
 
     let raw_region = format!("{}:{}-{}", chrom, begin + 1, end);
+    tracing::debug!("  processing region: {}", raw_region);
     let region = raw_region.parse()?;
 
     // Jump to the selected region.  In the case of errors, allow for the window not
@@ -136,9 +135,10 @@ fn process_window(
             for allele_no in 0..vcf_record.alternate_bases().len() {
                 let key_buf: Vec<u8> =
                     common::keys::Var::from_vcf_allele(&vcf_record, allele_no).into();
-                let record = dbsnp::pbs::Record::from_vcf_allele(&vcf_record, allele_no)?;
+                let record = helixmtdb::pbs::Record::from_vcf_allele(&vcf_record, allele_no)?;
+                tracing::trace!("  record: {:?}", &record);
                 let record_buf = record.encode_to_vec();
-                db.put_cf(&cf_dbsnp, &key_buf, &record_buf)?;
+                db.put_cf(&cf_helix, &key_buf, &record_buf)?;
             }
         }
     }
@@ -146,55 +146,11 @@ fn process_window(
     Ok(())
 }
 
-/// Implementation of `dbsnp import` sub command.
+/// Implementation of `helixmtdb import` sub command.
 pub fn run(common: &common::cli::Args, args: &Args) -> Result<(), anyhow::Error> {
-    tracing::info!("Starting 'dbsnp import' command");
+    tracing::info!("Starting 'helixmtdb import' command");
     tracing::info!("common = {:#?}", &common);
     tracing::info!("args = {:#?}", &args);
-
-    tracing::info!("Opening dbSNP VCF file...");
-    let before_loading = std::time::Instant::now();
-    let mut reader_vcf =
-        noodles_vcf::indexed_reader::Builder::default().build_from_path(&args.path_in_vcf)?;
-    let header = reader_vcf.read_header()?;
-    let dbsnp_reference = if let record::value::Collection::Unstructured(values) = header
-        .other_records()
-        .get(&record::key::Other::from_str("reference")?)
-        .expect("no ##reference header")
-    {
-        values.first().expect("no reference value").to_owned()
-    } else {
-        anyhow::bail!("invalid type of ##reference header");
-    };
-    let dbsnp_build_id = if let record::value::Collection::Unstructured(values) = header
-        .other_records()
-        .get(&record::key::Other::from_str("dbSNP_BUILD_ID")?)
-        .expect("no ##dbSNP_BUILD_ID header")
-    {
-        values.first().expect("no reference value").to_owned()
-    } else {
-        anyhow::bail!("invalid type of ##dbSNP_BUILD_ID header");
-    };
-    tracing::info!(
-        "...done opening dbSNP VCF file in {:?}",
-        before_loading.elapsed()
-    );
-
-    // Check that the dbSNP reference from the matches the genome release.
-    let assembly = if dbsnp_reference.starts_with("GRCh37") {
-        Assembly::Grch37p10
-    } else if dbsnp_reference.starts_with("GRCh38") {
-        Assembly::Grch38
-    } else {
-        anyhow::bail!("unknown assembly in dbSNP reference: {}", dbsnp_reference);
-    };
-    if assembly != args.genome_release.into() {
-        anyhow::bail!(
-            "dbSNP reference assembly ({}) does not match genome release from args ({})",
-            dbsnp_reference,
-            args.genome_release
-        );
-    }
 
     // Open the RocksDB for writing.
     tracing::info!("Opening RocksDB for writing ...");
@@ -220,20 +176,12 @@ pub fn run(common: &common::cli::Args, args: &Args) -> Result<(), anyhow::Error>
         "genome-release",
         format!("{}", args.genome_release),
     )?;
-    db.put_cf(&cf_meta, "db-version", dbsnp_build_id)?;
-    db.put_cf(&cf_meta, "db-name", "dbsnp")?;
     tracing::info!(
         "... done opening RocksDB for writing in {:?}",
         before_opening_rocksdb.elapsed()
     );
 
-    tracing::info!("Importing dbSNP file ...");
-    let before_import = std::time::Instant::now();
     tsv_import(db.clone(), args)?;
-    tracing::info!(
-        "... done importing dbSNP file in {:?}",
-        before_import.elapsed()
-    );
 
     tracing::info!("Running RocksDB compaction ...");
     let before_compaction = std::time::Instant::now();
@@ -255,16 +203,16 @@ mod test {
     use temp_testdir::TempDir;
 
     #[test]
-    fn smoke_test_import_dbsnp() {
+    fn smoke_test_import_helix() {
         let tmp_dir = TempDir::default();
         let common = common::cli::Args {
             verbose: Verbosity::new(1, 0),
         };
         let args = Args {
             genome_release: common::cli::GenomeRelease::Grch37,
-            path_in_vcf: String::from("tests/dbsnp/example/dbsnp.brca1.vcf.bgz"),
+            path_in_vcf: String::from("tests/helixmtdb/example/helixmtdb.vcf.bgz"),
             path_out_rocksdb: format!("{}", tmp_dir.join("out-rocksdb").display()),
-            cf_name: String::from("dbsnp_data"),
+            cf_name: String::from("helixmtdb_data"),
             path_wal_dir: None,
             tbi_window_size: 1_000_000,
         };

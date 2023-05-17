@@ -7,6 +7,7 @@ pub mod common;
 pub mod cons;
 pub mod dbsnp;
 mod error;
+pub mod helixmtdb;
 pub mod tsv;
 
 pub use crate::error::*;

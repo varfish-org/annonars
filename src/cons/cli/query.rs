@@ -5,7 +5,7 @@ use std::sync::Arc;
 use prost::Message;
 
 use crate::{
-    common::{self, keys, spdi},
+    common::{self, cli::extract_chrom, keys, spdi},
     cons,
 };
 
@@ -87,28 +87,6 @@ fn open_rocksdb(
     Ok((db, meta))
 }
 
-/// Get chromosome from the SPDI range.
-///
-/// See `extract_chrom_var` for details.
-fn extract_chrom_range(range: &spdi::Range, meta: &Meta) -> Result<String, anyhow::Error> {
-    if range.sequence.contains(':') {
-        let mut iter = range.sequence.rsplitn(2, ':');
-        let chromosome = iter.next().unwrap();
-        if let Some(genome_release) = iter.next() {
-            if genome_release.to_lowercase() != meta.genome_release.to_lowercase() {
-                return Err(anyhow::anyhow!(
-                    "genome release mismatch (lowercase): expected {}, got {}",
-                    meta.genome_release,
-                    genome_release
-                ));
-            }
-        }
-        Ok(chromosome.to_owned())
-    } else {
-        Ok(range.sequence.clone())
-    }
-}
-
 /// Print values to `out_writer`.
 fn print_values(
     out_writer: &mut Box<dyn std::io::Write>,
@@ -147,7 +125,7 @@ pub fn run(common: &common::cli::Args, args: &Args) -> Result<(), anyhow::Error>
     let before_query = std::time::Instant::now();
     let (start, stop) = if let Some(range) = args.query.range.as_ref() {
         let range = spdi::Range {
-            sequence: extract_chrom_range(range, &meta)?,
+            sequence: extract_chrom::from_range(range, Some(&meta.genome_release))?,
             ..range.clone()
         };
 

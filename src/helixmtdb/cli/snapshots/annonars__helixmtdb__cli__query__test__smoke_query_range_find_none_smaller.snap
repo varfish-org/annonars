@@ -1,0 +1,5 @@
+---
+source: src/helixmtdb/cli/query.rs
+expression: "&out_data"
+---
+

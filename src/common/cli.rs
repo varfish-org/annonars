@@ -58,6 +58,16 @@ pub const CANONICAL: &[&str] = &[
     "18", "19", "20", "21", "22", "X", "Y", "M", "MT",
 ];
 
+/// Make a chromosome name canonical.
+pub fn canonicalize(chrom: &str) -> String {
+    let chrom = chrom.strip_prefix("chr").unwrap_or(chrom);
+    if chrom == "M" {
+        "MT".to_string()
+    } else {
+        chrom.to_string()
+    }
+}
+
 /// Return whether the given chromosome name is a canonical one.
 ///
 /// The prefix `"chr"` is stripped from the name before checking.
@@ -90,4 +100,91 @@ pub fn build_genome_windows(
     }
 
     Ok(result)
+}
+
+/// Helpers to extract chromosome name from `<release>:<chrom>` string.
+pub mod extract_chrom {
+    use crate::common::spdi;
+
+    /// Get chromosome from the SPDI variant.
+    ///
+    /// If the optional genome release was given then it is compared to the one specified
+    /// in `expected_genome_release` and stripped (comparision is case insensitive).
+    pub fn from_var(
+        variant: &spdi::Var,
+        expected_genome_release: Option<&str>,
+    ) -> Result<String, anyhow::Error> {
+        if variant.sequence.contains(':') {
+            let mut iter = variant.sequence.rsplitn(2, ':');
+            let chromosome = iter.next().unwrap();
+            if let Some(genome_release) = iter.next() {
+                if let Some(expected_genome_release) = expected_genome_release {
+                    if genome_release.to_lowercase() != expected_genome_release.to_lowercase() {
+                        return Err(anyhow::anyhow!(
+                            "genome release mismatch (lowercase): expected {}, got {}",
+                            expected_genome_release,
+                            genome_release
+                        ));
+                    }
+                }
+            }
+            Ok(super::canonicalize(chromosome))
+        } else {
+            Ok(super::canonicalize(&variant.sequence))
+        }
+    }
+
+    /// Get chromosome from the SPDI position.
+    ///
+    /// See `from_var` for details.
+    pub fn from_pos(
+        pos: &spdi::Pos,
+        expected_genome_release: Option<&str>,
+    ) -> Result<String, anyhow::Error> {
+        if pos.sequence.contains(':') {
+            let mut iter = pos.sequence.rsplitn(2, ':');
+            let chromosome = iter.next().unwrap();
+            if let Some(genome_release) = iter.next() {
+                if let Some(expected_genome_release) = expected_genome_release {
+                    if genome_release.to_lowercase() != expected_genome_release.to_lowercase() {
+                        return Err(anyhow::anyhow!(
+                            "genome release mismatch (lowercase): expected {}, got {}",
+                            expected_genome_release,
+                            genome_release
+                        ));
+                    }
+                }
+            }
+            Ok(super::canonicalize(chromosome))
+        } else {
+            Ok(super::canonicalize(&pos.sequence))
+        }
+    }
+
+    /// Get chromosome from the SPDI range.
+    ///
+    /// See `from_var` for details.
+    pub fn from_range(
+        range: &spdi::Range,
+        expected_genome_release: Option<&str>,
+    ) -> Result<String, anyhow::Error> {
+        if range.sequence.contains(':') {
+            let mut iter = range.sequence.rsplitn(2, ':');
+            let chromosome = iter.next().unwrap();
+            if let Some(genome_release) = iter.next() {
+                if let Some(expected_genome_release) = expected_genome_release {
+                    if genome_release.to_lowercase() != expected_genome_release.to_lowercase() {
+                        return Err(anyhow::anyhow!(
+                            "genome release mismatch (lowercase): expected {}, got {}",
+                            expected_genome_release,
+                            genome_release
+                        ));
+                    }
+                }
+            }
+            Ok(super::canonicalize(chromosome))
+        } else {
+            Ok(super::canonicalize(&range.sequence))
+        }
+    }
 }

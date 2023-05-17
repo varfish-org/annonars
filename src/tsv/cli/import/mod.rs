@@ -174,7 +174,7 @@ pub fn run(common: &common::cli::Args, args: &Args) -> Result<(), anyhow::Error>
     )?);
     tracing::info!("  writing meta information");
     let cf_meta = db.cf_handle("meta").unwrap();
-    db.put_cf(&cf_meta, "annona-rs-version", crate::VERSION)?;
+    db.put_cf(&cf_meta, "annonars-version", crate::VERSION)?;
     db.put_cf(
         &cf_meta,
         "genome-release",

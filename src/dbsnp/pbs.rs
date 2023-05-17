@@ -19,7 +19,7 @@ impl Record {
         let alt_allele = record
             .alternate_bases()
             .get(allele_no)
-            .expect("no alternate allele?")
+            .ok_or_else(|| anyhow::anyhow!("no such allele: {}", allele_no))?
             .to_string();
         let rs_id = if let Some(Some(field::Value::Integer(rs))) =
             record.info().get(&field::Key::from_str("RS")?)
