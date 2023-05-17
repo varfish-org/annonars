@@ -6,6 +6,28 @@ use noodles_vcf::record::info::field;
 
 include!(concat!(env!("OUT_DIR"), "/annonars.helixmtdb.pbs.rs"));
 
+/// Options struct that allows to specify which details fields are to be extracted from
+/// gnomAD-mtDNA VCF records.
+#[derive(Debug, Clone, Copy, PartialEq, Eq, serde::Serialize, serde::Deserialize)]
+pub struct DetailsOptions {
+    /// Enable extraction of `Vep` records.
+    pub vep: bool,
+    /// Enable creation of `QualityInfo`.
+    pub quality: bool,
+    /// Enable creation of `HeteroplasmyInfo`.
+    pub heteroplasmy: bool,
+    /// Enable creation of `FilterHistograms`.
+    pub filter_hists: bool,
+    /// Enable creation of `PopulationInfo`.
+    pub pop_details: bool,
+    /// Enable creation of `HaplogroupInfo`.
+    pub haplogroups_details: bool,
+    /// Enable creation of `AgeInfo`.
+    pub age_hists: bool,
+    /// Enable creation of `DepthInfo`.
+    pub depth_details: bool,
+}
+
 impl Record {
     /// Creates a new `Record` from a VCF record and allele number.
     pub fn from_vcf_allele(
