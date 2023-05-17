@@ -3,6 +3,13 @@
 set -euo pipefail
 set -x
 
+if [[ tests/dbsnp/example/dbsnp.brca1.vcf.bgz \
+        -nt tests/dbsnp/example/dbsnp.brca1.vcf ]]; then
+    bgzip -c tests/dbsnp/example/dbsnp.brca1.vcf \
+    > tests/dbsnp/example/dbsnp.brca1.vcf.bgz
+    tabix -f tests/dbsnp/example/dbsnp.brca1.vcf.bgz
+fi
+
 rm -rf tests/dbsnp/example/dbsnp.brca1.vcf.gz.db
 cargo run --all-features -- \
     dbsnp import \
