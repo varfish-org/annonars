@@ -132,16 +132,16 @@ message QualityInfo {
 
 // Encapsulate VCF INFO fields related to heteroplasmy levels.
 message HeteroplasmyInfo {
-    // Histogram of number of individuals with a heteroplasmy level below 0.1,
-    // bin edges are: [0.0, 0.1, 0.2, 0.30000000000000004, 0.4, 0.5,
-    // 0.6000000000000001, 0.7000000000000001, 0.8, 0.9, 1.0]
+    // Histogram of number of individuals with a heteroplasmy level below 0.1, bin edges are: [0.0,
+    // 0.1, 0.2, 0.30000000000000004, 0.4, 0.5, 0.6000000000000001, 0.7000000000000001, 0.8, 0.9,
+    // 1.0]
     repeated int32 heteroplasmy_below_min_het_threshold_hist = 1;
-    // Histogram of heteroplasmy levels; bin edges are: [0.0, 0.1, 0.2, 0.30000000000000004,
-    // 0.4, 0.5, 0.6000000000000001, 0.7000000000000001, 0.8, 0.9, 1.0].
+    // Histogram of heteroplasmy levels; bin edges are: [0.0, 0.1, 0.2, 0.30000000000000004, 0.4,
+    // 0.5, 0.6000000000000001, 0.7000000000000001, 0.8, 0.9, 1.0].
     repeated int32 hl_hist = 2;
-    // Present if variant is found at an overall frequency of .001 across all
-    // samples with a heteroplasmy level > 0 and < 0.50 (includes variants
-    // <0.01 heteroplasmy which are subsequently filtered)
+    // Present if variant is found at an overall frequency of .001 across all samples with a
+    // heteroplasmy level > 0 and < 0.50 (includes variants <0.01 heteroplasmy which are
+    // subsequently filtered)
     bool common_low_heteroplasmy = 3;
     // Maximum heteroplasmy level observed among all samples for that variant.
     float max_hl = 4;
@@ -149,57 +149,49 @@ message HeteroplasmyInfo {
 
 // Encapsulate VCF INFO fields related to filter failure histograms.
 message FilterHistograms {
-    // Histogram of number of individuals failing the base_qual filter
-    // (alternate allele median base quality) across heteroplasmy levels,
-    // bin edges are: [0.0, 0.1, 0.2, 0.30000000000000004, 0.4, 0.5,
-    // 0.6000000000000001, 0.7000000000000001, 0.8, 0.9, 1.0]
-    repeated int32 base_qual_hist = 1;
-    // Histogram of number of individuals failing the position filter (median
-    // distance of alternate variants from end of reads) across
-    // heteroplasmy levels, bin edges are: [0.0, 0.1, 0.2, 0.
-    // 30000000000000004, 0.4, 0.5, 0.6000000000000001, 0.7000000000000001,
-    // 0.8, 0.9, 1.0]
-    repeated int32 position_hist = 2;
-    // Histogram of number of individuals failing the strand_bias filter
-    // (evidence for alternate allele comes from one read direction only)
-    // across heteroplasmy levels, bin edges are: [0.0, 0.1, 0.2,
-    // 0.30000000000000004, 0.4, 0.5, 0.6000000000000001,
-    // 0.7000000000000001, 0.8, 0.9, 1.0]
-    repeated int32 strand_bias_hist = 3;
-    // Histogram of number of individuals failing the weak_evidence filter
-    // (mutation does not meet likelihood threshold) across heteroplasmy
-    // levels, bin edges are: [0.0, 0.1, 0.2, 0.30000000000000004, 0.4,
+    // Histogram of number of individuals failing the base_qual filter (alternate allele median base
+    // quality) across heteroplasmy levels, bin edges are: [0.0, 0.1, 0.2, 0.30000000000000004, 0.4,
     // 0.5, 0.6000000000000001, 0.7000000000000001, 0.8, 0.9, 1.0]
+    repeated int32 base_qual_hist = 1;
+    // Histogram of number of individuals failing the position filter (median distance of alternate
+    // variants from end of reads) across heteroplasmy levels, bin edges are: [0.0, 0.1, 0.2, 0.
+    // 30000000000000004, 0.4, 0.5, 0.6000000000000001, 0.7000000000000001, 0.8, 0.9, 1.0]
+    repeated int32 position_hist = 2;
+    // Histogram of number of individuals failing the strand_bias filter (evidence for alternate
+    // allele comes from one read direction only) across heteroplasmy levels, bin edges are: [0.0,
+    // 0.1, 0.2, 0.30000000000000004, 0.4, 0.5, 0.6000000000000001, 0.7000000000000001, 0.8, 0.9,
+    // 1.0]
+    repeated int32 strand_bias_hist = 3;
+    // Histogram of number of individuals failing the weak_evidence filter (mutation does not meet
+    // likelihood threshold) across heteroplasmy levels, bin edges are: [0.0, 0.1, 0.2,
+    // 0.30000000000000004, 0.4, 0.5, 0.6000000000000001, 0.7000000000000001, 0.8, 0.9, 1.0]
     repeated int32 weak_evidence_hist = 4;
-    // Histogram of number of individuals failing the contamination filter
-    // across heteroplasmy levels, bin edges are: [0.0, 0.1, 0.2,
-    // 0.30000000000000004, 0.4, 0.5, 0.6000000000000001,
+    // Histogram of number of individuals failing the contamination filter across heteroplasmy
+    // levels, bin edges are: [0.0, 0.1, 0.2, 0.30000000000000004, 0.4, 0.5, 0.6000000000000001,
     // 0.7000000000000001, 0.8, 0.9, 1.0]
     repeated int32 contamination_hist = 5;
 }
 
 // Encapsulate VCF INFO fields related to populations.
 message PopulationInfo {
-    // List of overall allele number for each population, population order:
-    // ['afr', 'ami', 'amr', 'asj', 'eas', 'fin', 'nfe', 'oth', 'sas',
-    // 'mid']
+    // List of overall allele number for each population, population order: ['afr', 'ami', 'amr',
+    // 'asj', 'eas', 'fin', 'nfe', 'oth', 'sas', 'mid']
     repeated int32 pop_an = 1;
-    // List of AC_het for each population, population order: ['afr', 'ami',
-    // 'amr', 'asj', 'eas', 'fin', 'nfe', 'oth', 'sas', 'mid']
+    // List of AC_het for each population, population order: ['afr', 'ami', 'amr', 'asj', 'eas',
+    // 'fin', 'nfe', 'oth', 'sas', 'mid']
     repeated int32 pop_ac_het = 2;
-    // List of AC_hom for each population, population order: ['afr', 'ami',
-    // 'amr', 'asj', 'eas', 'fin', 'nfe', 'oth', 'sas', 'mid']
+    // List of AC_hom for each population, population order: ['afr', 'ami', 'amr', 'asj', 'eas',
+    // 'fin', 'nfe', 'oth', 'sas', 'mid']
     repeated int32 pop_ac_hom = 3;
-    // List of AF_hom for each population, population order: ['afr', 'ami',
-    // 'amr', 'asj', 'eas', 'fin', 'nfe', 'oth', 'sas', 'mid']
+    // List of AF_hom for each population, population order: ['afr', 'ami', 'amr', 'asj', 'eas',
+    // 'fin', 'nfe', 'oth', 'sas', 'mid']
     repeated float pop_af_hom = 4;
-    // List of AF_het for each population, population order: ['afr', 'ami',
-    // 'amr', 'asj', 'eas', 'fin', 'nfe', 'oth', 'sas', 'mid']
+    // List of AF_het for each population, population order: ['afr', 'ami', 'amr', 'asj', 'eas',
+    // 'fin', 'nfe', 'oth', 'sas', 'mid']
     repeated float pop_af_het = 5;
-    // Histogram of heteroplasmy levels for each population; bin edges are:
-    // [0.0, 0.1, 0.2, 0.30000000000000004, 0.4, 0.5, 0.6000000000000001,
-    // 0.7000000000000001, 0.8, 0.9, 1.0], population order: ['afr', 'ami',
-    // 'amr', 'asj', 'eas', 'fin', 'nfe', 'oth', 'sas', 'mid']
+    // Histogram of heteroplasmy levels for each population; bin edges are: [0.0, 0.1, 0.2,
+    // 0.30000000000000004, 0.4, 0.5, 0.6000000000000001, 0.7000000000000001, 0.8, 0.9, 1.0],
+    // population order: ['afr', 'ami', 'amr', 'asj', 'eas', 'fin', 'nfe', 'oth', 'sas', 'mid']
     repeated int32 pop_hl_hist = 6;
 }
 
@@ -207,41 +199,34 @@ message PopulationInfo {
 message HaplogroupInfo {
     // Present if variant is present as a haplogroup defining variant in PhyloTree build 17.
     bool hap_defining_variant = 1;
-    // List of overall allele number for each haplogroup, haplogroup order:
-    // ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'HV', 'I', 'J', 'K', 'L0',
-    // 'L1', 'L2', 'L3', 'L4', 'L5', 'M', 'N', 'P', 'R', 'T', 'U', 'V',
-    // 'W', 'X', 'Y', 'Z']
+    // List of overall allele number for each haplogroup, haplogroup order: ['A', 'B', 'C', 'D',
+    // 'E', 'F', 'G', 'H', 'HV', 'I', 'J', 'K', 'L0', 'L1', 'L2', 'L3', 'L4', 'L5', 'M', 'N', 'P',
+    // 'R', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z']
     repeated int32 hap_an = 2;
-    // List of AC_het for each haplogroup, haplogroup order: ['A', 'B', 'C',
-    // 'D', 'E', 'F', 'G', 'H', 'HV', 'I', 'J', 'K', 'L0', 'L1', 'L2',
-    // 'L3', 'L4', 'L5', 'M', 'N', 'P', 'R', 'T', 'U', 'V', 'W', 'X', 'Y',
-    // 'Z']
+    // List of AC_het for each haplogroup, haplogroup order: ['A', 'B', 'C', 'D', 'E', 'F', 'G',
+    // 'H', 'HV', 'I', 'J', 'K', 'L0', 'L1', 'L2', 'L3', 'L4', 'L5', 'M', 'N', 'P', 'R', 'T', 'U',
+    // 'V', 'W', 'X', 'Y', 'Z']
     repeated int32 hap_ac_het = 3;
-    // List of AC_hom for each haplogroup, haplogroup order: ['A', 'B', 'C',
-    // 'D', 'E', 'F', 'G', 'H', 'HV', 'I', 'J', 'K', 'L0', 'L1', 'L2',
-    // 'L3', 'L4', 'L5', 'M', 'N', 'P', 'R', 'T', 'U', 'V', 'W', 'X', 'Y',
-    // 'Z']
+    // List of AC_hom for each haplogroup, haplogroup order: ['A', 'B', 'C', 'D', 'E', 'F', 'G',
+    // 'H', 'HV', 'I', 'J', 'K', 'L0', 'L1', 'L2', 'L3', 'L4', 'L5', 'M', 'N', 'P', 'R', 'T', 'U',
+    // 'V', 'W', 'X', 'Y', 'Z']
     repeated int32 hap_ac_hom = 4;
-    // List of AF_het for each haplogroup, haplogroup order: ['A', 'B', 'C',
-    // 'D', 'E', 'F', 'G', 'H', 'HV', 'I', 'J', 'K', 'L0', 'L1', 'L2',
-    // 'L3', 'L4', 'L5', 'M', 'N', 'P', 'R', 'T', 'U', 'V', 'W', 'X', 'Y',
-    // 'Z']
+    // List of AF_het for each haplogroup, haplogroup order: ['A', 'B', 'C', 'D', 'E', 'F', 'G',
+    // 'H', 'HV', 'I', 'J', 'K', 'L0', 'L1', 'L2', 'L3', 'L4', 'L5', 'M', 'N', 'P', 'R', 'T', 'U',
+    // 'V', 'W', 'X', 'Y', 'Z']
     repeated float hap_af_het = 5;
-    // List of AF_hom for each haplogroup, haplogroup order: ['A', 'B', 'C',
-    // 'D', 'E', 'F', 'G', 'H', 'HV', 'I', 'J', 'K', 'L0', 'L1', 'L2',
-    // 'L3', 'L4', 'L5', 'M', 'N', 'P', 'R', 'T', 'U', 'V', 'W', 'X', 'Y',
-    // 'Z']
+    // List of AF_hom for each haplogroup, haplogroup order: ['A', 'B', 'C', 'D', 'E', 'F', 'G',
+    // 'H', 'HV', 'I', 'J', 'K', 'L0', 'L1', 'L2', 'L3', 'L4', 'L5', 'M', 'N', 'P', 'R', 'T', 'U',
+    // 'V', 'W', 'X', 'Y', 'Z']
     repeated float hap_af_hom = 6;
-    // Histogram of heteroplasmy levels for each haplogroup; bin edges are:
-    // [0.0, 0.1, 0.2, 0.30000000000000004, 0.4, 0.5, 0.6000000000000001,
-    // 0.7000000000000001, 0.8, 0.9, 1.0], haplogroup order: ['A', 'B',
-    // 'C', 'D', 'E', 'F', 'G', 'H', 'HV', 'I', 'J', 'K', 'L0', 'L1', 'L2',
-    // 'L3', 'L4', 'L5', 'M', 'N', 'P', 'R', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z']
+    // Histogram of heteroplasmy levels for each haplogroup; bin edges are: [0.0, 0.1, 0.2,
+    // 0.30000000000000004, 0.4, 0.5, 0.6000000000000001, 0.7000000000000001, 0.8, 0.9, 1.0],
+    // haplogroup order: ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'HV', 'I', 'J', 'K', 'L0', 'L1',
+    // 'L2', 'L3', 'L4', 'L5', 'M', 'N', 'P', 'R', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z']
     repeated int32 hap_hl_hist = 7;
-    // List of filtering allele frequency for each haplogroup restricted to
-    // homoplasmic variants, haplogroup order: ['A', 'B', 'C', 'D', 'E',
-    // 'F', 'G', 'H', 'HV', 'I', 'J', 'K', 'L0', 'L1', 'L2', 'L3', 'L4',
-    // 'L5', 'M', 'N', 'P', 'R', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z']
+    // List of filtering allele frequency for each haplogroup restricted to homoplasmic variants,
+    // haplogroup order: ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'HV', 'I', 'J', 'K', 'L0', 'L1',
+    // 'L2', 'L3', 'L4', 'L5', 'M', 'N', 'P', 'R', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z']
     repeated float hap_faf_hom = 8;
     // Haplogroup with maximum AF_hom.
     optional string hapmax_af_hom = 9;
@@ -262,8 +247,8 @@ message AgeInfo {
     // Count of age values falling above highest histogram bin edge for individuals with a
     // homoplasmic variant.
     int32 age_hist_hom_n_larger = 3;
-    // Histogram of ages of individuals with a heteroplasmic variant; bin edges are: [30.0,
-    // 35.0, 40.0, 45.0, 50.0, 55.0, 60.0, 65.0, 70.0, 75.0, 80.0]
+    // Histogram of ages of individuals with a heteroplasmic variant; bin edges are: [30.0, 35.0,
+    // 40.0, 45.0, 50.0, 55.0, 60.0, 65.0, 70.0, 75.0, 80.0]
     repeated int32 age_hist_het_bin_freq = 4;
     // Count of age values falling below lowest histogram bin edge for individuals with a
     // heteroplasmic variant.
@@ -277,22 +262,21 @@ message AgeInfo {
 message DepthInfo {
     // Count of dp values falling above highest histogram bin edge for all individuals.
     int32 dp_hist_all_n_larger = 1;
-    // Count of dp values falling above highest histogram bin edge for
-    // individuals with the alternative allele
+    // Count of dp values falling above highest histogram bin edge for individuals with the
+    // alternative allele
     int32 dp_hist_alt_n_larger = 2;
-    // Histogram of dp values for all individuals; bin edges are: [0.0, 200.0,
-    // 400.0, 600.0, 800.0, 1000.0, 1200.0, 1400.0, 1600.0, 1800.0, 2000.0]
+    // Histogram of dp values for all individuals; bin edges are: [0.0, 200.0, 400.0, 600.0, 800.0,
+    // 1000.0, 1200.0, 1400.0, 1600.0, 1800.0, 2000.0]
     repeated int32 dp_hist_all_bin_freq = 3;
-    // Histogram of dp values for individuals with the alternative allele; bin
-    // edges are: [0.0, 200.0, 400.0, 600.0, 800.0, 1000.0, 1200.0, 1400.0,
-    // 1600.0, 1800.0, 2000.0]
+    // Histogram of dp values for individuals with the alternative allele; bin edges are: [0.0,
+    // 200.0, 400.0, 600.0, 800.0, 1000.0, 1200.0, 1400.0, 1600.0, 1800.0, 2000.0]
     repeated int32 dp_hist_alt_bin_freq = 4;
 }
 
 // Protocol buffer for the gnomAD-mtDNA VCF record.
 //
-// The more specialized fields from the INFO column are stored in separate, optional fields
-// such that we don't end up with a humongous message.
+// The more specialized fields from the INFO column are stored in separate, optional fields such
+// that we don't end up with a humongous message.
 message Record {
     // Chromosome name.
     string chrom = 1;
