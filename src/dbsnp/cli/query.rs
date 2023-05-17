@@ -5,7 +5,7 @@ use std::{io::Write, sync::Arc};
 use prost::Message;
 
 use crate::{
-    common::{self, keys, spdi},
+    common::{self, cli::extract_chrom, keys, spdi},
     cons::cli::args::vars::ArgsQuery,
     dbsnp,
 };
@@ -111,7 +111,7 @@ fn query_for_variant(
 ) -> Result<dbsnp::pbs::Record, anyhow::Error> {
     // Split off the genome release (checked) and convert to key as used in database.
     let query = spdi::Var {
-        sequence: extract_chrom_var(variant, meta)?,
+        sequence: extract_chrom::from_var(variant, Some(&meta.genome_release))?,
         ..variant.clone()
     };
     // Execute query.
@@ -121,77 +121,9 @@ fn query_for_variant(
     let raw_value = db
         .get_cf(cf_data, key)?
         .ok_or_else(|| anyhow::anyhow!("could not find variant in database"))?;
-    eprintln!("raw_value = {:?}", &raw_value);
     // Decode via prost.
     dbsnp::pbs::Record::decode(&mut std::io::Cursor::new(&raw_value))
         .map_err(|e| anyhow::anyhow!("failed to decode record: {}", e))
-}
-
-/// Get chromosome from the SPDI variant.
-///
-/// If the optional genome release was given then it is compared to the one specified
-/// in `meta` and stripped (comparision is case insensitive).
-fn extract_chrom_var(variant: &spdi::Var, meta: &Meta) -> Result<String, anyhow::Error> {
-    if variant.sequence.contains(':') {
-        let mut iter = variant.sequence.rsplitn(2, ':');
-        let chromosome = iter.next().unwrap();
-        if let Some(genome_release) = iter.next() {
-            if genome_release.to_lowercase() != meta.genome_release.to_lowercase() {
-                return Err(anyhow::anyhow!(
-                    "genome release mismatch (lowercase): expected {}, got {}",
-                    meta.genome_release,
-                    genome_release
-                ));
-            }
-        }
-        Ok(chromosome.to_owned())
-    } else {
-        Ok(variant.sequence.clone())
-    }
-}
-
-/// Get chromosome from the SPDI position.
-///
-/// See `extract_chrom_var` for details.
-fn extract_chrom_pos(pos: &spdi::Pos, meta: &Meta) -> Result<String, anyhow::Error> {
-    if pos.sequence.contains(':') {
-        let mut iter = pos.sequence.rsplitn(2, ':');
-        let chromosome = iter.next().unwrap();
-        if let Some(genome_release) = iter.next() {
-            if genome_release.to_lowercase() != meta.genome_release.to_lowercase() {
-                return Err(anyhow::anyhow!(
-                    "genome release mismatch (lowercase): expected {}, got {}",
-                    meta.genome_release,
-                    genome_release
-                ));
-            }
-        }
-        Ok(chromosome.to_owned())
-    } else {
-        Ok(pos.sequence.clone())
-    }
-}
-
-/// Get chromosome from the SPDI range.
-///
-/// See `extract_chrom_var` for details.
-fn extract_chrom_range(range: &spdi::Range, meta: &Meta) -> Result<String, anyhow::Error> {
-    if range.sequence.contains(':') {
-        let mut iter = range.sequence.rsplitn(2, ':');
-        let chromosome = iter.next().unwrap();
-        if let Some(genome_release) = iter.next() {
-            if genome_release.to_lowercase() != meta.genome_release.to_lowercase() {
-                return Err(anyhow::anyhow!(
-                    "genome release mismatch (lowercase): expected {}, got {}",
-                    meta.genome_release,
-                    genome_release
-                ));
-            }
-        }
-        Ok(chromosome.to_owned())
-    } else {
-        Ok(range.sequence.clone())
-    }
 }
 
 /// Implementation of `tsv query` sub command.
@@ -223,13 +155,13 @@ pub fn run(common: &common::cli::Args, args: &Args) -> Result<(), anyhow::Error>
     } else {
         let (start, stop) = if let Some(position) = args.query.position.as_ref() {
             let position = spdi::Pos {
-                sequence: extract_chrom_pos(position, &meta)?,
+                sequence: extract_chrom::from_pos(position, Some(&meta.genome_release))?,
                 ..position.clone()
             };
             (Some(position.clone()), Some(position))
         } else if let Some(range) = args.query.range.as_ref() {
             let range = spdi::Range {
-                sequence: extract_chrom_range(range, &meta)?,
+                sequence: extract_chrom::from_range(range, Some(&meta.genome_release))?,
                 ..range.clone()
             };
             let (start, stop) = range.into();

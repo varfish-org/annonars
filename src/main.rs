@@ -1,4 +1,4 @@
-use annonars::{common, cons, dbsnp, tsv};
+use annonars::{common, cons, dbsnp, helixmtdb, tsv};
 use anyhow::Error;
 use clap::{command, Args, Parser, Subcommand};
 
@@ -29,6 +29,8 @@ enum Commands {
     Cons(Cons),
     /// "dbsnp" sub commands
     Dbsnp(Dbsnp),
+    /// "helixmtdb" sub commands
+    Helixmtdb(Helixmtdb),
 }
 
 /// Parsing of "tsv" subcommand
@@ -64,6 +66,7 @@ enum ConsCommands {
     /// "query" sub command
     Query(cons::cli::query::Args),
 }
+
 /// Parsing of "dbsnp" subcommands.
 #[derive(Debug, Args, Clone)]
 struct Dbsnp {
@@ -81,6 +84,22 @@ enum DbsnpCommands {
     Query(dbsnp::cli::query::Args),
 }
 
+/// Parsing of "helixmtdb" subcommands.
+#[derive(Debug, Args, Clone)]
+struct Helixmtdb {
+    /// The sub command to run
+    #[command(subcommand)]
+    command: HelixmtdbCommands,
+}
+
+/// Enum supporting the parsing of "helixmtdb *" subcommands.
+#[derive(Debug, Subcommand, Clone)]
+enum HelixmtdbCommands {
+    /// "import" sub command
+    Import(helixmtdb::cli::import::Args),
+    /// "query" sub command
+    Query(helixmtdb::cli::query::Args),
+}
 pub fn main() -> Result<(), anyhow::Error> {
     let cli = Cli::parse();
 
@@ -113,6 +132,10 @@ pub fn main() -> Result<(), anyhow::Error> {
             Commands::Dbsnp(args) => match &args.command {
                 DbsnpCommands::Import(args) => dbsnp::cli::import::run(&cli.common, args)?,
                 DbsnpCommands::Query(args) => dbsnp::cli::query::run(&cli.common, args)?,
+            },
+            Commands::Helixmtdb(args) => match &args.command {
+                HelixmtdbCommands::Import(args) => helixmtdb::cli::import::run(&cli.common, args)?,
+                HelixmtdbCommands::Query(args) => helixmtdb::cli::query::run(&cli.common, args)?,
             },
         }
 
