@@ -352,8 +352,6 @@ pub fn run(common: &common::cli::Args, args: &Args) -> Result<(), anyhow::Error>
 
 #[cfg(test)]
 mod test {
-    use crate::gnomad_pbs::gnomad2::DetailsOptions;
-
     use super::*;
 
     use clap_verbosity_flag::Verbosity;
@@ -374,7 +372,9 @@ mod test {
             cf_name: String::from("gnomad_nuclear_data"),
             path_wal_dir: None,
             tbi_window_size: 1_000_000,
-            import_fields_json: Some(serde_json::to_string(&DetailsOptions::with_all_enabled())?),
+            import_fields_json: Some(serde_json::to_string(
+                &gnomad2::DetailsOptions::with_all_enabled(),
+            )?),
             gnomad_kind: GnomadKind::Exomes,
             gnomad_version: String::from("2.1"),
         };
@@ -397,7 +397,9 @@ mod test {
             cf_name: String::from("gnomad_nuclear_data"),
             path_wal_dir: None,
             tbi_window_size: 1_000_000,
-            import_fields_json: Some(serde_json::to_string(&DetailsOptions::with_all_enabled())?),
+            import_fields_json: Some(serde_json::to_string(
+                &gnomad2::DetailsOptions::with_all_enabled(),
+            )?),
             gnomad_kind: GnomadKind::Genomes,
             gnomad_version: String::from("2.1"),
         };
@@ -420,7 +422,9 @@ mod test {
             cf_name: String::from("gnomad_nuclear_data"),
             path_wal_dir: None,
             tbi_window_size: 1_000_000,
-            import_fields_json: Some(serde_json::to_string(&DetailsOptions::with_all_enabled())?),
+            import_fields_json: Some(serde_json::to_string(
+                &gnomad2::DetailsOptions::with_all_enabled(),
+            )?),
             gnomad_kind: GnomadKind::Exomes,
             gnomad_version: String::from("2.1"),
         };
@@ -443,7 +447,9 @@ mod test {
             cf_name: String::from("gnomad_nuclear_data"),
             path_wal_dir: None,
             tbi_window_size: 1_000_000,
-            import_fields_json: Some(serde_json::to_string(&DetailsOptions::with_all_enabled())?),
+            import_fields_json: Some(serde_json::to_string(
+                &gnomad3::DetailsOptions::with_all_enabled(),
+            )?),
             gnomad_kind: GnomadKind::Genomes,
             gnomad_version: String::from("3.1"),
         };

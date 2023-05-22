@@ -261,7 +261,6 @@ impl Record {
             as_sor: common::noodles::get_f32(record, "AS_SOR")?,
             positive_train_site: common::noodles::get_flag(record, "POSITIVE_TRAIN_SITE")?,
             negative_train_site: common::noodles::get_flag(record, "NEGATIVE_TRAIN_SITE")?,
-            dp: common::noodles::get_i32(record, "DP")?,
             as_vqslod: common::noodles::get_f32(record, "AS_VQSLOD")?,
             as_culprit: common::noodles::get_string(record, "AS_culprit")?,
             segdup: common::noodles::get_flag(record, "seqdup")?,
