@@ -231,10 +231,8 @@ pub fn run(common: &common::cli::Args, args: &Args) -> Result<(), anyhow::Error>
         args.path_in_tsv
             .par_iter()
             .progress_with_style(common::cli::indicatif_style())
-            .for_each(|path_in_tsv| {
-                no_tbi::tsv_import(&db, args, &infer_config, &schema, path_in_tsv)
-                    .unwrap_or_else(|_| panic!("failed processing file {}", path_in_tsv));
-            });
+            .map(|path_in_tsv| no_tbi::tsv_import(&db, args, &infer_config, &schema, path_in_tsv))
+            .collect::<Result<Vec<_>, _>>()?;
     }
     tracing::info!(
         "... done importing TSV files in {:?}",

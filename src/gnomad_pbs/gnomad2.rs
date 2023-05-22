@@ -132,7 +132,8 @@ impl Record {
         let liftover_info = options
             .liftover
             .then(|| Self::extract_liftover(record))
-            .transpose()?;
+            .transpose()?
+            .flatten();
 
         Ok(Self {
             chrom,
@@ -178,17 +179,30 @@ impl Record {
     }
 
     /// Extract the liftover related fields into gnomAD v2 `Vep` records.
-    fn extract_liftover(record: &noodles_vcf::Record) -> Result<LiftoverInfo, anyhow::Error> {
-        Ok(LiftoverInfo {
+    fn extract_liftover(
+        record: &noodles_vcf::Record,
+    ) -> Result<Option<LiftoverInfo>, anyhow::Error> {
+        let tmp = LiftoverInfo {
             reverse_complemented_alleles: common::noodles::get_flag(
                 record,
                 "ReverseComplementedAlleles",
             )?,
             swapped_alleles: common::noodles::get_flag(record, "SwappedAlleles")?,
-            original_alleles: common::noodles::get_vec_str(record, "OriginalAlleles")?,
-            original_contig: common::noodles::get_string(record, "OriginalContig")?,
-            original_start: common::noodles::get_string(record, "OriginalStart")?,
-        })
+            original_alleles: common::noodles::get_vec_str(record, "OriginalAlleles")
+                .unwrap_or_default(),
+            original_contig: common::noodles::get_string(record, "OriginalContig").ok(),
+            original_start: common::noodles::get_string(record, "OriginalStart").ok(),
+        };
+        if tmp.reverse_complemented_alleles
+            || tmp.swapped_alleles
+            || !tmp.original_alleles.is_empty()
+            || tmp.original_contig.is_some()
+            || tmp.original_start.is_some()
+        {
+            Ok(Some(tmp))
+        } else {
+            Ok(None)
+        }
     }
 
     /// Extract the details on the random forest.

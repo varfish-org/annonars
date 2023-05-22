@@ -35,7 +35,7 @@ pub struct DetailsOptions {
     /// Enable variant details info.
     pub var_info: bool,
     /// Enable variant effetcs info.
-    pub effecte_info: bool,
+    pub effect_info: bool,
     /// Enable extraction of sub populations in the "global" cohort.
     pub global_cohort_pops: bool,
     /// Enable extraction of all sub cohorts (requires `pop_global_cohorts`).
@@ -53,7 +53,7 @@ impl Default for DetailsOptions {
         Self {
             vep: true,
             var_info: true,
-            effecte_info: true,
+            effect_info: true,
             global_cohort_pops: true,
             all_cohorts: false,
             quality: false,
@@ -69,7 +69,7 @@ impl DetailsOptions {
         Self {
             vep: true,
             var_info: true,
-            effecte_info: true,
+            effect_info: true,
             global_cohort_pops: true,
             all_cohorts: true,
             quality: true,
@@ -111,7 +111,7 @@ impl Record {
             .transpose()?
             .unwrap_or_default();
         let effect_info = options
-            .effecte_info
+            .effect_info
             .then(|| Self::extract_effect_info(record))
             .transpose()?;
         let variant_info = options
@@ -250,9 +250,9 @@ impl Record {
     /// Extract the quality-related fields from the VCF record.
     fn extract_quality(record: &noodles_vcf::record::Record) -> Result<QualityInfo, anyhow::Error> {
         Ok(QualityInfo {
-            as_fs: common::noodles::get_f32(record, "as_fs")?,
-            inbreeding_coeff: common::noodles::get_f32(record, "AS_FS")?,
-            as_mq: common::noodles::get_f32(record, "InbreedingCoeff")?,
+            as_fs: common::noodles::get_f32(record, "AS_FS")?,
+            inbreeding_coeff: common::noodles::get_f32(record, "InbreedingCoeff")?,
+            as_mq: common::noodles::get_f32(record, "AS_MQ")?,
             mq_rank_sum: common::noodles::get_f32(record, "MQRankSum").ok(),
             as_mq_rank_sum: common::noodles::get_f32(record, "AS_MQRankSum").ok(),
             as_qd: common::noodles::get_f32(record, "AS_QD")?,

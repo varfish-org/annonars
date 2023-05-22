@@ -152,10 +152,8 @@ pub fn tsv_import(
     regions
         .par_iter()
         .progress_with_style(common::cli::indicatif_style())
-        .for_each(|region| {
-            tsv_import_window(db, args, config, schema, path_in_tsv, region)
-                .unwrap_or_else(|e| panic!("failed processing of region {:?}: {}", region, e));
-        });
+        .map(|region| tsv_import_window(db, args, config, schema, path_in_tsv, region))
+        .collect::<Result<Vec<_>, _>>()?;
 
     Ok(())
 }

@@ -48,7 +48,7 @@ pub struct Args {
     #[arg(long)]
     pub gnomad_kind: GnomadKind,
     /// The data version to write out.
-    #[arg(long, default_value = "3.1")]
+    #[arg(long)]
     pub gnomad_version: String,
     /// Genome build to use in the build.
     #[arg(long, value_enum)]
@@ -113,7 +113,7 @@ fn tsv_import(
     windows
         .par_iter()
         .progress_with_style(style)
-        .for_each(|(chrom, begin, end)| {
+        .map(|(chrom, begin, end)| {
             process_window(
                 db.clone(),
                 chrom,
@@ -123,13 +123,8 @@ fn tsv_import(
                 path_in_vcf,
                 gnomad_version,
             )
-            .unwrap_or_else(|e| {
-                panic!(
-                    "failed to process window {}:{}-{} of {}: {}",
-                    chrom, begin, end, path_in_vcf, e
-                )
-            });
-        });
+        })
+        .collect::<Result<Vec<_>, _>>()?;
 
     Ok(())
 }

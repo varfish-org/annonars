@@ -17,9 +17,15 @@ if [[ $SCRIPT_DIR/gnomad-$data_kind.vcf \
 fi
 
 if [[ $data_kind == "genomes" ]] && [[ $genome_release == "grch38" ]]; then
-    rf_info=false
+    gnomad_version=3.1
 else
-    rf_info=true
+    gnomad_version=2.1
+fi
+
+if [[ $data_kind == "exomes" ]] && [[ $genome_release == "grch38" ]]; then
+    liftover=true
+else
+    liftover=false
 fi
 
 rm -rf $SCRIPT_DIR/gnomad-$data_kind.vcf.bgz.db
@@ -30,14 +36,17 @@ cargo run --all-features -- \
         \"var_info\": true,
         \"global_cohort_pops\": true,
         \"all_cohorts\": true,
-        \"rf_info\": ${rf_info},
+        \"rf_info\": true,
+        \"effect_info\": true,
+        \"liftover\": $liftover,
         \"quality\": true,
         \"age_hists\": true,
         \"depth_details\": true
     }" \
     --genome-release $genome_release \
     --gnomad-kind $data_kind \
+    --gnomad-version $gnomad_version \
     --path-in-vcf $SCRIPT_DIR/gnomad-$data_kind.vcf.bgz \
     --path-out-rocksdb $SCRIPT_DIR/gnomad-$data_kind.vcf.bgz.db \
-|| rm -rf $SCRIPT_DIR/gnomad-$data_kind.vcf.bgz.db
+|| { rm -rf $SCRIPT_DIR/gnomad-$data_kind.vcf.bgz.db; exit 1; }
 rm -f $SCRIPT_DIR/gnomad-$data_kind.vcf.bgz.db/*.log

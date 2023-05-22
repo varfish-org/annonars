@@ -189,9 +189,9 @@ message LiftoverInfo {
     // alleles were not changed during liftover, this attribute will be omitted.
     repeated string original_alleles = 3;
     // The name of the source contig/chromosome prior to liftover.
-    string original_contig = 4;
+    optional string original_contig = 4;
     // The position of the variant on the source contig prior to liftover.
-    string original_start = 5;
+    optional string original_start = 5;
 }
 
 // Variant type related information.
