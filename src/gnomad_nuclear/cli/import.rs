@@ -146,7 +146,7 @@ fn process_window(
 ) -> Result<(), anyhow::Error> {
     let cf_gnomad = db.cf_handle(&args.cf_name).unwrap();
     let mut reader =
-        noodles_vcf::indexed_reader::Builder::default().build_from_path(&path_in_vcf)?;
+        noodles_vcf::indexed_reader::Builder::default().build_from_path(path_in_vcf)?;
     let header = reader.read_header()?;
 
     let raw_region = format!("{}:{}-{}", chrom, begin + 1, end);
