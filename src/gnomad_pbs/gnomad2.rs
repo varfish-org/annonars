@@ -6,9 +6,18 @@ use noodles_vcf::record::info::field;
 
 use crate::common;
 
-use super::common::{SexCoding, COHORTS, POPS};
+include!(concat!(env!("OUT_DIR"), "/annonars.gnomad.v1.gnomad2.rs"));
 
-include!(concat!(env!("OUT_DIR"), "/annonars.gnomad.v1.nuclear.rs"));
+/// The cohorts that are available in the gnomAD-exomes/genomes VCFs.
+pub static COHORTS: &[&str] = &["controls", "non_cancer", "non_neuro", "non_topmed"];
+
+/// The populations that are available in the gnomAD-exomes/genomes VCFs.
+///
+/// This includes the "global" population represented by an empty string.
+pub static POPS: &[&str] = &[
+    "afr", "amr", "asj", "eas", "eas_jpn", "eas_oea", "eas_kor", "fin", "nfe", "nfe_bgr",
+    "nfe_est", "nfe_nwe", "nfe_onf", "nfe_seu", "nfe_swe", "oth", "sas",
+];
 
 /// Options struct that allows to specify which details fields are to be extracted from
 /// gnomAD-exomes/genomes VCF records.
@@ -32,6 +41,8 @@ pub struct DetailsOptions {
     pub age_hists: bool,
     /// Enable extraction of detailed depth of coverage info.
     pub depth_details: bool,
+    /// Enable extraction of liftover info.
+    pub liftover: bool,
 }
 
 impl Default for DetailsOptions {
@@ -45,6 +56,7 @@ impl Default for DetailsOptions {
             quality: false,
             age_hists: false,
             depth_details: false,
+            liftover: false,
         }
     }
 }
@@ -61,6 +73,7 @@ impl DetailsOptions {
             quality: true,
             age_hists: true,
             depth_details: true,
+            liftover: true,
         }
     }
 }
@@ -71,7 +84,6 @@ impl Record {
         record: &noodles_vcf::record::Record,
         allele_no: usize,
         options: &DetailsOptions,
-        sex_coding: SexCoding,
     ) -> Result<Self, anyhow::Error> {
         assert!(allele_no == 0, "only allele 0 is supported");
 
@@ -88,18 +100,13 @@ impl Record {
             .ok_or_else(|| anyhow::anyhow!("no such allele: {}", allele_no))?
             .to_string();
         let filters = Self::extract_filters(record)?;
-        let allele_counts = Self::extract_cohorts_allele_counts(record, options, sex_coding)?;
+        let allele_counts = Self::extract_cohorts_allele_counts(record, options)?;
         let nonpar = common::noodles::get_flag(record, "nonpar")?;
 
         // Extract optional fields.
-        let vep2 = options
+        let vep = options
             .vep
-            .then(|| Self::extract_vep2(record))
-            .transpose()?
-            .unwrap_or_default();
-        let vep3 = options
-            .vep
-            .then(|| Self::extract_vep3(record))
+            .then(|| Self::extract_vep(record))
             .transpose()?
             .unwrap_or_default();
         let rf_info = options
@@ -122,6 +129,10 @@ impl Record {
             .depth_details
             .then(|| Self::extract_depth(record))
             .transpose()?;
+        let liftover_info = options
+            .liftover
+            .then(|| Self::extract_liftover(record))
+            .transpose()?;
 
         Ok(Self {
             chrom,
@@ -129,9 +140,9 @@ impl Record {
             ref_allele,
             alt_allele,
             filters,
-            vep2,
-            vep3,
+            vep,
             allele_counts,
+            liftover_info,
             nonpar,
             rf_info,
             variant_info,
@@ -142,7 +153,7 @@ impl Record {
     }
 
     /// Extract the "vep" field into gnomAD v2 `Vep` records.
-    fn extract_vep2(
+    fn extract_vep(
         record: &noodles_vcf::Record,
     ) -> Result<Vec<super::vep_gnomad2::Vep>, anyhow::Error> {
         if let Some(Some(field::Value::Array(field::value::Array::String(v)))) =
@@ -166,29 +177,9 @@ impl Record {
         }
     }
 
-    /// Extract the "vep" field into gnomAD v3 `Vep` records.
-    fn extract_vep3(
-        record: &noodles_vcf::Record,
-    ) -> Result<Vec<super::vep_gnomad3::Vep>, anyhow::Error> {
-        if let Some(Some(field::Value::Array(field::value::Array::String(v)))) =
-            record.info().get(&field::Key::from_str("vep")?)
-        {
-            v.iter()
-                .flat_map(|v| {
-                    if let Some(s) = v.as_ref() {
-                        if s.matches('|').count() + 1 == super::vep_gnomad3::Vep::num_fields() {
-                            Some(super::vep_gnomad3::Vep::from_str(s))
-                        } else {
-                            None
-                        }
-                    } else {
-                        None
-                    }
-                })
-                .collect::<Result<Vec<_>, _>>()
-        } else {
-            anyhow::bail!("missing INFO/vep in gnomAD-nuclear record")
-        }
+    /// Extract the liftover related fields into gnomAD v2 `Vep` records.
+    fn extract_liftover(record: &noodles_vcf::Record) -> Result<LiftoverInfo, anyhow::Error> {
+        todo!()
     }
 
     /// Extract the details on the random forest.
@@ -297,20 +288,17 @@ impl Record {
     fn extract_cohorts_allele_counts(
         record: &noodles_vcf::Record,
         options: &DetailsOptions,
-        sex_coding: SexCoding,
     ) -> Result<Vec<CohortAlleleCounts>, anyhow::Error> {
-        let (suffix_xx, suffix_xy) = sex_coding.to_suffixes();
-
         // Initialize global cohort.  We will always extract the non-population specific
         // counts for them.
         let mut global_counts = CohortAlleleCounts {
             cohort: None,
             by_sex: Some(AlleleCountsBySex {
-                overall: Some(Self::extract_allele_counts(record, "", "")?),
-                xx: Some(Self::extract_allele_counts(record, "", suffix_xx)?),
-                xy: Some(Self::extract_allele_counts(record, "", suffix_xy)?),
+                overall: Self::extract_allele_counts(record, "", "")?,
+                xx: Self::extract_allele_counts(record, "", "_female")?,
+                xy: Self::extract_allele_counts(record, "", "_male")?,
             }),
-            raw: Some(Self::extract_allele_counts(record, "", "_raw")?),
+            raw: Self::extract_allele_counts(record, "", "_raw")?,
             popmax: common::noodles::get_string(record, "popmax").ok(),
             af_popmax: common::noodles::get_f32(record, "AF_popmax").ok(),
             ac_popmax: common::noodles::get_i32(record, "AC_popmax").ok(),
@@ -324,9 +312,7 @@ impl Record {
             for pop in POPS {
                 global_counts
                     .by_population
-                    .push(Self::extract_population_allele_counts(
-                        record, "", pop, suffix_xx, suffix_xy,
-                    )?);
+                    .push(Self::extract_population_allele_counts(record, "", pop)?);
             }
         }
 
@@ -338,11 +324,11 @@ impl Record {
                 let mut cohort_counts = CohortAlleleCounts {
                     cohort: Some(cohort.to_string()),
                     by_sex: Some(AlleleCountsBySex {
-                        overall: Some(Self::extract_allele_counts(record, &prefix, "")?),
-                        xx: Some(Self::extract_allele_counts(record, &prefix, suffix_xx)?),
-                        xy: Some(Self::extract_allele_counts(record, &prefix, suffix_xy)?),
+                        overall: Self::extract_allele_counts(record, &prefix, "")?,
+                        xx: Self::extract_allele_counts(record, &prefix, "_female")?,
+                        xy: Self::extract_allele_counts(record, &prefix, "male")?,
                     }),
-                    raw: Some(Self::extract_allele_counts(record, &prefix, "_raw")?),
+                    raw: Self::extract_allele_counts(record, &prefix, "_raw")?,
                     popmax: common::noodles::get_string(record, &format!("{}_popmax", cohort)).ok(),
                     af_popmax: common::noodles::get_f32(record, &format!("{}_AF_popmax", cohort))
                         .ok(),
@@ -362,7 +348,7 @@ impl Record {
                     cohort_counts
                         .by_population
                         .push(Self::extract_population_allele_counts(
-                            record, &prefix, pop, suffix_xx, suffix_xy,
+                            record, &prefix, pop,
                         )?);
                 }
 
@@ -378,27 +364,13 @@ impl Record {
         record: &noodles_vcf::Record,
         prefix: &str,
         pop: &str,
-        suffix_xx: &str,
-        suffix_xy: &str,
     ) -> Result<PopulationAlleleCounts, anyhow::Error> {
         Ok(PopulationAlleleCounts {
             population: pop.to_string(),
             counts: Some(AlleleCountsBySex {
-                overall: Some(Self::extract_allele_counts(
-                    record,
-                    prefix,
-                    &format!("_{}", pop),
-                )?),
-                xx: Some(Self::extract_allele_counts(
-                    record,
-                    prefix,
-                    &format!("_{}{}", pop, suffix_xx),
-                )?),
-                xy: Some(Self::extract_allele_counts(
-                    record,
-                    prefix,
-                    &format!("_{}{}", pop, suffix_xy),
-                )?),
+                overall: Self::extract_allele_counts(record, prefix, &format!("_{}", pop))?,
+                xx: Self::extract_allele_counts(record, prefix, &format!("_{}{}", pop, "_female"))?,
+                xy: Self::extract_allele_counts(record, prefix, &format!("_{}{}", pop, "_male"))?,
             }),
             // The faf95 and faf99 value is not present for all populations.  We use a blanket
             // "ok()" here so things don't blow up randomly.
@@ -412,17 +384,23 @@ impl Record {
         record: &noodles_vcf::Record,
         prefix: &str,
         suffix: &str,
-    ) -> Result<AlleleCounts, anyhow::Error> {
-        Ok(AlleleCounts {
-            ac: common::noodles::get_i32(record, &format!("{}AC{}", prefix, suffix))
-                .unwrap_or_default(),
-            an: common::noodles::get_i32(record, &format!("{}AN{}", prefix, suffix))
-                .unwrap_or_default(),
-            nhomalt: common::noodles::get_i32(record, &format!("{}nhomalt{}", prefix, suffix))
-                .unwrap_or_default(),
-            af: common::noodles::get_f32(record, &format!("{}AF{}", prefix, suffix))
-                .unwrap_or_default(),
-        })
+    ) -> Result<Option<AlleleCounts>, anyhow::Error> {
+        if common::noodles::get_i32(record, &format!("{}AN{}", prefix, suffix)).unwrap_or_default()
+            == 0
+        {
+            Ok(None)
+        } else {
+            Ok(Some(AlleleCounts {
+                ac: common::noodles::get_i32(record, &format!("{}AC{}", prefix, suffix))
+                    .unwrap_or_default(),
+                an: common::noodles::get_i32(record, &format!("{}AN{}", prefix, suffix))
+                    .unwrap_or_default(),
+                nhomalt: common::noodles::get_i32(record, &format!("{}nhomalt{}", prefix, suffix))
+                    .unwrap_or_default(),
+                af: common::noodles::get_f32(record, &format!("{}AF{}", prefix, suffix))
+                    .unwrap_or_default(),
+            }))
+        }
     }
 }
 
@@ -440,12 +418,8 @@ mod test {
         let mut records = Vec::new();
         for row in reader_vcf.records(&header) {
             let vcf_record = row?;
-            let record = Record::from_vcf_allele(
-                &vcf_record,
-                0,
-                &DetailsOptions::with_all_enabled(),
-                SexCoding::FemaleMale,
-            )?;
+            let record =
+                Record::from_vcf_allele(&vcf_record, 0, &DetailsOptions::with_all_enabled())?;
             records.push(record);
         }
 
@@ -464,12 +438,8 @@ mod test {
         let mut records = Vec::new();
         for row in reader_vcf.records(&header) {
             let vcf_record = row?;
-            let record = Record::from_vcf_allele(
-                &vcf_record,
-                0,
-                &DetailsOptions::with_all_enabled(),
-                SexCoding::FemaleMale,
-            )?;
+            let record =
+                Record::from_vcf_allele(&vcf_record, 0, &DetailsOptions::with_all_enabled())?;
             records.push(record);
         }
 
@@ -488,39 +458,8 @@ mod test {
         let mut records = Vec::new();
         for row in reader_vcf.records(&header) {
             let vcf_record = row?;
-            let record = Record::from_vcf_allele(
-                &vcf_record,
-                0,
-                &DetailsOptions::with_all_enabled(),
-                SexCoding::FemaleMale,
-            )?;
-            records.push(record);
-        }
-
-        insta::assert_yaml_snapshot!(records);
-
-        Ok(())
-    }
-
-    #[test]
-    fn test_record_from_vcf_allele_gnomad_genomes_grch38() -> Result<(), anyhow::Error> {
-        let path_vcf = "tests/gnomad-nuclear/example-genomes-grch38/gnomad-genomes.vcf";
-        let mut reader_vcf =
-            noodles_util::variant::reader::Builder::default().build_from_path(path_vcf)?;
-        let header = reader_vcf.read_header()?;
-
-        let mut records = Vec::new();
-        for row in reader_vcf.records(&header) {
-            let vcf_record = row?;
-            let record = Record::from_vcf_allele(
-                &vcf_record,
-                0,
-                &DetailsOptions {
-                    rf_info: false,
-                    ..DetailsOptions::with_all_enabled(),
-                },
-                SexCoding::XxXy,
-            )?;
+            let record =
+                Record::from_vcf_allele(&vcf_record, 0, &DetailsOptions::with_all_enabled())?;
             records.push(record);
         }
 

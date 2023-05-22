@@ -1,8 +1,7 @@
 syntax = "proto3";
 
-package annonars.gnomad.v1.nuclear;
+package annonars.gnomad.v1.gnomad3;
 
-import "annonars/gnomad/v1/vep_gnomad2.proto";
 import "annonars/gnomad/v1/vep_gnomad3.proto";
 
 // Protocol buffer enum for site-level filters.
@@ -10,13 +9,30 @@ enum Filter {
     // Allele count is zero after filtering out low-confidence genotypes (GQ < 20; DP < 10; and AB <
     // 0.2 for het calls).
     ALLELE_COUNT_IS_ZERO = 0;
+    // Failed VQSR filtering thresholds of -2.7739 for SNPs and -1.0606 for indels.
+    AS_VSQR = 1;
     // InbreedingCoeff < -0.3.
-    INBREEDING_COEFF = 1;
+    INBREEDING_COEFF = 2;
     // Passed all variant filters
-    PASS = 2;
-    // Failed random forest filtering thresholds of 0.055272738028512555, 0.20641025579497013
-    // (probabilities of being a true positive variant) for SNPs, indels
-    RANDOM_FOREST = 3;
+    PASS = 3;
+}
+
+// Store details on variant effect predictions.
+message EffectInfo {
+    // PrimateAI's deleteriousness score from 0 (less deleterious) to 1 (more deleterious).
+    optional float primate_ai_score = 1;
+    // dbNSFP's Revel score from 0 to 1. Variants with higher scores are predicted to be
+    // more likely to be deleterious.
+    optional float revel_score = 2;
+    // Illumina's SpliceAI max delta score; interpreted as the probability of the variant
+    // being splice-altering.
+    optional float splice_ai_max_ds = 3;
+    // The consequence term associated with the max delta score in 'splice_ai_max_ds'.
+    optional string splice_ai_consequence = 4;
+    // Raw CADD scores are interpretable as the extent to which the annotation profile for a given variant suggests that the variant is likely to be 'observed' (negative values) vs 'simulated' (positive values). Larger values are more deleterious.
+    optional float cadd_raw = 5;
+    // Cadd Phred-like scores ('scaled C-scores') ranging from 1 to 99, based on the rank of each variant relative to all possible 8.6 billion substitutions in the human reference genome. Larger values are more deleterious.
+    optional float cadd_phred = 6;
 }
 
 // Store the relevant allele counts and frequencies in a given sub cohort.
@@ -36,9 +52,9 @@ message AlleleCountsBySex {
     // Overall allele counts in the sub cohort.
     AlleleCounts overall = 1;
     // Allele counts in female/XX karyotype individuals of sub cohort.
-    AlleleCounts xx = 2;
+    optional AlleleCounts xx = 2;
     // Allele counts in male/XY karyotype individuals of sub cohort.
-    AlleleCounts xy = 3;
+    optional AlleleCounts xy = 3;
 }
 
 // Store the allele counts for the given sub cohort in the given population.
@@ -52,6 +68,14 @@ message PopulationAlleleCounts {
     optional float faf95 = 3;
     // The filtering allele frequency (using Poisson 99% CI).
     optional float faf99 = 4;
+    // The filtering allele frequency for XX samples (using Poisson 95% CI).
+    optional float faf95_xx = 5;
+    // The filtering allele frequency for XX samples (using Poisson 99% CI).
+    optional float faf99_xx = 6;
+    // The filtering allele frequency for XY samples (using Poisson 95% CI).
+    optional float faf95_xy = 7;
+    // The filtering allele frequency for XY samples (using Poisson 99% CI).
+    optional float faf99_xy = 8;
 }
 
 // Store the allele counts for the given cohort.
@@ -117,64 +141,55 @@ message DepthInfo {
 
 // Encapsulate quality-related information.
 message QualityInfo {
-    // Phred-scaled p-value of Fisher's exact test for strand bias.
-    float fs = 1;
+    // Allele-specific phred-scaled p-value of Fisher's exact test for strand bias.
+    float as_fs = 1;
     // Inbreeding coefficient as estimated from the genotype likelihoods per-sample when compared
     // against the Hardy-Weinberg expectation.
     float inbreeding_coeff = 2;
-    // Root mean square of the mapping quality of reads across all samples.
-    float mq = 3;
+    // Allele-specific root mean square of the mapping quality of reads across all samples
+    float as_mq = 3;
     // Z-score from Wilcoxon rank sum test of alternate vs. reference read mapping qualities.
     optional float mq_rank_sum = 4;
-    // Variant call confidence normalized by depth of sample reads supporting a variant.
-    float qd = 5;
+    // Allele-specific z-score from Wilcoxon rank sum test of alternate vs. reference read
+    // mapping qualities.
+    optional float as_mq_rank_sum = 5;
+    // Allele-specific variant call confidence normalized by depth of sample reads supporting a
+    // variant.
+    float as_qd = 6;
     // Z-score from Wilcoxon rank sum test of alternate vs. reference read position bias.
-    optional float read_pos_rank_sum = 6;
-    // Strand bias estimated by the symmetric odds ratio test.
-    float sor = 7;
+    optional float read_pos_rank_sum = 7;
+    // Allele-specific z-score from Wilcoxon rank sum test of alternate vs. reference read position bias.
+    optional float as_read_pos_rank_sum = 8;
+    // Allele-specific strand bias estimated by the symmetric odds ratio test.
+    float as_sor = 9;
     // Variant was used to build the positive training set of high-quality variants for VQSR.
-    bool vqsr_positive_train_site = 8;
+    bool positive_train_site = 10;
     // Variant was used to build the negative training set of low-quality variants for VQSR.
-    bool vqsr_negative_train_site = 9;
+    bool negative_train_site = 11;
     // Z-score from Wilcoxon rank sum test of alternate vs. reference base qualities.
-    optional float base_q_rank_sum = 10;
-    // Z-score from Wilcoxon rank sum test of alternate vs. reference number of hard clipped bases.
-    optional float clipping_rank_sum = 11;
+    optional float base_q_rank_sum = 12;
     // Depth of informative coverage for each sample; reads with MQ=255 or with bad mates are
     // filtered.
-    int32 dp = 12;
-    // Log-odds ratio of being a true variant versus being a false positive under the trained VQSR
-    // Gaussian mixture model.
-    float vqslod = 13;
-    // Worst-performing annotation in the VQSR Gaussian mixture model.
-    string vqsr_culprit = 14;
+    int32 dp = 13;
+    // Allele-specific log-odds ratio of being a true variant versus being a false positive under the trained VQSR Gaussian mixture model.
+    float as_vqslod = 14;
+    // Allele-specific worst-performing annotation in the VQSR Gaussian mixture model.
+    string as_culprit = 15;
     // Variant falls within a segmental duplication region.
-    bool segdup = 15;
+    bool segdup = 16;
     // Variant falls within a low complexity region.
-    bool lcr = 16;
-    // Variant falls within a reference decoy region.
-    bool decoy = 17;
+    bool lcr = 17;
     // Variant was a callset-wide doubleton that was transmitted within a family (i.e., a singleton
     // amongst unrelated sampes in cohort).
     bool transmitted_singleton = 18;
-    // Maximum p-value over callset for binomial test of observed allele balance for a heterozygous
-    // genotype, given expectation of AB=0.5.
-    optional float pab_max = 19;
+    // Maximum p-value over callset for binomial test of observed allele balance for a heterozygous genotype, given expectation of 0.5.
+    optional float as_pab_max = 19;
+    // Allele-specific sum of PL[0] values; used to approximate the QUAL score.
+    optional int32 as_qual_approx = 20;
+    // Allele-specific forward/reverse read counts for strand bias tests.
+    optional string as_sb_table = 21;
 }
 
-// Random forest related information.
-message RandomForestInfo {
-    // Random forest prediction probability for a site being a true variant.
-    float rf_tp_probability = 1;
-    // Variant was labelled as a positive example for training of random forest model.
-    bool rf_positive_label = 2;
-    // Variant was labelled as a negative example for training of random forest model.
-    bool rf_negative_label = 3;
-    // Random forest training label.
-    optional string rf_label = 4;
-    // Variant was used in training random forest model.
-    bool rf_train = 5;
-}
 
 // Variant type related information.
 message VariantInfo {
@@ -186,9 +201,10 @@ message VariantInfo {
     int32 n_alt_alleles = 3;
     // Variant type was mixed.
     bool was_mixed = 4;
-    // Variant locus coincides with a spanning deletion (represented by a star) observed elsewhere
-    // in the callset.
-    bool has_star = 5;
+    // All samples are homozygous alternate for the variant.
+    bool monoallelic = 5;
+    // Depth over variant genotypes (does not include depth of reference samples).
+    int32 var_dp = 6;
 }
 
 // Protocol buffer for the gnomAD-mtDNA VCF record.
@@ -207,27 +223,25 @@ message Record {
 
     // Site-level filters.
     repeated Filter filters = 5;
-    // VEP v2 annotation records (gnomAD v2).
-    repeated annonars.gnomad.v1.vep_gnomad2.Vep vep2 = 6;
-    // VEP v3 annotation records (gnomAD v3).
-    repeated annonars.gnomad.v1.vep_gnomad3.Vep vep3 = 7;
+    // VEP annotation records.
+    repeated annonars.gnomad.v1.vep_gnomad3.Vep vep = 6;
 
     // Variant allele counts in the different cohorts and population.
     //
     // The populations in gnomAD v2/3 are: empty for global, "controls", "non_cancer", "non_neuro",
     // and "non_topmed".
-    repeated CohortAlleleCounts allele_counts = 8;
+    repeated CohortAlleleCounts allele_counts = 7;
     // Variant (on sex chromosome) falls outside a pseudoautosomal region
-    bool nonpar = 9;
+    bool nonpar = 8;
 
-    // Random forest related information.
-    optional RandomForestInfo rf_info = 10;
+    // Information on variant scores.
+    optional EffectInfo effect_info = 9;
     // Variant-related information details.
-    optional VariantInfo variant_info = 11;
+    optional VariantInfo variant_info = 10;
     // Summary information for variant quality interpretation.
-    optional QualityInfo quality_info = 12;
+    optional QualityInfo quality_info = 11;
     // Age-related information.
-    optional AgeInfo age_info = 13;
+    optional AgeInfo age_info = 12;
     // Depth of coverage-related information.
-    optional DepthInfo depth_info = 14;
+    optional DepthInfo depth_info = 13;
 }

@@ -10,7 +10,7 @@ use rayon::prelude::{IntoParallelRefIterator, ParallelIterator};
 
 use crate::{
     common::{self, cli::indicatif_style},
-    gnomad_pbs::{self, common::SexCoding, nuclear::DetailsOptions},
+    gnomad_pbs::{self, gnomad2, gnomad3},
 };
 
 /// Select the type of gnomAD data to import.
@@ -22,6 +22,15 @@ pub enum GnomadKind {
     /// gnomAD genomes
     #[strum(serialize = "genomes")]
     Genomes,
+}
+
+/// Select the genomAD version (v2/v3; important for the field names).
+#[derive(strum::Display, clap::ValueEnum, Debug, Clone, Copy, PartialEq, Eq, Hash)]
+pub enum GnomadVersion {
+    /// Version 2.x
+    Two,
+    /// Version 3.x
+    Three,
 }
 
 /// Command line arguments for `gnomad_nuclear import` sub command.
@@ -66,6 +75,7 @@ fn tsv_import(
     db: Arc<rocksdb::DBWithThreadMode<rocksdb::MultiThreaded>>,
     args: &Args,
     path_in_vcf: &str,
+    gnomad_version: GnomadVersion,
 ) -> Result<(), anyhow::Error> {
     // Load tabix header and create BGZF reader with tabix index.
     let tabix_src = format!("{}.tbi", path_in_vcf);
@@ -104,14 +114,21 @@ fn tsv_import(
         .par_iter()
         .progress_with_style(style)
         .for_each(|(chrom, begin, end)| {
-            process_window(db.clone(), chrom, *begin, *end, args, path_in_vcf).unwrap_or_else(
-                |e| {
-                    panic!(
-                        "failed to process window {}:{}-{} of {}: {}",
-                        chrom, begin, end, path_in_vcf, e
-                    )
-                },
-            );
+            process_window(
+                db.clone(),
+                chrom,
+                *begin,
+                *end,
+                args,
+                path_in_vcf,
+                gnomad_version,
+            )
+            .unwrap_or_else(|e| {
+                panic!(
+                    "failed to process window {}:{}-{} of {}: {}",
+                    chrom, begin, end, path_in_vcf, e
+                )
+            });
         });
 
     Ok(())
@@ -125,21 +142,12 @@ fn process_window(
     end: usize,
     args: &Args,
     path_in_vcf: &str,
+    gnomad_version: GnomadVersion,
 ) -> Result<(), anyhow::Error> {
     let cf_gnomad = db.cf_handle(&args.cf_name).unwrap();
     let mut reader =
         noodles_vcf::indexed_reader::Builder::default().build_from_path(&path_in_vcf)?;
     let header = reader.read_header()?;
-    // Determine coding of sex/XY karyotype from header keys.
-    let sex_coding = if header
-        .infos()
-        .keys()
-        .any(|x| x.to_string().contains("_XX") || x.to_string().contains("_XY"))
-    {
-        SexCoding::XxXy
-    } else {
-        SexCoding::FemaleMale
-    };
 
     let raw_region = format!("{}:{}-{}", chrom, begin + 1, end);
     tracing::debug!("  processing region: {}", raw_region);
@@ -167,22 +175,37 @@ fn process_window(
             let vcf_record = result?;
 
             // Process each alternate allele into one record.
-            let details_options = serde_json::from_str(
-                args.import_fields_json
-                    .as_ref()
-                    .expect("has been set earlier"),
-            )?;
             for allele_no in 0..vcf_record.alternate_bases().len() {
                 let key_buf: Vec<u8> =
                     common::keys::Var::from_vcf_allele(&vcf_record, allele_no).into();
-                let record = gnomad_pbs::nuclear::Record::from_vcf_allele(
-                    &vcf_record,
-                    allele_no,
-                    &details_options,
-                    sex_coding,
-                )?;
-                tracing::trace!("  record: {:?}", &record);
-                let record_buf = record.encode_to_vec();
+                let record_buf = match gnomad_version {
+                    GnomadVersion::Two => {
+                        let details_options = serde_json::from_str(
+                            args.import_fields_json
+                                .as_ref()
+                                .expect("has been set earlier"),
+                        )?;
+                        gnomad_pbs::gnomad2::Record::from_vcf_allele(
+                            &vcf_record,
+                            allele_no,
+                            &details_options,
+                        )?
+                        .encode_to_vec()
+                    }
+                    GnomadVersion::Three => {
+                        let details_options = serde_json::from_str(
+                            args.import_fields_json
+                                .as_ref()
+                                .expect("has been set earlier"),
+                        )?;
+                        gnomad_pbs::gnomad3::Record::from_vcf_allele(
+                            &vcf_record,
+                            allele_no,
+                            &details_options,
+                        )?
+                        .encode_to_vec()
+                    }
+                };
                 db.put_cf(&cf_gnomad, &key_buf, &record_buf)?;
             }
         }
@@ -193,15 +216,38 @@ fn process_window(
 
 /// Implementation of `gnomad_nuclear import` sub command.
 pub fn run(common: &common::cli::Args, args: &Args) -> Result<(), anyhow::Error> {
+    let gnomad_version = if args.gnomad_version.starts_with("2.") {
+        GnomadVersion::Two
+    } else if args.gnomad_version.starts_with("3.") {
+        GnomadVersion::Three
+    } else {
+        anyhow::bail!("gnomAD version must be either 2 or 3")
+    };
+
     // Put defaults for fields to serialize into args.
-    let args = Args {
-        import_fields_json: args
-            .import_fields_json
-            .clone()
-            .map(|v| serde_json::to_string(&serde_json::from_str::<DetailsOptions>(&v)?))
-            .or_else(|| Some(serde_json::to_string(&DetailsOptions::default())))
-            .transpose()?,
-        ..args.clone()
+    let args = match gnomad_version {
+        GnomadVersion::Two => Args {
+            import_fields_json: args
+                .import_fields_json
+                .clone()
+                .map(|v| {
+                    serde_json::to_string(&serde_json::from_str::<gnomad2::DetailsOptions>(&v)?)
+                })
+                .or_else(|| Some(serde_json::to_string(&gnomad2::DetailsOptions::default())))
+                .transpose()?,
+            ..args.clone()
+        },
+        GnomadVersion::Three => Args {
+            import_fields_json: args
+                .import_fields_json
+                .clone()
+                .map(|v| {
+                    serde_json::to_string(&serde_json::from_str::<gnomad3::DetailsOptions>(&v)?)
+                })
+                .or_else(|| Some(serde_json::to_string(&gnomad3::DetailsOptions::default())))
+                .transpose()?,
+            ..args.clone()
+        },
     };
 
     tracing::info!("Starting 'gnomad-nuclear import' command");
@@ -269,29 +315,18 @@ pub fn run(common: &common::cli::Args, args: &Args) -> Result<(), anyhow::Error>
     )?;
     db.put_cf(
         &cf_meta,
-        format!("gnomad-{}-version", args.gnomad_kind),
-        &args.gnomad_version,
-    )?;
+        "gnomad-kind",
+        args.gnomad_kind.to_string().to_lowercase(),
+    );
+    db.put_cf(&cf_meta, "gnomad-version", &args.gnomad_version)?;
     if let Some(vep_version) = vep_version {
-        db.put_cf(
-            &cf_meta,
-            format!("gnomad-{}-vep-version", args.gnomad_kind),
-            &vep_version,
-        )?;
+        db.put_cf(&cf_meta, "gnomad-vep-version", &vep_version)?;
     }
     if let Some(dbsnp_version) = dbsnp_version {
-        db.put_cf(
-            &cf_meta,
-            format!("gnomad-{}-dbsnp-version", args.gnomad_kind),
-            &dbsnp_version,
-        )?;
+        db.put_cf(&cf_meta, "gnomad-dbsnp-version", &dbsnp_version)?;
     }
     if let Some(age_distributions) = age_distributions {
-        db.put_cf(
-            &cf_meta,
-            &format!("gnomad-{}-age-distributions", args.gnomad_kind),
-            &age_distributions,
-        )?;
+        db.put_cf(&cf_meta, "gnomad-age-distributions", &age_distributions)?;
     }
     tracing::info!(
         "... done opening RocksDB for writing in {:?}",
@@ -301,7 +336,7 @@ pub fn run(common: &common::cli::Args, args: &Args) -> Result<(), anyhow::Error>
     tracing::info!("Loading gnomad_nuclear VCF file into RocksDB...");
     let before_loading = std::time::Instant::now();
     for path_in_tsv in &args.path_in_vcf {
-        tsv_import(db.clone(), &args, path_in_tsv)?;
+        tsv_import(db.clone(), &args, path_in_tsv, gnomad_version)?;
     }
     tracing::info!(
         "... done loading gnomad_nuclear VCF file into RocksDB in {:?}",
@@ -322,7 +357,7 @@ pub fn run(common: &common::cli::Args, args: &Args) -> Result<(), anyhow::Error>
 
 #[cfg(test)]
 mod test {
-    use crate::gnomad_pbs::nuclear::DetailsOptions;
+    use crate::gnomad_pbs::gnomad2::DetailsOptions;
 
     use super::*;
 

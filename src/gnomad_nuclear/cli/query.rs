@@ -76,7 +76,7 @@ fn open_rocksdb(
 fn print_record(
     out_writer: &mut Box<dyn std::io::Write>,
     output_format: common::cli::OutputFormat,
-    value: &gnomad_pbs::nuclear::Record,
+    value: &gnomad_pbs::gnomad2::Record,
 ) -> Result<(), anyhow::Error> {
     match output_format {
         common::cli::OutputFormat::Jsonl => {
@@ -92,7 +92,7 @@ fn query_for_variant(
     meta: &Meta,
     db: &rocksdb::DBWithThreadMode<rocksdb::MultiThreaded>,
     cf_data: &Arc<rocksdb::BoundColumnFamily>,
-) -> Result<gnomad_pbs::nuclear::Record, anyhow::Error> {
+) -> Result<gnomad_pbs::gnomad2::Record, anyhow::Error> {
     // Split off the genome release (checked) and convert to key as used in database.
     let query = spdi::Var {
         sequence: extract_chrom::from_var(variant, Some(&meta.genome_release))?,
@@ -106,7 +106,7 @@ fn query_for_variant(
         .get_cf(cf_data, key)?
         .ok_or_else(|| anyhow::anyhow!("could not find variant in database"))?;
     // Decode via prost.
-    gnomad_pbs::nuclear::Record::decode(&mut std::io::Cursor::new(&raw_value))
+    gnomad_pbs::gnomad2::Record::decode(&mut std::io::Cursor::new(&raw_value))
         .map_err(|e| anyhow::anyhow!("failed to decode record: {}", e))
 }
 
@@ -190,7 +190,7 @@ pub fn run(common: &common::cli::Args, args: &Args) -> Result<(), anyhow::Error>
                 }
 
                 let record =
-                    gnomad_pbs::nuclear::Record::decode(&mut std::io::Cursor::new(&raw_value))
+                    gnomad_pbs::gnomad2::Record::decode(&mut std::io::Cursor::new(&raw_value))
                         .map_err(|e| anyhow::anyhow!("failed to decode record: {}", e))?;
                 print_record(&mut out_writer, args.out_format, &record)?;
                 iter.next();
