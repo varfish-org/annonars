@@ -51,6 +51,19 @@ pub fn get_f32(record: &noodles_vcf::Record, name: &str) -> Result<f32, anyhow::
     }
 }
 
+/// Extract an `Vec<String>` field from record with an array field.
+///
+/// This is different than parsing the histograms from pipe-separated strings.
+pub fn get_vec_str(record: &noodles_vcf::Record, name: &str) -> Result<Vec<String>, anyhow::Error> {
+    if let Some(Some(field::Value::Array(field::value::Array::String(vs)))) =
+        record.info().get(&field::Key::from_str(name)?)
+    {
+        Ok(vs.iter().flatten().cloned().collect())
+    } else {
+        anyhow::bail!("missing INFO/{} in gnomAD record", name)
+    }
+}
+
 /// Extract an `Vec<FromStr>` field from a record encoded as a pipe symbol separated string.
 pub fn get_vec<T>(record: &noodles_vcf::Record, name: &str) -> Result<Vec<T>, anyhow::Error>
 where

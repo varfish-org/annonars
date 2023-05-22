@@ -147,16 +147,18 @@ message QualityInfo {
     float vqslod = 13;
     // Allele-specific worst-performing annotation in the VQSR Gaussian mixture model
     string vqsr_culprit = 14;
+    // Variant falls within a segmental duplication region
+    bool segdup = 15;
     // Variant falls within a low complexity region.
-    bool lcr = 15;
+    bool lcr = 16;
     // Variant falls within a reference decoy region.
-    bool decoy = 16;
+    bool decoy = 17;
     // Variant was a callset-wide doubleton that was transmitted within a family (i.e., a singleton
     // amongst unrelated sampes in cohort).
-    bool transmitted_singleton = 17;
+    bool transmitted_singleton = 18;
     // Maximum p-value over callset for binomial test of observed allele balance for a heterozygous
     // genotype, given expectation of AB=0.5.
-    optional float pab_max = 18;
+    optional float pab_max = 19;
 }
 
 // Random forest related information.

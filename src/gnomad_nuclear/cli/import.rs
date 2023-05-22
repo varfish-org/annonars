@@ -317,7 +317,7 @@ pub fn run(common: &common::cli::Args, args: &Args) -> Result<(), anyhow::Error>
         &cf_meta,
         "gnomad-kind",
         args.gnomad_kind.to_string().to_lowercase(),
-    );
+    )?;
     db.put_cf(&cf_meta, "gnomad-version", &args.gnomad_version)?;
     if let Some(vep_version) = vep_version {
         db.put_cf(&cf_meta, "gnomad-vep-version", &vep_version)?;

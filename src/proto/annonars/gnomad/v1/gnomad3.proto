@@ -166,8 +166,6 @@ message QualityInfo {
     bool positive_train_site = 10;
     // Variant was used to build the negative training set of low-quality variants for VQSR.
     bool negative_train_site = 11;
-    // Z-score from Wilcoxon rank sum test of alternate vs. reference base qualities.
-    optional float base_q_rank_sum = 12;
     // Depth of informative coverage for each sample; reads with MQ=255 or with bad mates are
     // filtered.
     int32 dp = 13;

@@ -110,6 +110,10 @@ impl Record {
             .then(|| Self::extract_vep(record))
             .transpose()?
             .unwrap_or_default();
+        let effect_info = options
+            .effecte_info
+            .then(|| Self::extract_effect_info(record))
+            .transpose()?;
         let variant_info = options
             .var_info
             .then(|| Self::extract_variant_info(record))
@@ -135,6 +139,7 @@ impl Record {
             filters,
             vep,
             allele_counts,
+            effect_info,
             nonpar,
             variant_info,
             quality_info,
@@ -175,6 +180,21 @@ impl Record {
             allele_type: common::noodles::get_string(record, "allele_type")?,
             n_alt_alleles: common::noodles::get_i32(record, "n_alt_alleles")?,
             was_mixed: common::noodles::get_flag(record, "was_mixed")?,
+            monoallelic: common::noodles::get_flag(record, "was_mixed")?,
+            var_dp: common::noodles::get_i32(record, "n_alt_alleles")?,
+        })
+    }
+
+    /// Extract details on the variant effects.
+    fn extract_effect_info(record: &noodles_vcf::Record) -> Result<EffectInfo, anyhow::Error> {
+        Ok(EffectInfo {
+            primate_ai_score: common::noodles::get_f32(record, "primate_ai_score").ok(),
+            revel_score: common::noodles::get_f32(record, "revel_score").ok(),
+            splice_ai_max_ds: common::noodles::get_f32(record, "splice_ai_max_ds").ok(),
+            splice_ai_consequence: common::noodles::get_string(record, "splice_ai_consequence")
+                .ok(),
+            cadd_raw: common::noodles::get_f32(record, "cadd_raw").ok(),
+            cadd_phred: common::noodles::get_f32(record, "cadd_phred").ok(),
         })
     }
 
@@ -190,7 +210,7 @@ impl Record {
                         Some("AC0") => Ok(Filter::AlleleCountIsZero as i32),
                         Some("InbreedingCoeff") => Ok(Filter::InbreedingCoeff as i32),
                         Some("PASS") => Ok(Filter::Pass as i32),
-                        Some("RF") => Ok(Filter::RandomForest as i32),
+                        Some("AS_VQSR") => Ok(Filter::AsVsqr as i32),
                         Some(val) => anyhow::bail!("invalid filter value {}", val),
                         None => anyhow::bail!("missing filter value"),
                     })
@@ -230,31 +250,26 @@ impl Record {
     /// Extract the quality-related fields from the VCF record.
     fn extract_quality(record: &noodles_vcf::record::Record) -> Result<QualityInfo, anyhow::Error> {
         Ok(QualityInfo {
-            fs: common::noodles::get_f32(record, "FS")?,
-            inbreeding_coeff: common::noodles::get_f32(record, "InbreedingCoeff")?,
-            mq: common::noodles::get_f32(record, "MQ")?,
+            as_fs: common::noodles::get_f32(record, "as_fs")?,
+            inbreeding_coeff: common::noodles::get_f32(record, "AS_FS")?,
+            as_mq: common::noodles::get_f32(record, "InbreedingCoeff")?,
             mq_rank_sum: common::noodles::get_f32(record, "MQRankSum").ok(),
-            qd: common::noodles::get_f32(record, "QD")?,
+            as_mq_rank_sum: common::noodles::get_f32(record, "AS_MQRankSum").ok(),
+            as_qd: common::noodles::get_f32(record, "AS_QD")?,
             read_pos_rank_sum: common::noodles::get_f32(record, "ReadPosRankSum").ok(),
-            sor: common::noodles::get_f32(record, "SOR")?,
-            vqsr_positive_train_site: common::noodles::get_flag(
-                record,
-                "VQSR_POSITIVE_TRAIN_SITE",
-            )?,
-            vqsr_negative_train_site: common::noodles::get_flag(
-                record,
-                "VQSR_NEGATIVE_TRAIN_SITE",
-            )?,
-            base_q_rank_sum: common::noodles::get_f32(record, "BaseQRankSum").ok(),
-            clipping_rank_sum: common::noodles::get_f32(record, "ClippingRankSum").ok(),
+            as_read_pos_rank_sum: common::noodles::get_f32(record, "AS_ReadPosRankSum").ok(),
+            as_sor: common::noodles::get_f32(record, "AS_SOR")?,
+            positive_train_site: common::noodles::get_flag(record, "POSITIVE_TRAIN_SITE")?,
+            negative_train_site: common::noodles::get_flag(record, "NEGATIVE_TRAIN_SITE")?,
             dp: common::noodles::get_i32(record, "DP")?,
-            vqslod: common::noodles::get_f32(record, "VQSLOD")?,
-            vqsr_culprit: common::noodles::get_string(record, "VQSR_culprit")?,
-            segdup: common::noodles::get_flag(record, "segdup")?,
+            as_vqslod: common::noodles::get_f32(record, "AS_VQSLOD")?,
+            as_culprit: common::noodles::get_string(record, "AS_culprit")?,
+            segdup: common::noodles::get_flag(record, "seqdup")?,
             lcr: common::noodles::get_flag(record, "lcr")?,
-            decoy: common::noodles::get_flag(record, "decoy")?,
             transmitted_singleton: common::noodles::get_flag(record, "transmitted_singleton")?,
-            pab_max: common::noodles::get_f32(record, "pab_max").ok(),
+            as_pab_max: common::noodles::get_f32(record, "AS_pab_max").ok(),
+            as_qual_approx: common::noodles::get_i32(record, "AS_QUALapprox").ok(),
+            as_sb_table: common::noodles::get_string(record, "AS_SB_TABLE").ok(),
         })
     }
 
@@ -269,8 +284,8 @@ impl Record {
             cohort: None,
             by_sex: Some(AlleleCountsBySex {
                 overall: Some(Self::extract_allele_counts(record, "", "")?),
-                xx: Some(Self::extract_allele_counts(record, "")?),
-                xy: Some(Self::extract_allele_counts(record, "")?),
+                xx: Some(Self::extract_allele_counts(record, "", "_XX")?),
+                xy: Some(Self::extract_allele_counts(record, "", "_XY")?),
             }),
             raw: Some(Self::extract_allele_counts(record, "", "_raw")?),
             popmax: common::noodles::get_string(record, "popmax").ok(),
@@ -299,8 +314,8 @@ impl Record {
                     cohort: Some(cohort.to_string()),
                     by_sex: Some(AlleleCountsBySex {
                         overall: Some(Self::extract_allele_counts(record, &prefix, "")?),
-                        xx: Some(Self::extract_allele_counts(record, &prefix)?),
-                        xy: Some(Self::extract_allele_counts(record, &prefix)?),
+                        xx: Some(Self::extract_allele_counts(record, &prefix, "_XX")?),
+                        xy: Some(Self::extract_allele_counts(record, &prefix, "_XY")?),
                     }),
                     raw: Some(Self::extract_allele_counts(record, &prefix, "_raw")?),
                     popmax: common::noodles::get_string(record, &format!("{}_popmax", cohort)).ok(),
@@ -362,6 +377,10 @@ impl Record {
             // "ok()" here so things don't blow up randomly.
             faf95: common::noodles::get_f32(record, &format!("faf95_{}", pop)).ok(),
             faf99: common::noodles::get_f32(record, &format!("faf99_{}", pop)).ok(),
+            faf95_xx: common::noodles::get_f32(record, &format!("faf95_{}_XX", pop)).ok(),
+            faf99_xx: common::noodles::get_f32(record, &format!("faf99_{}_XX", pop)).ok(),
+            faf95_xy: common::noodles::get_f32(record, &format!("faf95_{}_XY", pop)).ok(),
+            faf99_xy: common::noodles::get_f32(record, &format!("faf99_{}_XY", pop)).ok(),
         })
     }
 
@@ -398,14 +417,8 @@ mod test {
         let mut records = Vec::new();
         for row in reader_vcf.records(&header) {
             let vcf_record = row?;
-            let record = Record::from_vcf_allele(
-                &vcf_record,
-                0,
-                &DetailsOptions {
-                    rf_info: false,
-                    ..DetailsOptions::with_all_enabled()
-                },
-            )?;
+            let record =
+                Record::from_vcf_allele(&vcf_record, 0, &DetailsOptions::with_all_enabled())?;
             records.push(record);
         }
 

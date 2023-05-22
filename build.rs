@@ -11,9 +11,10 @@ fn main() {
     println!("cargo:rerun-if-changed=annonars/helixmtdb/v1/base.proto");
     prost_build::Config::new()
         .protoc_arg("-Isrc/proto")
-        // Add serde serialization and deserialization to the generated
-        // code.
+        // Add serde serialization and deserialization to the generated code.
         .type_attribute(".", "#[derive(serde::Serialize, serde::Deserialize)]")
+        // Skip serializing `None` values.
+        .type_attribute(".", "#[serde_with::skip_serializing_none]")
         // Rename the field attributes such that we can properly decode
         // ucsc-annotation TSV file with serde.
         .field_attribute(

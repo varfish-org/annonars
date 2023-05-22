@@ -179,7 +179,16 @@ impl Record {
 
     /// Extract the liftover related fields into gnomAD v2 `Vep` records.
     fn extract_liftover(record: &noodles_vcf::Record) -> Result<LiftoverInfo, anyhow::Error> {
-        todo!()
+        Ok(LiftoverInfo {
+            reverse_complemented_alleles: common::noodles::get_flag(
+                record,
+                "ReverseComplementedAlleles",
+            )?,
+            swapped_alleles: common::noodles::get_flag(record, "SwappedAlleles")?,
+            original_alleles: common::noodles::get_vec_str(record, "OriginalAlleles")?,
+            original_contig: common::noodles::get_string(record, "OriginalContig")?,
+            original_start: common::noodles::get_string(record, "OriginalStart")?,
+        })
     }
 
     /// Extract the details on the random forest.
@@ -262,7 +271,7 @@ impl Record {
             mq_rank_sum: common::noodles::get_f32(record, "MQRankSum").ok(),
             qd: common::noodles::get_f32(record, "QD")?,
             read_pos_rank_sum: common::noodles::get_f32(record, "ReadPosRankSum").ok(),
-            sor: common::noodles::get_f32(record, "SOR")?,
+            sor: common::noodles::get_f32(record, "SOR").ok(),
             vqsr_positive_train_site: common::noodles::get_flag(
                 record,
                 "VQSR_POSITIVE_TRAIN_SITE",
