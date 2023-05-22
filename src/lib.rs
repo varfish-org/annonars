@@ -9,6 +9,7 @@ pub mod dbsnp;
 mod error;
 pub mod gnomad_mtdna;
 pub mod gnomad_nuclear;
+pub mod gnomad_pbs;
 pub mod helixmtdb;
 pub mod tsv;
 

@@ -1,0 +1,4505 @@
+---
+source: src/gnomad_pbs/nuclear.rs
+assertion_line: 500
+expression: records
+---
+- chrom: chr1
+  pos: 138653
+  ref_allele: C
+  alt_allele: G
+  filters: []
+  vep2:
+    - allele: G
+      consequence: synonymous_variant
+      impact: LOW
+      symbol: AL627309.1
+      gene: ENSG00000237683
+      feature_type: Transcript
+      feature: ENST00000423372
+      feature_biotype: protein_coding
+      exon: 1/2
+      intron: ~
+      hgvsc: "ENST00000423372.3:c.657G>C"
+      hgvsp: "ENST00000423372.3:c.657G>C(p.=)"
+      cdna_position: "727"
+      cds_position: "657"
+      protein_position: "219"
+      amino_acids: G
+      codons: ggG/ggC
+      existing_variation: ~
+      dbsnp_id: "1"
+      distance: ~
+      strand: "-1"
+      flags: ~
+      variant_class: SNV
+      minimised: "1"
+      symbol_source: Clone_based_ensembl_gene
+      hgnc_id: ~
+      canonical: true
+      tsl: ~
+      appris: ~
+      ccds: ~
+      ensp: ENSP00000473460
+      swissprot: ~
+      trembl: R4GN28&B7Z7W4
+      uniparc: UPI0002C88512
+      gene_pheno: ~
+      sift: ~
+      polyphen: ~
+      domains: []
+      hgvs_offset: ~
+      gmaf: ~
+      afr_maf: ~
+      amr_maf: ~
+      eas_maf: ~
+      eur_maf: ~
+      sas_maf: ~
+      aa_maf: ~
+      ea_maf: ~
+      exac_maf: ~
+      exac_adj_maf: ~
+      exac_afr_maf: ~
+      exac_amr_maf: ~
+      exac_eas_maf: ~
+      exac_fin_maf: ~
+      exac_nfe_maf: ~
+      exac_oth_maf: ~
+      exac_sas_maf: ~
+      clin_sig: ~
+      somatic: ~
+      pheno: ~
+      pubmed: ~
+      motif_name: ~
+      motif_pos: ~
+      high_inf_pos: ~
+      motif_score_change: ~
+      lof: ~
+      lof_filter: ~
+      lof_flags: ~
+      lof_info: ~
+    - allele: G
+      consequence: downstream_gene_variant
+      impact: MODIFIER
+      symbol: CICP27
+      gene: ENSG00000233750
+      feature_type: Transcript
+      feature: ENST00000442987
+      feature_biotype: processed_pseudogene
+      exon: ~
+      intron: ~
+      hgvsc: ~
+      hgvsp: ~
+      cdna_position: ~
+      cds_position: ~
+      protein_position: ~
+      amino_acids: ~
+      codons: ~
+      existing_variation: ~
+      dbsnp_id: "1"
+      distance: "3817"
+      strand: "1"
+      flags: ~
+      variant_class: SNV
+      minimised: "1"
+      symbol_source: HGNC
+      hgnc_id: "48835"
+      canonical: true
+      tsl: ~
+      appris: ~
+      ccds: ~
+      ensp: ~
+      swissprot: ~
+      trembl: ~
+      uniparc: ~
+      gene_pheno: ~
+      sift: ~
+      polyphen: ~
+      domains: []
+      hgvs_offset: ~
+      gmaf: ~
+      afr_maf: ~
+      amr_maf: ~
+      eas_maf: ~
+      eur_maf: ~
+      sas_maf: ~
+      aa_maf: ~
+      ea_maf: ~
+      exac_maf: ~
+      exac_adj_maf: ~
+      exac_afr_maf: ~
+      exac_amr_maf: ~
+      exac_eas_maf: ~
+      exac_fin_maf: ~
+      exac_nfe_maf: ~
+      exac_oth_maf: ~
+      exac_sas_maf: ~
+      clin_sig: ~
+      somatic: ~
+      pheno: ~
+      pubmed: ~
+      motif_name: ~
+      motif_pos: ~
+      high_inf_pos: ~
+      motif_score_change: ~
+      lof: ~
+      lof_filter: ~
+      lof_flags: ~
+      lof_info: ~
+    - allele: G
+      consequence: downstream_gene_variant
+      impact: MODIFIER
+      symbol: RP11-34P13.13
+      gene: ENSG00000241860
+      feature_type: Transcript
+      feature: ENST00000484859
+      feature_biotype: antisense
+      exon: ~
+      intron: ~
+      hgvsc: ~
+      hgvsp: ~
+      cdna_position: ~
+      cds_position: ~
+      protein_position: ~
+      amino_acids: ~
+      codons: ~
+      existing_variation: ~
+      dbsnp_id: "1"
+      distance: "2821"
+      strand: "-1"
+      flags: ~
+      variant_class: SNV
+      minimised: "1"
+      symbol_source: Clone_based_vega_gene
+      hgnc_id: ~
+      canonical: true
+      tsl: ~
+      appris: ~
+      ccds: ~
+      ensp: ~
+      swissprot: ~
+      trembl: ~
+      uniparc: ~
+      gene_pheno: ~
+      sift: ~
+      polyphen: ~
+      domains: []
+      hgvs_offset: ~
+      gmaf: ~
+      afr_maf: ~
+      amr_maf: ~
+      eas_maf: ~
+      eur_maf: ~
+      sas_maf: ~
+      aa_maf: ~
+      ea_maf: ~
+      exac_maf: ~
+      exac_adj_maf: ~
+      exac_afr_maf: ~
+      exac_amr_maf: ~
+      exac_eas_maf: ~
+      exac_fin_maf: ~
+      exac_nfe_maf: ~
+      exac_oth_maf: ~
+      exac_sas_maf: ~
+      clin_sig: ~
+      somatic: ~
+      pheno: ~
+      pubmed: ~
+      motif_name: ~
+      motif_pos: ~
+      high_inf_pos: ~
+      motif_score_change: ~
+      lof: ~
+      lof_filter: ~
+      lof_flags: ~
+      lof_info: ~
+    - allele: G
+      consequence: downstream_gene_variant
+      impact: MODIFIER
+      symbol: RP11-34P13.13
+      gene: ENSG00000241860
+      feature_type: Transcript
+      feature: ENST00000490997
+      feature_biotype: antisense
+      exon: ~
+      intron: ~
+      hgvsc: ~
+      hgvsp: ~
+      cdna_position: ~
+      cds_position: ~
+      protein_position: ~
+      amino_acids: ~
+      codons: ~
+      existing_variation: ~
+      dbsnp_id: "1"
+      distance: "4155"
+      strand: "-1"
+      flags: ~
+      variant_class: SNV
+      minimised: "1"
+      symbol_source: Clone_based_vega_gene
+      hgnc_id: ~
+      canonical: false
+      tsl: ~
+      appris: ~
+      ccds: ~
+      ensp: ~
+      swissprot: ~
+      trembl: ~
+      uniparc: ~
+      gene_pheno: ~
+      sift: ~
+      polyphen: ~
+      domains: []
+      hgvs_offset: ~
+      gmaf: ~
+      afr_maf: ~
+      amr_maf: ~
+      eas_maf: ~
+      eur_maf: ~
+      sas_maf: ~
+      aa_maf: ~
+      ea_maf: ~
+      exac_maf: ~
+      exac_adj_maf: ~
+      exac_afr_maf: ~
+      exac_amr_maf: ~
+      exac_eas_maf: ~
+      exac_fin_maf: ~
+      exac_nfe_maf: ~
+      exac_oth_maf: ~
+      exac_sas_maf: ~
+      clin_sig: ~
+      somatic: ~
+      pheno: ~
+      pubmed: ~
+      motif_name: ~
+      motif_pos: ~
+      high_inf_pos: ~
+      motif_score_change: ~
+      lof: ~
+      lof_filter: ~
+      lof_flags: ~
+      lof_info: ~
+    - allele: G
+      consequence: downstream_gene_variant
+      impact: MODIFIER
+      symbol: RP11-34P13.14
+      gene: ENSG00000239906
+      feature_type: Transcript
+      feature: ENST00000493797
+      feature_biotype: antisense
+      exon: ~
+      intron: ~
+      hgvsc: ~
+      hgvsp: ~
+      cdna_position: ~
+      cds_position: ~
+      protein_position: ~
+      amino_acids: ~
+      codons: ~
+      existing_variation: ~
+      dbsnp_id: "1"
+      distance: "1137"
+      strand: "-1"
+      flags: ~
+      variant_class: SNV
+      minimised: "1"
+      symbol_source: Clone_based_vega_gene
+      hgnc_id: ~
+      canonical: true
+      tsl: ~
+      appris: ~
+      ccds: ~
+      ensp: ~
+      swissprot: ~
+      trembl: ~
+      uniparc: ~
+      gene_pheno: ~
+      sift: ~
+      polyphen: ~
+      domains: []
+      hgvs_offset: ~
+      gmaf: ~
+      afr_maf: ~
+      amr_maf: ~
+      eas_maf: ~
+      eur_maf: ~
+      sas_maf: ~
+      aa_maf: ~
+      ea_maf: ~
+      exac_maf: ~
+      exac_adj_maf: ~
+      exac_afr_maf: ~
+      exac_amr_maf: ~
+      exac_eas_maf: ~
+      exac_fin_maf: ~
+      exac_nfe_maf: ~
+      exac_oth_maf: ~
+      exac_sas_maf: ~
+      clin_sig: ~
+      somatic: ~
+      pheno: ~
+      pubmed: ~
+      motif_name: ~
+      motif_pos: ~
+      high_inf_pos: ~
+      motif_score_change: ~
+      lof: ~
+      lof_filter: ~
+      lof_flags: ~
+      lof_info: ~
+    - allele: G
+      consequence: upstream_gene_variant
+      impact: MODIFIER
+      symbol: RP11-34P13.15
+      gene: ENSG00000268903
+      feature_type: Transcript
+      feature: ENST00000494149
+      feature_biotype: processed_pseudogene
+      exon: ~
+      intron: ~
+      hgvsc: ~
+      hgvsp: ~
+      cdna_position: ~
+      cds_position: ~
+      protein_position: ~
+      amino_acids: ~
+      codons: ~
+      existing_variation: ~
+      dbsnp_id: "1"
+      distance: "2758"
+      strand: "-1"
+      flags: ~
+      variant_class: SNV
+      minimised: "1"
+      symbol_source: Clone_based_vega_gene
+      hgnc_id: ~
+      canonical: true
+      tsl: ~
+      appris: ~
+      ccds: ~
+      ensp: ~
+      swissprot: ~
+      trembl: ~
+      uniparc: ~
+      gene_pheno: ~
+      sift: ~
+      polyphen: ~
+      domains: []
+      hgvs_offset: ~
+      gmaf: ~
+      afr_maf: ~
+      amr_maf: ~
+      eas_maf: ~
+      eur_maf: ~
+      sas_maf: ~
+      aa_maf: ~
+      ea_maf: ~
+      exac_maf: ~
+      exac_adj_maf: ~
+      exac_afr_maf: ~
+      exac_amr_maf: ~
+      exac_eas_maf: ~
+      exac_fin_maf: ~
+      exac_nfe_maf: ~
+      exac_oth_maf: ~
+      exac_sas_maf: ~
+      clin_sig: ~
+      somatic: ~
+      pheno: ~
+      pubmed: ~
+      motif_name: ~
+      motif_pos: ~
+      high_inf_pos: ~
+      motif_score_change: ~
+      lof: ~
+      lof_filter: ~
+      lof_flags: ~
+      lof_info: ~
+    - allele: G
+      consequence: upstream_gene_variant
+      impact: MODIFIER
+      symbol: RP11-34P13.16
+      gene: ENSG00000269981
+      feature_type: Transcript
+      feature: ENST00000595919
+      feature_biotype: processed_pseudogene
+      exon: ~
+      intron: ~
+      hgvsc: ~
+      hgvsp: ~
+      cdna_position: ~
+      cds_position: ~
+      protein_position: ~
+      amino_acids: ~
+      codons: ~
+      existing_variation: ~
+      dbsnp_id: "1"
+      distance: "688"
+      strand: "-1"
+      flags: ~
+      variant_class: SNV
+      minimised: "1"
+      symbol_source: Clone_based_vega_gene
+      hgnc_id: ~
+      canonical: true
+      tsl: ~
+      appris: ~
+      ccds: ~
+      ensp: ~
+      swissprot: ~
+      trembl: ~
+      uniparc: ~
+      gene_pheno: ~
+      sift: ~
+      polyphen: ~
+      domains: []
+      hgvs_offset: ~
+      gmaf: ~
+      afr_maf: ~
+      amr_maf: ~
+      eas_maf: ~
+      eur_maf: ~
+      sas_maf: ~
+      aa_maf: ~
+      ea_maf: ~
+      exac_maf: ~
+      exac_adj_maf: ~
+      exac_afr_maf: ~
+      exac_amr_maf: ~
+      exac_eas_maf: ~
+      exac_fin_maf: ~
+      exac_nfe_maf: ~
+      exac_oth_maf: ~
+      exac_sas_maf: ~
+      clin_sig: ~
+      somatic: ~
+      pheno: ~
+      pubmed: ~
+      motif_name: ~
+      motif_pos: ~
+      high_inf_pos: ~
+      motif_score_change: ~
+      lof: ~
+      lof_filter: ~
+      lof_flags: ~
+      lof_info: ~
+    - allele: G
+      consequence: regulatory_region_variant
+      impact: MODIFIER
+      symbol: ""
+      gene: ""
+      feature_type: RegulatoryFeature
+      feature: ENSR00000668505
+      feature_biotype: CTCF_binding_site
+      exon: ~
+      intron: ~
+      hgvsc: ~
+      hgvsp: ~
+      cdna_position: ~
+      cds_position: ~
+      protein_position: ~
+      amino_acids: ~
+      codons: ~
+      existing_variation: ~
+      dbsnp_id: "1"
+      distance: ~
+      strand: ~
+      flags: ~
+      variant_class: SNV
+      minimised: "1"
+      symbol_source: ~
+      hgnc_id: ~
+      canonical: false
+      tsl: ~
+      appris: ~
+      ccds: ~
+      ensp: ~
+      swissprot: ~
+      trembl: ~
+      uniparc: ~
+      gene_pheno: ~
+      sift: ~
+      polyphen: ~
+      domains: []
+      hgvs_offset: ~
+      gmaf: ~
+      afr_maf: ~
+      amr_maf: ~
+      eas_maf: ~
+      eur_maf: ~
+      sas_maf: ~
+      aa_maf: ~
+      ea_maf: ~
+      exac_maf: ~
+      exac_adj_maf: ~
+      exac_afr_maf: ~
+      exac_amr_maf: ~
+      exac_eas_maf: ~
+      exac_fin_maf: ~
+      exac_nfe_maf: ~
+      exac_oth_maf: ~
+      exac_sas_maf: ~
+      clin_sig: ~
+      somatic: ~
+      pheno: ~
+      pubmed: ~
+      motif_name: ~
+      motif_pos: ~
+      high_inf_pos: ~
+      motif_score_change: ~
+      lof: ~
+      lof_filter: ~
+      lof_flags: ~
+      lof_info: ~
+  vep3: []
+  allele_counts:
+    - cohort: ~
+      by_population:
+        - population: afr
+          counts:
+            overall:
+              ac: 0
+              an: 5224
+              nhomalt: 0
+              af: 0
+            xx:
+              ac: 0
+              an: 2998
+              nhomalt: 0
+              af: 0
+            xy:
+              ac: 0
+              an: 2226
+              nhomalt: 0
+              af: 0
+          faf95: 0
+          faf99: 0
+        - population: amr
+          counts:
+            overall:
+              ac: 0
+              an: 10882
+              nhomalt: 0
+              af: 0
+            xx:
+              ac: 0
+              an: 5942
+              nhomalt: 0
+              af: 0
+            xy:
+              ac: 0
+              an: 4940
+              nhomalt: 0
+              af: 0
+          faf95: 0
+          faf99: 0
+        - population: asj
+          counts:
+            overall:
+              ac: 0
+              an: 1506
+              nhomalt: 0
+              af: 0
+            xx:
+              ac: 0
+              an: 842
+              nhomalt: 0
+              af: 0
+            xy:
+              ac: 0
+              an: 664
+              nhomalt: 0
+              af: 0
+          faf95: ~
+          faf99: ~
+        - population: eas
+          counts:
+            overall:
+              ac: 0
+              an: 7858
+              nhomalt: 0
+              af: 0
+            xx:
+              ac: 0
+              an: 3798
+              nhomalt: 0
+              af: 0
+            xy:
+              ac: 0
+              an: 4060
+              nhomalt: 0
+              af: 0
+          faf95: 0
+          faf99: 0
+        - population: fin
+          counts:
+            overall:
+              ac: 0
+              an: 732
+              nhomalt: 0
+              af: 0
+            xx:
+              ac: 0
+              an: 350
+              nhomalt: 0
+              af: 0
+            xy:
+              ac: 0
+              an: 382
+              nhomalt: 0
+              af: 0
+          faf95: ~
+          faf99: ~
+        - population: nfe
+          counts:
+            overall:
+              ac: 0
+              an: 20660
+              nhomalt: 0
+              af: 0
+            xx:
+              ac: 0
+              an: 10040
+              nhomalt: 0
+              af: 0
+            xy:
+              ac: 0
+              an: 10620
+              nhomalt: 0
+              af: 0
+          faf95: 0
+          faf99: 0
+        - population: oth
+          counts:
+            overall:
+              ac: 0
+              an: 1922
+              nhomalt: 0
+              af: 0
+            xx:
+              ac: 0
+              an: 932
+              nhomalt: 0
+              af: 0
+            xy:
+              ac: 0
+              an: 990
+              nhomalt: 0
+              af: 0
+          faf95: ~
+          faf99: ~
+        - population: sas
+          counts:
+            overall:
+              ac: 4
+              an: 6086
+              nhomalt: 0
+              af: 0.000657246
+            xx:
+              ac: 0
+              an: 2388
+              nhomalt: 0
+              af: 0
+            xy:
+              ac: 4
+              an: 3698
+              nhomalt: 0
+              af: 0.00108167
+          faf95: 0.00022377
+          faf99: 0.00022383
+      by_sex:
+        overall:
+          ac: 4
+          an: 54870
+          nhomalt: 0
+          af: 0.0000728996
+        xx:
+          ac: 0
+          an: 27290
+          nhomalt: 0
+          af: 0
+        xy:
+          ac: 4
+          an: 27580
+          nhomalt: 0
+          af: 0.000145033
+      raw:
+        ac: 4
+        an: 105176
+        nhomalt: 0
+        af: 0.0000380315
+      popmax: sas
+      af_popmax: 0.000657246
+      ac_popmax: 4
+      an_popmax: 6086
+      nhomalt_popmax: 0
+    - cohort: controls
+      by_population:
+        - population: afr
+          counts:
+            overall:
+              ac: 0
+              an: 2242
+              nhomalt: 0
+              af: 0
+            xx:
+              ac: 0
+              an: 1298
+              nhomalt: 0
+              af: 0
+            xy:
+              ac: 0
+              an: 944
+              nhomalt: 0
+              af: 0
+          faf95: 0
+          faf99: 0
+        - population: amr
+          counts:
+            overall:
+              ac: 0
+              an: 5530
+              nhomalt: 0
+              af: 0
+            xx:
+              ac: 0
+              an: 3116
+              nhomalt: 0
+              af: 0
+            xy:
+              ac: 0
+              an: 2414
+              nhomalt: 0
+              af: 0
+          faf95: 0
+          faf99: 0
+        - population: asj
+          counts:
+            overall:
+              ac: 0
+              an: 276
+              nhomalt: 0
+              af: 0
+            xx:
+              ac: 0
+              an: 124
+              nhomalt: 0
+              af: 0
+            xy:
+              ac: 0
+              an: 152
+              nhomalt: 0
+              af: 0
+          faf95: ~
+          faf99: ~
+        - population: eas
+          counts:
+            overall:
+              ac: 0
+              an: 3874
+              nhomalt: 0
+              af: 0
+            xx:
+              ac: 0
+              an: 1948
+              nhomalt: 0
+              af: 0
+            xy:
+              ac: 0
+              an: 1926
+              nhomalt: 0
+              af: 0
+          faf95: 0
+          faf99: 0
+        - population: fin
+          counts:
+            overall:
+              ac: 0
+              an: 26
+              nhomalt: 0
+              af: 0
+            xx:
+              ac: 0
+              an: 14
+              nhomalt: 0
+              af: 0
+            xy:
+              ac: 0
+              an: 12
+              nhomalt: 0
+              af: 0
+          faf95: ~
+          faf99: ~
+        - population: nfe
+          counts:
+            overall:
+              ac: 0
+              an: 7114
+              nhomalt: 0
+              af: 0
+            xx:
+              ac: 0
+              an: 3750
+              nhomalt: 0
+              af: 0
+            xy:
+              ac: 0
+              an: 3364
+              nhomalt: 0
+              af: 0
+          faf95: 0
+          faf99: 0
+        - population: oth
+          counts:
+            overall:
+              ac: 0
+              an: 702
+              nhomalt: 0
+              af: 0
+            xx:
+              ac: 0
+              an: 360
+              nhomalt: 0
+              af: 0
+            xy:
+              ac: 0
+              an: 342
+              nhomalt: 0
+              af: 0
+          faf95: ~
+          faf99: ~
+        - population: sas
+          counts:
+            overall:
+              ac: 1
+              an: 2804
+              nhomalt: 0
+              af: 0.000356633
+            xx:
+              ac: 0
+              an: 1108
+              nhomalt: 0
+              af: 0
+            xy:
+              ac: 1
+              an: 1696
+              nhomalt: 0
+              af: 0.000589623
+          faf95: 0.00022377
+          faf99: 0.00022383
+      by_sex:
+        overall:
+          ac: 1
+          an: 22568
+          nhomalt: 0
+          af: 0.0000443105
+        xx:
+          ac: 0
+          an: 11718
+          nhomalt: 0
+          af: 0
+        xy:
+          ac: 1
+          an: 10850
+          nhomalt: 0
+          af: 0.0000921659
+      raw:
+        ac: 1
+        an: 42382
+        nhomalt: 0
+        af: 0.0000235949
+      popmax: sas
+      af_popmax: 0.000356633
+      ac_popmax: 1
+      an_popmax: 2804
+      nhomalt_popmax: 0
+    - cohort: non_cancer
+      by_population:
+        - population: afr
+          counts:
+            overall:
+              ac: 0
+              an: 5224
+              nhomalt: 0
+              af: 0
+            xx:
+              ac: 0
+              an: 2998
+              nhomalt: 0
+              af: 0
+            xy:
+              ac: 0
+              an: 2226
+              nhomalt: 0
+              af: 0
+          faf95: 0
+          faf99: 0
+        - population: amr
+          counts:
+            overall:
+              ac: 0
+              an: 10882
+              nhomalt: 0
+              af: 0
+            xx:
+              ac: 0
+              an: 5942
+              nhomalt: 0
+              af: 0
+            xy:
+              ac: 0
+              an: 4940
+              nhomalt: 0
+              af: 0
+          faf95: 0
+          faf99: 0
+        - population: asj
+          counts:
+            overall:
+              ac: 0
+              an: 1506
+              nhomalt: 0
+              af: 0
+            xx:
+              ac: 0
+              an: 842
+              nhomalt: 0
+              af: 0
+            xy:
+              ac: 0
+              an: 664
+              nhomalt: 0
+              af: 0
+          faf95: ~
+          faf99: ~
+        - population: eas
+          counts:
+            overall:
+              ac: 0
+              an: 7858
+              nhomalt: 0
+              af: 0
+            xx:
+              ac: 0
+              an: 3798
+              nhomalt: 0
+              af: 0
+            xy:
+              ac: 0
+              an: 4060
+              nhomalt: 0
+              af: 0
+          faf95: 0
+          faf99: 0
+        - population: fin
+          counts:
+            overall:
+              ac: 0
+              an: 732
+              nhomalt: 0
+              af: 0
+            xx:
+              ac: 0
+              an: 350
+              nhomalt: 0
+              af: 0
+            xy:
+              ac: 0
+              an: 382
+              nhomalt: 0
+              af: 0
+          faf95: ~
+          faf99: ~
+        - population: nfe
+          counts:
+            overall:
+              ac: 0
+              an: 20660
+              nhomalt: 0
+              af: 0
+            xx:
+              ac: 0
+              an: 10040
+              nhomalt: 0
+              af: 0
+            xy:
+              ac: 0
+              an: 10620
+              nhomalt: 0
+              af: 0
+          faf95: 0
+          faf99: 0
+        - population: oth
+          counts:
+            overall:
+              ac: 0
+              an: 1922
+              nhomalt: 0
+              af: 0
+            xx:
+              ac: 0
+              an: 932
+              nhomalt: 0
+              af: 0
+            xy:
+              ac: 0
+              an: 990
+              nhomalt: 0
+              af: 0
+          faf95: ~
+          faf99: ~
+        - population: sas
+          counts:
+            overall:
+              ac: 4
+              an: 6086
+              nhomalt: 0
+              af: 0.000657246
+            xx:
+              ac: 0
+              an: 2388
+              nhomalt: 0
+              af: 0
+            xy:
+              ac: 4
+              an: 3698
+              nhomalt: 0
+              af: 0.00108167
+          faf95: 0.00022377
+          faf99: 0.00022383
+      by_sex:
+        overall:
+          ac: 4
+          an: 54870
+          nhomalt: 0
+          af: 0.0000728996
+        xx:
+          ac: 0
+          an: 27290
+          nhomalt: 0
+          af: 0
+        xy:
+          ac: 4
+          an: 27580
+          nhomalt: 0
+          af: 0.000145033
+      raw:
+        ac: 4
+        an: 104932
+        nhomalt: 0
+        af: 0.0000381199
+      popmax: sas
+      af_popmax: 0.000657246
+      ac_popmax: 4
+      an_popmax: 6086
+      nhomalt_popmax: 0
+    - cohort: non_neuro
+      by_population:
+        - population: afr
+          counts:
+            overall:
+              ac: 0
+              an: 5192
+              nhomalt: 0
+              af: 0
+            xx:
+              ac: 0
+              an: 2984
+              nhomalt: 0
+              af: 0
+            xy:
+              ac: 0
+              an: 2208
+              nhomalt: 0
+              af: 0
+          faf95: 0
+          faf99: 0
+        - population: amr
+          counts:
+            overall:
+              ac: 0
+              an: 7626
+              nhomalt: 0
+              af: 0
+            xx:
+              ac: 0
+              an: 4234
+              nhomalt: 0
+              af: 0
+            xy:
+              ac: 0
+              an: 3392
+              nhomalt: 0
+              af: 0
+          faf95: 0
+          faf99: 0
+        - population: asj
+          counts:
+            overall:
+              ac: 0
+              an: 654
+              nhomalt: 0
+              af: 0
+            xx:
+              ac: 0
+              an: 294
+              nhomalt: 0
+              af: 0
+            xy:
+              ac: 0
+              an: 360
+              nhomalt: 0
+              af: 0
+          faf95: ~
+          faf99: ~
+        - population: eas
+          counts:
+            overall:
+              ac: 0
+              an: 7846
+              nhomalt: 0
+              af: 0
+            xx:
+              ac: 0
+              an: 3790
+              nhomalt: 0
+              af: 0
+            xy:
+              ac: 0
+              an: 4056
+              nhomalt: 0
+              af: 0
+          faf95: 0
+          faf99: 0
+        - population: fin
+          counts:
+            overall:
+              ac: 0
+              an: 500
+              nhomalt: 0
+              af: 0
+            xx:
+              ac: 0
+              an: 186
+              nhomalt: 0
+              af: 0
+            xy:
+              ac: 0
+              an: 314
+              nhomalt: 0
+              af: 0
+          faf95: ~
+          faf99: ~
+        - population: nfe
+          counts:
+            overall:
+              ac: 0
+              an: 16902
+              nhomalt: 0
+              af: 0
+            xx:
+              ac: 0
+              an: 8748
+              nhomalt: 0
+              af: 0
+            xy:
+              ac: 0
+              an: 8154
+              nhomalt: 0
+              af: 0
+          faf95: 0
+          faf99: 0
+        - population: oth
+          counts:
+            overall:
+              ac: 0
+              an: 1536
+              nhomalt: 0
+              af: 0
+            xx:
+              ac: 0
+              an: 790
+              nhomalt: 0
+              af: 0
+            xy:
+              ac: 0
+              an: 746
+              nhomalt: 0
+              af: 0
+          faf95: ~
+          faf99: ~
+        - population: sas
+          counts:
+            overall:
+              ac: 4
+              an: 6084
+              nhomalt: 0
+              af: 0.000657462
+            xx:
+              ac: 0
+              an: 2388
+              nhomalt: 0
+              af: 0
+            xy:
+              ac: 4
+              an: 3696
+              nhomalt: 0
+              af: 0.00108225
+          faf95: 0.00022377
+          faf99: 0.00022383
+      by_sex:
+        overall:
+          ac: 4
+          an: 46340
+          nhomalt: 0
+          af: 0.0000863185
+        xx:
+          ac: 0
+          an: 23414
+          nhomalt: 0
+          af: 0
+        xy:
+          ac: 4
+          an: 22926
+          nhomalt: 0
+          af: 0.000174474
+      raw:
+        ac: 4
+        an: 89150
+        nhomalt: 0
+        af: 0.0000448682
+      popmax: sas
+      af_popmax: 0.000657462
+      ac_popmax: 4
+      an_popmax: 6084
+      nhomalt_popmax: 0
+    - cohort: non_topmed
+      by_population:
+        - population: afr
+          counts:
+            overall:
+              ac: 0
+              an: 5074
+              nhomalt: 0
+              af: 0
+            xx:
+              ac: 0
+              an: 2900
+              nhomalt: 0
+              af: 0
+            xy:
+              ac: 0
+              an: 2174
+              nhomalt: 0
+              af: 0
+          faf95: 0
+          faf99: 0
+        - population: amr
+          counts:
+            overall:
+              ac: 0
+              an: 10844
+              nhomalt: 0
+              af: 0
+            xx:
+              ac: 0
+              an: 5920
+              nhomalt: 0
+              af: 0
+            xy:
+              ac: 0
+              an: 4924
+              nhomalt: 0
+              af: 0
+          faf95: 0
+          faf99: 0
+        - population: asj
+          counts:
+            overall:
+              ac: 0
+              an: 1478
+              nhomalt: 0
+              af: 0
+            xx:
+              ac: 0
+              an: 828
+              nhomalt: 0
+              af: 0
+            xy:
+              ac: 0
+              an: 650
+              nhomalt: 0
+              af: 0
+          faf95: ~
+          faf99: ~
+        - population: eas
+          counts:
+            overall:
+              ac: 0
+              an: 7856
+              nhomalt: 0
+              af: 0
+            xx:
+              ac: 0
+              an: 3798
+              nhomalt: 0
+              af: 0
+            xy:
+              ac: 0
+              an: 4058
+              nhomalt: 0
+              af: 0
+          faf95: 0
+          faf99: 0
+        - population: fin
+          counts:
+            overall:
+              ac: 0
+              an: 730
+              nhomalt: 0
+              af: 0
+            xx:
+              ac: 0
+              an: 348
+              nhomalt: 0
+              af: 0
+            xy:
+              ac: 0
+              an: 382
+              nhomalt: 0
+              af: 0
+          faf95: ~
+          faf99: ~
+        - population: nfe
+          counts:
+            overall:
+              ac: 0
+              an: 19652
+              nhomalt: 0
+              af: 0
+            xx:
+              ac: 0
+              an: 9496
+              nhomalt: 0
+              af: 0
+            xy:
+              ac: 0
+              an: 10156
+              nhomalt: 0
+              af: 0
+          faf95: 0
+          faf99: 0
+        - population: oth
+          counts:
+            overall:
+              ac: 0
+              an: 1878
+              nhomalt: 0
+              af: 0
+            xx:
+              ac: 0
+              an: 908
+              nhomalt: 0
+              af: 0
+            xy:
+              ac: 0
+              an: 970
+              nhomalt: 0
+              af: 0
+          faf95: ~
+          faf99: ~
+        - population: sas
+          counts:
+            overall:
+              ac: 4
+              an: 6086
+              nhomalt: 0
+              af: 0.000657246
+            xx:
+              ac: 0
+              an: 2388
+              nhomalt: 0
+              af: 0
+            xy:
+              ac: 4
+              an: 3698
+              nhomalt: 0
+              af: 0.00108167
+          faf95: 0.00022377
+          faf99: 0.00022383
+      by_sex:
+        overall:
+          ac: 4
+          an: 53598
+          nhomalt: 0
+          af: 0.0000746297
+        xx:
+          ac: 0
+          an: 26586
+          nhomalt: 0
+          af: 0
+        xy:
+          ac: 4
+          an: 27012
+          nhomalt: 0
+          af: 0.000148082
+      raw:
+        ac: 4
+        an: 103858
+        nhomalt: 0
+        af: 0.0000385141
+      popmax: sas
+      af_popmax: 0.000657246
+      ac_popmax: 4
+      an_popmax: 6086
+      nhomalt_popmax: 0
+  nonpar: false
+  rf_info:
+    rf_tp_probability: 0.561271
+    rf_positive_label: false
+    rf_negative_label: false
+    rf_label: ~
+    rf_train: false
+  variant_info:
+    variant_type: multi-snv
+    allele_type: snv
+    n_alt_alleles: 3
+    was_mixed: false
+    has_star: false
+  quality_info:
+    fs: 2.105
+    inbreeding_coeff: 0.0985
+    mq: 36.33
+    mq_rank_sum: -0.376
+    qd: 8.31
+    read_pos_rank_sum: 0.84
+    sor: 0.908
+    vqsr_positive_train_site: false
+    vqsr_negative_train_site: false
+    base_q_rank_sum: 1.04
+    clipping_rank_sum: 0.374
+    dp: 4939758
+    vqslod: 0.796
+    vqsr_culprit: MQ
+    segdup: true
+    lcr: false
+    decoy: false
+    transmitted_singleton: false
+    pab_max: 0.0423948
+  age_info:
+    age_hist_hom_bin_freq: []
+    age_hist_hom_n_smaller: 0
+    age_hist_hom_n_larger: 0
+    age_hist_het_bin_freq: []
+    age_hist_het_n_smaller: 0
+    age_hist_het_n_larger: 0
+  depth_info:
+    dp_hist_all_n_larger: 15029
+    dp_hist_alt_n_larger: 4
+    dp_hist_all_bin_freq: []
+    dp_hist_alt_bin_freq: []
+- chrom: chr1
+  pos: 138654
+  ref_allele: C
+  alt_allele: T
+  filters: []
+  vep2:
+    - allele: T
+      consequence: missense_variant
+      impact: MODERATE
+      symbol: AL627309.1
+      gene: ENSG00000237683
+      feature_type: Transcript
+      feature: ENST00000423372
+      feature_biotype: protein_coding
+      exon: 1/2
+      intron: ~
+      hgvsc: "ENST00000423372.3:c.656G>A"
+      hgvsp: "ENSP00000473460.1:p.Gly219Glu"
+      cdna_position: "726"
+      cds_position: "656"
+      protein_position: "219"
+      amino_acids: G/E
+      codons: gGg/gAg
+      existing_variation: ~
+      dbsnp_id: "1"
+      distance: ~
+      strand: "-1"
+      flags: ~
+      variant_class: SNV
+      minimised: "1"
+      symbol_source: Clone_based_ensembl_gene
+      hgnc_id: ~
+      canonical: true
+      tsl: ~
+      appris: ~
+      ccds: ~
+      ensp: ENSP00000473460
+      swissprot: ~
+      trembl: R4GN28&B7Z7W4
+      uniparc: UPI0002C88512
+      gene_pheno: ~
+      sift:
+        prediction: deleterious
+        score: 0.03
+      polyphen:
+        prediction: benign
+        score: 0.057
+      domains: []
+      hgvs_offset: ~
+      gmaf: ~
+      afr_maf: ~
+      amr_maf: ~
+      eas_maf: ~
+      eur_maf: ~
+      sas_maf: ~
+      aa_maf: ~
+      ea_maf: ~
+      exac_maf: ~
+      exac_adj_maf: ~
+      exac_afr_maf: ~
+      exac_amr_maf: ~
+      exac_eas_maf: ~
+      exac_fin_maf: ~
+      exac_nfe_maf: ~
+      exac_oth_maf: ~
+      exac_sas_maf: ~
+      clin_sig: ~
+      somatic: ~
+      pheno: ~
+      pubmed: ~
+      motif_name: ~
+      motif_pos: ~
+      high_inf_pos: ~
+      motif_score_change: ~
+      lof: ~
+      lof_filter: ~
+      lof_flags: ~
+      lof_info: ~
+    - allele: T
+      consequence: downstream_gene_variant
+      impact: MODIFIER
+      symbol: CICP27
+      gene: ENSG00000233750
+      feature_type: Transcript
+      feature: ENST00000442987
+      feature_biotype: processed_pseudogene
+      exon: ~
+      intron: ~
+      hgvsc: ~
+      hgvsp: ~
+      cdna_position: ~
+      cds_position: ~
+      protein_position: ~
+      amino_acids: ~
+      codons: ~
+      existing_variation: ~
+      dbsnp_id: "1"
+      distance: "3818"
+      strand: "1"
+      flags: ~
+      variant_class: SNV
+      minimised: "1"
+      symbol_source: HGNC
+      hgnc_id: "48835"
+      canonical: true
+      tsl: ~
+      appris: ~
+      ccds: ~
+      ensp: ~
+      swissprot: ~
+      trembl: ~
+      uniparc: ~
+      gene_pheno: ~
+      sift: ~
+      polyphen: ~
+      domains: []
+      hgvs_offset: ~
+      gmaf: ~
+      afr_maf: ~
+      amr_maf: ~
+      eas_maf: ~
+      eur_maf: ~
+      sas_maf: ~
+      aa_maf: ~
+      ea_maf: ~
+      exac_maf: ~
+      exac_adj_maf: ~
+      exac_afr_maf: ~
+      exac_amr_maf: ~
+      exac_eas_maf: ~
+      exac_fin_maf: ~
+      exac_nfe_maf: ~
+      exac_oth_maf: ~
+      exac_sas_maf: ~
+      clin_sig: ~
+      somatic: ~
+      pheno: ~
+      pubmed: ~
+      motif_name: ~
+      motif_pos: ~
+      high_inf_pos: ~
+      motif_score_change: ~
+      lof: ~
+      lof_filter: ~
+      lof_flags: ~
+      lof_info: ~
+    - allele: T
+      consequence: downstream_gene_variant
+      impact: MODIFIER
+      symbol: RP11-34P13.13
+      gene: ENSG00000241860
+      feature_type: Transcript
+      feature: ENST00000484859
+      feature_biotype: antisense
+      exon: ~
+      intron: ~
+      hgvsc: ~
+      hgvsp: ~
+      cdna_position: ~
+      cds_position: ~
+      protein_position: ~
+      amino_acids: ~
+      codons: ~
+      existing_variation: ~
+      dbsnp_id: "1"
+      distance: "2820"
+      strand: "-1"
+      flags: ~
+      variant_class: SNV
+      minimised: "1"
+      symbol_source: Clone_based_vega_gene
+      hgnc_id: ~
+      canonical: true
+      tsl: ~
+      appris: ~
+      ccds: ~
+      ensp: ~
+      swissprot: ~
+      trembl: ~
+      uniparc: ~
+      gene_pheno: ~
+      sift: ~
+      polyphen: ~
+      domains: []
+      hgvs_offset: ~
+      gmaf: ~
+      afr_maf: ~
+      amr_maf: ~
+      eas_maf: ~
+      eur_maf: ~
+      sas_maf: ~
+      aa_maf: ~
+      ea_maf: ~
+      exac_maf: ~
+      exac_adj_maf: ~
+      exac_afr_maf: ~
+      exac_amr_maf: ~
+      exac_eas_maf: ~
+      exac_fin_maf: ~
+      exac_nfe_maf: ~
+      exac_oth_maf: ~
+      exac_sas_maf: ~
+      clin_sig: ~
+      somatic: ~
+      pheno: ~
+      pubmed: ~
+      motif_name: ~
+      motif_pos: ~
+      high_inf_pos: ~
+      motif_score_change: ~
+      lof: ~
+      lof_filter: ~
+      lof_flags: ~
+      lof_info: ~
+    - allele: T
+      consequence: downstream_gene_variant
+      impact: MODIFIER
+      symbol: RP11-34P13.13
+      gene: ENSG00000241860
+      feature_type: Transcript
+      feature: ENST00000490997
+      feature_biotype: antisense
+      exon: ~
+      intron: ~
+      hgvsc: ~
+      hgvsp: ~
+      cdna_position: ~
+      cds_position: ~
+      protein_position: ~
+      amino_acids: ~
+      codons: ~
+      existing_variation: ~
+      dbsnp_id: "1"
+      distance: "4154"
+      strand: "-1"
+      flags: ~
+      variant_class: SNV
+      minimised: "1"
+      symbol_source: Clone_based_vega_gene
+      hgnc_id: ~
+      canonical: false
+      tsl: ~
+      appris: ~
+      ccds: ~
+      ensp: ~
+      swissprot: ~
+      trembl: ~
+      uniparc: ~
+      gene_pheno: ~
+      sift: ~
+      polyphen: ~
+      domains: []
+      hgvs_offset: ~
+      gmaf: ~
+      afr_maf: ~
+      amr_maf: ~
+      eas_maf: ~
+      eur_maf: ~
+      sas_maf: ~
+      aa_maf: ~
+      ea_maf: ~
+      exac_maf: ~
+      exac_adj_maf: ~
+      exac_afr_maf: ~
+      exac_amr_maf: ~
+      exac_eas_maf: ~
+      exac_fin_maf: ~
+      exac_nfe_maf: ~
+      exac_oth_maf: ~
+      exac_sas_maf: ~
+      clin_sig: ~
+      somatic: ~
+      pheno: ~
+      pubmed: ~
+      motif_name: ~
+      motif_pos: ~
+      high_inf_pos: ~
+      motif_score_change: ~
+      lof: ~
+      lof_filter: ~
+      lof_flags: ~
+      lof_info: ~
+    - allele: T
+      consequence: downstream_gene_variant
+      impact: MODIFIER
+      symbol: RP11-34P13.14
+      gene: ENSG00000239906
+      feature_type: Transcript
+      feature: ENST00000493797
+      feature_biotype: antisense
+      exon: ~
+      intron: ~
+      hgvsc: ~
+      hgvsp: ~
+      cdna_position: ~
+      cds_position: ~
+      protein_position: ~
+      amino_acids: ~
+      codons: ~
+      existing_variation: ~
+      dbsnp_id: "1"
+      distance: "1136"
+      strand: "-1"
+      flags: ~
+      variant_class: SNV
+      minimised: "1"
+      symbol_source: Clone_based_vega_gene
+      hgnc_id: ~
+      canonical: true
+      tsl: ~
+      appris: ~
+      ccds: ~
+      ensp: ~
+      swissprot: ~
+      trembl: ~
+      uniparc: ~
+      gene_pheno: ~
+      sift: ~
+      polyphen: ~
+      domains: []
+      hgvs_offset: ~
+      gmaf: ~
+      afr_maf: ~
+      amr_maf: ~
+      eas_maf: ~
+      eur_maf: ~
+      sas_maf: ~
+      aa_maf: ~
+      ea_maf: ~
+      exac_maf: ~
+      exac_adj_maf: ~
+      exac_afr_maf: ~
+      exac_amr_maf: ~
+      exac_eas_maf: ~
+      exac_fin_maf: ~
+      exac_nfe_maf: ~
+      exac_oth_maf: ~
+      exac_sas_maf: ~
+      clin_sig: ~
+      somatic: ~
+      pheno: ~
+      pubmed: ~
+      motif_name: ~
+      motif_pos: ~
+      high_inf_pos: ~
+      motif_score_change: ~
+      lof: ~
+      lof_filter: ~
+      lof_flags: ~
+      lof_info: ~
+    - allele: T
+      consequence: upstream_gene_variant
+      impact: MODIFIER
+      symbol: RP11-34P13.15
+      gene: ENSG00000268903
+      feature_type: Transcript
+      feature: ENST00000494149
+      feature_biotype: processed_pseudogene
+      exon: ~
+      intron: ~
+      hgvsc: ~
+      hgvsp: ~
+      cdna_position: ~
+      cds_position: ~
+      protein_position: ~
+      amino_acids: ~
+      codons: ~
+      existing_variation: ~
+      dbsnp_id: "1"
+      distance: "2759"
+      strand: "-1"
+      flags: ~
+      variant_class: SNV
+      minimised: "1"
+      symbol_source: Clone_based_vega_gene
+      hgnc_id: ~
+      canonical: true
+      tsl: ~
+      appris: ~
+      ccds: ~
+      ensp: ~
+      swissprot: ~
+      trembl: ~
+      uniparc: ~
+      gene_pheno: ~
+      sift: ~
+      polyphen: ~
+      domains: []
+      hgvs_offset: ~
+      gmaf: ~
+      afr_maf: ~
+      amr_maf: ~
+      eas_maf: ~
+      eur_maf: ~
+      sas_maf: ~
+      aa_maf: ~
+      ea_maf: ~
+      exac_maf: ~
+      exac_adj_maf: ~
+      exac_afr_maf: ~
+      exac_amr_maf: ~
+      exac_eas_maf: ~
+      exac_fin_maf: ~
+      exac_nfe_maf: ~
+      exac_oth_maf: ~
+      exac_sas_maf: ~
+      clin_sig: ~
+      somatic: ~
+      pheno: ~
+      pubmed: ~
+      motif_name: ~
+      motif_pos: ~
+      high_inf_pos: ~
+      motif_score_change: ~
+      lof: ~
+      lof_filter: ~
+      lof_flags: ~
+      lof_info: ~
+    - allele: T
+      consequence: upstream_gene_variant
+      impact: MODIFIER
+      symbol: RP11-34P13.16
+      gene: ENSG00000269981
+      feature_type: Transcript
+      feature: ENST00000595919
+      feature_biotype: processed_pseudogene
+      exon: ~
+      intron: ~
+      hgvsc: ~
+      hgvsp: ~
+      cdna_position: ~
+      cds_position: ~
+      protein_position: ~
+      amino_acids: ~
+      codons: ~
+      existing_variation: ~
+      dbsnp_id: "1"
+      distance: "689"
+      strand: "-1"
+      flags: ~
+      variant_class: SNV
+      minimised: "1"
+      symbol_source: Clone_based_vega_gene
+      hgnc_id: ~
+      canonical: true
+      tsl: ~
+      appris: ~
+      ccds: ~
+      ensp: ~
+      swissprot: ~
+      trembl: ~
+      uniparc: ~
+      gene_pheno: ~
+      sift: ~
+      polyphen: ~
+      domains: []
+      hgvs_offset: ~
+      gmaf: ~
+      afr_maf: ~
+      amr_maf: ~
+      eas_maf: ~
+      eur_maf: ~
+      sas_maf: ~
+      aa_maf: ~
+      ea_maf: ~
+      exac_maf: ~
+      exac_adj_maf: ~
+      exac_afr_maf: ~
+      exac_amr_maf: ~
+      exac_eas_maf: ~
+      exac_fin_maf: ~
+      exac_nfe_maf: ~
+      exac_oth_maf: ~
+      exac_sas_maf: ~
+      clin_sig: ~
+      somatic: ~
+      pheno: ~
+      pubmed: ~
+      motif_name: ~
+      motif_pos: ~
+      high_inf_pos: ~
+      motif_score_change: ~
+      lof: ~
+      lof_filter: ~
+      lof_flags: ~
+      lof_info: ~
+    - allele: T
+      consequence: regulatory_region_variant
+      impact: MODIFIER
+      symbol: ""
+      gene: ""
+      feature_type: RegulatoryFeature
+      feature: ENSR00000668505
+      feature_biotype: CTCF_binding_site
+      exon: ~
+      intron: ~
+      hgvsc: ~
+      hgvsp: ~
+      cdna_position: ~
+      cds_position: ~
+      protein_position: ~
+      amino_acids: ~
+      codons: ~
+      existing_variation: ~
+      dbsnp_id: "1"
+      distance: ~
+      strand: ~
+      flags: ~
+      variant_class: SNV
+      minimised: "1"
+      symbol_source: ~
+      hgnc_id: ~
+      canonical: false
+      tsl: ~
+      appris: ~
+      ccds: ~
+      ensp: ~
+      swissprot: ~
+      trembl: ~
+      uniparc: ~
+      gene_pheno: ~
+      sift: ~
+      polyphen: ~
+      domains: []
+      hgvs_offset: ~
+      gmaf: ~
+      afr_maf: ~
+      amr_maf: ~
+      eas_maf: ~
+      eur_maf: ~
+      sas_maf: ~
+      aa_maf: ~
+      ea_maf: ~
+      exac_maf: ~
+      exac_adj_maf: ~
+      exac_afr_maf: ~
+      exac_amr_maf: ~
+      exac_eas_maf: ~
+      exac_fin_maf: ~
+      exac_nfe_maf: ~
+      exac_oth_maf: ~
+      exac_sas_maf: ~
+      clin_sig: ~
+      somatic: ~
+      pheno: ~
+      pubmed: ~
+      motif_name: ~
+      motif_pos: ~
+      high_inf_pos: ~
+      motif_score_change: ~
+      lof: ~
+      lof_filter: ~
+      lof_flags: ~
+      lof_info: ~
+  vep3: []
+  allele_counts:
+    - cohort: ~
+      by_population:
+        - population: afr
+          counts:
+            overall:
+              ac: 0
+              an: 5224
+              nhomalt: 0
+              af: 0
+            xx:
+              ac: 0
+              an: 2998
+              nhomalt: 0
+              af: 0
+            xy:
+              ac: 0
+              an: 2226
+              nhomalt: 0
+              af: 0
+          faf95: 0
+          faf99: 0
+        - population: amr
+          counts:
+            overall:
+              ac: 2
+              an: 10890
+              nhomalt: 0
+              af: 0.000183655
+            xx:
+              ac: 1
+              an: 5948
+              nhomalt: 0
+              af: 0.000168124
+            xy:
+              ac: 1
+              an: 4942
+              nhomalt: 0
+              af: 0.000202347
+          faf95: 0.00003227
+          faf99: 0.0000323
+        - population: asj
+          counts:
+            overall:
+              ac: 0
+              an: 1508
+              nhomalt: 0
+              af: 0
+            xx:
+              ac: 0
+              an: 844
+              nhomalt: 0
+              af: 0
+            xy:
+              ac: 0
+              an: 664
+              nhomalt: 0
+              af: 0
+          faf95: ~
+          faf99: ~
+        - population: eas
+          counts:
+            overall:
+              ac: 0
+              an: 7858
+              nhomalt: 0
+              af: 0
+            xx:
+              ac: 0
+              an: 3798
+              nhomalt: 0
+              af: 0
+            xy:
+              ac: 0
+              an: 4060
+              nhomalt: 0
+              af: 0
+          faf95: 0
+          faf99: 0
+        - population: fin
+          counts:
+            overall:
+              ac: 0
+              an: 732
+              nhomalt: 0
+              af: 0
+            xx:
+              ac: 0
+              an: 352
+              nhomalt: 0
+              af: 0
+            xy:
+              ac: 0
+              an: 380
+              nhomalt: 0
+              af: 0
+          faf95: ~
+          faf99: ~
+        - population: nfe
+          counts:
+            overall:
+              ac: 0
+              an: 20686
+              nhomalt: 0
+              af: 0
+            xx:
+              ac: 0
+              an: 10050
+              nhomalt: 0
+              af: 0
+            xy:
+              ac: 0
+              an: 10636
+              nhomalt: 0
+              af: 0
+          faf95: 0
+          faf99: 0
+        - population: oth
+          counts:
+            overall:
+              ac: 0
+              an: 1920
+              nhomalt: 0
+              af: 0
+            xx:
+              ac: 0
+              an: 930
+              nhomalt: 0
+              af: 0
+            xy:
+              ac: 0
+              an: 990
+              nhomalt: 0
+              af: 0
+          faf95: ~
+          faf99: ~
+        - population: sas
+          counts:
+            overall:
+              ac: 0
+              an: 6084
+              nhomalt: 0
+              af: 0
+            xx:
+              ac: 0
+              an: 2390
+              nhomalt: 0
+              af: 0
+            xy:
+              ac: 0
+              an: 3694
+              nhomalt: 0
+              af: 0
+          faf95: 0
+          faf99: 0
+      by_sex:
+        overall:
+          ac: 2
+          an: 54902
+          nhomalt: 0
+          af: 0.0000364285
+        xx:
+          ac: 1
+          an: 27310
+          nhomalt: 0
+          af: 0.0000366166
+        xy:
+          ac: 1
+          an: 27592
+          nhomalt: 0
+          af: 0.0000362424
+      raw:
+        ac: 3
+        an: 105366
+        nhomalt: 0
+        af: 0.0000284722
+      popmax: amr
+      af_popmax: 0.000183655
+      ac_popmax: 2
+      an_popmax: 10890
+      nhomalt_popmax: 0
+    - cohort: controls
+      by_population:
+        - population: afr
+          counts:
+            overall:
+              ac: 0
+              an: 2242
+              nhomalt: 0
+              af: 0
+            xx:
+              ac: 0
+              an: 1298
+              nhomalt: 0
+              af: 0
+            xy:
+              ac: 0
+              an: 944
+              nhomalt: 0
+              af: 0
+          faf95: 0
+          faf99: 0
+        - population: amr
+          counts:
+            overall:
+              ac: 0
+              an: 5538
+              nhomalt: 0
+              af: 0
+            xx:
+              ac: 0
+              an: 3126
+              nhomalt: 0
+              af: 0
+            xy:
+              ac: 0
+              an: 2412
+              nhomalt: 0
+              af: 0
+          faf95: 0.00003227
+          faf99: 0.0000323
+        - population: asj
+          counts:
+            overall:
+              ac: 0
+              an: 276
+              nhomalt: 0
+              af: 0
+            xx:
+              ac: 0
+              an: 124
+              nhomalt: 0
+              af: 0
+            xy:
+              ac: 0
+              an: 152
+              nhomalt: 0
+              af: 0
+          faf95: ~
+          faf99: ~
+        - population: eas
+          counts:
+            overall:
+              ac: 0
+              an: 3874
+              nhomalt: 0
+              af: 0
+            xx:
+              ac: 0
+              an: 1948
+              nhomalt: 0
+              af: 0
+            xy:
+              ac: 0
+              an: 1926
+              nhomalt: 0
+              af: 0
+          faf95: 0
+          faf99: 0
+        - population: fin
+          counts:
+            overall:
+              ac: 0
+              an: 26
+              nhomalt: 0
+              af: 0
+            xx:
+              ac: 0
+              an: 14
+              nhomalt: 0
+              af: 0
+            xy:
+              ac: 0
+              an: 12
+              nhomalt: 0
+              af: 0
+          faf95: ~
+          faf99: ~
+        - population: nfe
+          counts:
+            overall:
+              ac: 0
+              an: 7122
+              nhomalt: 0
+              af: 0
+            xx:
+              ac: 0
+              an: 3754
+              nhomalt: 0
+              af: 0
+            xy:
+              ac: 0
+              an: 3368
+              nhomalt: 0
+              af: 0
+          faf95: 0
+          faf99: 0
+        - population: oth
+          counts:
+            overall:
+              ac: 0
+              an: 700
+              nhomalt: 0
+              af: 0
+            xx:
+              ac: 0
+              an: 358
+              nhomalt: 0
+              af: 0
+            xy:
+              ac: 0
+              an: 342
+              nhomalt: 0
+              af: 0
+          faf95: ~
+          faf99: ~
+        - population: sas
+          counts:
+            overall:
+              ac: 0
+              an: 2804
+              nhomalt: 0
+              af: 0
+            xx:
+              ac: 0
+              an: 1110
+              nhomalt: 0
+              af: 0
+            xy:
+              ac: 0
+              an: 1694
+              nhomalt: 0
+              af: 0
+          faf95: 0
+          faf99: 0
+      by_sex:
+        overall:
+          ac: 0
+          an: 22582
+          nhomalt: 0
+          af: 0
+        xx:
+          ac: 0
+          an: 11732
+          nhomalt: 0
+          af: 0
+        xy:
+          ac: 0
+          an: 10850
+          nhomalt: 0
+          af: 0
+      raw:
+        ac: 0
+        an: 42482
+        nhomalt: 0
+        af: 0
+      popmax: ~
+      af_popmax: ~
+      ac_popmax: ~
+      an_popmax: ~
+      nhomalt_popmax: ~
+    - cohort: non_cancer
+      by_population:
+        - population: afr
+          counts:
+            overall:
+              ac: 0
+              an: 5224
+              nhomalt: 0
+              af: 0
+            xx:
+              ac: 0
+              an: 2998
+              nhomalt: 0
+              af: 0
+            xy:
+              ac: 0
+              an: 2226
+              nhomalt: 0
+              af: 0
+          faf95: 0
+          faf99: 0
+        - population: amr
+          counts:
+            overall:
+              ac: 2
+              an: 10890
+              nhomalt: 0
+              af: 0.000183655
+            xx:
+              ac: 1
+              an: 5948
+              nhomalt: 0
+              af: 0.000168124
+            xy:
+              ac: 1
+              an: 4942
+              nhomalt: 0
+              af: 0.000202347
+          faf95: 0.00003227
+          faf99: 0.0000323
+        - population: asj
+          counts:
+            overall:
+              ac: 0
+              an: 1508
+              nhomalt: 0
+              af: 0
+            xx:
+              ac: 0
+              an: 844
+              nhomalt: 0
+              af: 0
+            xy:
+              ac: 0
+              an: 664
+              nhomalt: 0
+              af: 0
+          faf95: ~
+          faf99: ~
+        - population: eas
+          counts:
+            overall:
+              ac: 0
+              an: 7858
+              nhomalt: 0
+              af: 0
+            xx:
+              ac: 0
+              an: 3798
+              nhomalt: 0
+              af: 0
+            xy:
+              ac: 0
+              an: 4060
+              nhomalt: 0
+              af: 0
+          faf95: 0
+          faf99: 0
+        - population: fin
+          counts:
+            overall:
+              ac: 0
+              an: 732
+              nhomalt: 0
+              af: 0
+            xx:
+              ac: 0
+              an: 352
+              nhomalt: 0
+              af: 0
+            xy:
+              ac: 0
+              an: 380
+              nhomalt: 0
+              af: 0
+          faf95: ~
+          faf99: ~
+        - population: nfe
+          counts:
+            overall:
+              ac: 0
+              an: 20686
+              nhomalt: 0
+              af: 0
+            xx:
+              ac: 0
+              an: 10050
+              nhomalt: 0
+              af: 0
+            xy:
+              ac: 0
+              an: 10636
+              nhomalt: 0
+              af: 0
+          faf95: 0
+          faf99: 0
+        - population: oth
+          counts:
+            overall:
+              ac: 0
+              an: 1920
+              nhomalt: 0
+              af: 0
+            xx:
+              ac: 0
+              an: 930
+              nhomalt: 0
+              af: 0
+            xy:
+              ac: 0
+              an: 990
+              nhomalt: 0
+              af: 0
+          faf95: ~
+          faf99: ~
+        - population: sas
+          counts:
+            overall:
+              ac: 0
+              an: 6084
+              nhomalt: 0
+              af: 0
+            xx:
+              ac: 0
+              an: 2390
+              nhomalt: 0
+              af: 0
+            xy:
+              ac: 0
+              an: 3694
+              nhomalt: 0
+              af: 0
+          faf95: 0
+          faf99: 0
+      by_sex:
+        overall:
+          ac: 2
+          an: 54902
+          nhomalt: 0
+          af: 0.0000364285
+        xx:
+          ac: 1
+          an: 27310
+          nhomalt: 0
+          af: 0.0000366166
+        xy:
+          ac: 1
+          an: 27592
+          nhomalt: 0
+          af: 0.0000362424
+      raw:
+        ac: 3
+        an: 105112
+        nhomalt: 0
+        af: 0.000028541
+      popmax: amr
+      af_popmax: 0.000183655
+      ac_popmax: 2
+      an_popmax: 10890
+      nhomalt_popmax: 0
+    - cohort: non_neuro
+      by_population:
+        - population: afr
+          counts:
+            overall:
+              ac: 0
+              an: 5192
+              nhomalt: 0
+              af: 0
+            xx:
+              ac: 0
+              an: 2984
+              nhomalt: 0
+              af: 0
+            xy:
+              ac: 0
+              an: 2208
+              nhomalt: 0
+              af: 0
+          faf95: 0
+          faf99: 0
+        - population: amr
+          counts:
+            overall:
+              ac: 1
+              an: 7636
+              nhomalt: 0
+              af: 0.000130959
+            xx:
+              ac: 1
+              an: 4242
+              nhomalt: 0
+              af: 0.000235738
+            xy:
+              ac: 0
+              an: 3394
+              nhomalt: 0
+              af: 0
+          faf95: 0.00003227
+          faf99: 0.0000323
+        - population: asj
+          counts:
+            overall:
+              ac: 0
+              an: 656
+              nhomalt: 0
+              af: 0
+            xx:
+              ac: 0
+              an: 296
+              nhomalt: 0
+              af: 0
+            xy:
+              ac: 0
+              an: 360
+              nhomalt: 0
+              af: 0
+          faf95: ~
+          faf99: ~
+        - population: eas
+          counts:
+            overall:
+              ac: 0
+              an: 7846
+              nhomalt: 0
+              af: 0
+            xx:
+              ac: 0
+              an: 3790
+              nhomalt: 0
+              af: 0
+            xy:
+              ac: 0
+              an: 4056
+              nhomalt: 0
+              af: 0
+          faf95: 0
+          faf99: 0
+        - population: fin
+          counts:
+            overall:
+              ac: 0
+              an: 500
+              nhomalt: 0
+              af: 0
+            xx:
+              ac: 0
+              an: 188
+              nhomalt: 0
+              af: 0
+            xy:
+              ac: 0
+              an: 312
+              nhomalt: 0
+              af: 0
+          faf95: ~
+          faf99: ~
+        - population: nfe
+          counts:
+            overall:
+              ac: 0
+              an: 16918
+              nhomalt: 0
+              af: 0
+            xx:
+              ac: 0
+              an: 8754
+              nhomalt: 0
+              af: 0
+            xy:
+              ac: 0
+              an: 8164
+              nhomalt: 0
+              af: 0
+          faf95: 0
+          faf99: 0
+        - population: oth
+          counts:
+            overall:
+              ac: 0
+              an: 1534
+              nhomalt: 0
+              af: 0
+            xx:
+              ac: 0
+              an: 788
+              nhomalt: 0
+              af: 0
+            xy:
+              ac: 0
+              an: 746
+              nhomalt: 0
+              af: 0
+          faf95: ~
+          faf99: ~
+        - population: sas
+          counts:
+            overall:
+              ac: 0
+              an: 6082
+              nhomalt: 0
+              af: 0
+            xx:
+              ac: 0
+              an: 2390
+              nhomalt: 0
+              af: 0
+            xy:
+              ac: 0
+              an: 3692
+              nhomalt: 0
+              af: 0
+          faf95: 0
+          faf99: 0
+      by_sex:
+        overall:
+          ac: 1
+          an: 46364
+          nhomalt: 0
+          af: 0.0000215685
+        xx:
+          ac: 1
+          an: 23432
+          nhomalt: 0
+          af: 0.0000426767
+        xy:
+          ac: 0
+          an: 22932
+          nhomalt: 0
+          af: 0
+      raw:
+        ac: 2
+        an: 89314
+        nhomalt: 0
+        af: 0.0000223929
+      popmax: amr
+      af_popmax: 0.000130959
+      ac_popmax: 1
+      an_popmax: 7636
+      nhomalt_popmax: 0
+    - cohort: non_topmed
+      by_population:
+        - population: afr
+          counts:
+            overall:
+              ac: 0
+              an: 5074
+              nhomalt: 0
+              af: 0
+            xx:
+              ac: 0
+              an: 2900
+              nhomalt: 0
+              af: 0
+            xy:
+              ac: 0
+              an: 2174
+              nhomalt: 0
+              af: 0
+          faf95: 0
+          faf99: 0
+        - population: amr
+          counts:
+            overall:
+              ac: 2
+              an: 10852
+              nhomalt: 0
+              af: 0.000184298
+            xx:
+              ac: 1
+              an: 5926
+              nhomalt: 0
+              af: 0.000168748
+            xy:
+              ac: 1
+              an: 4926
+              nhomalt: 0
+              af: 0.000203004
+          faf95: 0.00003227
+          faf99: 0.0000323
+        - population: asj
+          counts:
+            overall:
+              ac: 0
+              an: 1480
+              nhomalt: 0
+              af: 0
+            xx:
+              ac: 0
+              an: 830
+              nhomalt: 0
+              af: 0
+            xy:
+              ac: 0
+              an: 650
+              nhomalt: 0
+              af: 0
+          faf95: ~
+          faf99: ~
+        - population: eas
+          counts:
+            overall:
+              ac: 0
+              an: 7856
+              nhomalt: 0
+              af: 0
+            xx:
+              ac: 0
+              an: 3798
+              nhomalt: 0
+              af: 0
+            xy:
+              ac: 0
+              an: 4058
+              nhomalt: 0
+              af: 0
+          faf95: 0
+          faf99: 0
+        - population: fin
+          counts:
+            overall:
+              ac: 0
+              an: 730
+              nhomalt: 0
+              af: 0
+            xx:
+              ac: 0
+              an: 350
+              nhomalt: 0
+              af: 0
+            xy:
+              ac: 0
+              an: 380
+              nhomalt: 0
+              af: 0
+          faf95: ~
+          faf99: ~
+        - population: nfe
+          counts:
+            overall:
+              ac: 0
+              an: 19678
+              nhomalt: 0
+              af: 0
+            xx:
+              ac: 0
+              an: 9506
+              nhomalt: 0
+              af: 0
+            xy:
+              ac: 0
+              an: 10172
+              nhomalt: 0
+              af: 0
+          faf95: 0
+          faf99: 0
+        - population: oth
+          counts:
+            overall:
+              ac: 0
+              an: 1876
+              nhomalt: 0
+              af: 0
+            xx:
+              ac: 0
+              an: 906
+              nhomalt: 0
+              af: 0
+            xy:
+              ac: 0
+              an: 970
+              nhomalt: 0
+              af: 0
+          faf95: ~
+          faf99: ~
+        - population: sas
+          counts:
+            overall:
+              ac: 0
+              an: 6084
+              nhomalt: 0
+              af: 0
+            xx:
+              ac: 0
+              an: 2390
+              nhomalt: 0
+              af: 0
+            xy:
+              ac: 0
+              an: 3694
+              nhomalt: 0
+              af: 0
+          faf95: 0
+          faf99: 0
+      by_sex:
+        overall:
+          ac: 2
+          an: 53630
+          nhomalt: 0
+          af: 0.0000372926
+        xx:
+          ac: 1
+          an: 26606
+          nhomalt: 0
+          af: 0.0000375855
+        xy:
+          ac: 1
+          an: 27024
+          nhomalt: 0
+          af: 0.0000370041
+      raw:
+        ac: 3
+        an: 104050
+        nhomalt: 0
+        af: 0.0000288323
+      popmax: amr
+      af_popmax: 0.000184298
+      ac_popmax: 2
+      an_popmax: 10852
+      nhomalt_popmax: 0
+  nonpar: false
+  rf_info:
+    rf_tp_probability: 0.0797253
+    rf_positive_label: false
+    rf_negative_label: false
+    rf_label: ~
+    rf_train: false
+  variant_info:
+    variant_type: snv
+    allele_type: snv
+    n_alt_alleles: 1
+    was_mixed: false
+    has_star: false
+  quality_info:
+    fs: 0.508
+    inbreeding_coeff: -0.0431
+    mq: 36.86
+    mq_rank_sum: 0.482
+    qd: 5.59
+    read_pos_rank_sum: 0.516
+    sor: 0.638
+    vqsr_positive_train_site: false
+    vqsr_negative_train_site: false
+    base_q_rank_sum: 3.84
+    clipping_rank_sum: -0.328
+    dp: 4938132
+    vqslod: 0.585
+    vqsr_culprit: QD
+    segdup: true
+    lcr: false
+    decoy: false
+    transmitted_singleton: false
+    pab_max: 1
+  age_info:
+    age_hist_hom_bin_freq: []
+    age_hist_hom_n_smaller: 0
+    age_hist_hom_n_larger: 0
+    age_hist_het_bin_freq: []
+    age_hist_het_n_smaller: 0
+    age_hist_het_n_larger: 0
+  depth_info:
+    dp_hist_all_n_larger: 15028
+    dp_hist_alt_n_larger: 2
+    dp_hist_all_bin_freq: []
+    dp_hist_alt_bin_freq: []
+- chrom: chr1
+  pos: 138667
+  ref_allele: G
+  alt_allele: C
+  filters: []
+  vep2:
+    - allele: C
+      consequence: missense_variant
+      impact: MODERATE
+      symbol: AL627309.1
+      gene: ENSG00000237683
+      feature_type: Transcript
+      feature: ENST00000423372
+      feature_biotype: protein_coding
+      exon: 1/2
+      intron: ~
+      hgvsc: "ENST00000423372.3:c.643C>G"
+      hgvsp: "ENSP00000473460.1:p.Leu215Val"
+      cdna_position: "713"
+      cds_position: "643"
+      protein_position: "215"
+      amino_acids: L/V
+      codons: Ctt/Gtt
+      existing_variation: ~
+      dbsnp_id: "1"
+      distance: ~
+      strand: "-1"
+      flags: ~
+      variant_class: SNV
+      minimised: "1"
+      symbol_source: Clone_based_ensembl_gene
+      hgnc_id: ~
+      canonical: true
+      tsl: ~
+      appris: ~
+      ccds: ~
+      ensp: ENSP00000473460
+      swissprot: ~
+      trembl: R4GN28&B7Z7W4
+      uniparc: UPI0002C88512
+      gene_pheno: ~
+      sift:
+        prediction: tolerated
+        score: 0.09
+      polyphen:
+        prediction: possibly_damaging
+        score: 0.801
+      domains: []
+      hgvs_offset: ~
+      gmaf: ~
+      afr_maf: ~
+      amr_maf: ~
+      eas_maf: ~
+      eur_maf: ~
+      sas_maf: ~
+      aa_maf: ~
+      ea_maf: ~
+      exac_maf: ~
+      exac_adj_maf: ~
+      exac_afr_maf: ~
+      exac_amr_maf: ~
+      exac_eas_maf: ~
+      exac_fin_maf: ~
+      exac_nfe_maf: ~
+      exac_oth_maf: ~
+      exac_sas_maf: ~
+      clin_sig: ~
+      somatic: ~
+      pheno: ~
+      pubmed: ~
+      motif_name: ~
+      motif_pos: ~
+      high_inf_pos: ~
+      motif_score_change: ~
+      lof: ~
+      lof_filter: ~
+      lof_flags: ~
+      lof_info: ~
+    - allele: C
+      consequence: downstream_gene_variant
+      impact: MODIFIER
+      symbol: CICP27
+      gene: ENSG00000233750
+      feature_type: Transcript
+      feature: ENST00000442987
+      feature_biotype: processed_pseudogene
+      exon: ~
+      intron: ~
+      hgvsc: ~
+      hgvsp: ~
+      cdna_position: ~
+      cds_position: ~
+      protein_position: ~
+      amino_acids: ~
+      codons: ~
+      existing_variation: ~
+      dbsnp_id: "1"
+      distance: "3831"
+      strand: "1"
+      flags: ~
+      variant_class: SNV
+      minimised: "1"
+      symbol_source: HGNC
+      hgnc_id: "48835"
+      canonical: true
+      tsl: ~
+      appris: ~
+      ccds: ~
+      ensp: ~
+      swissprot: ~
+      trembl: ~
+      uniparc: ~
+      gene_pheno: ~
+      sift: ~
+      polyphen: ~
+      domains: []
+      hgvs_offset: ~
+      gmaf: ~
+      afr_maf: ~
+      amr_maf: ~
+      eas_maf: ~
+      eur_maf: ~
+      sas_maf: ~
+      aa_maf: ~
+      ea_maf: ~
+      exac_maf: ~
+      exac_adj_maf: ~
+      exac_afr_maf: ~
+      exac_amr_maf: ~
+      exac_eas_maf: ~
+      exac_fin_maf: ~
+      exac_nfe_maf: ~
+      exac_oth_maf: ~
+      exac_sas_maf: ~
+      clin_sig: ~
+      somatic: ~
+      pheno: ~
+      pubmed: ~
+      motif_name: ~
+      motif_pos: ~
+      high_inf_pos: ~
+      motif_score_change: ~
+      lof: ~
+      lof_filter: ~
+      lof_flags: ~
+      lof_info: ~
+    - allele: C
+      consequence: downstream_gene_variant
+      impact: MODIFIER
+      symbol: RP11-34P13.13
+      gene: ENSG00000241860
+      feature_type: Transcript
+      feature: ENST00000484859
+      feature_biotype: antisense
+      exon: ~
+      intron: ~
+      hgvsc: ~
+      hgvsp: ~
+      cdna_position: ~
+      cds_position: ~
+      protein_position: ~
+      amino_acids: ~
+      codons: ~
+      existing_variation: ~
+      dbsnp_id: "1"
+      distance: "2807"
+      strand: "-1"
+      flags: ~
+      variant_class: SNV
+      minimised: "1"
+      symbol_source: Clone_based_vega_gene
+      hgnc_id: ~
+      canonical: true
+      tsl: ~
+      appris: ~
+      ccds: ~
+      ensp: ~
+      swissprot: ~
+      trembl: ~
+      uniparc: ~
+      gene_pheno: ~
+      sift: ~
+      polyphen: ~
+      domains: []
+      hgvs_offset: ~
+      gmaf: ~
+      afr_maf: ~
+      amr_maf: ~
+      eas_maf: ~
+      eur_maf: ~
+      sas_maf: ~
+      aa_maf: ~
+      ea_maf: ~
+      exac_maf: ~
+      exac_adj_maf: ~
+      exac_afr_maf: ~
+      exac_amr_maf: ~
+      exac_eas_maf: ~
+      exac_fin_maf: ~
+      exac_nfe_maf: ~
+      exac_oth_maf: ~
+      exac_sas_maf: ~
+      clin_sig: ~
+      somatic: ~
+      pheno: ~
+      pubmed: ~
+      motif_name: ~
+      motif_pos: ~
+      high_inf_pos: ~
+      motif_score_change: ~
+      lof: ~
+      lof_filter: ~
+      lof_flags: ~
+      lof_info: ~
+    - allele: C
+      consequence: downstream_gene_variant
+      impact: MODIFIER
+      symbol: RP11-34P13.13
+      gene: ENSG00000241860
+      feature_type: Transcript
+      feature: ENST00000490997
+      feature_biotype: antisense
+      exon: ~
+      intron: ~
+      hgvsc: ~
+      hgvsp: ~
+      cdna_position: ~
+      cds_position: ~
+      protein_position: ~
+      amino_acids: ~
+      codons: ~
+      existing_variation: ~
+      dbsnp_id: "1"
+      distance: "4141"
+      strand: "-1"
+      flags: ~
+      variant_class: SNV
+      minimised: "1"
+      symbol_source: Clone_based_vega_gene
+      hgnc_id: ~
+      canonical: false
+      tsl: ~
+      appris: ~
+      ccds: ~
+      ensp: ~
+      swissprot: ~
+      trembl: ~
+      uniparc: ~
+      gene_pheno: ~
+      sift: ~
+      polyphen: ~
+      domains: []
+      hgvs_offset: ~
+      gmaf: ~
+      afr_maf: ~
+      amr_maf: ~
+      eas_maf: ~
+      eur_maf: ~
+      sas_maf: ~
+      aa_maf: ~
+      ea_maf: ~
+      exac_maf: ~
+      exac_adj_maf: ~
+      exac_afr_maf: ~
+      exac_amr_maf: ~
+      exac_eas_maf: ~
+      exac_fin_maf: ~
+      exac_nfe_maf: ~
+      exac_oth_maf: ~
+      exac_sas_maf: ~
+      clin_sig: ~
+      somatic: ~
+      pheno: ~
+      pubmed: ~
+      motif_name: ~
+      motif_pos: ~
+      high_inf_pos: ~
+      motif_score_change: ~
+      lof: ~
+      lof_filter: ~
+      lof_flags: ~
+      lof_info: ~
+    - allele: C
+      consequence: downstream_gene_variant
+      impact: MODIFIER
+      symbol: RP11-34P13.14
+      gene: ENSG00000239906
+      feature_type: Transcript
+      feature: ENST00000493797
+      feature_biotype: antisense
+      exon: ~
+      intron: ~
+      hgvsc: ~
+      hgvsp: ~
+      cdna_position: ~
+      cds_position: ~
+      protein_position: ~
+      amino_acids: ~
+      codons: ~
+      existing_variation: ~
+      dbsnp_id: "1"
+      distance: "1123"
+      strand: "-1"
+      flags: ~
+      variant_class: SNV
+      minimised: "1"
+      symbol_source: Clone_based_vega_gene
+      hgnc_id: ~
+      canonical: true
+      tsl: ~
+      appris: ~
+      ccds: ~
+      ensp: ~
+      swissprot: ~
+      trembl: ~
+      uniparc: ~
+      gene_pheno: ~
+      sift: ~
+      polyphen: ~
+      domains: []
+      hgvs_offset: ~
+      gmaf: ~
+      afr_maf: ~
+      amr_maf: ~
+      eas_maf: ~
+      eur_maf: ~
+      sas_maf: ~
+      aa_maf: ~
+      ea_maf: ~
+      exac_maf: ~
+      exac_adj_maf: ~
+      exac_afr_maf: ~
+      exac_amr_maf: ~
+      exac_eas_maf: ~
+      exac_fin_maf: ~
+      exac_nfe_maf: ~
+      exac_oth_maf: ~
+      exac_sas_maf: ~
+      clin_sig: ~
+      somatic: ~
+      pheno: ~
+      pubmed: ~
+      motif_name: ~
+      motif_pos: ~
+      high_inf_pos: ~
+      motif_score_change: ~
+      lof: ~
+      lof_filter: ~
+      lof_flags: ~
+      lof_info: ~
+    - allele: C
+      consequence: upstream_gene_variant
+      impact: MODIFIER
+      symbol: RP11-34P13.15
+      gene: ENSG00000268903
+      feature_type: Transcript
+      feature: ENST00000494149
+      feature_biotype: processed_pseudogene
+      exon: ~
+      intron: ~
+      hgvsc: ~
+      hgvsp: ~
+      cdna_position: ~
+      cds_position: ~
+      protein_position: ~
+      amino_acids: ~
+      codons: ~
+      existing_variation: ~
+      dbsnp_id: "1"
+      distance: "2772"
+      strand: "-1"
+      flags: ~
+      variant_class: SNV
+      minimised: "1"
+      symbol_source: Clone_based_vega_gene
+      hgnc_id: ~
+      canonical: true
+      tsl: ~
+      appris: ~
+      ccds: ~
+      ensp: ~
+      swissprot: ~
+      trembl: ~
+      uniparc: ~
+      gene_pheno: ~
+      sift: ~
+      polyphen: ~
+      domains: []
+      hgvs_offset: ~
+      gmaf: ~
+      afr_maf: ~
+      amr_maf: ~
+      eas_maf: ~
+      eur_maf: ~
+      sas_maf: ~
+      aa_maf: ~
+      ea_maf: ~
+      exac_maf: ~
+      exac_adj_maf: ~
+      exac_afr_maf: ~
+      exac_amr_maf: ~
+      exac_eas_maf: ~
+      exac_fin_maf: ~
+      exac_nfe_maf: ~
+      exac_oth_maf: ~
+      exac_sas_maf: ~
+      clin_sig: ~
+      somatic: ~
+      pheno: ~
+      pubmed: ~
+      motif_name: ~
+      motif_pos: ~
+      high_inf_pos: ~
+      motif_score_change: ~
+      lof: ~
+      lof_filter: ~
+      lof_flags: ~
+      lof_info: ~
+    - allele: C
+      consequence: upstream_gene_variant
+      impact: MODIFIER
+      symbol: RP11-34P13.16
+      gene: ENSG00000269981
+      feature_type: Transcript
+      feature: ENST00000595919
+      feature_biotype: processed_pseudogene
+      exon: ~
+      intron: ~
+      hgvsc: ~
+      hgvsp: ~
+      cdna_position: ~
+      cds_position: ~
+      protein_position: ~
+      amino_acids: ~
+      codons: ~
+      existing_variation: ~
+      dbsnp_id: "1"
+      distance: "702"
+      strand: "-1"
+      flags: ~
+      variant_class: SNV
+      minimised: "1"
+      symbol_source: Clone_based_vega_gene
+      hgnc_id: ~
+      canonical: true
+      tsl: ~
+      appris: ~
+      ccds: ~
+      ensp: ~
+      swissprot: ~
+      trembl: ~
+      uniparc: ~
+      gene_pheno: ~
+      sift: ~
+      polyphen: ~
+      domains: []
+      hgvs_offset: ~
+      gmaf: ~
+      afr_maf: ~
+      amr_maf: ~
+      eas_maf: ~
+      eur_maf: ~
+      sas_maf: ~
+      aa_maf: ~
+      ea_maf: ~
+      exac_maf: ~
+      exac_adj_maf: ~
+      exac_afr_maf: ~
+      exac_amr_maf: ~
+      exac_eas_maf: ~
+      exac_fin_maf: ~
+      exac_nfe_maf: ~
+      exac_oth_maf: ~
+      exac_sas_maf: ~
+      clin_sig: ~
+      somatic: ~
+      pheno: ~
+      pubmed: ~
+      motif_name: ~
+      motif_pos: ~
+      high_inf_pos: ~
+      motif_score_change: ~
+      lof: ~
+      lof_filter: ~
+      lof_flags: ~
+      lof_info: ~
+    - allele: C
+      consequence: regulatory_region_variant
+      impact: MODIFIER
+      symbol: ""
+      gene: ""
+      feature_type: RegulatoryFeature
+      feature: ENSR00000668505
+      feature_biotype: CTCF_binding_site
+      exon: ~
+      intron: ~
+      hgvsc: ~
+      hgvsp: ~
+      cdna_position: ~
+      cds_position: ~
+      protein_position: ~
+      amino_acids: ~
+      codons: ~
+      existing_variation: ~
+      dbsnp_id: "1"
+      distance: ~
+      strand: ~
+      flags: ~
+      variant_class: SNV
+      minimised: "1"
+      symbol_source: ~
+      hgnc_id: ~
+      canonical: false
+      tsl: ~
+      appris: ~
+      ccds: ~
+      ensp: ~
+      swissprot: ~
+      trembl: ~
+      uniparc: ~
+      gene_pheno: ~
+      sift: ~
+      polyphen: ~
+      domains: []
+      hgvs_offset: ~
+      gmaf: ~
+      afr_maf: ~
+      amr_maf: ~
+      eas_maf: ~
+      eur_maf: ~
+      sas_maf: ~
+      aa_maf: ~
+      ea_maf: ~
+      exac_maf: ~
+      exac_adj_maf: ~
+      exac_afr_maf: ~
+      exac_amr_maf: ~
+      exac_eas_maf: ~
+      exac_fin_maf: ~
+      exac_nfe_maf: ~
+      exac_oth_maf: ~
+      exac_sas_maf: ~
+      clin_sig: ~
+      somatic: ~
+      pheno: ~
+      pubmed: ~
+      motif_name: ~
+      motif_pos: ~
+      high_inf_pos: ~
+      motif_score_change: ~
+      lof: ~
+      lof_filter: ~
+      lof_flags: ~
+      lof_info: ~
+  vep3: []
+  allele_counts:
+    - cohort: ~
+      by_population:
+        - population: afr
+          counts:
+            overall:
+              ac: 0
+              an: 5228
+              nhomalt: 0
+              af: 0
+            xx:
+              ac: 0
+              an: 2998
+              nhomalt: 0
+              af: 0
+            xy:
+              ac: 0
+              an: 2230
+              nhomalt: 0
+              af: 0
+          faf95: 0
+          faf99: 0
+        - population: amr
+          counts:
+            overall:
+              ac: 0
+              an: 11078
+              nhomalt: 0
+              af: 0
+            xx:
+              ac: 0
+              an: 6056
+              nhomalt: 0
+              af: 0
+            xy:
+              ac: 0
+              an: 5022
+              nhomalt: 0
+              af: 0
+          faf95: 0
+          faf99: 0
+        - population: asj
+          counts:
+            overall:
+              ac: 0
+              an: 1536
+              nhomalt: 0
+              af: 0
+            xx:
+              ac: 0
+              an: 856
+              nhomalt: 0
+              af: 0
+            xy:
+              ac: 0
+              an: 680
+              nhomalt: 0
+              af: 0
+          faf95: ~
+          faf99: ~
+        - population: eas
+          counts:
+            overall:
+              ac: 0
+              an: 7900
+              nhomalt: 0
+              af: 0
+            xx:
+              ac: 0
+              an: 3826
+              nhomalt: 0
+              af: 0
+            xy:
+              ac: 0
+              an: 4074
+              nhomalt: 0
+              af: 0
+          faf95: 0
+          faf99: 0
+        - population: fin
+          counts:
+            overall:
+              ac: 0
+              an: 744
+              nhomalt: 0
+              af: 0
+            xx:
+              ac: 0
+              an: 358
+              nhomalt: 0
+              af: 0
+            xy:
+              ac: 0
+              an: 386
+              nhomalt: 0
+              af: 0
+          faf95: ~
+          faf99: ~
+        - population: nfe
+          counts:
+            overall:
+              ac: 0
+              an: 21110
+              nhomalt: 0
+              af: 0
+            xx:
+              ac: 0
+              an: 10294
+              nhomalt: 0
+              af: 0
+            xy:
+              ac: 0
+              an: 10816
+              nhomalt: 0
+              af: 0
+          faf95: 0
+          faf99: 0
+        - population: oth
+          counts:
+            overall:
+              ac: 0
+              an: 1932
+              nhomalt: 0
+              af: 0
+            xx:
+              ac: 0
+              an: 936
+              nhomalt: 0
+              af: 0
+            xy:
+              ac: 0
+              an: 996
+              nhomalt: 0
+              af: 0
+          faf95: ~
+          faf99: ~
+        - population: sas
+          counts:
+            overall:
+              ac: 1
+              an: 6132
+              nhomalt: 0
+              af: 0.000163079
+            xx:
+              ac: 0
+              an: 2400
+              nhomalt: 0
+              af: 0
+            xy:
+              ac: 1
+              an: 3732
+              nhomalt: 0
+              af: 0.000267953
+          faf95: 0.000008
+          faf99: 0.000008
+      by_sex:
+        overall:
+          ac: 1
+          an: 55660
+          nhomalt: 0
+          af: 0.0000179662
+        xx:
+          ac: 0
+          an: 27724
+          nhomalt: 0
+          af: 0
+        xy:
+          ac: 1
+          an: 27936
+          nhomalt: 0
+          af: 0.0000357961
+      raw:
+        ac: 1
+        an: 111004
+        nhomalt: 0
+        af: 0.00000900868
+      popmax: sas
+      af_popmax: 0.000163079
+      ac_popmax: 1
+      an_popmax: 6132
+      nhomalt_popmax: 0
+    - cohort: controls
+      by_population:
+        - population: afr
+          counts:
+            overall:
+              ac: 0
+              an: 2244
+              nhomalt: 0
+              af: 0
+            xx:
+              ac: 0
+              an: 1298
+              nhomalt: 0
+              af: 0
+            xy:
+              ac: 0
+              an: 946
+              nhomalt: 0
+              af: 0
+          faf95: 0
+          faf99: 0
+        - population: amr
+          counts:
+            overall:
+              ac: 0
+              an: 5638
+              nhomalt: 0
+              af: 0
+            xx:
+              ac: 0
+              an: 3180
+              nhomalt: 0
+              af: 0
+            xy:
+              ac: 0
+              an: 2458
+              nhomalt: 0
+              af: 0
+          faf95: 0
+          faf99: 0
+        - population: asj
+          counts:
+            overall:
+              ac: 0
+              an: 278
+              nhomalt: 0
+              af: 0
+            xx:
+              ac: 0
+              an: 124
+              nhomalt: 0
+              af: 0
+            xy:
+              ac: 0
+              an: 154
+              nhomalt: 0
+              af: 0
+          faf95: ~
+          faf99: ~
+        - population: eas
+          counts:
+            overall:
+              ac: 0
+              an: 3872
+              nhomalt: 0
+              af: 0
+            xx:
+              ac: 0
+              an: 1948
+              nhomalt: 0
+              af: 0
+            xy:
+              ac: 0
+              an: 1924
+              nhomalt: 0
+              af: 0
+          faf95: 0
+          faf99: 0
+        - population: fin
+          counts:
+            overall:
+              ac: 0
+              an: 26
+              nhomalt: 0
+              af: 0
+            xx:
+              ac: 0
+              an: 14
+              nhomalt: 0
+              af: 0
+            xy:
+              ac: 0
+              an: 12
+              nhomalt: 0
+              af: 0
+          faf95: ~
+          faf99: ~
+        - population: nfe
+          counts:
+            overall:
+              ac: 0
+              an: 7186
+              nhomalt: 0
+              af: 0
+            xx:
+              ac: 0
+              an: 3784
+              nhomalt: 0
+              af: 0
+            xy:
+              ac: 0
+              an: 3402
+              nhomalt: 0
+              af: 0
+          faf95: 0
+          faf99: 0
+        - population: oth
+          counts:
+            overall:
+              ac: 0
+              an: 704
+              nhomalt: 0
+              af: 0
+            xx:
+              ac: 0
+              an: 362
+              nhomalt: 0
+              af: 0
+            xy:
+              ac: 0
+              an: 342
+              nhomalt: 0
+              af: 0
+          faf95: ~
+          faf99: ~
+        - population: sas
+          counts:
+            overall:
+              ac: 0
+              an: 2812
+              nhomalt: 0
+              af: 0
+            xx:
+              ac: 0
+              an: 1112
+              nhomalt: 0
+              af: 0
+            xy:
+              ac: 0
+              an: 1700
+              nhomalt: 0
+              af: 0
+          faf95: 0.000008
+          faf99: 0.000008
+      by_sex:
+        overall:
+          ac: 0
+          an: 22760
+          nhomalt: 0
+          af: 0
+        xx:
+          ac: 0
+          an: 11822
+          nhomalt: 0
+          af: 0
+        xy:
+          ac: 0
+          an: 10938
+          nhomalt: 0
+          af: 0
+      raw:
+        ac: 0
+        an: 44536
+        nhomalt: 0
+        af: 0
+      popmax: ~
+      af_popmax: ~
+      ac_popmax: ~
+      an_popmax: ~
+      nhomalt_popmax: ~
+    - cohort: non_cancer
+      by_population:
+        - population: afr
+          counts:
+            overall:
+              ac: 0
+              an: 5228
+              nhomalt: 0
+              af: 0
+            xx:
+              ac: 0
+              an: 2998
+              nhomalt: 0
+              af: 0
+            xy:
+              ac: 0
+              an: 2230
+              nhomalt: 0
+              af: 0
+          faf95: 0
+          faf99: 0
+        - population: amr
+          counts:
+            overall:
+              ac: 0
+              an: 11078
+              nhomalt: 0
+              af: 0
+            xx:
+              ac: 0
+              an: 6056
+              nhomalt: 0
+              af: 0
+            xy:
+              ac: 0
+              an: 5022
+              nhomalt: 0
+              af: 0
+          faf95: 0
+          faf99: 0
+        - population: asj
+          counts:
+            overall:
+              ac: 0
+              an: 1536
+              nhomalt: 0
+              af: 0
+            xx:
+              ac: 0
+              an: 856
+              nhomalt: 0
+              af: 0
+            xy:
+              ac: 0
+              an: 680
+              nhomalt: 0
+              af: 0
+          faf95: ~
+          faf99: ~
+        - population: eas
+          counts:
+            overall:
+              ac: 0
+              an: 7900
+              nhomalt: 0
+              af: 0
+            xx:
+              ac: 0
+              an: 3826
+              nhomalt: 0
+              af: 0
+            xy:
+              ac: 0
+              an: 4074
+              nhomalt: 0
+              af: 0
+          faf95: 0
+          faf99: 0
+        - population: fin
+          counts:
+            overall:
+              ac: 0
+              an: 744
+              nhomalt: 0
+              af: 0
+            xx:
+              ac: 0
+              an: 358
+              nhomalt: 0
+              af: 0
+            xy:
+              ac: 0
+              an: 386
+              nhomalt: 0
+              af: 0
+          faf95: ~
+          faf99: ~
+        - population: nfe
+          counts:
+            overall:
+              ac: 0
+              an: 21110
+              nhomalt: 0
+              af: 0
+            xx:
+              ac: 0
+              an: 10294
+              nhomalt: 0
+              af: 0
+            xy:
+              ac: 0
+              an: 10816
+              nhomalt: 0
+              af: 0
+          faf95: 0
+          faf99: 0
+        - population: oth
+          counts:
+            overall:
+              ac: 0
+              an: 1932
+              nhomalt: 0
+              af: 0
+            xx:
+              ac: 0
+              an: 936
+              nhomalt: 0
+              af: 0
+            xy:
+              ac: 0
+              an: 996
+              nhomalt: 0
+              af: 0
+          faf95: ~
+          faf99: ~
+        - population: sas
+          counts:
+            overall:
+              ac: 1
+              an: 6132
+              nhomalt: 0
+              af: 0.000163079
+            xx:
+              ac: 0
+              an: 2400
+              nhomalt: 0
+              af: 0
+            xy:
+              ac: 1
+              an: 3732
+              nhomalt: 0
+              af: 0.000267953
+          faf95: 0.000008
+          faf99: 0.000008
+      by_sex:
+        overall:
+          ac: 1
+          an: 55660
+          nhomalt: 0
+          af: 0.0000179662
+        xx:
+          ac: 0
+          an: 27724
+          nhomalt: 0
+          af: 0
+        xy:
+          ac: 1
+          an: 27936
+          nhomalt: 0
+          af: 0.0000357961
+      raw:
+        ac: 1
+        an: 110688
+        nhomalt: 0
+        af: 0.0000090344
+      popmax: sas
+      af_popmax: 0.000163079
+      ac_popmax: 1
+      an_popmax: 6132
+      nhomalt_popmax: 0
+    - cohort: non_neuro
+      by_population:
+        - population: afr
+          counts:
+            overall:
+              ac: 0
+              an: 5196
+              nhomalt: 0
+              af: 0
+            xx:
+              ac: 0
+              an: 2984
+              nhomalt: 0
+              af: 0
+            xy:
+              ac: 0
+              an: 2212
+              nhomalt: 0
+              af: 0
+          faf95: 0
+          faf99: 0
+        - population: amr
+          counts:
+            overall:
+              ac: 0
+              an: 7820
+              nhomalt: 0
+              af: 0
+            xx:
+              ac: 0
+              an: 4346
+              nhomalt: 0
+              af: 0
+            xy:
+              ac: 0
+              an: 3474
+              nhomalt: 0
+              af: 0
+          faf95: 0
+          faf99: 0
+        - population: asj
+          counts:
+            overall:
+              ac: 0
+              an: 662
+              nhomalt: 0
+              af: 0
+            xx:
+              ac: 0
+              an: 298
+              nhomalt: 0
+              af: 0
+            xy:
+              ac: 0
+              an: 364
+              nhomalt: 0
+              af: 0
+          faf95: ~
+          faf99: ~
+        - population: eas
+          counts:
+            overall:
+              ac: 0
+              an: 7848
+              nhomalt: 0
+              af: 0
+            xx:
+              ac: 0
+              an: 3790
+              nhomalt: 0
+              af: 0
+            xy:
+              ac: 0
+              an: 4058
+              nhomalt: 0
+              af: 0
+          faf95: 0
+          faf99: 0
+        - population: fin
+          counts:
+            overall:
+              ac: 0
+              an: 514
+              nhomalt: 0
+              af: 0
+            xx:
+              ac: 0
+              an: 196
+              nhomalt: 0
+              af: 0
+            xy:
+              ac: 0
+              an: 318
+              nhomalt: 0
+              af: 0
+          faf95: ~
+          faf99: ~
+        - population: nfe
+          counts:
+            overall:
+              ac: 0
+              an: 17284
+              nhomalt: 0
+              af: 0
+            xx:
+              ac: 0
+              an: 8982
+              nhomalt: 0
+              af: 0
+            xy:
+              ac: 0
+              an: 8302
+              nhomalt: 0
+              af: 0
+          faf95: 0
+          faf99: 0
+        - population: oth
+          counts:
+            overall:
+              ac: 0
+              an: 1544
+              nhomalt: 0
+              af: 0
+            xx:
+              ac: 0
+              an: 794
+              nhomalt: 0
+              af: 0
+            xy:
+              ac: 0
+              an: 750
+              nhomalt: 0
+              af: 0
+          faf95: ~
+          faf99: ~
+        - population: sas
+          counts:
+            overall:
+              ac: 1
+              an: 6130
+              nhomalt: 0
+              af: 0.000163132
+            xx:
+              ac: 0
+              an: 2400
+              nhomalt: 0
+              af: 0
+            xy:
+              ac: 1
+              an: 3730
+              nhomalt: 0
+              af: 0.000268097
+          faf95: 0.000008
+          faf99: 0.000008
+      by_sex:
+        overall:
+          ac: 1
+          an: 46998
+          nhomalt: 0
+          af: 0.0000212775
+        xx:
+          ac: 0
+          an: 23790
+          nhomalt: 0
+          af: 0
+        xy:
+          ac: 1
+          an: 23208
+          nhomalt: 0
+          af: 0.0000430886
+      raw:
+        ac: 1
+        an: 93968
+        nhomalt: 0
+        af: 0.0000106419
+      popmax: sas
+      af_popmax: 0.000163132
+      ac_popmax: 1
+      an_popmax: 6130
+      nhomalt_popmax: 0
+    - cohort: non_topmed
+      by_population:
+        - population: afr
+          counts:
+            overall:
+              ac: 0
+              an: 5078
+              nhomalt: 0
+              af: 0
+            xx:
+              ac: 0
+              an: 2900
+              nhomalt: 0
+              af: 0
+            xy:
+              ac: 0
+              an: 2178
+              nhomalt: 0
+              af: 0
+          faf95: 0
+          faf99: 0
+        - population: amr
+          counts:
+            overall:
+              ac: 0
+              an: 11040
+              nhomalt: 0
+              af: 0
+            xx:
+              ac: 0
+              an: 6034
+              nhomalt: 0
+              af: 0
+            xy:
+              ac: 0
+              an: 5006
+              nhomalt: 0
+              af: 0
+          faf95: 0
+          faf99: 0
+        - population: asj
+          counts:
+            overall:
+              ac: 0
+              an: 1508
+              nhomalt: 0
+              af: 0
+            xx:
+              ac: 0
+              an: 842
+              nhomalt: 0
+              af: 0
+            xy:
+              ac: 0
+              an: 666
+              nhomalt: 0
+              af: 0
+          faf95: ~
+          faf99: ~
+        - population: eas
+          counts:
+            overall:
+              ac: 0
+              an: 7898
+              nhomalt: 0
+              af: 0
+            xx:
+              ac: 0
+              an: 3826
+              nhomalt: 0
+              af: 0
+            xy:
+              ac: 0
+              an: 4072
+              nhomalt: 0
+              af: 0
+          faf95: 0
+          faf99: 0
+        - population: fin
+          counts:
+            overall:
+              ac: 0
+              an: 742
+              nhomalt: 0
+              af: 0
+            xx:
+              ac: 0
+              an: 356
+              nhomalt: 0
+              af: 0
+            xy:
+              ac: 0
+              an: 386
+              nhomalt: 0
+              af: 0
+          faf95: ~
+          faf99: ~
+        - population: nfe
+          counts:
+            overall:
+              ac: 0
+              an: 20102
+              nhomalt: 0
+              af: 0
+            xx:
+              ac: 0
+              an: 9750
+              nhomalt: 0
+              af: 0
+            xy:
+              ac: 0
+              an: 10352
+              nhomalt: 0
+              af: 0
+          faf95: 0
+          faf99: 0
+        - population: oth
+          counts:
+            overall:
+              ac: 0
+              an: 1886
+              nhomalt: 0
+              af: 0
+            xx:
+              ac: 0
+              an: 910
+              nhomalt: 0
+              af: 0
+            xy:
+              ac: 0
+              an: 976
+              nhomalt: 0
+              af: 0
+          faf95: ~
+          faf99: ~
+        - population: sas
+          counts:
+            overall:
+              ac: 1
+              an: 6132
+              nhomalt: 0
+              af: 0.000163079
+            xx:
+              ac: 0
+              an: 2400
+              nhomalt: 0
+              af: 0
+            xy:
+              ac: 1
+              an: 3732
+              nhomalt: 0
+              af: 0.000267953
+          faf95: 0.000008
+          faf99: 0.000008
+      by_sex:
+        overall:
+          ac: 1
+          an: 54386
+          nhomalt: 0
+          af: 0.0000183871
+        xx:
+          ac: 0
+          an: 27018
+          nhomalt: 0
+          af: 0
+        xy:
+          ac: 1
+          an: 27368
+          nhomalt: 0
+          af: 0.000036539
+      raw:
+        ac: 1
+        an: 109674
+        nhomalt: 0
+        af: 0.00000911793
+      popmax: sas
+      af_popmax: 0.000163079
+      ac_popmax: 1
+      an_popmax: 6132
+      nhomalt_popmax: 0
+  nonpar: false
+  rf_info:
+    rf_tp_probability: 0.0108928
+    rf_positive_label: false
+    rf_negative_label: false
+    rf_label: ~
+    rf_train: false
+  variant_info:
+    variant_type: snv
+    allele_type: snv
+    n_alt_alleles: 1
+    was_mixed: false
+    has_star: false
+  quality_info:
+    fs: 18.822
+    inbreeding_coeff: -0.0435
+    mq: 34.94
+    mq_rank_sum: -1.023
+    qd: 4.06
+    read_pos_rank_sum: -0.527
+    sor: 0.09
+    vqsr_positive_train_site: false
+    vqsr_negative_train_site: false
+    base_q_rank_sum: -0.581
+    clipping_rank_sum: 0.03
+    dp: 4968225
+    vqslod: -13.81
+    vqsr_culprit: FS
+    segdup: true
+    lcr: false
+    decoy: false
+    transmitted_singleton: false
+    pab_max: 0.000000000185456
+  age_info:
+    age_hist_hom_bin_freq: []
+    age_hist_hom_n_smaller: 0
+    age_hist_hom_n_larger: 0
+    age_hist_het_bin_freq: []
+    age_hist_het_n_smaller: 0
+    age_hist_het_n_larger: 0
+  depth_info:
+    dp_hist_all_n_larger: 15028
+    dp_hist_alt_n_larger: 1
+    dp_hist_all_bin_freq: []
+    dp_hist_alt_bin_freq: []
+

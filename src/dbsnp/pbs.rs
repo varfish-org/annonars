@@ -4,7 +4,7 @@ use std::str::FromStr;
 
 use noodles_vcf::record::info::field;
 
-include!(concat!(env!("OUT_DIR"), "/annonars.dbsnp.pbs.rs"));
+include!(concat!(env!("OUT_DIR"), "/annonars.dbsnp.v1.base.rs"));
 
 impl Record {
     /// Creates a new `Record` from a VCF record and allele number.

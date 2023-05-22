@@ -7,7 +7,7 @@ use prost::Message;
 use crate::{
     common::{self, cli::extract_chrom, keys, spdi},
     cons::cli::args::vars::ArgsQuery,
-    gnomad_nuclear,
+    gnomad_pbs,
 };
 
 /// Command line arguments for `tsv query` sub command.
@@ -76,7 +76,7 @@ fn open_rocksdb(
 fn print_record(
     out_writer: &mut Box<dyn std::io::Write>,
     output_format: common::cli::OutputFormat,
-    value: &gnomad_nuclear::pbs::Record,
+    value: &gnomad_pbs::nuclear::Record,
 ) -> Result<(), anyhow::Error> {
     match output_format {
         common::cli::OutputFormat::Jsonl => {
@@ -92,7 +92,7 @@ fn query_for_variant(
     meta: &Meta,
     db: &rocksdb::DBWithThreadMode<rocksdb::MultiThreaded>,
     cf_data: &Arc<rocksdb::BoundColumnFamily>,
-) -> Result<gnomad_nuclear::pbs::Record, anyhow::Error> {
+) -> Result<gnomad_pbs::nuclear::Record, anyhow::Error> {
     // Split off the genome release (checked) and convert to key as used in database.
     let query = spdi::Var {
         sequence: extract_chrom::from_var(variant, Some(&meta.genome_release))?,
@@ -106,7 +106,7 @@ fn query_for_variant(
         .get_cf(cf_data, key)?
         .ok_or_else(|| anyhow::anyhow!("could not find variant in database"))?;
     // Decode via prost.
-    gnomad_nuclear::pbs::Record::decode(&mut std::io::Cursor::new(&raw_value))
+    gnomad_pbs::nuclear::Record::decode(&mut std::io::Cursor::new(&raw_value))
         .map_err(|e| anyhow::anyhow!("failed to decode record: {}", e))
 }
 
@@ -190,7 +190,7 @@ pub fn run(common: &common::cli::Args, args: &Args) -> Result<(), anyhow::Error>
                 }
 
                 let record =
-                    gnomad_nuclear::pbs::Record::decode(&mut std::io::Cursor::new(&raw_value))
+                    gnomad_pbs::nuclear::Record::decode(&mut std::io::Cursor::new(&raw_value))
                         .map_err(|e| anyhow::anyhow!("failed to decode record: {}", e))?;
                 print_record(&mut out_writer, args.out_format, &record)?;
                 iter.next();
@@ -220,7 +220,7 @@ mod test {
         };
         let args = Args {
             path_rocksdb: String::from(
-                "tests/gnomad-nuclear/example-exomes/gnomad-exomes.vcf.bgz.db",
+                "tests/gnomad-nuclear/example-exomes-grch37/gnomad-exomes.vcf.bgz.db",
             ),
             cf_name: String::from("gnomad_nuclear_data"),
             out_file: temp.join("out").to_string_lossy().to_string(),
