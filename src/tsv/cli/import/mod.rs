@@ -84,17 +84,21 @@ pub fn process_tsv_line(
     let values = values.iter().collect::<Vec<_>>();
     let var = ctx.values_to_var(&values)?;
 
-    let key: Vec<u8> = var.clone().into();
-    let value = ctx.encode_values(&values)?;
+    if let Some(var) = var.as_ref() {
+        let key: Vec<u8> = var.clone().into();
+        let value = ctx.encode_values(&values)?;
 
-    tracing::trace!(
-        "putting for var = {:?}, key = {:?}, value = {:?}",
-        &var,
-        &key,
-        &value
-    );
+        tracing::trace!(
+            "putting for var = {:?}, key = {:?}, value = {:?}",
+            &var,
+            &key,
+            &value
+        );
 
-    db.put_cf(cf_data, key, value)?;
+        db.put_cf(cf_data, key, value)?;
+    } else {
+        tracing::trace!("skipping line: {:?}", &line);
+    }
 
     Ok(())
 }
