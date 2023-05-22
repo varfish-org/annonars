@@ -37,7 +37,7 @@ flate2 = { version = "1.0" }
 bgzip = { version = "0.3" }
 noodles-bgzf = { version = "0.21" }
 noodles-tabix = { version = "0.20" }
-noodles-csi = "0.17.0"
+noodles-csi = "0.18.0"
 noodles-core = "0.11.0"
 hgvs = { version = "0.7" }
 prost = "0.11"
