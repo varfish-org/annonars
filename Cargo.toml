@@ -42,7 +42,7 @@ noodles-core = "0.11.0"
 hgvs = { version = "0.7" }
 prost = "0.11"
 csv = "1.2.1"
-noodles-vcf = "0.29.0"
+noodles-vcf = "0.30.0"
 noodles-util = { version = "0.10.0", features = ["variant"] }
 
 [build-dependencies]
