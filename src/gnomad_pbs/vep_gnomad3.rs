@@ -83,6 +83,9 @@ impl FromStr for Vep {
                         .iter()
                         .map(|p| {
                             let tmp = p.split(':').collect::<Vec<_>>();
+                            if tmp.len() < 2 {
+                                dbg!(&values, &p);
+                            }
                             super::vep_common::Domain {
                                 source: tmp[0].to_string(),
                                 id: tmp[1].to_string(),
