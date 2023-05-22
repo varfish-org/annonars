@@ -331,6 +331,7 @@ pub fn run(common: &common::cli::Args, args: &Args) -> Result<(), anyhow::Error>
     tracing::info!("Loading gnomad_nuclear VCF file into RocksDB...");
     let before_loading = std::time::Instant::now();
     for path_in_tsv in &args.path_in_vcf {
+        tracing::info!("  importing file {} ...", &path_in_tsv);
         tsv_import(db.clone(), &args, path_in_tsv, gnomad_version)?;
     }
     tracing::info!(
