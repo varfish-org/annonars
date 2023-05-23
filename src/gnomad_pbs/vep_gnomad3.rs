@@ -80,8 +80,8 @@ impl FromStr for Vep {
                 .then(|| {
                     let pairs = values[35].split('&').collect::<Vec<_>>();
                     pairs
-                        .iter()
-                        .filter(|s| s != "null")
+                        .into_iter()
+                        .filter(|s| *s != "null")
                         .map(|p| {
                             let tmp = p.split(':').collect::<Vec<_>>();
                             super::vep_common::Domain {
