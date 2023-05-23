@@ -1,5 +1,12 @@
 # Changelog
 
+### [0.2.2](https://www.github.com/bihealth/annona-rs/compare/v0.2.1...v0.2.2) (2023-05-23)
+
+
+### Bug Fixes
+
+* allow "db-utils copy" without genome-release meta entry ([#39](https://www.github.com/bihealth/annona-rs/issues/39)) ([773896e](https://www.github.com/bihealth/annona-rs/commit/773896e61751215b7b67c214f15751f0b76d3b04))
+
 ### [0.2.1](https://www.github.com/bihealth/annona-rs/compare/v0.2.0...v0.2.1) (2023-05-23)
 
 
