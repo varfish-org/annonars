@@ -1,5 +1,12 @@
 # Changelog
 
+### [0.2.3](https://www.github.com/bihealth/annona-rs/compare/v0.2.2...v0.2.3) (2023-05-23)
+
+
+### Bug Fixes
+
+* tsv parsing index problems ([#41](https://www.github.com/bihealth/annona-rs/issues/41)) ([ff14b54](https://www.github.com/bihealth/annona-rs/commit/ff14b5433d4f789125c2b9fe8079824734ade9aa))
+
 ### [0.2.2](https://www.github.com/bihealth/annona-rs/compare/v0.2.1...v0.2.2) (2023-05-23)
 
 
