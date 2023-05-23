@@ -151,7 +151,7 @@ pub fn tsv_import(
     tracing::info!("  importing TBI-parallel: {}", path_in_tsv);
     regions
         .par_iter()
-        .progress_with_style(common::cli::indicatif_style())
+        .progress_with(common::cli::progress_bar(regions.len()))
         .map(|region| tsv_import_window(db, args, config, schema, path_in_tsv, region))
         .collect::<Result<Vec<_>, _>>()?;
 

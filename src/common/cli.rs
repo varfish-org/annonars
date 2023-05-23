@@ -50,6 +50,18 @@ pub fn indicatif_style() -> indicatif::ProgressStyle {
         .progress_chars("#>-")
 }
 
+/// Construct an `indicatif` progress bar with the common style.
+///
+/// Also, we will enable a steady tick every 0.1s and hide in tests.
+pub fn progress_bar(#[allow(unused_variables)] len: usize) -> indicatif::ProgressBar {
+    #[cfg(test)]
+    let pb = indicatif::ProgressBar::hidden();
+    #[cfg(not(test))]
+    let pb = indicatif::ProgressBar::new(len as u64).with_style(indicatif_style());
+    pb.enable_steady_tick(std::time::Duration::from_millis(100));
+    pb
+}
+
 /// Canonical chromosome names.
 ///
 /// Note that the mitochondrial genome runs under two names.

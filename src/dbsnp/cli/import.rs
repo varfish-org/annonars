@@ -9,10 +9,7 @@ use noodles_vcf::header::record;
 use prost::Message;
 use rayon::prelude::{IntoParallelRefIterator, ParallelIterator};
 
-use crate::{
-    common::{self, cli::indicatif_style},
-    dbsnp,
-};
+use crate::{common, dbsnp};
 
 /// Command line arguments for `dbsnp import` sub command.
 #[derive(Parser, Debug, Clone)]
@@ -79,10 +76,9 @@ fn tsv_import(
 
     tracing::info!("Loading dbSNP VCF file into RocksDB...");
     let before_loading = std::time::Instant::now();
-    let style = indicatif_style();
     windows
         .par_iter()
-        .progress_with_style(style)
+        .progress_with(common::cli::progress_bar(windows.len()))
         .map(|(chrom, begin, end)| process_window(db.clone(), chrom, *begin, *end, args))
         .collect::<Result<Vec<_>, _>>()?;
     tracing::info!(
