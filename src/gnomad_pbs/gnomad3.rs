@@ -308,25 +308,25 @@ impl Record {
         let mut result = vec![global_counts];
         if options.all_cohorts {
             for cohort in COHORTS {
-                let prefix = format!("{}_", cohort);
+                let infix = format!("_{}", cohort);
                 let mut cohort_counts = CohortAlleleCounts {
                     cohort: Some(cohort.to_string()),
                     by_sex: Some(AlleleCountsBySex {
-                        overall: Some(Self::extract_allele_counts(record, &prefix, "")?),
-                        xx: Some(Self::extract_allele_counts(record, &prefix, "_XX")?),
-                        xy: Some(Self::extract_allele_counts(record, &prefix, "_XY")?),
+                        overall: Some(Self::extract_allele_counts(record, &infix, "")?),
+                        xx: Some(Self::extract_allele_counts(record, &infix, "_XX")?),
+                        xy: Some(Self::extract_allele_counts(record, &infix, "_XY")?),
                     }),
-                    raw: Some(Self::extract_allele_counts(record, &prefix, "_raw")?),
+                    raw: Some(Self::extract_allele_counts(record, &infix, "_raw")?),
                     popmax: common::noodles::get_string(record, &format!("{}_popmax", cohort)).ok(),
-                    af_popmax: common::noodles::get_f32(record, &format!("{}_AF_popmax", cohort))
+                    af_popmax: common::noodles::get_f32(record, &format!("AF_{}_popmax", cohort))
                         .ok(),
-                    ac_popmax: common::noodles::get_i32(record, &format!("{}_AC_popmax", cohort))
+                    ac_popmax: common::noodles::get_i32(record, &format!("AC_{}_popmax", cohort))
                         .ok(),
-                    an_popmax: common::noodles::get_i32(record, &format!("{}_AN_popmax", cohort))
+                    an_popmax: common::noodles::get_i32(record, &format!("AN_{}_popmax", cohort))
                         .ok(),
                     nhomalt_popmax: common::noodles::get_i32(
                         record,
-                        &format!("{}_nhomalt_popmax", cohort),
+                        &format!("nhomalt_{}_popmax", cohort),
                     )
                     .ok(),
                     by_population: Vec::new(), // to be filled below
@@ -335,9 +335,7 @@ impl Record {
                 for pop in POPS {
                     cohort_counts
                         .by_population
-                        .push(Self::extract_population_allele_counts(
-                            record, &prefix, pop,
-                        )?);
+                        .push(Self::extract_population_allele_counts(record, &infix, pop)?);
                 }
 
                 result.push(cohort_counts);
@@ -350,7 +348,7 @@ impl Record {
     /// Extrac the population allele counts from the `record`.
     fn extract_population_allele_counts(
         record: &noodles_vcf::Record,
-        prefix: &str,
+        infix: &str,
         pop: &str,
     ) -> Result<PopulationAlleleCounts, anyhow::Error> {
         Ok(PopulationAlleleCounts {
@@ -358,18 +356,18 @@ impl Record {
             counts: Some(AlleleCountsBySex {
                 overall: Some(Self::extract_allele_counts(
                     record,
-                    prefix,
+                    infix,
                     &format!("_{}", pop),
                 )?),
                 xx: Some(Self::extract_allele_counts(
                     record,
-                    prefix,
-                    &format!("_{}_female", pop),
+                    infix,
+                    &format!("_{}_XX", pop),
                 )?),
                 xy: Some(Self::extract_allele_counts(
                     record,
-                    prefix,
-                    &format!("_{}_male", pop),
+                    infix,
+                    &format!("_{}_XY", pop),
                 )?),
             }),
             // The faf95 and faf99 value is not present for all populations.  We use a blanket
@@ -383,20 +381,20 @@ impl Record {
         })
     }
 
-    /// Extract the allele counts from the `record` with the given prefix and suffix.
+    /// Extract the allele counts from the `record` with the given infix and suffix.
     fn extract_allele_counts(
         record: &noodles_vcf::Record,
-        prefix: &str,
+        infix: &str,
         suffix: &str,
     ) -> Result<AlleleCounts, anyhow::Error> {
         Ok(AlleleCounts {
-            ac: common::noodles::get_i32(record, &format!("{}AC{}", prefix, suffix))
+            ac: common::noodles::get_i32(record, &format!("AC{}{}", infix, suffix))
                 .unwrap_or_default(),
-            an: common::noodles::get_i32(record, &format!("{}AN{}", prefix, suffix))
+            an: common::noodles::get_i32(record, &format!("AN{}{}", infix, suffix))
                 .unwrap_or_default(),
-            nhomalt: common::noodles::get_i32(record, &format!("{}nhomalt{}", prefix, suffix))
+            nhomalt: common::noodles::get_i32(record, &format!("nhomalt{}{}", infix, suffix))
                 .unwrap_or_default(),
-            af: common::noodles::get_f32(record, &format!("{}AF{}", prefix, suffix))
+            af: common::noodles::get_f32(record, &format!("AF{}{}", infix, suffix))
                 .unwrap_or_default(),
         })
     }

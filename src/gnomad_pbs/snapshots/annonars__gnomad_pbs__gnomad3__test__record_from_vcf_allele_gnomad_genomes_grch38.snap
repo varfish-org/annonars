@@ -1,5 +1,6 @@
 ---
 source: src/gnomad_pbs/gnomad3.rs
+assertion_line: 422
 expression: records
 ---
 - chrom: chr1
@@ -380,12 +381,12 @@ expression: records
               af: 0
             xx:
               ac: 0
-              an: 0
+              an: 19882
               nhomalt: 0
               af: 0
             xy:
               ac: 0
-              an: 0
+              an: 17174
               nhomalt: 0
               af: 0
           faf95: 0
@@ -403,12 +404,12 @@ expression: records
               af: 0
             xx:
               ac: 0
-              an: 0
+              an: 312
               nhomalt: 0
               af: 0
             xy:
               ac: 0
-              an: 0
+              an: 312
               nhomalt: 0
               af: 0
           faf95: ~
@@ -426,14 +427,14 @@ expression: records
               af: 0.000104668
             xx:
               ac: 0
-              an: 0
+              an: 4306
               nhomalt: 0
               af: 0
             xy:
-              ac: 0
-              an: 0
+              ac: 1
+              an: 5248
               nhomalt: 0
-              af: 0
+              af: 0.000190549
           faf95: 0
           faf99: 0
           faf95_xx: ~
@@ -449,12 +450,12 @@ expression: records
               af: 0
             xx:
               ac: 0
-              an: 0
+              an: 1238
               nhomalt: 0
               af: 0
             xy:
               ac: 0
-              an: 0
+              an: 1030
               nhomalt: 0
               af: 0
           faf95: ~
@@ -472,12 +473,12 @@ expression: records
               af: 0
             xx:
               ac: 0
-              an: 0
+              an: 2054
               nhomalt: 0
               af: 0
             xy:
               ac: 0
-              an: 0
+              an: 2572
               nhomalt: 0
               af: 0
           faf95: 0
@@ -495,12 +496,12 @@ expression: records
               af: 0
             xx:
               ac: 0
-              an: 0
+              an: 1470
               nhomalt: 0
               af: 0
             xy:
               ac: 0
-              an: 0
+              an: 3878
               nhomalt: 0
               af: 0
           faf95: ~
@@ -518,12 +519,12 @@ expression: records
               af: 0
             xx:
               ac: 0
-              an: 0
+              an: 134
               nhomalt: 0
               af: 0
             xy:
               ac: 0
-              an: 0
+              an: 104
               nhomalt: 0
               af: 0
           faf95: ~
@@ -541,12 +542,12 @@ expression: records
               af: 0
             xx:
               ac: 0
-              an: 0
+              an: 26958
               nhomalt: 0
               af: 0
             xy:
               ac: 0
-              an: 0
+              an: 18918
               nhomalt: 0
               af: 0
           faf95: 0
@@ -564,12 +565,12 @@ expression: records
               af: 0
             xx:
               ac: 0
-              an: 0
+              an: 706
               nhomalt: 0
               af: 0
             xy:
               ac: 0
-              an: 0
+              an: 686
               nhomalt: 0
               af: 0
           faf95: ~
@@ -587,12 +588,12 @@ expression: records
               af: 0
             xx:
               ac: 0
-              an: 0
+              an: 760
               nhomalt: 0
               af: 0
             xy:
               ac: 0
-              an: 0
+              an: 2314
               nhomalt: 0
               af: 0
           faf95: 0
@@ -633,17 +634,17 @@ expression: records
           counts:
             overall:
               ac: 0
-              an: 0
+              an: 8100
               nhomalt: 0
               af: 0
             xx:
               ac: 0
-              an: 0
+              an: 4202
               nhomalt: 0
               af: 0
             xy:
               ac: 0
-              an: 0
+              an: 3898
               nhomalt: 0
               af: 0
           faf95: 0
@@ -656,17 +657,17 @@ expression: records
           counts:
             overall:
               ac: 0
-              an: 0
+              an: 30
               nhomalt: 0
               af: 0
             xx:
               ac: 0
-              an: 0
+              an: 12
               nhomalt: 0
               af: 0
             xy:
               ac: 0
-              an: 0
+              an: 18
               nhomalt: 0
               af: 0
           faf95: ~
@@ -679,17 +680,17 @@ expression: records
           counts:
             overall:
               ac: 0
-              an: 0
+              an: 3254
               nhomalt: 0
               af: 0
             xx:
               ac: 0
-              an: 0
+              an: 1720
               nhomalt: 0
               af: 0
             xy:
               ac: 0
-              an: 0
+              an: 1534
               nhomalt: 0
               af: 0
           faf95: 0
@@ -702,17 +703,17 @@ expression: records
           counts:
             overall:
               ac: 0
-              an: 0
+              an: 84
               nhomalt: 0
               af: 0
             xx:
               ac: 0
-              an: 0
+              an: 54
               nhomalt: 0
               af: 0
             xy:
               ac: 0
-              an: 0
+              an: 30
               nhomalt: 0
               af: 0
           faf95: ~
@@ -725,17 +726,17 @@ expression: records
           counts:
             overall:
               ac: 0
-              an: 0
+              an: 2224
               nhomalt: 0
               af: 0
             xx:
               ac: 0
-              an: 0
+              an: 946
               nhomalt: 0
               af: 0
             xy:
               ac: 0
-              an: 0
+              an: 1278
               nhomalt: 0
               af: 0
           faf95: 0
@@ -748,17 +749,17 @@ expression: records
           counts:
             overall:
               ac: 0
-              an: 0
+              an: 2642
               nhomalt: 0
               af: 0
             xx:
               ac: 0
-              an: 0
+              an: 324
               nhomalt: 0
               af: 0
             xy:
               ac: 0
-              an: 0
+              an: 2318
               nhomalt: 0
               af: 0
           faf95: ~
@@ -771,17 +772,17 @@ expression: records
           counts:
             overall:
               ac: 0
-              an: 0
+              an: 188
               nhomalt: 0
               af: 0
             xx:
               ac: 0
-              an: 0
+              an: 108
               nhomalt: 0
               af: 0
             xy:
               ac: 0
-              an: 0
+              an: 80
               nhomalt: 0
               af: 0
           faf95: ~
@@ -794,17 +795,17 @@ expression: records
           counts:
             overall:
               ac: 0
-              an: 0
+              an: 4658
               nhomalt: 0
               af: 0
             xx:
               ac: 0
-              an: 0
+              an: 2270
               nhomalt: 0
               af: 0
             xy:
               ac: 0
-              an: 0
+              an: 2388
               nhomalt: 0
               af: 0
           faf95: 0
@@ -817,17 +818,17 @@ expression: records
           counts:
             overall:
               ac: 0
-              an: 0
+              an: 548
               nhomalt: 0
               af: 0
             xx:
               ac: 0
-              an: 0
+              an: 284
               nhomalt: 0
               af: 0
             xy:
               ac: 0
-              an: 0
+              an: 264
               nhomalt: 0
               af: 0
           faf95: ~
@@ -840,17 +841,17 @@ expression: records
           counts:
             overall:
               ac: 0
-              an: 0
+              an: 2124
               nhomalt: 0
               af: 0
             xx:
               ac: 0
-              an: 0
+              an: 602
               nhomalt: 0
               af: 0
             xy:
               ac: 0
-              an: 0
+              an: 1522
               nhomalt: 0
               af: 0
           faf95: 0
@@ -862,22 +863,22 @@ expression: records
       by_sex:
         overall:
           ac: 0
-          an: 0
+          an: 23852
           nhomalt: 0
           af: 0
         xx:
           ac: 0
-          an: 0
+          an: 10522
           nhomalt: 0
           af: 0
         xy:
           ac: 0
-          an: 0
+          an: 13330
           nhomalt: 0
           af: 0
       raw:
         ac: 0
-        an: 0
+        an: 28694
         nhomalt: 0
         af: 0
       popmax: ~
@@ -891,17 +892,17 @@ expression: records
           counts:
             overall:
               ac: 0
-              an: 0
+              an: 36760
               nhomalt: 0
               af: 0
             xx:
               ac: 0
-              an: 0
+              an: 19740
               nhomalt: 0
               af: 0
             xy:
               ac: 0
-              an: 0
+              an: 17020
               nhomalt: 0
               af: 0
           faf95: 0
@@ -914,17 +915,17 @@ expression: records
           counts:
             overall:
               ac: 0
-              an: 0
+              an: 624
               nhomalt: 0
               af: 0
             xx:
               ac: 0
-              an: 0
+              an: 312
               nhomalt: 0
               af: 0
             xy:
               ac: 0
-              an: 0
+              an: 312
               nhomalt: 0
               af: 0
           faf95: ~
@@ -936,20 +937,20 @@ expression: records
         - population: amr
           counts:
             overall:
-              ac: 0
-              an: 0
+              ac: 1
+              an: 9438
               nhomalt: 0
-              af: 0
+              af: 0.000105955
             xx:
               ac: 0
-              an: 0
+              an: 4276
               nhomalt: 0
               af: 0
             xy:
-              ac: 0
-              an: 0
+              ac: 1
+              an: 5162
               nhomalt: 0
-              af: 0
+              af: 0.000193723
           faf95: 0
           faf99: 0
           faf95_xx: ~
@@ -960,17 +961,17 @@ expression: records
           counts:
             overall:
               ac: 0
-              an: 0
+              an: 2158
               nhomalt: 0
               af: 0
             xx:
               ac: 0
-              an: 0
+              an: 1154
               nhomalt: 0
               af: 0
             xy:
               ac: 0
-              an: 0
+              an: 1004
               nhomalt: 0
               af: 0
           faf95: ~
@@ -983,17 +984,17 @@ expression: records
           counts:
             overall:
               ac: 0
-              an: 0
+              an: 4416
               nhomalt: 0
               af: 0
             xx:
               ac: 0
-              an: 0
+              an: 1964
               nhomalt: 0
               af: 0
             xy:
               ac: 0
-              an: 0
+              an: 2452
               nhomalt: 0
               af: 0
           faf95: 0
@@ -1006,17 +1007,17 @@ expression: records
           counts:
             overall:
               ac: 0
-              an: 0
+              an: 5348
               nhomalt: 0
               af: 0
             xx:
               ac: 0
-              an: 0
+              an: 1470
               nhomalt: 0
               af: 0
             xy:
               ac: 0
-              an: 0
+              an: 3878
               nhomalt: 0
               af: 0
           faf95: ~
@@ -1029,17 +1030,17 @@ expression: records
           counts:
             overall:
               ac: 0
-              an: 0
+              an: 228
               nhomalt: 0
               af: 0
             xx:
               ac: 0
-              an: 0
+              an: 130
               nhomalt: 0
               af: 0
             xy:
               ac: 0
-              an: 0
+              an: 98
               nhomalt: 0
               af: 0
           faf95: ~
@@ -1052,17 +1053,17 @@ expression: records
           counts:
             overall:
               ac: 0
-              an: 0
+              an: 43706
               nhomalt: 0
               af: 0
             xx:
               ac: 0
-              an: 0
+              an: 26112
               nhomalt: 0
               af: 0
             xy:
               ac: 0
-              an: 0
+              an: 17594
               nhomalt: 0
               af: 0
           faf95: 0
@@ -1075,17 +1076,17 @@ expression: records
           counts:
             overall:
               ac: 0
-              an: 0
+              an: 1344
               nhomalt: 0
               af: 0
             xx:
               ac: 0
-              an: 0
+              an: 686
               nhomalt: 0
               af: 0
             xy:
               ac: 0
-              an: 0
+              an: 658
               nhomalt: 0
               af: 0
           faf95: ~
@@ -1098,17 +1099,17 @@ expression: records
           counts:
             overall:
               ac: 0
-              an: 0
+              an: 3046
               nhomalt: 0
               af: 0
             xx:
               ac: 0
-              an: 0
+              an: 744
               nhomalt: 0
               af: 0
             xy:
               ac: 0
-              an: 0
+              an: 2302
               nhomalt: 0
               af: 0
           faf95: 0
@@ -1119,25 +1120,25 @@ expression: records
           faf99_xy: ~
       by_sex:
         overall:
-          ac: 0
-          an: 0
+          ac: 1
+          an: 107068
           nhomalt: 0
-          af: 0
+          af: 0.00000933986
         xx:
           ac: 0
-          an: 0
+          an: 56588
           nhomalt: 0
           af: 0
         xy:
-          ac: 0
-          an: 0
+          ac: 1
+          an: 50480
           nhomalt: 0
-          af: 0
+          af: 0.0000198098
       raw:
-        ac: 0
-        an: 0
+        ac: 1
+        an: 130996
         nhomalt: 0
-        af: 0
+        af: 0.00000763382
       popmax: ~
       af_popmax: ~
       ac_popmax: ~
@@ -1149,17 +1150,17 @@ expression: records
           counts:
             overall:
               ac: 0
-              an: 0
+              an: 29184
               nhomalt: 0
               af: 0
             xx:
               ac: 0
-              an: 0
+              an: 16880
               nhomalt: 0
               af: 0
             xy:
               ac: 0
-              an: 0
+              an: 12304
               nhomalt: 0
               af: 0
           faf95: 0
@@ -1172,17 +1173,17 @@ expression: records
           counts:
             overall:
               ac: 0
-              an: 0
+              an: 594
               nhomalt: 0
               af: 0
             xx:
               ac: 0
-              an: 0
+              an: 286
               nhomalt: 0
               af: 0
             xy:
               ac: 0
-              an: 0
+              an: 308
               nhomalt: 0
               af: 0
           faf95: ~
@@ -1194,20 +1195,20 @@ expression: records
         - population: amr
           counts:
             overall:
-              ac: 0
-              an: 0
+              ac: 1
+              an: 9312
               nhomalt: 0
-              af: 0
+              af: 0.000107388
             xx:
               ac: 0
-              an: 0
+              an: 4208
               nhomalt: 0
               af: 0
             xy:
-              ac: 0
-              an: 0
+              ac: 1
+              an: 5104
               nhomalt: 0
-              af: 0
+              af: 0.000195925
           faf95: 0
           faf99: 0
           faf95_xx: ~
@@ -1218,17 +1219,17 @@ expression: records
           counts:
             overall:
               ac: 0
-              an: 0
+              an: 2220
               nhomalt: 0
               af: 0
             xx:
               ac: 0
-              an: 0
+              an: 1218
               nhomalt: 0
               af: 0
             xy:
               ac: 0
-              an: 0
+              an: 1002
               nhomalt: 0
               af: 0
           faf95: ~
@@ -1241,17 +1242,17 @@ expression: records
           counts:
             overall:
               ac: 0
-              an: 0
+              an: 4626
               nhomalt: 0
               af: 0
             xx:
               ac: 0
-              an: 0
+              an: 2054
               nhomalt: 0
               af: 0
             xy:
               ac: 0
-              an: 0
+              an: 2572
               nhomalt: 0
               af: 0
           faf95: 0
@@ -1264,17 +1265,17 @@ expression: records
           counts:
             overall:
               ac: 0
-              an: 0
+              an: 3366
               nhomalt: 0
               af: 0
             xx:
               ac: 0
-              an: 0
+              an: 416
               nhomalt: 0
               af: 0
             xy:
               ac: 0
-              an: 0
+              an: 2950
               nhomalt: 0
               af: 0
           faf95: ~
@@ -1287,17 +1288,17 @@ expression: records
           counts:
             overall:
               ac: 0
-              an: 0
+              an: 236
               nhomalt: 0
               af: 0
             xx:
               ac: 0
-              an: 0
+              an: 134
               nhomalt: 0
               af: 0
             xy:
               ac: 0
-              an: 0
+              an: 102
               nhomalt: 0
               af: 0
           faf95: ~
@@ -1310,17 +1311,17 @@ expression: records
           counts:
             overall:
               ac: 0
-              an: 0
+              an: 43372
               nhomalt: 0
               af: 0
             xx:
               ac: 0
-              an: 0
+              an: 25940
               nhomalt: 0
               af: 0
             xy:
               ac: 0
-              an: 0
+              an: 17432
               nhomalt: 0
               af: 0
           faf95: 0
@@ -1333,17 +1334,17 @@ expression: records
           counts:
             overall:
               ac: 0
-              an: 0
+              an: 1328
               nhomalt: 0
               af: 0
             xx:
               ac: 0
-              an: 0
+              an: 678
               nhomalt: 0
               af: 0
             xy:
               ac: 0
-              an: 0
+              an: 650
               nhomalt: 0
               af: 0
           faf95: ~
@@ -1356,17 +1357,17 @@ expression: records
           counts:
             overall:
               ac: 0
-              an: 0
+              an: 3074
               nhomalt: 0
               af: 0
             xx:
               ac: 0
-              an: 0
+              an: 760
               nhomalt: 0
               af: 0
             xy:
               ac: 0
-              an: 0
+              an: 2314
               nhomalt: 0
               af: 0
           faf95: 0
@@ -1377,25 +1378,25 @@ expression: records
           faf99_xy: ~
       by_sex:
         overall:
-          ac: 0
-          an: 0
+          ac: 1
+          an: 97312
           nhomalt: 0
-          af: 0
+          af: 0.0000102762
         xx:
           ac: 0
-          an: 0
+          an: 52574
           nhomalt: 0
           af: 0
         xy:
-          ac: 0
-          an: 0
+          ac: 1
+          an: 44738
           nhomalt: 0
-          af: 0
+          af: 0.0000223524
       raw:
-        ac: 0
-        an: 0
+        ac: 1
+        an: 118850
         nhomalt: 0
-        af: 0
+        af: 0.00000841397
       popmax: ~
       af_popmax: ~
       ac_popmax: ~
@@ -1407,17 +1408,17 @@ expression: records
           counts:
             overall:
               ac: 0
-              an: 0
+              an: 21914
               nhomalt: 0
               af: 0
             xx:
               ac: 0
-              an: 0
+              an: 10532
               nhomalt: 0
               af: 0
             xy:
               ac: 0
-              an: 0
+              an: 11382
               nhomalt: 0
               af: 0
           faf95: 0
@@ -1430,17 +1431,17 @@ expression: records
           counts:
             overall:
               ac: 0
-              an: 0
+              an: 60
               nhomalt: 0
               af: 0
             xx:
               ac: 0
-              an: 0
+              an: 38
               nhomalt: 0
               af: 0
             xy:
               ac: 0
-              an: 0
+              an: 22
               nhomalt: 0
               af: 0
           faf95: ~
@@ -1453,17 +1454,17 @@ expression: records
           counts:
             overall:
               ac: 0
-              an: 0
+              an: 8056
               nhomalt: 0
               af: 0
             xx:
               ac: 0
-              an: 0
+              an: 3394
               nhomalt: 0
               af: 0
             xy:
               ac: 0
-              an: 0
+              an: 4662
               nhomalt: 0
               af: 0
           faf95: 0
@@ -1476,17 +1477,17 @@ expression: records
           counts:
             overall:
               ac: 0
-              an: 0
+              an: 650
               nhomalt: 0
               af: 0
             xx:
               ac: 0
-              an: 0
+              an: 176
               nhomalt: 0
               af: 0
             xy:
               ac: 0
-              an: 0
+              an: 474
               nhomalt: 0
               af: 0
           faf95: ~
@@ -1499,17 +1500,17 @@ expression: records
           counts:
             overall:
               ac: 0
-              an: 0
+              an: 3298
               nhomalt: 0
               af: 0
             xx:
               ac: 0
-              an: 0
+              an: 1252
               nhomalt: 0
               af: 0
             xy:
               ac: 0
-              an: 0
+              an: 2046
               nhomalt: 0
               af: 0
           faf95: 0
@@ -1522,17 +1523,17 @@ expression: records
           counts:
             overall:
               ac: 0
-              an: 0
+              an: 5278
               nhomalt: 0
               af: 0
             xx:
               ac: 0
-              an: 0
+              an: 1426
               nhomalt: 0
               af: 0
             xy:
               ac: 0
-              an: 0
+              an: 3852
               nhomalt: 0
               af: 0
           faf95: ~
@@ -1545,17 +1546,17 @@ expression: records
           counts:
             overall:
               ac: 0
-              an: 0
+              an: 206
               nhomalt: 0
               af: 0
             xx:
               ac: 0
-              an: 0
+              an: 116
               nhomalt: 0
               af: 0
             xy:
               ac: 0
-              an: 0
+              an: 90
               nhomalt: 0
               af: 0
           faf95: ~
@@ -1568,17 +1569,17 @@ expression: records
           counts:
             overall:
               ac: 0
-              an: 0
+              an: 13400
               nhomalt: 0
               af: 0
             xx:
               ac: 0
-              an: 0
+              an: 5830
               nhomalt: 0
               af: 0
             xy:
               ac: 0
-              an: 0
+              an: 7570
               nhomalt: 0
               af: 0
           faf95: 0
@@ -1591,17 +1592,17 @@ expression: records
           counts:
             overall:
               ac: 0
-              an: 0
+              an: 978
               nhomalt: 0
               af: 0
             xx:
               ac: 0
-              an: 0
+              an: 460
               nhomalt: 0
               af: 0
             xy:
               ac: 0
-              an: 0
+              an: 518
               nhomalt: 0
               af: 0
           faf95: ~
@@ -1614,17 +1615,17 @@ expression: records
           counts:
             overall:
               ac: 0
-              an: 0
+              an: 3060
               nhomalt: 0
               af: 0
             xx:
               ac: 0
-              an: 0
+              an: 758
               nhomalt: 0
               af: 0
             xy:
               ac: 0
-              an: 0
+              an: 2302
               nhomalt: 0
               af: 0
           faf95: 0
@@ -1636,22 +1637,22 @@ expression: records
       by_sex:
         overall:
           ac: 0
-          an: 0
+          an: 56900
           nhomalt: 0
           af: 0
         xx:
           ac: 0
-          an: 0
+          an: 23982
           nhomalt: 0
           af: 0
         xy:
           ac: 0
-          an: 0
+          an: 32918
           nhomalt: 0
           af: 0
       raw:
         ac: 0
-        an: 0
+        an: 70334
         nhomalt: 0
         af: 0
       popmax: ~
@@ -1665,17 +1666,17 @@ expression: records
           counts:
             overall:
               ac: 0
-              an: 0
+              an: 25570
               nhomalt: 0
               af: 0
             xx:
               ac: 0
-              an: 0
+              an: 14150
               nhomalt: 0
               af: 0
             xy:
               ac: 0
-              an: 0
+              an: 11420
               nhomalt: 0
               af: 0
           faf95: 0
@@ -1688,17 +1689,17 @@ expression: records
           counts:
             overall:
               ac: 0
-              an: 0
+              an: 624
               nhomalt: 0
               af: 0
             xx:
               ac: 0
-              an: 0
+              an: 312
               nhomalt: 0
               af: 0
             xy:
               ac: 0
-              an: 0
+              an: 312
               nhomalt: 0
               af: 0
           faf95: ~
@@ -1710,20 +1711,20 @@ expression: records
         - population: amr
           counts:
             overall:
-              ac: 0
-              an: 0
+              ac: 1
+              an: 8568
               nhomalt: 0
-              af: 0
+              af: 0.000116713
             xx:
               ac: 0
-              an: 0
+              an: 3810
               nhomalt: 0
               af: 0
             xy:
-              ac: 0
-              an: 0
+              ac: 1
+              an: 4758
               nhomalt: 0
-              af: 0
+              af: 0.000210172
           faf95: 0
           faf99: 0
           faf95_xx: ~
@@ -1734,17 +1735,17 @@ expression: records
           counts:
             overall:
               ac: 0
-              an: 0
+              an: 2028
               nhomalt: 0
               af: 0
             xx:
               ac: 0
-              an: 0
+              an: 1130
               nhomalt: 0
               af: 0
             xy:
               ac: 0
-              an: 0
+              an: 898
               nhomalt: 0
               af: 0
           faf95: ~
@@ -1757,17 +1758,17 @@ expression: records
           counts:
             overall:
               ac: 0
-              an: 0
+              an: 2500
               nhomalt: 0
               af: 0
             xx:
               ac: 0
-              an: 0
+              an: 1186
               nhomalt: 0
               af: 0
             xy:
               ac: 0
-              an: 0
+              an: 1314
               nhomalt: 0
               af: 0
           faf95: 0
@@ -1780,17 +1781,17 @@ expression: records
           counts:
             overall:
               ac: 0
-              an: 0
+              an: 3404
               nhomalt: 0
               af: 0
             xx:
               ac: 0
-              an: 0
+              an: 606
               nhomalt: 0
               af: 0
             xy:
               ac: 0
-              an: 0
+              an: 2798
               nhomalt: 0
               af: 0
           faf95: ~
@@ -1803,17 +1804,17 @@ expression: records
           counts:
             overall:
               ac: 0
-              an: 0
+              an: 230
               nhomalt: 0
               af: 0
             xx:
               ac: 0
-              an: 0
+              an: 132
               nhomalt: 0
               af: 0
             xy:
               ac: 0
-              an: 0
+              an: 98
               nhomalt: 0
               af: 0
           faf95: ~
@@ -1826,17 +1827,17 @@ expression: records
           counts:
             overall:
               ac: 0
-              an: 0
+              an: 35656
               nhomalt: 0
               af: 0
             xx:
               ac: 0
-              an: 0
+              an: 22250
               nhomalt: 0
               af: 0
             xy:
               ac: 0
-              an: 0
+              an: 13406
               nhomalt: 0
               af: 0
           faf95: 0
@@ -1849,17 +1850,17 @@ expression: records
           counts:
             overall:
               ac: 0
-              an: 0
+              an: 1248
               nhomalt: 0
               af: 0
             xx:
               ac: 0
-              an: 0
+              an: 640
               nhomalt: 0
               af: 0
             xy:
               ac: 0
-              an: 0
+              an: 608
               nhomalt: 0
               af: 0
           faf95: ~
@@ -1872,17 +1873,17 @@ expression: records
           counts:
             overall:
               ac: 0
-              an: 0
+              an: 2348
               nhomalt: 0
               af: 0
             xx:
               ac: 0
-              an: 0
+              an: 466
               nhomalt: 0
               af: 0
             xy:
               ac: 0
-              an: 0
+              an: 1882
               nhomalt: 0
               af: 0
           faf95: 0
@@ -1893,25 +1894,25 @@ expression: records
           faf99_xy: ~
       by_sex:
         overall:
-          ac: 0
-          an: 0
+          ac: 1
+          an: 82176
           nhomalt: 0
-          af: 0
+          af: 0.000012169
         xx:
           ac: 0
-          an: 0
+          an: 44682
           nhomalt: 0
           af: 0
         xy:
-          ac: 0
-          an: 0
+          ac: 1
+          an: 37494
           nhomalt: 0
-          af: 0
+          af: 0.0000266709
       raw:
-        ac: 0
-        an: 0
+        ac: 1
+        an: 100494
         nhomalt: 0
-        af: 0
+        af: 0.00000995084
       popmax: ~
       af_popmax: ~
       ac_popmax: ~
@@ -2341,13 +2342,13 @@ expression: records
               nhomalt: 0
               af: 0.0000539549
             xx:
-              ac: 0
-              an: 0
+              ac: 2
+              an: 19888
               nhomalt: 0
-              af: 0
+              af: 0.000100563
             xy:
               ac: 0
-              an: 0
+              an: 17180
               nhomalt: 0
               af: 0
           faf95: 0.00000894
@@ -2365,12 +2366,12 @@ expression: records
               af: 0
             xx:
               ac: 0
-              an: 0
+              an: 314
               nhomalt: 0
               af: 0
             xy:
               ac: 0
-              an: 0
+              an: 314
               nhomalt: 0
               af: 0
           faf95: ~
@@ -2388,12 +2389,12 @@ expression: records
               af: 0
             xx:
               ac: 0
-              an: 0
+              an: 4332
               nhomalt: 0
               af: 0
             xy:
               ac: 0
-              an: 0
+              an: 5294
               nhomalt: 0
               af: 0
           faf95: 0
@@ -2411,12 +2412,12 @@ expression: records
               af: 0
             xx:
               ac: 0
-              an: 0
+              an: 1242
               nhomalt: 0
               af: 0
             xy:
               ac: 0
-              an: 0
+              an: 1034
               nhomalt: 0
               af: 0
           faf95: ~
@@ -2434,12 +2435,12 @@ expression: records
               af: 0
             xx:
               ac: 0
-              an: 0
+              an: 2060
               nhomalt: 0
               af: 0
             xy:
               ac: 0
-              an: 0
+              an: 2592
               nhomalt: 0
               af: 0
           faf95: 0
@@ -2457,12 +2458,12 @@ expression: records
               af: 0
             xx:
               ac: 0
-              an: 0
+              an: 1466
               nhomalt: 0
               af: 0
             xy:
               ac: 0
-              an: 0
+              an: 3900
               nhomalt: 0
               af: 0
           faf95: ~
@@ -2480,12 +2481,12 @@ expression: records
               af: 0
             xx:
               ac: 0
-              an: 0
+              an: 136
               nhomalt: 0
               af: 0
             xy:
               ac: 0
-              an: 0
+              an: 104
               nhomalt: 0
               af: 0
           faf95: ~
@@ -2503,12 +2504,12 @@ expression: records
               af: 0
             xx:
               ac: 0
-              an: 0
+              an: 27052
               nhomalt: 0
               af: 0
             xy:
               ac: 0
-              an: 0
+              an: 19022
               nhomalt: 0
               af: 0
           faf95: 0
@@ -2526,12 +2527,12 @@ expression: records
               af: 0
             xx:
               ac: 0
-              an: 0
+              an: 706
               nhomalt: 0
               af: 0
             xy:
               ac: 0
-              an: 0
+              an: 684
               nhomalt: 0
               af: 0
           faf95: ~
@@ -2549,12 +2550,12 @@ expression: records
               af: 0
             xx:
               ac: 0
-              an: 0
+              an: 754
               nhomalt: 0
               af: 0
             xy:
               ac: 0
-              an: 0
+              an: 2330
               nhomalt: 0
               af: 0
           faf95: 0
@@ -2595,17 +2596,17 @@ expression: records
           counts:
             overall:
               ac: 0
-              an: 0
+              an: 8100
               nhomalt: 0
               af: 0
             xx:
               ac: 0
-              an: 0
+              an: 4200
               nhomalt: 0
               af: 0
             xy:
               ac: 0
-              an: 0
+              an: 3900
               nhomalt: 0
               af: 0
           faf95: 0.00000894
@@ -2618,17 +2619,17 @@ expression: records
           counts:
             overall:
               ac: 0
-              an: 0
+              an: 30
               nhomalt: 0
               af: 0
             xx:
               ac: 0
-              an: 0
+              an: 12
               nhomalt: 0
               af: 0
             xy:
               ac: 0
-              an: 0
+              an: 18
               nhomalt: 0
               af: 0
           faf95: ~
@@ -2641,17 +2642,17 @@ expression: records
           counts:
             overall:
               ac: 0
-              an: 0
+              an: 3266
               nhomalt: 0
               af: 0
             xx:
               ac: 0
-              an: 0
+              an: 1728
               nhomalt: 0
               af: 0
             xy:
               ac: 0
-              an: 0
+              an: 1538
               nhomalt: 0
               af: 0
           faf95: 0
@@ -2664,17 +2665,17 @@ expression: records
           counts:
             overall:
               ac: 0
-              an: 0
+              an: 84
               nhomalt: 0
               af: 0
             xx:
               ac: 0
-              an: 0
+              an: 54
               nhomalt: 0
               af: 0
             xy:
               ac: 0
-              an: 0
+              an: 30
               nhomalt: 0
               af: 0
           faf95: ~
@@ -2687,17 +2688,17 @@ expression: records
           counts:
             overall:
               ac: 0
-              an: 0
+              an: 2234
               nhomalt: 0
               af: 0
             xx:
               ac: 0
-              an: 0
+              an: 950
               nhomalt: 0
               af: 0
             xy:
               ac: 0
-              an: 0
+              an: 1284
               nhomalt: 0
               af: 0
           faf95: 0
@@ -2710,17 +2711,17 @@ expression: records
           counts:
             overall:
               ac: 0
-              an: 0
+              an: 2656
               nhomalt: 0
               af: 0
             xx:
               ac: 0
-              an: 0
+              an: 326
               nhomalt: 0
               af: 0
             xy:
               ac: 0
-              an: 0
+              an: 2330
               nhomalt: 0
               af: 0
           faf95: ~
@@ -2733,17 +2734,17 @@ expression: records
           counts:
             overall:
               ac: 0
-              an: 0
+              an: 190
               nhomalt: 0
               af: 0
             xx:
               ac: 0
-              an: 0
+              an: 110
               nhomalt: 0
               af: 0
             xy:
               ac: 0
-              an: 0
+              an: 80
               nhomalt: 0
               af: 0
           faf95: ~
@@ -2756,17 +2757,17 @@ expression: records
           counts:
             overall:
               ac: 0
-              an: 0
+              an: 4692
               nhomalt: 0
               af: 0
             xx:
               ac: 0
-              an: 0
+              an: 2280
               nhomalt: 0
               af: 0
             xy:
               ac: 0
-              an: 0
+              an: 2412
               nhomalt: 0
               af: 0
           faf95: 0
@@ -2779,17 +2780,17 @@ expression: records
           counts:
             overall:
               ac: 0
-              an: 0
+              an: 546
               nhomalt: 0
               af: 0
             xx:
               ac: 0
-              an: 0
+              an: 282
               nhomalt: 0
               af: 0
             xy:
               ac: 0
-              an: 0
+              an: 264
               nhomalt: 0
               af: 0
           faf95: ~
@@ -2802,17 +2803,17 @@ expression: records
           counts:
             overall:
               ac: 0
-              an: 0
+              an: 2134
               nhomalt: 0
               af: 0
             xx:
               ac: 0
-              an: 0
+              an: 604
               nhomalt: 0
               af: 0
             xy:
               ac: 0
-              an: 0
+              an: 1530
               nhomalt: 0
               af: 0
           faf95: 0
@@ -2824,24 +2825,24 @@ expression: records
       by_sex:
         overall:
           ac: 0
-          an: 0
+          an: 23932
           nhomalt: 0
           af: 0
         xx:
           ac: 0
-          an: 0
+          an: 10546
           nhomalt: 0
           af: 0
         xy:
           ac: 0
-          an: 0
+          an: 13386
           nhomalt: 0
           af: 0
       raw:
-        ac: 0
-        an: 0
+        ac: 1
+        an: 28778
         nhomalt: 0
-        af: 0
+        af: 0.0000347488
       popmax: ~
       af_popmax: ~
       ac_popmax: ~
@@ -2852,18 +2853,18 @@ expression: records
         - population: afr
           counts:
             overall:
-              ac: 0
-              an: 0
+              ac: 2
+              an: 36772
               nhomalt: 0
-              af: 0
+              af: 0.0000543892
             xx:
-              ac: 0
-              an: 0
+              ac: 2
+              an: 19746
               nhomalt: 0
-              af: 0
+              af: 0.000101286
             xy:
               ac: 0
-              an: 0
+              an: 17026
               nhomalt: 0
               af: 0
           faf95: 0.00000894
@@ -2876,17 +2877,17 @@ expression: records
           counts:
             overall:
               ac: 0
-              an: 0
+              an: 628
               nhomalt: 0
               af: 0
             xx:
               ac: 0
-              an: 0
+              an: 314
               nhomalt: 0
               af: 0
             xy:
               ac: 0
-              an: 0
+              an: 314
               nhomalt: 0
               af: 0
           faf95: ~
@@ -2899,17 +2900,17 @@ expression: records
           counts:
             overall:
               ac: 0
-              an: 0
+              an: 9504
               nhomalt: 0
               af: 0
             xx:
               ac: 0
-              an: 0
+              an: 4300
               nhomalt: 0
               af: 0
             xy:
               ac: 0
-              an: 0
+              an: 5204
               nhomalt: 0
               af: 0
           faf95: 0
@@ -2922,17 +2923,17 @@ expression: records
           counts:
             overall:
               ac: 0
-              an: 0
+              an: 2166
               nhomalt: 0
               af: 0
             xx:
               ac: 0
-              an: 0
+              an: 1158
               nhomalt: 0
               af: 0
             xy:
               ac: 0
-              an: 0
+              an: 1008
               nhomalt: 0
               af: 0
           faf95: ~
@@ -2945,17 +2946,17 @@ expression: records
           counts:
             overall:
               ac: 0
-              an: 0
+              an: 4438
               nhomalt: 0
               af: 0
             xx:
               ac: 0
-              an: 0
+              an: 1970
               nhomalt: 0
               af: 0
             xy:
               ac: 0
-              an: 0
+              an: 2468
               nhomalt: 0
               af: 0
           faf95: 0
@@ -2968,17 +2969,17 @@ expression: records
           counts:
             overall:
               ac: 0
-              an: 0
+              an: 5366
               nhomalt: 0
               af: 0
             xx:
               ac: 0
-              an: 0
+              an: 1466
               nhomalt: 0
               af: 0
             xy:
               ac: 0
-              an: 0
+              an: 3900
               nhomalt: 0
               af: 0
           faf95: ~
@@ -2991,17 +2992,17 @@ expression: records
           counts:
             overall:
               ac: 0
-              an: 0
+              an: 230
               nhomalt: 0
               af: 0
             xx:
               ac: 0
-              an: 0
+              an: 132
               nhomalt: 0
               af: 0
             xy:
               ac: 0
-              an: 0
+              an: 98
               nhomalt: 0
               af: 0
           faf95: ~
@@ -3014,17 +3015,17 @@ expression: records
           counts:
             overall:
               ac: 0
-              an: 0
+              an: 43888
               nhomalt: 0
               af: 0
             xx:
               ac: 0
-              an: 0
+              an: 26206
               nhomalt: 0
               af: 0
             xy:
               ac: 0
-              an: 0
+              an: 17682
               nhomalt: 0
               af: 0
           faf95: 0
@@ -3037,17 +3038,17 @@ expression: records
           counts:
             overall:
               ac: 0
-              an: 0
+              an: 1342
               nhomalt: 0
               af: 0
             xx:
               ac: 0
-              an: 0
+              an: 686
               nhomalt: 0
               af: 0
             xy:
               ac: 0
-              an: 0
+              an: 656
               nhomalt: 0
               af: 0
           faf95: ~
@@ -3060,17 +3061,17 @@ expression: records
           counts:
             overall:
               ac: 0
-              an: 0
+              an: 3056
               nhomalt: 0
               af: 0
             xx:
               ac: 0
-              an: 0
+              an: 738
               nhomalt: 0
               af: 0
             xy:
               ac: 0
-              an: 0
+              an: 2318
               nhomalt: 0
               af: 0
           faf95: 0
@@ -3081,25 +3082,25 @@ expression: records
           faf99_xy: ~
       by_sex:
         overall:
-          ac: 0
-          an: 0
+          ac: 2
+          an: 107390
           nhomalt: 0
-          af: 0
+          af: 0.0000186237
         xx:
-          ac: 0
-          an: 0
+          ac: 2
+          an: 56716
           nhomalt: 0
-          af: 0
+          af: 0.0000352634
         xy:
           ac: 0
-          an: 0
+          an: 50674
           nhomalt: 0
           af: 0
       raw:
-        ac: 0
-        an: 0
+        ac: 4
+        an: 131136
         nhomalt: 0
-        af: 0
+        af: 0.0000305027
       popmax: ~
       af_popmax: ~
       ac_popmax: ~
@@ -3110,18 +3111,18 @@ expression: records
         - population: afr
           counts:
             overall:
-              ac: 0
-              an: 0
+              ac: 2
+              an: 29190
               nhomalt: 0
-              af: 0
+              af: 0.0000685166
             xx:
-              ac: 0
-              an: 0
+              ac: 2
+              an: 16886
               nhomalt: 0
-              af: 0
+              af: 0.000118441
             xy:
               ac: 0
-              an: 0
+              an: 12304
               nhomalt: 0
               af: 0
           faf95: 0.00000894
@@ -3134,17 +3135,17 @@ expression: records
           counts:
             overall:
               ac: 0
-              an: 0
+              an: 598
               nhomalt: 0
               af: 0
             xx:
               ac: 0
-              an: 0
+              an: 288
               nhomalt: 0
               af: 0
             xy:
               ac: 0
-              an: 0
+              an: 310
               nhomalt: 0
               af: 0
           faf95: ~
@@ -3157,17 +3158,17 @@ expression: records
           counts:
             overall:
               ac: 0
-              an: 0
+              an: 9378
               nhomalt: 0
               af: 0
             xx:
               ac: 0
-              an: 0
+              an: 4230
               nhomalt: 0
               af: 0
             xy:
               ac: 0
-              an: 0
+              an: 5148
               nhomalt: 0
               af: 0
           faf95: 0
@@ -3180,17 +3181,17 @@ expression: records
           counts:
             overall:
               ac: 0
-              an: 0
+              an: 2226
               nhomalt: 0
               af: 0
             xx:
               ac: 0
-              an: 0
+              an: 1220
               nhomalt: 0
               af: 0
             xy:
               ac: 0
-              an: 0
+              an: 1006
               nhomalt: 0
               af: 0
           faf95: ~
@@ -3203,17 +3204,17 @@ expression: records
           counts:
             overall:
               ac: 0
-              an: 0
+              an: 4652
               nhomalt: 0
               af: 0
             xx:
               ac: 0
-              an: 0
+              an: 2060
               nhomalt: 0
               af: 0
             xy:
               ac: 0
-              an: 0
+              an: 2592
               nhomalt: 0
               af: 0
           faf95: 0
@@ -3226,17 +3227,17 @@ expression: records
           counts:
             overall:
               ac: 0
-              an: 0
+              an: 3388
               nhomalt: 0
               af: 0
             xx:
               ac: 0
-              an: 0
+              an: 420
               nhomalt: 0
               af: 0
             xy:
               ac: 0
-              an: 0
+              an: 2968
               nhomalt: 0
               af: 0
           faf95: ~
@@ -3249,17 +3250,17 @@ expression: records
           counts:
             overall:
               ac: 0
-              an: 0
+              an: 238
               nhomalt: 0
               af: 0
             xx:
               ac: 0
-              an: 0
+              an: 136
               nhomalt: 0
               af: 0
             xy:
               ac: 0
-              an: 0
+              an: 102
               nhomalt: 0
               af: 0
           faf95: ~
@@ -3272,17 +3273,17 @@ expression: records
           counts:
             overall:
               ac: 0
-              an: 0
+              an: 43560
               nhomalt: 0
               af: 0
             xx:
               ac: 0
-              an: 0
+              an: 26032
               nhomalt: 0
               af: 0
             xy:
               ac: 0
-              an: 0
+              an: 17528
               nhomalt: 0
               af: 0
           faf95: 0
@@ -3295,17 +3296,17 @@ expression: records
           counts:
             overall:
               ac: 0
-              an: 0
+              an: 1324
               nhomalt: 0
               af: 0
             xx:
               ac: 0
-              an: 0
+              an: 676
               nhomalt: 0
               af: 0
             xy:
               ac: 0
-              an: 0
+              an: 648
               nhomalt: 0
               af: 0
           faf95: ~
@@ -3318,17 +3319,17 @@ expression: records
           counts:
             overall:
               ac: 0
-              an: 0
+              an: 3084
               nhomalt: 0
               af: 0
             xx:
               ac: 0
-              an: 0
+              an: 754
               nhomalt: 0
               af: 0
             xy:
               ac: 0
-              an: 0
+              an: 2330
               nhomalt: 0
               af: 0
           faf95: 0
@@ -3339,25 +3340,25 @@ expression: records
           faf99_xy: ~
       by_sex:
         overall:
-          ac: 0
-          an: 0
+          ac: 2
+          an: 97638
           nhomalt: 0
-          af: 0
+          af: 0.0000204838
         xx:
-          ac: 0
-          an: 0
+          ac: 2
+          an: 52702
           nhomalt: 0
-          af: 0
+          af: 0.0000379492
         xy:
           ac: 0
-          an: 0
+          an: 44936
           nhomalt: 0
           af: 0
       raw:
-        ac: 0
-        an: 0
+        ac: 4
+        an: 118984
         nhomalt: 0
-        af: 0
+        af: 0.000033618
       popmax: ~
       af_popmax: ~
       ac_popmax: ~
@@ -3369,17 +3370,17 @@ expression: records
           counts:
             overall:
               ac: 0
-              an: 0
+              an: 21934
               nhomalt: 0
               af: 0
             xx:
               ac: 0
-              an: 0
+              an: 10540
               nhomalt: 0
               af: 0
             xy:
               ac: 0
-              an: 0
+              an: 11394
               nhomalt: 0
               af: 0
           faf95: 0.00000894
@@ -3392,17 +3393,17 @@ expression: records
           counts:
             overall:
               ac: 0
-              an: 0
+              an: 60
               nhomalt: 0
               af: 0
             xx:
               ac: 0
-              an: 0
+              an: 38
               nhomalt: 0
               af: 0
             xy:
               ac: 0
-              an: 0
+              an: 22
               nhomalt: 0
               af: 0
           faf95: ~
@@ -3415,17 +3416,17 @@ expression: records
           counts:
             overall:
               ac: 0
-              an: 0
+              an: 8120
               nhomalt: 0
               af: 0
             xx:
               ac: 0
-              an: 0
+              an: 3416
               nhomalt: 0
               af: 0
             xy:
               ac: 0
-              an: 0
+              an: 4704
               nhomalt: 0
               af: 0
           faf95: 0
@@ -3438,17 +3439,17 @@ expression: records
           counts:
             overall:
               ac: 0
-              an: 0
+              an: 654
               nhomalt: 0
               af: 0
             xx:
               ac: 0
-              an: 0
+              an: 178
               nhomalt: 0
               af: 0
             xy:
               ac: 0
-              an: 0
+              an: 476
               nhomalt: 0
               af: 0
           faf95: ~
@@ -3461,17 +3462,17 @@ expression: records
           counts:
             overall:
               ac: 0
-              an: 0
+              an: 3318
               nhomalt: 0
               af: 0
             xx:
               ac: 0
-              an: 0
+              an: 1254
               nhomalt: 0
               af: 0
             xy:
               ac: 0
-              an: 0
+              an: 2064
               nhomalt: 0
               af: 0
           faf95: 0
@@ -3484,17 +3485,17 @@ expression: records
           counts:
             overall:
               ac: 0
-              an: 0
+              an: 5296
               nhomalt: 0
               af: 0
             xx:
               ac: 0
-              an: 0
+              an: 1422
               nhomalt: 0
               af: 0
             xy:
               ac: 0
-              an: 0
+              an: 3874
               nhomalt: 0
               af: 0
           faf95: ~
@@ -3507,17 +3508,17 @@ expression: records
           counts:
             overall:
               ac: 0
-              an: 0
+              an: 208
               nhomalt: 0
               af: 0
             xx:
               ac: 0
-              an: 0
+              an: 118
               nhomalt: 0
               af: 0
             xy:
               ac: 0
-              an: 0
+              an: 90
               nhomalt: 0
               af: 0
           faf95: ~
@@ -3530,17 +3531,17 @@ expression: records
           counts:
             overall:
               ac: 0
-              an: 0
+              an: 13464
               nhomalt: 0
               af: 0
             xx:
               ac: 0
-              an: 0
+              an: 5850
               nhomalt: 0
               af: 0
             xy:
               ac: 0
-              an: 0
+              an: 7614
               nhomalt: 0
               af: 0
           faf95: 0
@@ -3553,17 +3554,17 @@ expression: records
           counts:
             overall:
               ac: 0
-              an: 0
+              an: 980
               nhomalt: 0
               af: 0
             xx:
               ac: 0
-              an: 0
+              an: 464
               nhomalt: 0
               af: 0
             xy:
               ac: 0
-              an: 0
+              an: 516
               nhomalt: 0
               af: 0
           faf95: ~
@@ -3576,17 +3577,17 @@ expression: records
           counts:
             overall:
               ac: 0
-              an: 0
+              an: 3070
               nhomalt: 0
               af: 0
             xx:
               ac: 0
-              an: 0
+              an: 752
               nhomalt: 0
               af: 0
             xy:
               ac: 0
-              an: 0
+              an: 2318
               nhomalt: 0
               af: 0
           faf95: 0
@@ -3598,24 +3599,24 @@ expression: records
       by_sex:
         overall:
           ac: 0
-          an: 0
+          an: 57104
           nhomalt: 0
           af: 0
         xx:
           ac: 0
-          an: 0
+          an: 24032
           nhomalt: 0
           af: 0
         xy:
           ac: 0
-          an: 0
+          an: 33072
           nhomalt: 0
           af: 0
       raw:
-        ac: 0
-        an: 0
+        ac: 1
+        an: 70476
         nhomalt: 0
-        af: 0
+        af: 0.0000141892
       popmax: ~
       af_popmax: ~
       ac_popmax: ~
@@ -3626,18 +3627,18 @@ expression: records
         - population: afr
           counts:
             overall:
-              ac: 0
-              an: 0
+              ac: 1
+              an: 25588
               nhomalt: 0
-              af: 0
+              af: 0.0000390808
             xx:
-              ac: 0
-              an: 0
+              ac: 1
+              an: 14164
               nhomalt: 0
-              af: 0
+              af: 0.0000706015
             xy:
               ac: 0
-              an: 0
+              an: 11424
               nhomalt: 0
               af: 0
           faf95: 0.00000894
@@ -3650,17 +3651,17 @@ expression: records
           counts:
             overall:
               ac: 0
-              an: 0
+              an: 628
               nhomalt: 0
               af: 0
             xx:
               ac: 0
-              an: 0
+              an: 314
               nhomalt: 0
               af: 0
             xy:
               ac: 0
-              an: 0
+              an: 314
               nhomalt: 0
               af: 0
           faf95: ~
@@ -3673,17 +3674,17 @@ expression: records
           counts:
             overall:
               ac: 0
-              an: 0
+              an: 8634
               nhomalt: 0
               af: 0
             xx:
               ac: 0
-              an: 0
+              an: 3834
               nhomalt: 0
               af: 0
             xy:
               ac: 0
-              an: 0
+              an: 4800
               nhomalt: 0
               af: 0
           faf95: 0
@@ -3696,17 +3697,17 @@ expression: records
           counts:
             overall:
               ac: 0
-              an: 0
+              an: 2034
               nhomalt: 0
               af: 0
             xx:
               ac: 0
-              an: 0
+              an: 1134
               nhomalt: 0
               af: 0
             xy:
               ac: 0
-              an: 0
+              an: 900
               nhomalt: 0
               af: 0
           faf95: ~
@@ -3719,17 +3720,17 @@ expression: records
           counts:
             overall:
               ac: 0
-              an: 0
+              an: 2520
               nhomalt: 0
               af: 0
             xx:
               ac: 0
-              an: 0
+              an: 1188
               nhomalt: 0
               af: 0
             xy:
               ac: 0
-              an: 0
+              an: 1332
               nhomalt: 0
               af: 0
           faf95: 0
@@ -3742,17 +3743,17 @@ expression: records
           counts:
             overall:
               ac: 0
-              an: 0
+              an: 3426
               nhomalt: 0
               af: 0
             xx:
               ac: 0
-              an: 0
+              an: 604
               nhomalt: 0
               af: 0
             xy:
               ac: 0
-              an: 0
+              an: 2822
               nhomalt: 0
               af: 0
           faf95: ~
@@ -3765,17 +3766,17 @@ expression: records
           counts:
             overall:
               ac: 0
-              an: 0
+              an: 232
               nhomalt: 0
               af: 0
             xx:
               ac: 0
-              an: 0
+              an: 134
               nhomalt: 0
               af: 0
             xy:
               ac: 0
-              an: 0
+              an: 98
               nhomalt: 0
               af: 0
           faf95: ~
@@ -3788,17 +3789,17 @@ expression: records
           counts:
             overall:
               ac: 0
-              an: 0
+              an: 35796
               nhomalt: 0
               af: 0
             xx:
               ac: 0
-              an: 0
+              an: 22314
               nhomalt: 0
               af: 0
             xy:
               ac: 0
-              an: 0
+              an: 13482
               nhomalt: 0
               af: 0
           faf95: 0
@@ -3811,17 +3812,17 @@ expression: records
           counts:
             overall:
               ac: 0
-              an: 0
+              an: 1244
               nhomalt: 0
               af: 0
             xx:
               ac: 0
-              an: 0
+              an: 638
               nhomalt: 0
               af: 0
             xy:
               ac: 0
-              an: 0
+              an: 606
               nhomalt: 0
               af: 0
           faf95: ~
@@ -3834,17 +3835,17 @@ expression: records
           counts:
             overall:
               ac: 0
-              an: 0
+              an: 2356
               nhomalt: 0
               af: 0
             xx:
               ac: 0
-              an: 0
+              an: 460
               nhomalt: 0
               af: 0
             xy:
               ac: 0
-              an: 0
+              an: 1896
               nhomalt: 0
               af: 0
           faf95: 0
@@ -3855,25 +3856,25 @@ expression: records
           faf99_xy: ~
       by_sex:
         overall:
-          ac: 0
-          an: 0
+          ac: 1
+          an: 82458
           nhomalt: 0
-          af: 0
+          af: 0.0000121274
         xx:
-          ac: 0
-          an: 0
+          ac: 1
+          an: 44784
           nhomalt: 0
-          af: 0
+          af: 0.0000223294
         xy:
           ac: 0
-          an: 0
+          an: 37674
           nhomalt: 0
           af: 0
       raw:
-        ac: 0
-        an: 0
+        ac: 2
+        an: 100600
         nhomalt: 0
-        af: 0
+        af: 0.0000198807
       popmax: ~
       af_popmax: ~
       ac_popmax: ~
@@ -4304,12 +4305,12 @@ expression: records
               af: 0
             xx:
               ac: 0
-              an: 0
+              an: 19888
               nhomalt: 0
               af: 0
             xy:
               ac: 0
-              an: 0
+              an: 17182
               nhomalt: 0
               af: 0
           faf95: 0
@@ -4327,12 +4328,12 @@ expression: records
               af: 0
             xx:
               ac: 0
-              an: 0
+              an: 314
               nhomalt: 0
               af: 0
             xy:
               ac: 0
-              an: 0
+              an: 314
               nhomalt: 0
               af: 0
           faf95: ~
@@ -4350,14 +4351,14 @@ expression: records
               af: 0.000207771
             xx:
               ac: 0
-              an: 0
+              an: 4332
               nhomalt: 0
               af: 0
             xy:
-              ac: 0
-              an: 0
+              ac: 2
+              an: 5294
               nhomalt: 0
-              af: 0
+              af: 0.000377786
           faf95: 0.00003622
           faf99: 0.00001477
           faf95_xx: ~
@@ -4373,12 +4374,12 @@ expression: records
               af: 0
             xx:
               ac: 0
-              an: 0
+              an: 1242
               nhomalt: 0
               af: 0
             xy:
               ac: 0
-              an: 0
+              an: 1034
               nhomalt: 0
               af: 0
           faf95: ~
@@ -4396,12 +4397,12 @@ expression: records
               af: 0
             xx:
               ac: 0
-              an: 0
+              an: 2060
               nhomalt: 0
               af: 0
             xy:
               ac: 0
-              an: 0
+              an: 2592
               nhomalt: 0
               af: 0
           faf95: 0
@@ -4419,12 +4420,12 @@ expression: records
               af: 0
             xx:
               ac: 0
-              an: 0
+              an: 1466
               nhomalt: 0
               af: 0
             xy:
               ac: 0
-              an: 0
+              an: 3900
               nhomalt: 0
               af: 0
           faf95: ~
@@ -4442,12 +4443,12 @@ expression: records
               af: 0
             xx:
               ac: 0
-              an: 0
+              an: 136
               nhomalt: 0
               af: 0
             xy:
               ac: 0
-              an: 0
+              an: 104
               nhomalt: 0
               af: 0
           faf95: ~
@@ -4465,12 +4466,12 @@ expression: records
               af: 0
             xx:
               ac: 0
-              an: 0
+              an: 27052
               nhomalt: 0
               af: 0
             xy:
               ac: 0
-              an: 0
+              an: 19022
               nhomalt: 0
               af: 0
           faf95: 0
@@ -4488,12 +4489,12 @@ expression: records
               af: 0
             xx:
               ac: 0
-              an: 0
+              an: 706
               nhomalt: 0
               af: 0
             xy:
               ac: 0
-              an: 0
+              an: 684
               nhomalt: 0
               af: 0
           faf95: ~
@@ -4511,12 +4512,12 @@ expression: records
               af: 0
             xx:
               ac: 0
-              an: 0
+              an: 754
               nhomalt: 0
               af: 0
             xy:
               ac: 0
-              an: 0
+              an: 2330
               nhomalt: 0
               af: 0
           faf95: 0
@@ -4557,17 +4558,17 @@ expression: records
           counts:
             overall:
               ac: 0
-              an: 0
+              an: 8100
               nhomalt: 0
               af: 0
             xx:
               ac: 0
-              an: 0
+              an: 4200
               nhomalt: 0
               af: 0
             xy:
               ac: 0
-              an: 0
+              an: 3900
               nhomalt: 0
               af: 0
           faf95: 0
@@ -4580,17 +4581,17 @@ expression: records
           counts:
             overall:
               ac: 0
-              an: 0
+              an: 30
               nhomalt: 0
               af: 0
             xx:
               ac: 0
-              an: 0
+              an: 12
               nhomalt: 0
               af: 0
             xy:
               ac: 0
-              an: 0
+              an: 18
               nhomalt: 0
               af: 0
           faf95: ~
@@ -4603,17 +4604,17 @@ expression: records
           counts:
             overall:
               ac: 0
-              an: 0
+              an: 3266
               nhomalt: 0
               af: 0
             xx:
               ac: 0
-              an: 0
+              an: 1728
               nhomalt: 0
               af: 0
             xy:
               ac: 0
-              an: 0
+              an: 1538
               nhomalt: 0
               af: 0
           faf95: 0.00003622
@@ -4626,17 +4627,17 @@ expression: records
           counts:
             overall:
               ac: 0
-              an: 0
+              an: 84
               nhomalt: 0
               af: 0
             xx:
               ac: 0
-              an: 0
+              an: 54
               nhomalt: 0
               af: 0
             xy:
               ac: 0
-              an: 0
+              an: 30
               nhomalt: 0
               af: 0
           faf95: ~
@@ -4649,17 +4650,17 @@ expression: records
           counts:
             overall:
               ac: 0
-              an: 0
+              an: 2234
               nhomalt: 0
               af: 0
             xx:
               ac: 0
-              an: 0
+              an: 950
               nhomalt: 0
               af: 0
             xy:
               ac: 0
-              an: 0
+              an: 1284
               nhomalt: 0
               af: 0
           faf95: 0
@@ -4672,17 +4673,17 @@ expression: records
           counts:
             overall:
               ac: 0
-              an: 0
+              an: 2656
               nhomalt: 0
               af: 0
             xx:
               ac: 0
-              an: 0
+              an: 326
               nhomalt: 0
               af: 0
             xy:
               ac: 0
-              an: 0
+              an: 2330
               nhomalt: 0
               af: 0
           faf95: ~
@@ -4695,17 +4696,17 @@ expression: records
           counts:
             overall:
               ac: 0
-              an: 0
+              an: 190
               nhomalt: 0
               af: 0
             xx:
               ac: 0
-              an: 0
+              an: 110
               nhomalt: 0
               af: 0
             xy:
               ac: 0
-              an: 0
+              an: 80
               nhomalt: 0
               af: 0
           faf95: ~
@@ -4718,17 +4719,17 @@ expression: records
           counts:
             overall:
               ac: 0
-              an: 0
+              an: 4692
               nhomalt: 0
               af: 0
             xx:
               ac: 0
-              an: 0
+              an: 2280
               nhomalt: 0
               af: 0
             xy:
               ac: 0
-              an: 0
+              an: 2412
               nhomalt: 0
               af: 0
           faf95: 0
@@ -4741,17 +4742,17 @@ expression: records
           counts:
             overall:
               ac: 0
-              an: 0
+              an: 546
               nhomalt: 0
               af: 0
             xx:
               ac: 0
-              an: 0
+              an: 282
               nhomalt: 0
               af: 0
             xy:
               ac: 0
-              an: 0
+              an: 264
               nhomalt: 0
               af: 0
           faf95: ~
@@ -4764,17 +4765,17 @@ expression: records
           counts:
             overall:
               ac: 0
-              an: 0
+              an: 2134
               nhomalt: 0
               af: 0
             xx:
               ac: 0
-              an: 0
+              an: 604
               nhomalt: 0
               af: 0
             xy:
               ac: 0
-              an: 0
+              an: 1530
               nhomalt: 0
               af: 0
           faf95: 0
@@ -4786,22 +4787,22 @@ expression: records
       by_sex:
         overall:
           ac: 0
-          an: 0
+          an: 23932
           nhomalt: 0
           af: 0
         xx:
           ac: 0
-          an: 0
+          an: 10546
           nhomalt: 0
           af: 0
         xy:
           ac: 0
-          an: 0
+          an: 13386
           nhomalt: 0
           af: 0
       raw:
         ac: 0
-        an: 0
+        an: 28778
         nhomalt: 0
         af: 0
       popmax: ~
@@ -4815,17 +4816,17 @@ expression: records
           counts:
             overall:
               ac: 0
-              an: 0
+              an: 36774
               nhomalt: 0
               af: 0
             xx:
               ac: 0
-              an: 0
+              an: 19746
               nhomalt: 0
               af: 0
             xy:
               ac: 0
-              an: 0
+              an: 17028
               nhomalt: 0
               af: 0
           faf95: 0
@@ -4838,17 +4839,17 @@ expression: records
           counts:
             overall:
               ac: 0
-              an: 0
+              an: 628
               nhomalt: 0
               af: 0
             xx:
               ac: 0
-              an: 0
+              an: 314
               nhomalt: 0
               af: 0
             xy:
               ac: 0
-              an: 0
+              an: 314
               nhomalt: 0
               af: 0
           faf95: ~
@@ -4860,20 +4861,20 @@ expression: records
         - population: amr
           counts:
             overall:
-              ac: 0
-              an: 0
+              ac: 2
+              an: 9504
               nhomalt: 0
-              af: 0
+              af: 0.000210438
             xx:
               ac: 0
-              an: 0
+              an: 4300
               nhomalt: 0
               af: 0
             xy:
-              ac: 0
-              an: 0
+              ac: 2
+              an: 5204
               nhomalt: 0
-              af: 0
+              af: 0.00038432
           faf95: 0.00003622
           faf99: 0.00001477
           faf95_xx: ~
@@ -4884,17 +4885,17 @@ expression: records
           counts:
             overall:
               ac: 0
-              an: 0
+              an: 2166
               nhomalt: 0
               af: 0
             xx:
               ac: 0
-              an: 0
+              an: 1158
               nhomalt: 0
               af: 0
             xy:
               ac: 0
-              an: 0
+              an: 1008
               nhomalt: 0
               af: 0
           faf95: ~
@@ -4907,17 +4908,17 @@ expression: records
           counts:
             overall:
               ac: 0
-              an: 0
+              an: 4438
               nhomalt: 0
               af: 0
             xx:
               ac: 0
-              an: 0
+              an: 1970
               nhomalt: 0
               af: 0
             xy:
               ac: 0
-              an: 0
+              an: 2468
               nhomalt: 0
               af: 0
           faf95: 0
@@ -4930,17 +4931,17 @@ expression: records
           counts:
             overall:
               ac: 0
-              an: 0
+              an: 5366
               nhomalt: 0
               af: 0
             xx:
               ac: 0
-              an: 0
+              an: 1466
               nhomalt: 0
               af: 0
             xy:
               ac: 0
-              an: 0
+              an: 3900
               nhomalt: 0
               af: 0
           faf95: ~
@@ -4953,17 +4954,17 @@ expression: records
           counts:
             overall:
               ac: 0
-              an: 0
+              an: 230
               nhomalt: 0
               af: 0
             xx:
               ac: 0
-              an: 0
+              an: 132
               nhomalt: 0
               af: 0
             xy:
               ac: 0
-              an: 0
+              an: 98
               nhomalt: 0
               af: 0
           faf95: ~
@@ -4976,17 +4977,17 @@ expression: records
           counts:
             overall:
               ac: 0
-              an: 0
+              an: 43888
               nhomalt: 0
               af: 0
             xx:
               ac: 0
-              an: 0
+              an: 26206
               nhomalt: 0
               af: 0
             xy:
               ac: 0
-              an: 0
+              an: 17682
               nhomalt: 0
               af: 0
           faf95: 0
@@ -4999,17 +5000,17 @@ expression: records
           counts:
             overall:
               ac: 0
-              an: 0
+              an: 1342
               nhomalt: 0
               af: 0
             xx:
               ac: 0
-              an: 0
+              an: 686
               nhomalt: 0
               af: 0
             xy:
               ac: 0
-              an: 0
+              an: 656
               nhomalt: 0
               af: 0
           faf95: ~
@@ -5022,17 +5023,17 @@ expression: records
           counts:
             overall:
               ac: 0
-              an: 0
+              an: 3056
               nhomalt: 0
               af: 0
             xx:
               ac: 0
-              an: 0
+              an: 738
               nhomalt: 0
               af: 0
             xy:
               ac: 0
-              an: 0
+              an: 2318
               nhomalt: 0
               af: 0
           faf95: 0
@@ -5043,25 +5044,25 @@ expression: records
           faf99_xy: ~
       by_sex:
         overall:
-          ac: 0
-          an: 0
+          ac: 2
+          an: 107392
           nhomalt: 0
-          af: 0
+          af: 0.0000186234
         xx:
           ac: 0
-          an: 0
+          an: 56716
           nhomalt: 0
           af: 0
         xy:
-          ac: 0
-          an: 0
+          ac: 2
+          an: 50676
           nhomalt: 0
-          af: 0
+          af: 0.0000394664
       raw:
-        ac: 0
-        an: 0
-        nhomalt: 0
-        af: 0
+        ac: 6
+        an: 131136
+        nhomalt: 1
+        af: 0.000045754
       popmax: ~
       af_popmax: ~
       ac_popmax: ~
@@ -5073,17 +5074,17 @@ expression: records
           counts:
             overall:
               ac: 0
-              an: 0
+              an: 29192
               nhomalt: 0
               af: 0
             xx:
               ac: 0
-              an: 0
+              an: 16886
               nhomalt: 0
               af: 0
             xy:
               ac: 0
-              an: 0
+              an: 12306
               nhomalt: 0
               af: 0
           faf95: 0
@@ -5096,17 +5097,17 @@ expression: records
           counts:
             overall:
               ac: 0
-              an: 0
+              an: 598
               nhomalt: 0
               af: 0
             xx:
               ac: 0
-              an: 0
+              an: 288
               nhomalt: 0
               af: 0
             xy:
               ac: 0
-              an: 0
+              an: 310
               nhomalt: 0
               af: 0
           faf95: ~
@@ -5118,20 +5119,20 @@ expression: records
         - population: amr
           counts:
             overall:
-              ac: 0
-              an: 0
+              ac: 2
+              an: 9378
               nhomalt: 0
-              af: 0
+              af: 0.000213265
             xx:
               ac: 0
-              an: 0
+              an: 4230
               nhomalt: 0
               af: 0
             xy:
-              ac: 0
-              an: 0
+              ac: 2
+              an: 5148
               nhomalt: 0
-              af: 0
+              af: 0.0003885
           faf95: 0.00003622
           faf99: 0.00001477
           faf95_xx: ~
@@ -5142,17 +5143,17 @@ expression: records
           counts:
             overall:
               ac: 0
-              an: 0
+              an: 2226
               nhomalt: 0
               af: 0
             xx:
               ac: 0
-              an: 0
+              an: 1220
               nhomalt: 0
               af: 0
             xy:
               ac: 0
-              an: 0
+              an: 1006
               nhomalt: 0
               af: 0
           faf95: ~
@@ -5165,17 +5166,17 @@ expression: records
           counts:
             overall:
               ac: 0
-              an: 0
+              an: 4652
               nhomalt: 0
               af: 0
             xx:
               ac: 0
-              an: 0
+              an: 2060
               nhomalt: 0
               af: 0
             xy:
               ac: 0
-              an: 0
+              an: 2592
               nhomalt: 0
               af: 0
           faf95: 0
@@ -5188,17 +5189,17 @@ expression: records
           counts:
             overall:
               ac: 0
-              an: 0
+              an: 3388
               nhomalt: 0
               af: 0
             xx:
               ac: 0
-              an: 0
+              an: 420
               nhomalt: 0
               af: 0
             xy:
               ac: 0
-              an: 0
+              an: 2968
               nhomalt: 0
               af: 0
           faf95: ~
@@ -5211,17 +5212,17 @@ expression: records
           counts:
             overall:
               ac: 0
-              an: 0
+              an: 238
               nhomalt: 0
               af: 0
             xx:
               ac: 0
-              an: 0
+              an: 136
               nhomalt: 0
               af: 0
             xy:
               ac: 0
-              an: 0
+              an: 102
               nhomalt: 0
               af: 0
           faf95: ~
@@ -5234,17 +5235,17 @@ expression: records
           counts:
             overall:
               ac: 0
-              an: 0
+              an: 43560
               nhomalt: 0
               af: 0
             xx:
               ac: 0
-              an: 0
+              an: 26032
               nhomalt: 0
               af: 0
             xy:
               ac: 0
-              an: 0
+              an: 17528
               nhomalt: 0
               af: 0
           faf95: 0
@@ -5257,17 +5258,17 @@ expression: records
           counts:
             overall:
               ac: 0
-              an: 0
+              an: 1324
               nhomalt: 0
               af: 0
             xx:
               ac: 0
-              an: 0
+              an: 676
               nhomalt: 0
               af: 0
             xy:
               ac: 0
-              an: 0
+              an: 648
               nhomalt: 0
               af: 0
           faf95: ~
@@ -5280,17 +5281,17 @@ expression: records
           counts:
             overall:
               ac: 0
-              an: 0
+              an: 3084
               nhomalt: 0
               af: 0
             xx:
               ac: 0
-              an: 0
+              an: 754
               nhomalt: 0
               af: 0
             xy:
               ac: 0
-              an: 0
+              an: 2330
               nhomalt: 0
               af: 0
           faf95: 0
@@ -5301,25 +5302,25 @@ expression: records
           faf99_xy: ~
       by_sex:
         overall:
-          ac: 0
-          an: 0
+          ac: 2
+          an: 97640
           nhomalt: 0
-          af: 0
+          af: 0.0000204834
         xx:
           ac: 0
-          an: 0
+          an: 52702
           nhomalt: 0
           af: 0
         xy:
-          ac: 0
-          an: 0
+          ac: 2
+          an: 44938
           nhomalt: 0
-          af: 0
+          af: 0.0000445058
       raw:
-        ac: 0
-        an: 0
-        nhomalt: 0
-        af: 0
+        ac: 6
+        an: 118984
+        nhomalt: 1
+        af: 0.0000504269
       popmax: ~
       af_popmax: ~
       ac_popmax: ~
@@ -5331,17 +5332,17 @@ expression: records
           counts:
             overall:
               ac: 0
-              an: 0
+              an: 21934
               nhomalt: 0
               af: 0
             xx:
               ac: 0
-              an: 0
+              an: 10540
               nhomalt: 0
               af: 0
             xy:
               ac: 0
-              an: 0
+              an: 11394
               nhomalt: 0
               af: 0
           faf95: 0
@@ -5354,17 +5355,17 @@ expression: records
           counts:
             overall:
               ac: 0
-              an: 0
+              an: 60
               nhomalt: 0
               af: 0
             xx:
               ac: 0
-              an: 0
+              an: 38
               nhomalt: 0
               af: 0
             xy:
               ac: 0
-              an: 0
+              an: 22
               nhomalt: 0
               af: 0
           faf95: ~
@@ -5376,20 +5377,20 @@ expression: records
         - population: amr
           counts:
             overall:
-              ac: 0
-              an: 0
+              ac: 2
+              an: 8120
               nhomalt: 0
-              af: 0
+              af: 0.000246305
             xx:
               ac: 0
-              an: 0
+              an: 3416
               nhomalt: 0
               af: 0
             xy:
-              ac: 0
-              an: 0
+              ac: 2
+              an: 4704
               nhomalt: 0
-              af: 0
+              af: 0.00042517
           faf95: 0.00003622
           faf99: 0.00001477
           faf95_xx: ~
@@ -5400,17 +5401,17 @@ expression: records
           counts:
             overall:
               ac: 0
-              an: 0
+              an: 654
               nhomalt: 0
               af: 0
             xx:
               ac: 0
-              an: 0
+              an: 178
               nhomalt: 0
               af: 0
             xy:
               ac: 0
-              an: 0
+              an: 476
               nhomalt: 0
               af: 0
           faf95: ~
@@ -5423,17 +5424,17 @@ expression: records
           counts:
             overall:
               ac: 0
-              an: 0
+              an: 3318
               nhomalt: 0
               af: 0
             xx:
               ac: 0
-              an: 0
+              an: 1254
               nhomalt: 0
               af: 0
             xy:
               ac: 0
-              an: 0
+              an: 2064
               nhomalt: 0
               af: 0
           faf95: 0
@@ -5446,17 +5447,17 @@ expression: records
           counts:
             overall:
               ac: 0
-              an: 0
+              an: 5296
               nhomalt: 0
               af: 0
             xx:
               ac: 0
-              an: 0
+              an: 1422
               nhomalt: 0
               af: 0
             xy:
               ac: 0
-              an: 0
+              an: 3874
               nhomalt: 0
               af: 0
           faf95: ~
@@ -5469,17 +5470,17 @@ expression: records
           counts:
             overall:
               ac: 0
-              an: 0
+              an: 208
               nhomalt: 0
               af: 0
             xx:
               ac: 0
-              an: 0
+              an: 118
               nhomalt: 0
               af: 0
             xy:
               ac: 0
-              an: 0
+              an: 90
               nhomalt: 0
               af: 0
           faf95: ~
@@ -5492,17 +5493,17 @@ expression: records
           counts:
             overall:
               ac: 0
-              an: 0
+              an: 13464
               nhomalt: 0
               af: 0
             xx:
               ac: 0
-              an: 0
+              an: 5850
               nhomalt: 0
               af: 0
             xy:
               ac: 0
-              an: 0
+              an: 7614
               nhomalt: 0
               af: 0
           faf95: 0
@@ -5515,17 +5516,17 @@ expression: records
           counts:
             overall:
               ac: 0
-              an: 0
+              an: 980
               nhomalt: 0
               af: 0
             xx:
               ac: 0
-              an: 0
+              an: 464
               nhomalt: 0
               af: 0
             xy:
               ac: 0
-              an: 0
+              an: 516
               nhomalt: 0
               af: 0
           faf95: ~
@@ -5538,17 +5539,17 @@ expression: records
           counts:
             overall:
               ac: 0
-              an: 0
+              an: 3070
               nhomalt: 0
               af: 0
             xx:
               ac: 0
-              an: 0
+              an: 752
               nhomalt: 0
               af: 0
             xy:
               ac: 0
-              an: 0
+              an: 2318
               nhomalt: 0
               af: 0
           faf95: 0
@@ -5559,25 +5560,25 @@ expression: records
           faf99_xy: ~
       by_sex:
         overall:
-          ac: 0
-          an: 0
+          ac: 2
+          an: 57104
           nhomalt: 0
-          af: 0
+          af: 0.0000350238
         xx:
           ac: 0
-          an: 0
+          an: 24032
           nhomalt: 0
           af: 0
         xy:
-          ac: 0
-          an: 0
+          ac: 2
+          an: 33072
           nhomalt: 0
-          af: 0
+          af: 0.0000604741
       raw:
-        ac: 0
-        an: 0
-        nhomalt: 0
-        af: 0
+        ac: 5
+        an: 70476
+        nhomalt: 1
+        af: 0.0000709461
       popmax: ~
       af_popmax: ~
       ac_popmax: ~
@@ -5589,17 +5590,17 @@ expression: records
           counts:
             overall:
               ac: 0
-              an: 0
+              an: 25590
               nhomalt: 0
               af: 0
             xx:
               ac: 0
-              an: 0
+              an: 14164
               nhomalt: 0
               af: 0
             xy:
               ac: 0
-              an: 0
+              an: 11426
               nhomalt: 0
               af: 0
           faf95: 0
@@ -5612,17 +5613,17 @@ expression: records
           counts:
             overall:
               ac: 0
-              an: 0
+              an: 628
               nhomalt: 0
               af: 0
             xx:
               ac: 0
-              an: 0
+              an: 314
               nhomalt: 0
               af: 0
             xy:
               ac: 0
-              an: 0
+              an: 314
               nhomalt: 0
               af: 0
           faf95: ~
@@ -5634,20 +5635,20 @@ expression: records
         - population: amr
           counts:
             overall:
-              ac: 0
-              an: 0
+              ac: 2
+              an: 8634
               nhomalt: 0
-              af: 0
+              af: 0.000231642
             xx:
               ac: 0
-              an: 0
+              an: 3834
               nhomalt: 0
               af: 0
             xy:
-              ac: 0
-              an: 0
+              ac: 2
+              an: 4800
               nhomalt: 0
-              af: 0
+              af: 0.000416667
           faf95: 0.00003622
           faf99: 0.00001477
           faf95_xx: ~
@@ -5658,17 +5659,17 @@ expression: records
           counts:
             overall:
               ac: 0
-              an: 0
+              an: 2034
               nhomalt: 0
               af: 0
             xx:
               ac: 0
-              an: 0
+              an: 1134
               nhomalt: 0
               af: 0
             xy:
               ac: 0
-              an: 0
+              an: 900
               nhomalt: 0
               af: 0
           faf95: ~
@@ -5681,17 +5682,17 @@ expression: records
           counts:
             overall:
               ac: 0
-              an: 0
+              an: 2520
               nhomalt: 0
               af: 0
             xx:
               ac: 0
-              an: 0
+              an: 1188
               nhomalt: 0
               af: 0
             xy:
               ac: 0
-              an: 0
+              an: 1332
               nhomalt: 0
               af: 0
           faf95: 0
@@ -5704,17 +5705,17 @@ expression: records
           counts:
             overall:
               ac: 0
-              an: 0
+              an: 3426
               nhomalt: 0
               af: 0
             xx:
               ac: 0
-              an: 0
+              an: 604
               nhomalt: 0
               af: 0
             xy:
               ac: 0
-              an: 0
+              an: 2822
               nhomalt: 0
               af: 0
           faf95: ~
@@ -5727,17 +5728,17 @@ expression: records
           counts:
             overall:
               ac: 0
-              an: 0
+              an: 232
               nhomalt: 0
               af: 0
             xx:
               ac: 0
-              an: 0
+              an: 134
               nhomalt: 0
               af: 0
             xy:
               ac: 0
-              an: 0
+              an: 98
               nhomalt: 0
               af: 0
           faf95: ~
@@ -5750,17 +5751,17 @@ expression: records
           counts:
             overall:
               ac: 0
-              an: 0
+              an: 35796
               nhomalt: 0
               af: 0
             xx:
               ac: 0
-              an: 0
+              an: 22314
               nhomalt: 0
               af: 0
             xy:
               ac: 0
-              an: 0
+              an: 13482
               nhomalt: 0
               af: 0
           faf95: 0
@@ -5773,17 +5774,17 @@ expression: records
           counts:
             overall:
               ac: 0
-              an: 0
+              an: 1244
               nhomalt: 0
               af: 0
             xx:
               ac: 0
-              an: 0
+              an: 638
               nhomalt: 0
               af: 0
             xy:
               ac: 0
-              an: 0
+              an: 606
               nhomalt: 0
               af: 0
           faf95: ~
@@ -5796,17 +5797,17 @@ expression: records
           counts:
             overall:
               ac: 0
-              an: 0
+              an: 2356
               nhomalt: 0
               af: 0
             xx:
               ac: 0
-              an: 0
+              an: 460
               nhomalt: 0
               af: 0
             xy:
               ac: 0
-              an: 0
+              an: 1896
               nhomalt: 0
               af: 0
           faf95: 0
@@ -5817,25 +5818,25 @@ expression: records
           faf99_xy: ~
       by_sex:
         overall:
-          ac: 0
-          an: 0
+          ac: 2
+          an: 82460
           nhomalt: 0
-          af: 0
+          af: 0.0000242542
         xx:
           ac: 0
-          an: 0
+          an: 44784
           nhomalt: 0
           af: 0
         xy:
-          ac: 0
-          an: 0
+          ac: 2
+          an: 37676
           nhomalt: 0
-          af: 0
+          af: 0.0000530842
       raw:
-        ac: 0
-        an: 0
+        ac: 4
+        an: 100600
         nhomalt: 0
-        af: 0
+        af: 0.0000397614
       popmax: ~
       af_popmax: ~
       ac_popmax: ~
@@ -6266,12 +6267,12 @@ expression: records
               af: 0
             xx:
               ac: 0
-              an: 0
+              an: 19854
               nhomalt: 0
               af: 0
             xy:
               ac: 0
-              an: 0
+              an: 17166
               nhomalt: 0
               af: 0
           faf95: 0
@@ -6289,12 +6290,12 @@ expression: records
               af: 0
             xx:
               ac: 0
-              an: 0
+              an: 312
               nhomalt: 0
               af: 0
             xy:
               ac: 0
-              an: 0
+              an: 316
               nhomalt: 0
               af: 0
           faf95: ~
@@ -6311,13 +6312,13 @@ expression: records
               nhomalt: 0
               af: 0.000104167
             xx:
-              ac: 0
-              an: 0
+              ac: 1
+              an: 4304
               nhomalt: 0
-              af: 0
+              af: 0.000232342
             xy:
               ac: 0
-              an: 0
+              an: 5296
               nhomalt: 0
               af: 0
           faf95: 0
@@ -6335,12 +6336,12 @@ expression: records
               af: 0
             xx:
               ac: 0
-              an: 0
+              an: 1230
               nhomalt: 0
               af: 0
             xy:
               ac: 0
-              an: 0
+              an: 1022
               nhomalt: 0
               af: 0
           faf95: ~
@@ -6358,12 +6359,12 @@ expression: records
               af: 0
             xx:
               ac: 0
-              an: 0
+              an: 2056
               nhomalt: 0
               af: 0
             xy:
               ac: 0
-              an: 0
+              an: 2586
               nhomalt: 0
               af: 0
           faf95: 0
@@ -6381,12 +6382,12 @@ expression: records
               af: 0
             xx:
               ac: 0
-              an: 0
+              an: 1482
               nhomalt: 0
               af: 0
             xy:
               ac: 0
-              an: 0
+              an: 3866
               nhomalt: 0
               af: 0
           faf95: ~
@@ -6404,12 +6405,12 @@ expression: records
               af: 0
             xx:
               ac: 0
-              an: 0
+              an: 134
               nhomalt: 0
               af: 0
             xy:
               ac: 0
-              an: 0
+              an: 104
               nhomalt: 0
               af: 0
           faf95: ~
@@ -6426,13 +6427,13 @@ expression: records
               nhomalt: 0
               af: 0.0000217146
             xx:
-              ac: 0
-              an: 0
+              ac: 1
+              an: 27020
               nhomalt: 0
-              af: 0
+              af: 0.0000370096
             xy:
               ac: 0
-              an: 0
+              an: 19032
               nhomalt: 0
               af: 0
           faf95: 0
@@ -6450,12 +6451,12 @@ expression: records
               af: 0
             xx:
               ac: 0
-              an: 0
+              an: 710
               nhomalt: 0
               af: 0
             xy:
               ac: 0
-              an: 0
+              an: 684
               nhomalt: 0
               af: 0
           faf95: ~
@@ -6473,12 +6474,12 @@ expression: records
               af: 0
             xx:
               ac: 0
-              an: 0
+              an: 762
               nhomalt: 0
               af: 0
             xy:
               ac: 0
-              an: 0
+              an: 2312
               nhomalt: 0
               af: 0
           faf95: 0
@@ -6519,17 +6520,17 @@ expression: records
           counts:
             overall:
               ac: 0
-              an: 0
+              an: 8096
               nhomalt: 0
               af: 0
             xx:
               ac: 0
-              an: 0
+              an: 4198
               nhomalt: 0
               af: 0
             xy:
               ac: 0
-              an: 0
+              an: 3898
               nhomalt: 0
               af: 0
           faf95: 0
@@ -6542,17 +6543,17 @@ expression: records
           counts:
             overall:
               ac: 0
-              an: 0
+              an: 30
               nhomalt: 0
               af: 0
             xx:
               ac: 0
-              an: 0
+              an: 12
               nhomalt: 0
               af: 0
             xy:
               ac: 0
-              an: 0
+              an: 18
               nhomalt: 0
               af: 0
           faf95: ~
@@ -6565,17 +6566,17 @@ expression: records
           counts:
             overall:
               ac: 0
-              an: 0
+              an: 3256
               nhomalt: 0
               af: 0
             xx:
               ac: 0
-              an: 0
+              an: 1716
               nhomalt: 0
               af: 0
             xy:
               ac: 0
-              an: 0
+              an: 1540
               nhomalt: 0
               af: 0
           faf95: 0
@@ -6588,17 +6589,17 @@ expression: records
           counts:
             overall:
               ac: 0
-              an: 0
+              an: 80
               nhomalt: 0
               af: 0
             xx:
               ac: 0
-              an: 0
+              an: 52
               nhomalt: 0
               af: 0
             xy:
               ac: 0
-              an: 0
+              an: 28
               nhomalt: 0
               af: 0
           faf95: ~
@@ -6611,17 +6612,17 @@ expression: records
           counts:
             overall:
               ac: 0
-              an: 0
+              an: 2232
               nhomalt: 0
               af: 0
             xx:
               ac: 0
-              an: 0
+              an: 950
               nhomalt: 0
               af: 0
             xy:
               ac: 0
-              an: 0
+              an: 1282
               nhomalt: 0
               af: 0
           faf95: 0
@@ -6634,17 +6635,17 @@ expression: records
           counts:
             overall:
               ac: 0
-              an: 0
+              an: 2622
               nhomalt: 0
               af: 0
             xx:
               ac: 0
-              an: 0
+              an: 328
               nhomalt: 0
               af: 0
             xy:
               ac: 0
-              an: 0
+              an: 2294
               nhomalt: 0
               af: 0
           faf95: ~
@@ -6657,17 +6658,17 @@ expression: records
           counts:
             overall:
               ac: 0
-              an: 0
+              an: 188
               nhomalt: 0
               af: 0
             xx:
               ac: 0
-              an: 0
+              an: 108
               nhomalt: 0
               af: 0
             xy:
               ac: 0
-              an: 0
+              an: 80
               nhomalt: 0
               af: 0
           faf95: ~
@@ -6680,17 +6681,17 @@ expression: records
           counts:
             overall:
               ac: 0
-              an: 0
+              an: 4698
               nhomalt: 0
               af: 0
             xx:
               ac: 0
-              an: 0
+              an: 2282
               nhomalt: 0
               af: 0
             xy:
               ac: 0
-              an: 0
+              an: 2416
               nhomalt: 0
               af: 0
           faf95: 0
@@ -6703,17 +6704,17 @@ expression: records
           counts:
             overall:
               ac: 0
-              an: 0
+              an: 552
               nhomalt: 0
               af: 0
             xx:
               ac: 0
-              an: 0
+              an: 290
               nhomalt: 0
               af: 0
             xy:
               ac: 0
-              an: 0
+              an: 262
               nhomalt: 0
               af: 0
           faf95: ~
@@ -6726,17 +6727,17 @@ expression: records
           counts:
             overall:
               ac: 0
-              an: 0
+              an: 2124
               nhomalt: 0
               af: 0
             xx:
               ac: 0
-              an: 0
+              an: 608
               nhomalt: 0
               af: 0
             xy:
               ac: 0
-              an: 0
+              an: 1516
               nhomalt: 0
               af: 0
           faf95: 0
@@ -6748,22 +6749,22 @@ expression: records
       by_sex:
         overall:
           ac: 0
-          an: 0
+          an: 23878
           nhomalt: 0
           af: 0
         xx:
           ac: 0
-          an: 0
+          an: 10544
           nhomalt: 0
           af: 0
         xy:
           ac: 0
-          an: 0
+          an: 13334
           nhomalt: 0
           af: 0
       raw:
         ac: 0
-        an: 0
+        an: 28664
         nhomalt: 0
         af: 0
       popmax: ~
@@ -6777,17 +6778,17 @@ expression: records
           counts:
             overall:
               ac: 0
-              an: 0
+              an: 36724
               nhomalt: 0
               af: 0
             xx:
               ac: 0
-              an: 0
+              an: 19712
               nhomalt: 0
               af: 0
             xy:
               ac: 0
-              an: 0
+              an: 17012
               nhomalt: 0
               af: 0
           faf95: 0
@@ -6800,17 +6801,17 @@ expression: records
           counts:
             overall:
               ac: 0
-              an: 0
+              an: 628
               nhomalt: 0
               af: 0
             xx:
               ac: 0
-              an: 0
+              an: 312
               nhomalt: 0
               af: 0
             xy:
               ac: 0
-              an: 0
+              an: 316
               nhomalt: 0
               af: 0
           faf95: ~
@@ -6822,18 +6823,18 @@ expression: records
         - population: amr
           counts:
             overall:
-              ac: 0
-              an: 0
+              ac: 1
+              an: 9480
               nhomalt: 0
-              af: 0
+              af: 0.000105485
             xx:
-              ac: 0
-              an: 0
+              ac: 1
+              an: 4274
               nhomalt: 0
-              af: 0
+              af: 0.000233973
             xy:
               ac: 0
-              an: 0
+              an: 5206
               nhomalt: 0
               af: 0
           faf95: 0
@@ -6846,17 +6847,17 @@ expression: records
           counts:
             overall:
               ac: 0
-              an: 0
+              an: 2142
               nhomalt: 0
               af: 0
             xx:
               ac: 0
-              an: 0
+              an: 1144
               nhomalt: 0
               af: 0
             xy:
               ac: 0
-              an: 0
+              an: 998
               nhomalt: 0
               af: 0
           faf95: ~
@@ -6869,17 +6870,17 @@ expression: records
           counts:
             overall:
               ac: 0
-              an: 0
+              an: 4426
               nhomalt: 0
               af: 0
             xx:
               ac: 0
-              an: 0
+              an: 1964
               nhomalt: 0
               af: 0
             xy:
               ac: 0
-              an: 0
+              an: 2462
               nhomalt: 0
               af: 0
           faf95: 0
@@ -6892,17 +6893,17 @@ expression: records
           counts:
             overall:
               ac: 0
-              an: 0
+              an: 5348
               nhomalt: 0
               af: 0
             xx:
               ac: 0
-              an: 0
+              an: 1482
               nhomalt: 0
               af: 0
             xy:
               ac: 0
-              an: 0
+              an: 3866
               nhomalt: 0
               af: 0
           faf95: ~
@@ -6915,17 +6916,17 @@ expression: records
           counts:
             overall:
               ac: 0
-              an: 0
+              an: 228
               nhomalt: 0
               af: 0
             xx:
               ac: 0
-              an: 0
+              an: 130
               nhomalt: 0
               af: 0
             xy:
               ac: 0
-              an: 0
+              an: 98
               nhomalt: 0
               af: 0
           faf95: ~
@@ -6937,18 +6938,18 @@ expression: records
         - population: nfe
           counts:
             overall:
-              ac: 0
-              an: 0
+              ac: 1
+              an: 43856
               nhomalt: 0
-              af: 0
+              af: 0.0000228019
             xx:
-              ac: 0
-              an: 0
+              ac: 1
+              an: 26168
               nhomalt: 0
-              af: 0
+              af: 0.0000382146
             xy:
               ac: 0
-              an: 0
+              an: 17688
               nhomalt: 0
               af: 0
           faf95: 0
@@ -6961,17 +6962,17 @@ expression: records
           counts:
             overall:
               ac: 0
-              an: 0
+              an: 1346
               nhomalt: 0
               af: 0
             xx:
               ac: 0
-              an: 0
+              an: 690
               nhomalt: 0
               af: 0
             xy:
               ac: 0
-              an: 0
+              an: 656
               nhomalt: 0
               af: 0
           faf95: ~
@@ -6984,17 +6985,17 @@ expression: records
           counts:
             overall:
               ac: 0
-              an: 0
+              an: 3046
               nhomalt: 0
               af: 0
             xx:
               ac: 0
-              an: 0
+              an: 746
               nhomalt: 0
               af: 0
             xy:
               ac: 0
-              an: 0
+              an: 2300
               nhomalt: 0
               af: 0
           faf95: 0
@@ -7005,25 +7006,25 @@ expression: records
           faf99_xy: ~
       by_sex:
         overall:
-          ac: 0
-          an: 0
+          ac: 2
+          an: 107224
           nhomalt: 0
-          af: 0
+          af: 0.0000186525
         xx:
-          ac: 0
-          an: 0
+          ac: 2
+          an: 56622
           nhomalt: 0
-          af: 0
+          af: 0.000035322
         xy:
           ac: 0
-          an: 0
+          an: 50602
           nhomalt: 0
           af: 0
       raw:
-        ac: 0
-        an: 0
-        nhomalt: 0
-        af: 0
+        ac: 4
+        an: 130884
+        nhomalt: 1
+        af: 0.0000305614
       popmax: ~
       af_popmax: ~
       ac_popmax: ~
@@ -7035,17 +7036,17 @@ expression: records
           counts:
             overall:
               ac: 0
-              an: 0
+              an: 29162
               nhomalt: 0
               af: 0
             xx:
               ac: 0
-              an: 0
+              an: 16860
               nhomalt: 0
               af: 0
             xy:
               ac: 0
-              an: 0
+              an: 12302
               nhomalt: 0
               af: 0
           faf95: 0
@@ -7058,17 +7059,17 @@ expression: records
           counts:
             overall:
               ac: 0
-              an: 0
+              an: 598
               nhomalt: 0
               af: 0
             xx:
               ac: 0
-              an: 0
+              an: 286
               nhomalt: 0
               af: 0
             xy:
               ac: 0
-              an: 0
+              an: 312
               nhomalt: 0
               af: 0
           faf95: ~
@@ -7080,18 +7081,18 @@ expression: records
         - population: amr
           counts:
             overall:
-              ac: 0
-              an: 0
+              ac: 1
+              an: 9352
               nhomalt: 0
-              af: 0
+              af: 0.000106929
             xx:
-              ac: 0
-              an: 0
+              ac: 1
+              an: 4204
               nhomalt: 0
-              af: 0
+              af: 0.000237869
             xy:
               ac: 0
-              an: 0
+              an: 5148
               nhomalt: 0
               af: 0
           faf95: 0
@@ -7104,17 +7105,17 @@ expression: records
           counts:
             overall:
               ac: 0
-              an: 0
+              an: 2206
               nhomalt: 0
               af: 0
             xx:
               ac: 0
-              an: 0
+              an: 1210
               nhomalt: 0
               af: 0
             xy:
               ac: 0
-              an: 0
+              an: 996
               nhomalt: 0
               af: 0
           faf95: ~
@@ -7127,17 +7128,17 @@ expression: records
           counts:
             overall:
               ac: 0
-              an: 0
+              an: 4642
               nhomalt: 0
               af: 0
             xx:
               ac: 0
-              an: 0
+              an: 2056
               nhomalt: 0
               af: 0
             xy:
               ac: 0
-              an: 0
+              an: 2586
               nhomalt: 0
               af: 0
           faf95: 0
@@ -7150,17 +7151,17 @@ expression: records
           counts:
             overall:
               ac: 0
-              an: 0
+              an: 3356
               nhomalt: 0
               af: 0
             xx:
               ac: 0
-              an: 0
+              an: 424
               nhomalt: 0
               af: 0
             xy:
               ac: 0
-              an: 0
+              an: 2932
               nhomalt: 0
               af: 0
           faf95: ~
@@ -7173,17 +7174,17 @@ expression: records
           counts:
             overall:
               ac: 0
-              an: 0
+              an: 236
               nhomalt: 0
               af: 0
             xx:
               ac: 0
-              an: 0
+              an: 134
               nhomalt: 0
               af: 0
             xy:
               ac: 0
-              an: 0
+              an: 102
               nhomalt: 0
               af: 0
           faf95: ~
@@ -7195,18 +7196,18 @@ expression: records
         - population: nfe
           counts:
             overall:
-              ac: 0
-              an: 0
+              ac: 1
+              an: 43536
               nhomalt: 0
-              af: 0
+              af: 0.0000229695
             xx:
-              ac: 0
-              an: 0
+              ac: 1
+              an: 26012
               nhomalt: 0
-              af: 0
+              af: 0.0000384438
             xy:
               ac: 0
-              an: 0
+              an: 17524
               nhomalt: 0
               af: 0
           faf95: 0
@@ -7219,17 +7220,17 @@ expression: records
           counts:
             overall:
               ac: 0
-              an: 0
+              an: 1328
               nhomalt: 0
               af: 0
             xx:
               ac: 0
-              an: 0
+              an: 680
               nhomalt: 0
               af: 0
             xy:
               ac: 0
-              an: 0
+              an: 648
               nhomalt: 0
               af: 0
           faf95: ~
@@ -7242,17 +7243,17 @@ expression: records
           counts:
             overall:
               ac: 0
-              an: 0
+              an: 3074
               nhomalt: 0
               af: 0
             xx:
               ac: 0
-              an: 0
+              an: 762
               nhomalt: 0
               af: 0
             xy:
               ac: 0
-              an: 0
+              an: 2312
               nhomalt: 0
               af: 0
           faf95: 0
@@ -7263,25 +7264,25 @@ expression: records
           faf99_xy: ~
       by_sex:
         overall:
-          ac: 0
-          an: 0
+          ac: 2
+          an: 97490
           nhomalt: 0
-          af: 0
+          af: 0.0000205149
         xx:
-          ac: 0
-          an: 0
+          ac: 2
+          an: 52628
           nhomalt: 0
-          af: 0
+          af: 0.0000380026
         xy:
           ac: 0
-          an: 0
+          an: 44862
           nhomalt: 0
           af: 0
       raw:
-        ac: 0
-        an: 0
-        nhomalt: 0
-        af: 0
+        ac: 4
+        an: 118746
+        nhomalt: 1
+        af: 0.0000336853
       popmax: ~
       af_popmax: ~
       ac_popmax: ~
@@ -7293,17 +7294,17 @@ expression: records
           counts:
             overall:
               ac: 0
-              an: 0
+              an: 21902
               nhomalt: 0
               af: 0
             xx:
               ac: 0
-              an: 0
+              an: 10526
               nhomalt: 0
               af: 0
             xy:
               ac: 0
-              an: 0
+              an: 11376
               nhomalt: 0
               af: 0
           faf95: 0
@@ -7316,17 +7317,17 @@ expression: records
           counts:
             overall:
               ac: 0
-              an: 0
+              an: 60
               nhomalt: 0
               af: 0
             xx:
               ac: 0
-              an: 0
+              an: 38
               nhomalt: 0
               af: 0
             xy:
               ac: 0
-              an: 0
+              an: 22
               nhomalt: 0
               af: 0
           faf95: ~
@@ -7338,18 +7339,18 @@ expression: records
         - population: amr
           counts:
             overall:
-              ac: 0
-              an: 0
+              ac: 1
+              an: 8108
               nhomalt: 0
-              af: 0
+              af: 0.000123335
             xx:
-              ac: 0
-              an: 0
+              ac: 1
+              an: 3396
               nhomalt: 0
-              af: 0
+              af: 0.000294464
             xy:
               ac: 0
-              an: 0
+              an: 4712
               nhomalt: 0
               af: 0
           faf95: 0
@@ -7362,17 +7363,17 @@ expression: records
           counts:
             overall:
               ac: 0
-              an: 0
+              an: 646
               nhomalt: 0
               af: 0
             xx:
               ac: 0
-              an: 0
+              an: 178
               nhomalt: 0
               af: 0
             xy:
               ac: 0
-              an: 0
+              an: 468
               nhomalt: 0
               af: 0
           faf95: ~
@@ -7385,17 +7386,17 @@ expression: records
           counts:
             overall:
               ac: 0
-              an: 0
+              an: 3312
               nhomalt: 0
               af: 0
             xx:
               ac: 0
-              an: 0
+              an: 1252
               nhomalt: 0
               af: 0
             xy:
               ac: 0
-              an: 0
+              an: 2060
               nhomalt: 0
               af: 0
           faf95: 0
@@ -7408,17 +7409,17 @@ expression: records
           counts:
             overall:
               ac: 0
-              an: 0
+              an: 5278
               nhomalt: 0
               af: 0
             xx:
               ac: 0
-              an: 0
+              an: 1438
               nhomalt: 0
               af: 0
             xy:
               ac: 0
-              an: 0
+              an: 3840
               nhomalt: 0
               af: 0
           faf95: ~
@@ -7431,17 +7432,17 @@ expression: records
           counts:
             overall:
               ac: 0
-              an: 0
+              an: 206
               nhomalt: 0
               af: 0
             xx:
               ac: 0
-              an: 0
+              an: 116
               nhomalt: 0
               af: 0
             xy:
               ac: 0
-              an: 0
+              an: 90
               nhomalt: 0
               af: 0
           faf95: ~
@@ -7454,17 +7455,17 @@ expression: records
           counts:
             overall:
               ac: 0
-              an: 0
+              an: 13478
               nhomalt: 0
               af: 0
             xx:
               ac: 0
-              an: 0
+              an: 5842
               nhomalt: 0
               af: 0
             xy:
               ac: 0
-              an: 0
+              an: 7636
               nhomalt: 0
               af: 0
           faf95: 0
@@ -7477,17 +7478,17 @@ expression: records
           counts:
             overall:
               ac: 0
-              an: 0
+              an: 982
               nhomalt: 0
               af: 0
             xx:
               ac: 0
-              an: 0
+              an: 466
               nhomalt: 0
               af: 0
             xy:
               ac: 0
-              an: 0
+              an: 516
               nhomalt: 0
               af: 0
           faf95: ~
@@ -7500,17 +7501,17 @@ expression: records
           counts:
             overall:
               ac: 0
-              an: 0
+              an: 3060
               nhomalt: 0
               af: 0
             xx:
               ac: 0
-              an: 0
+              an: 760
               nhomalt: 0
               af: 0
             xy:
               ac: 0
-              an: 0
+              an: 2300
               nhomalt: 0
               af: 0
           faf95: 0
@@ -7521,25 +7522,25 @@ expression: records
           faf99_xy: ~
       by_sex:
         overall:
-          ac: 0
-          an: 0
+          ac: 1
+          an: 57032
           nhomalt: 0
-          af: 0
+          af: 0.000017534
         xx:
-          ac: 0
-          an: 0
+          ac: 1
+          an: 24012
           nhomalt: 0
-          af: 0
+          af: 0.0000416458
         xy:
           ac: 0
-          an: 0
+          an: 33020
           nhomalt: 0
           af: 0
       raw:
-        ac: 0
-        an: 0
-        nhomalt: 0
-        af: 0
+        ac: 3
+        an: 70272
+        nhomalt: 1
+        af: 0.0000426913
       popmax: ~
       af_popmax: ~
       ac_popmax: ~
@@ -7551,17 +7552,17 @@ expression: records
           counts:
             overall:
               ac: 0
-              an: 0
+              an: 25546
               nhomalt: 0
               af: 0
             xx:
               ac: 0
-              an: 0
+              an: 14138
               nhomalt: 0
               af: 0
             xy:
               ac: 0
-              an: 0
+              an: 11408
               nhomalt: 0
               af: 0
           faf95: 0
@@ -7574,17 +7575,17 @@ expression: records
           counts:
             overall:
               ac: 0
-              an: 0
+              an: 628
               nhomalt: 0
               af: 0
             xx:
               ac: 0
-              an: 0
+              an: 312
               nhomalt: 0
               af: 0
             xy:
               ac: 0
-              an: 0
+              an: 316
               nhomalt: 0
               af: 0
           faf95: ~
@@ -7596,18 +7597,18 @@ expression: records
         - population: amr
           counts:
             overall:
-              ac: 0
-              an: 0
+              ac: 1
+              an: 8614
               nhomalt: 0
-              af: 0
+              af: 0.00011609
             xx:
-              ac: 0
-              an: 0
+              ac: 1
+              an: 3816
               nhomalt: 0
-              af: 0
+              af: 0.000262055
             xy:
               ac: 0
-              an: 0
+              an: 4798
               nhomalt: 0
               af: 0
           faf95: 0
@@ -7620,17 +7621,17 @@ expression: records
           counts:
             overall:
               ac: 0
-              an: 0
+              an: 2012
               nhomalt: 0
               af: 0
             xx:
               ac: 0
-              an: 0
+              an: 1122
               nhomalt: 0
               af: 0
             xy:
               ac: 0
-              an: 0
+              an: 890
               nhomalt: 0
               af: 0
           faf95: ~
@@ -7643,17 +7644,17 @@ expression: records
           counts:
             overall:
               ac: 0
-              an: 0
+              an: 2514
               nhomalt: 0
               af: 0
             xx:
               ac: 0
-              an: 0
+              an: 1186
               nhomalt: 0
               af: 0
             xy:
               ac: 0
-              an: 0
+              an: 1328
               nhomalt: 0
               af: 0
           faf95: 0
@@ -7666,17 +7667,17 @@ expression: records
           counts:
             overall:
               ac: 0
-              an: 0
+              an: 3406
               nhomalt: 0
               af: 0
             xx:
               ac: 0
-              an: 0
+              an: 616
               nhomalt: 0
               af: 0
             xy:
               ac: 0
-              an: 0
+              an: 2790
               nhomalt: 0
               af: 0
           faf95: ~
@@ -7689,17 +7690,17 @@ expression: records
           counts:
             overall:
               ac: 0
-              an: 0
+              an: 230
               nhomalt: 0
               af: 0
             xx:
               ac: 0
-              an: 0
+              an: 132
               nhomalt: 0
               af: 0
             xy:
               ac: 0
-              an: 0
+              an: 98
               nhomalt: 0
               af: 0
           faf95: ~
@@ -7711,18 +7712,18 @@ expression: records
         - population: nfe
           counts:
             overall:
-              ac: 0
-              an: 0
+              ac: 1
+              an: 35780
               nhomalt: 0
-              af: 0
+              af: 0.0000279486
             xx:
-              ac: 0
-              an: 0
+              ac: 1
+              an: 22286
               nhomalt: 0
-              af: 0
+              af: 0.0000448712
             xy:
               ac: 0
-              an: 0
+              an: 13494
               nhomalt: 0
               af: 0
           faf95: 0
@@ -7735,17 +7736,17 @@ expression: records
           counts:
             overall:
               ac: 0
-              an: 0
+              an: 1248
               nhomalt: 0
               af: 0
             xx:
               ac: 0
-              an: 0
+              an: 640
               nhomalt: 0
               af: 0
             xy:
               ac: 0
-              an: 0
+              an: 608
               nhomalt: 0
               af: 0
           faf95: ~
@@ -7758,17 +7759,17 @@ expression: records
           counts:
             overall:
               ac: 0
-              an: 0
+              an: 2348
               nhomalt: 0
               af: 0
             xx:
               ac: 0
-              an: 0
+              an: 466
               nhomalt: 0
               af: 0
             xy:
               ac: 0
-              an: 0
+              an: 1882
               nhomalt: 0
               af: 0
           faf95: 0
@@ -7779,25 +7780,25 @@ expression: records
           faf99_xy: ~
       by_sex:
         overall:
-          ac: 0
-          an: 0
+          ac: 2
+          an: 82326
           nhomalt: 0
-          af: 0
+          af: 0.0000242937
         xx:
-          ac: 0
-          an: 0
+          ac: 2
+          an: 44714
           nhomalt: 0
-          af: 0
+          af: 0.0000447287
         xy:
           ac: 0
-          an: 0
+          an: 37612
           nhomalt: 0
           af: 0
       raw:
-        ac: 0
-        an: 0
-        nhomalt: 0
-        af: 0
+        ac: 4
+        an: 100384
+        nhomalt: 1
+        af: 0.000039847
       popmax: ~
       af_popmax: ~
       ac_popmax: ~
@@ -8228,12 +8229,12 @@ expression: records
               af: 0
             xx:
               ac: 0
-              an: 0
+              an: 19886
               nhomalt: 0
               af: 0
             xy:
               ac: 0
-              an: 0
+              an: 17166
               nhomalt: 0
               af: 0
           faf95: 0
@@ -8251,12 +8252,12 @@ expression: records
               af: 0
             xx:
               ac: 0
-              an: 0
+              an: 314
               nhomalt: 0
               af: 0
             xy:
               ac: 0
-              an: 0
+              an: 316
               nhomalt: 0
               af: 0
           faf95: ~
@@ -8274,12 +8275,12 @@ expression: records
               af: 0
             xx:
               ac: 0
-              an: 0
+              an: 4324
               nhomalt: 0
               af: 0
             xy:
               ac: 0
-              an: 0
+              an: 5304
               nhomalt: 0
               af: 0
           faf95: 0
@@ -8297,12 +8298,12 @@ expression: records
               af: 0
             xx:
               ac: 0
-              an: 0
+              an: 1240
               nhomalt: 0
               af: 0
             xy:
               ac: 0
-              an: 0
+              an: 1034
               nhomalt: 0
               af: 0
           faf95: ~
@@ -8320,12 +8321,12 @@ expression: records
               af: 0
             xx:
               ac: 0
-              an: 0
+              an: 2052
               nhomalt: 0
               af: 0
             xy:
               ac: 0
-              an: 0
+              an: 2580
               nhomalt: 0
               af: 0
           faf95: 0
@@ -8343,12 +8344,12 @@ expression: records
               af: 0
             xx:
               ac: 0
-              an: 0
+              an: 1478
               nhomalt: 0
               af: 0
             xy:
               ac: 0
-              an: 0
+              an: 3892
               nhomalt: 0
               af: 0
           faf95: ~
@@ -8366,12 +8367,12 @@ expression: records
               af: 0
             xx:
               ac: 0
-              an: 0
+              an: 134
               nhomalt: 0
               af: 0
             xy:
               ac: 0
-              an: 0
+              an: 98
               nhomalt: 0
               af: 0
           faf95: ~
@@ -8389,12 +8390,12 @@ expression: records
               af: 0
             xx:
               ac: 0
-              an: 0
+              an: 27066
               nhomalt: 0
               af: 0
             xy:
               ac: 0
-              an: 0
+              an: 19030
               nhomalt: 0
               af: 0
           faf95: 0
@@ -8412,12 +8413,12 @@ expression: records
               af: 0
             xx:
               ac: 0
-              an: 0
+              an: 708
               nhomalt: 0
               af: 0
             xy:
               ac: 0
-              an: 0
+              an: 690
               nhomalt: 0
               af: 0
           faf95: ~
@@ -8435,12 +8436,12 @@ expression: records
               af: 0
             xx:
               ac: 0
-              an: 0
+              an: 766
               nhomalt: 0
               af: 0
             xy:
               ac: 0
-              an: 0
+              an: 2340
               nhomalt: 0
               af: 0
           faf95: 0
@@ -8481,17 +8482,17 @@ expression: records
           counts:
             overall:
               ac: 0
-              an: 0
+              an: 8082
               nhomalt: 0
               af: 0
             xx:
               ac: 0
-              an: 0
+              an: 4190
               nhomalt: 0
               af: 0
             xy:
               ac: 0
-              an: 0
+              an: 3892
               nhomalt: 0
               af: 0
           faf95: 0
@@ -8504,17 +8505,17 @@ expression: records
           counts:
             overall:
               ac: 0
-              an: 0
+              an: 30
               nhomalt: 0
               af: 0
             xx:
               ac: 0
-              an: 0
+              an: 12
               nhomalt: 0
               af: 0
             xy:
               ac: 0
-              an: 0
+              an: 18
               nhomalt: 0
               af: 0
           faf95: ~
@@ -8527,17 +8528,17 @@ expression: records
           counts:
             overall:
               ac: 0
-              an: 0
+              an: 3264
               nhomalt: 0
               af: 0
             xx:
               ac: 0
-              an: 0
+              an: 1732
               nhomalt: 0
               af: 0
             xy:
               ac: 0
-              an: 0
+              an: 1532
               nhomalt: 0
               af: 0
           faf95: 0
@@ -8550,17 +8551,17 @@ expression: records
           counts:
             overall:
               ac: 0
-              an: 0
+              an: 84
               nhomalt: 0
               af: 0
             xx:
               ac: 0
-              an: 0
+              an: 54
               nhomalt: 0
               af: 0
             xy:
               ac: 0
-              an: 0
+              an: 30
               nhomalt: 0
               af: 0
           faf95: ~
@@ -8573,17 +8574,17 @@ expression: records
           counts:
             overall:
               ac: 0
-              an: 0
+              an: 2218
               nhomalt: 0
               af: 0
             xx:
               ac: 0
-              an: 0
+              an: 944
               nhomalt: 0
               af: 0
             xy:
               ac: 0
-              an: 0
+              an: 1274
               nhomalt: 0
               af: 0
           faf95: 0
@@ -8596,17 +8597,17 @@ expression: records
           counts:
             overall:
               ac: 0
-              an: 0
+              an: 2652
               nhomalt: 0
               af: 0
             xx:
               ac: 0
-              an: 0
+              an: 332
               nhomalt: 0
               af: 0
             xy:
               ac: 0
-              an: 0
+              an: 2320
               nhomalt: 0
               af: 0
           faf95: ~
@@ -8619,17 +8620,17 @@ expression: records
           counts:
             overall:
               ac: 0
-              an: 0
+              an: 186
               nhomalt: 0
               af: 0
             xx:
               ac: 0
-              an: 0
+              an: 108
               nhomalt: 0
               af: 0
             xy:
               ac: 0
-              an: 0
+              an: 78
               nhomalt: 0
               af: 0
           faf95: ~
@@ -8642,17 +8643,17 @@ expression: records
           counts:
             overall:
               ac: 0
-              an: 0
+              an: 4692
               nhomalt: 0
               af: 0
             xx:
               ac: 0
-              an: 0
+              an: 2278
               nhomalt: 0
               af: 0
             xy:
               ac: 0
-              an: 0
+              an: 2414
               nhomalt: 0
               af: 0
           faf95: 0
@@ -8665,17 +8666,17 @@ expression: records
           counts:
             overall:
               ac: 0
-              an: 0
+              an: 554
               nhomalt: 0
               af: 0
             xx:
               ac: 0
-              an: 0
+              an: 286
               nhomalt: 0
               af: 0
             xy:
               ac: 0
-              an: 0
+              an: 268
               nhomalt: 0
               af: 0
           faf95: ~
@@ -8688,17 +8689,17 @@ expression: records
           counts:
             overall:
               ac: 0
-              an: 0
+              an: 2134
               nhomalt: 0
               af: 0
             xx:
               ac: 0
-              an: 0
+              an: 608
               nhomalt: 0
               af: 0
             xy:
               ac: 0
-              an: 0
+              an: 1526
               nhomalt: 0
               af: 0
           faf95: 0
@@ -8710,24 +8711,24 @@ expression: records
       by_sex:
         overall:
           ac: 0
-          an: 0
+          an: 23896
           nhomalt: 0
           af: 0
         xx:
           ac: 0
-          an: 0
+          an: 10544
           nhomalt: 0
           af: 0
         xy:
           ac: 0
-          an: 0
+          an: 13352
           nhomalt: 0
           af: 0
       raw:
-        ac: 0
-        an: 0
+        ac: 1
+        an: 28646
         nhomalt: 0
-        af: 0
+        af: 0.0000349089
       popmax: ~
       af_popmax: ~
       ac_popmax: ~
@@ -8739,17 +8740,17 @@ expression: records
           counts:
             overall:
               ac: 0
-              an: 0
+              an: 36756
               nhomalt: 0
               af: 0
             xx:
               ac: 0
-              an: 0
+              an: 19744
               nhomalt: 0
               af: 0
             xy:
               ac: 0
-              an: 0
+              an: 17012
               nhomalt: 0
               af: 0
           faf95: 0
@@ -8762,17 +8763,17 @@ expression: records
           counts:
             overall:
               ac: 0
-              an: 0
+              an: 630
               nhomalt: 0
               af: 0
             xx:
               ac: 0
-              an: 0
+              an: 314
               nhomalt: 0
               af: 0
             xy:
               ac: 0
-              an: 0
+              an: 316
               nhomalt: 0
               af: 0
           faf95: ~
@@ -8785,17 +8786,17 @@ expression: records
           counts:
             overall:
               ac: 0
-              an: 0
+              an: 9512
               nhomalt: 0
               af: 0
             xx:
               ac: 0
-              an: 0
+              an: 4294
               nhomalt: 0
               af: 0
             xy:
               ac: 0
-              an: 0
+              an: 5218
               nhomalt: 0
               af: 0
           faf95: 0
@@ -8808,17 +8809,17 @@ expression: records
           counts:
             overall:
               ac: 0
-              an: 0
+              an: 2162
               nhomalt: 0
               af: 0
             xx:
               ac: 0
-              an: 0
+              an: 1154
               nhomalt: 0
               af: 0
             xy:
               ac: 0
-              an: 0
+              an: 1008
               nhomalt: 0
               af: 0
           faf95: ~
@@ -8831,17 +8832,17 @@ expression: records
           counts:
             overall:
               ac: 0
-              an: 0
+              an: 4422
               nhomalt: 0
               af: 0
             xx:
               ac: 0
-              an: 0
+              an: 1966
               nhomalt: 0
               af: 0
             xy:
               ac: 0
-              an: 0
+              an: 2456
               nhomalt: 0
               af: 0
           faf95: 0
@@ -8854,17 +8855,17 @@ expression: records
           counts:
             overall:
               ac: 0
-              an: 0
+              an: 5370
               nhomalt: 0
               af: 0
             xx:
               ac: 0
-              an: 0
+              an: 1478
               nhomalt: 0
               af: 0
             xy:
               ac: 0
-              an: 0
+              an: 3892
               nhomalt: 0
               af: 0
           faf95: ~
@@ -8877,17 +8878,17 @@ expression: records
           counts:
             overall:
               ac: 0
-              an: 0
+              an: 224
               nhomalt: 0
               af: 0
             xx:
               ac: 0
-              an: 0
+              an: 130
               nhomalt: 0
               af: 0
             xy:
               ac: 0
-              an: 0
+              an: 94
               nhomalt: 0
               af: 0
           faf95: ~
@@ -8900,17 +8901,17 @@ expression: records
           counts:
             overall:
               ac: 0
-              an: 0
+              an: 43918
               nhomalt: 0
               af: 0
             xx:
               ac: 0
-              an: 0
+              an: 26222
               nhomalt: 0
               af: 0
             xy:
               ac: 0
-              an: 0
+              an: 17696
               nhomalt: 0
               af: 0
           faf95: 0
@@ -8923,17 +8924,17 @@ expression: records
           counts:
             overall:
               ac: 0
-              an: 0
+              an: 1352
               nhomalt: 0
               af: 0
             xx:
               ac: 0
-              an: 0
+              an: 690
               nhomalt: 0
               af: 0
             xy:
               ac: 0
-              an: 0
+              an: 662
               nhomalt: 0
               af: 0
           faf95: ~
@@ -8946,17 +8947,17 @@ expression: records
           counts:
             overall:
               ac: 0
-              an: 0
+              an: 3078
               nhomalt: 0
               af: 0
             xx:
               ac: 0
-              an: 0
+              an: 750
               nhomalt: 0
               af: 0
             xy:
               ac: 0
-              an: 0
+              an: 2328
               nhomalt: 0
               af: 0
           faf95: 0
@@ -8968,24 +8969,24 @@ expression: records
       by_sex:
         overall:
           ac: 0
-          an: 0
+          an: 107424
           nhomalt: 0
           af: 0
         xx:
           ac: 0
-          an: 0
+          an: 56742
           nhomalt: 0
           af: 0
         xy:
           ac: 0
-          an: 0
+          an: 50682
           nhomalt: 0
           af: 0
       raw:
-        ac: 0
-        an: 0
+        ac: 2
+        an: 130948
         nhomalt: 0
-        af: 0
+        af: 0.0000152732
       popmax: ~
       af_popmax: ~
       ac_popmax: ~
@@ -8997,17 +8998,17 @@ expression: records
           counts:
             overall:
               ac: 0
-              an: 0
+              an: 29182
               nhomalt: 0
               af: 0
             xx:
               ac: 0
-              an: 0
+              an: 16882
               nhomalt: 0
               af: 0
             xy:
               ac: 0
-              an: 0
+              an: 12300
               nhomalt: 0
               af: 0
           faf95: 0
@@ -9020,17 +9021,17 @@ expression: records
           counts:
             overall:
               ac: 0
-              an: 0
+              an: 600
               nhomalt: 0
               af: 0
             xx:
               ac: 0
-              an: 0
+              an: 288
               nhomalt: 0
               af: 0
             xy:
               ac: 0
-              an: 0
+              an: 312
               nhomalt: 0
               af: 0
           faf95: ~
@@ -9043,17 +9044,17 @@ expression: records
           counts:
             overall:
               ac: 0
-              an: 0
+              an: 9380
               nhomalt: 0
               af: 0
             xx:
               ac: 0
-              an: 0
+              an: 4222
               nhomalt: 0
               af: 0
             xy:
               ac: 0
-              an: 0
+              an: 5158
               nhomalt: 0
               af: 0
           faf95: 0
@@ -9066,17 +9067,17 @@ expression: records
           counts:
             overall:
               ac: 0
-              an: 0
+              an: 2224
               nhomalt: 0
               af: 0
             xx:
               ac: 0
-              an: 0
+              an: 1218
               nhomalt: 0
               af: 0
             xy:
               ac: 0
-              an: 0
+              an: 1006
               nhomalt: 0
               af: 0
           faf95: ~
@@ -9089,17 +9090,17 @@ expression: records
           counts:
             overall:
               ac: 0
-              an: 0
+              an: 4632
               nhomalt: 0
               af: 0
             xx:
               ac: 0
-              an: 0
+              an: 2052
               nhomalt: 0
               af: 0
             xy:
               ac: 0
-              an: 0
+              an: 2580
               nhomalt: 0
               af: 0
           faf95: 0
@@ -9112,17 +9113,17 @@ expression: records
           counts:
             overall:
               ac: 0
-              an: 0
+              an: 3388
               nhomalt: 0
               af: 0
             xx:
               ac: 0
-              an: 0
+              an: 426
               nhomalt: 0
               af: 0
             xy:
               ac: 0
-              an: 0
+              an: 2962
               nhomalt: 0
               af: 0
           faf95: ~
@@ -9135,17 +9136,17 @@ expression: records
           counts:
             overall:
               ac: 0
-              an: 0
+              an: 230
               nhomalt: 0
               af: 0
             xx:
               ac: 0
-              an: 0
+              an: 134
               nhomalt: 0
               af: 0
             xy:
               ac: 0
-              an: 0
+              an: 96
               nhomalt: 0
               af: 0
           faf95: ~
@@ -9158,17 +9159,17 @@ expression: records
           counts:
             overall:
               ac: 0
-              an: 0
+              an: 43582
               nhomalt: 0
               af: 0
             xx:
               ac: 0
-              an: 0
+              an: 26048
               nhomalt: 0
               af: 0
             xy:
               ac: 0
-              an: 0
+              an: 17534
               nhomalt: 0
               af: 0
           faf95: 0
@@ -9181,17 +9182,17 @@ expression: records
           counts:
             overall:
               ac: 0
-              an: 0
+              an: 1332
               nhomalt: 0
               af: 0
             xx:
               ac: 0
-              an: 0
+              an: 678
               nhomalt: 0
               af: 0
             xy:
               ac: 0
-              an: 0
+              an: 654
               nhomalt: 0
               af: 0
           faf95: ~
@@ -9204,17 +9205,17 @@ expression: records
           counts:
             overall:
               ac: 0
-              an: 0
+              an: 3106
               nhomalt: 0
               af: 0
             xx:
               ac: 0
-              an: 0
+              an: 766
               nhomalt: 0
               af: 0
             xy:
               ac: 0
-              an: 0
+              an: 2340
               nhomalt: 0
               af: 0
           faf95: 0
@@ -9226,24 +9227,24 @@ expression: records
       by_sex:
         overall:
           ac: 0
-          an: 0
+          an: 97656
           nhomalt: 0
           af: 0
         xx:
           ac: 0
-          an: 0
+          an: 52714
           nhomalt: 0
           af: 0
         xy:
           ac: 0
-          an: 0
+          an: 44942
           nhomalt: 0
           af: 0
       raw:
-        ac: 0
-        an: 0
+        ac: 2
+        an: 118802
         nhomalt: 0
-        af: 0
+        af: 0.0000168347
       popmax: ~
       af_popmax: ~
       ac_popmax: ~
@@ -9255,17 +9256,17 @@ expression: records
           counts:
             overall:
               ac: 0
-              an: 0
+              an: 21918
               nhomalt: 0
               af: 0
             xx:
               ac: 0
-              an: 0
+              an: 10540
               nhomalt: 0
               af: 0
             xy:
               ac: 0
-              an: 0
+              an: 11378
               nhomalt: 0
               af: 0
           faf95: 0
@@ -9278,17 +9279,17 @@ expression: records
           counts:
             overall:
               ac: 0
-              an: 0
+              an: 60
               nhomalt: 0
               af: 0
             xx:
               ac: 0
-              an: 0
+              an: 38
               nhomalt: 0
               af: 0
             xy:
               ac: 0
-              an: 0
+              an: 22
               nhomalt: 0
               af: 0
           faf95: ~
@@ -9301,17 +9302,17 @@ expression: records
           counts:
             overall:
               ac: 0
-              an: 0
+              an: 8132
               nhomalt: 0
               af: 0
             xx:
               ac: 0
-              an: 0
+              an: 3412
               nhomalt: 0
               af: 0
             xy:
               ac: 0
-              an: 0
+              an: 4720
               nhomalt: 0
               af: 0
           faf95: 0
@@ -9324,17 +9325,17 @@ expression: records
           counts:
             overall:
               ac: 0
-              an: 0
+              an: 652
               nhomalt: 0
               af: 0
             xx:
               ac: 0
-              an: 0
+              an: 178
               nhomalt: 0
               af: 0
             xy:
               ac: 0
-              an: 0
+              an: 474
               nhomalt: 0
               af: 0
           faf95: ~
@@ -9347,17 +9348,17 @@ expression: records
           counts:
             overall:
               ac: 0
-              an: 0
+              an: 3298
               nhomalt: 0
               af: 0
             xx:
               ac: 0
-              an: 0
+              an: 1244
               nhomalt: 0
               af: 0
             xy:
               ac: 0
-              an: 0
+              an: 2054
               nhomalt: 0
               af: 0
           faf95: 0
@@ -9370,17 +9371,17 @@ expression: records
           counts:
             overall:
               ac: 0
-              an: 0
+              an: 5302
               nhomalt: 0
               af: 0
             xx:
               ac: 0
-              an: 0
+              an: 1436
               nhomalt: 0
               af: 0
             xy:
               ac: 0
-              an: 0
+              an: 3866
               nhomalt: 0
               af: 0
           faf95: ~
@@ -9393,17 +9394,17 @@ expression: records
           counts:
             overall:
               ac: 0
-              an: 0
+              an: 202
               nhomalt: 0
               af: 0
             xx:
               ac: 0
-              an: 0
+              an: 116
               nhomalt: 0
               af: 0
             xy:
               ac: 0
-              an: 0
+              an: 86
               nhomalt: 0
               af: 0
           faf95: ~
@@ -9416,17 +9417,17 @@ expression: records
           counts:
             overall:
               ac: 0
-              an: 0
+              an: 13458
               nhomalt: 0
               af: 0
             xx:
               ac: 0
-              an: 0
+              an: 5846
               nhomalt: 0
               af: 0
             xy:
               ac: 0
-              an: 0
+              an: 7612
               nhomalt: 0
               af: 0
           faf95: 0
@@ -9439,17 +9440,17 @@ expression: records
           counts:
             overall:
               ac: 0
-              an: 0
+              an: 984
               nhomalt: 0
               af: 0
             xx:
               ac: 0
-              an: 0
+              an: 462
               nhomalt: 0
               af: 0
             xy:
               ac: 0
-              an: 0
+              an: 522
               nhomalt: 0
               af: 0
           faf95: ~
@@ -9462,17 +9463,17 @@ expression: records
           counts:
             overall:
               ac: 0
-              an: 0
+              an: 3092
               nhomalt: 0
               af: 0
             xx:
               ac: 0
-              an: 0
+              an: 764
               nhomalt: 0
               af: 0
             xy:
               ac: 0
-              an: 0
+              an: 2328
               nhomalt: 0
               af: 0
           faf95: 0
@@ -9484,24 +9485,24 @@ expression: records
       by_sex:
         overall:
           ac: 0
-          an: 0
+          an: 57098
           nhomalt: 0
           af: 0
         xx:
           ac: 0
-          an: 0
+          an: 24036
           nhomalt: 0
           af: 0
         xy:
           ac: 0
-          an: 0
+          an: 33062
           nhomalt: 0
           af: 0
       raw:
-        ac: 0
-        an: 0
+        ac: 2
+        an: 70230
         nhomalt: 0
-        af: 0
+        af: 0.0000284779
       popmax: ~
       af_popmax: ~
       ac_popmax: ~
@@ -9513,17 +9514,17 @@ expression: records
           counts:
             overall:
               ac: 0
-              an: 0
+              an: 25586
               nhomalt: 0
               af: 0
             xx:
               ac: 0
-              an: 0
+              an: 14168
               nhomalt: 0
               af: 0
             xy:
               ac: 0
-              an: 0
+              an: 11418
               nhomalt: 0
               af: 0
           faf95: 0
@@ -9536,17 +9537,17 @@ expression: records
           counts:
             overall:
               ac: 0
-              an: 0
+              an: 630
               nhomalt: 0
               af: 0
             xx:
               ac: 0
-              an: 0
+              an: 314
               nhomalt: 0
               af: 0
             xy:
               ac: 0
-              an: 0
+              an: 316
               nhomalt: 0
               af: 0
           faf95: ~
@@ -9559,17 +9560,17 @@ expression: records
           counts:
             overall:
               ac: 0
-              an: 0
+              an: 8634
               nhomalt: 0
               af: 0
             xx:
               ac: 0
-              an: 0
+              an: 3822
               nhomalt: 0
               af: 0
             xy:
               ac: 0
-              an: 0
+              an: 4812
               nhomalt: 0
               af: 0
           faf95: 0
@@ -9582,17 +9583,17 @@ expression: records
           counts:
             overall:
               ac: 0
-              an: 0
+              an: 2036
               nhomalt: 0
               af: 0
             xx:
               ac: 0
-              an: 0
+              an: 1132
               nhomalt: 0
               af: 0
             xy:
               ac: 0
-              an: 0
+              an: 904
               nhomalt: 0
               af: 0
           faf95: ~
@@ -9605,17 +9606,17 @@ expression: records
           counts:
             overall:
               ac: 0
-              an: 0
+              an: 2518
               nhomalt: 0
               af: 0
             xx:
               ac: 0
-              an: 0
+              an: 1188
               nhomalt: 0
               af: 0
             xy:
               ac: 0
-              an: 0
+              an: 1330
               nhomalt: 0
               af: 0
           faf95: 0
@@ -9628,17 +9629,17 @@ expression: records
           counts:
             overall:
               ac: 0
-              an: 0
+              an: 3416
               nhomalt: 0
               af: 0
             xx:
               ac: 0
-              an: 0
+              an: 606
               nhomalt: 0
               af: 0
             xy:
               ac: 0
-              an: 0
+              an: 2810
               nhomalt: 0
               af: 0
           faf95: ~
@@ -9651,17 +9652,17 @@ expression: records
           counts:
             overall:
               ac: 0
-              an: 0
+              an: 224
               nhomalt: 0
               af: 0
             xx:
               ac: 0
-              an: 0
+              an: 132
               nhomalt: 0
               af: 0
             xy:
               ac: 0
-              an: 0
+              an: 92
               nhomalt: 0
               af: 0
           faf95: ~
@@ -9674,17 +9675,17 @@ expression: records
           counts:
             overall:
               ac: 0
-              an: 0
+              an: 35826
               nhomalt: 0
               af: 0
             xx:
               ac: 0
-              an: 0
+              an: 22326
               nhomalt: 0
               af: 0
             xy:
               ac: 0
-              an: 0
+              an: 13500
               nhomalt: 0
               af: 0
           faf95: 0
@@ -9697,17 +9698,17 @@ expression: records
           counts:
             overall:
               ac: 0
-              an: 0
+              an: 1252
               nhomalt: 0
               af: 0
             xx:
               ac: 0
-              an: 0
+              an: 640
               nhomalt: 0
               af: 0
             xy:
               ac: 0
-              an: 0
+              an: 612
               nhomalt: 0
               af: 0
           faf95: ~
@@ -9720,17 +9721,17 @@ expression: records
           counts:
             overall:
               ac: 0
-              an: 0
+              an: 2380
               nhomalt: 0
               af: 0
             xx:
               ac: 0
-              an: 0
+              an: 470
               nhomalt: 0
               af: 0
             xy:
               ac: 0
-              an: 0
+              an: 1910
               nhomalt: 0
               af: 0
           faf95: 0
@@ -9742,24 +9743,24 @@ expression: records
       by_sex:
         overall:
           ac: 0
-          an: 0
+          an: 82502
           nhomalt: 0
           af: 0
         xx:
           ac: 0
-          an: 0
+          an: 44798
           nhomalt: 0
           af: 0
         xy:
           ac: 0
-          an: 0
+          an: 37704
           nhomalt: 0
           af: 0
       raw:
-        ac: 0
-        an: 0
+        ac: 2
+        an: 100460
         nhomalt: 0
-        af: 0
+        af: 0.0000199084
       popmax: ~
       af_popmax: ~
       ac_popmax: ~
@@ -10190,12 +10191,12 @@ expression: records
               af: 0
             xx:
               ac: 0
-              an: 0
+              an: 19924
               nhomalt: 0
               af: 0
             xy:
               ac: 0
-              an: 0
+              an: 17210
               nhomalt: 0
               af: 0
           faf95: 0
@@ -10213,12 +10214,12 @@ expression: records
               af: 0
             xx:
               ac: 0
-              an: 0
+              an: 316
               nhomalt: 0
               af: 0
             xy:
               ac: 0
-              an: 0
+              an: 318
               nhomalt: 0
               af: 0
           faf95: ~
@@ -10236,12 +10237,12 @@ expression: records
               af: 0
             xx:
               ac: 0
-              an: 0
+              an: 4366
               nhomalt: 0
               af: 0
             xy:
               ac: 0
-              an: 0
+              an: 5380
               nhomalt: 0
               af: 0
           faf95: 0
@@ -10259,12 +10260,12 @@ expression: records
               af: 0
             xx:
               ac: 0
-              an: 0
+              an: 1258
               nhomalt: 0
               af: 0
             xy:
               ac: 0
-              an: 0
+              an: 1044
               nhomalt: 0
               af: 0
           faf95: ~
@@ -10282,12 +10283,12 @@ expression: records
               af: 0
             xx:
               ac: 0
-              an: 0
+              an: 2072
               nhomalt: 0
               af: 0
             xy:
               ac: 0
-              an: 0
+              an: 2598
               nhomalt: 0
               af: 0
           faf95: 0
@@ -10305,12 +10306,12 @@ expression: records
               af: 0
             xx:
               ac: 0
-              an: 0
+              an: 1494
               nhomalt: 0
               af: 0
             xy:
               ac: 0
-              an: 0
+              an: 3978
               nhomalt: 0
               af: 0
           faf95: ~
@@ -10328,12 +10329,12 @@ expression: records
               af: 0
             xx:
               ac: 0
-              an: 0
+              an: 136
               nhomalt: 0
               af: 0
             xy:
               ac: 0
-              an: 0
+              an: 104
               nhomalt: 0
               af: 0
           faf95: ~
@@ -10351,12 +10352,12 @@ expression: records
               af: 0
             xx:
               ac: 0
-              an: 0
+              an: 27388
               nhomalt: 0
               af: 0
             xy:
               ac: 0
-              an: 0
+              an: 19310
               nhomalt: 0
               af: 0
           faf95: 0
@@ -10374,12 +10375,12 @@ expression: records
               af: 0
             xx:
               ac: 0
-              an: 0
+              an: 710
               nhomalt: 0
               af: 0
             xy:
               ac: 0
-              an: 0
+              an: 694
               nhomalt: 0
               af: 0
           faf95: ~
@@ -10397,12 +10398,12 @@ expression: records
               af: 0
             xx:
               ac: 0
-              an: 0
+              an: 766
               nhomalt: 0
               af: 0
             xy:
               ac: 0
-              an: 0
+              an: 2372
               nhomalt: 0
               af: 0
           faf95: 0
@@ -10443,17 +10444,17 @@ expression: records
           counts:
             overall:
               ac: 0
-              an: 0
+              an: 8112
               nhomalt: 0
               af: 0
             xx:
               ac: 0
-              an: 0
+              an: 4210
               nhomalt: 0
               af: 0
             xy:
               ac: 0
-              an: 0
+              an: 3902
               nhomalt: 0
               af: 0
           faf95: 0
@@ -10466,17 +10467,17 @@ expression: records
           counts:
             overall:
               ac: 0
-              an: 0
+              an: 30
               nhomalt: 0
               af: 0
             xx:
               ac: 0
-              an: 0
+              an: 12
               nhomalt: 0
               af: 0
             xy:
               ac: 0
-              an: 0
+              an: 18
               nhomalt: 0
               af: 0
           faf95: ~
@@ -10489,17 +10490,17 @@ expression: records
           counts:
             overall:
               ac: 0
-              an: 0
+              an: 3296
               nhomalt: 0
               af: 0
             xx:
               ac: 0
-              an: 0
+              an: 1750
               nhomalt: 0
               af: 0
             xy:
               ac: 0
-              an: 0
+              an: 1546
               nhomalt: 0
               af: 0
           faf95: 0
@@ -10512,17 +10513,17 @@ expression: records
           counts:
             overall:
               ac: 0
-              an: 0
+              an: 88
               nhomalt: 0
               af: 0
             xx:
               ac: 0
-              an: 0
+              an: 56
               nhomalt: 0
               af: 0
             xy:
               ac: 0
-              an: 0
+              an: 32
               nhomalt: 0
               af: 0
           faf95: ~
@@ -10535,17 +10536,17 @@ expression: records
           counts:
             overall:
               ac: 0
-              an: 0
+              an: 2238
               nhomalt: 0
               af: 0
             xx:
               ac: 0
-              an: 0
+              an: 954
               nhomalt: 0
               af: 0
             xy:
               ac: 0
-              an: 0
+              an: 1284
               nhomalt: 0
               af: 0
           faf95: 0
@@ -10558,17 +10559,17 @@ expression: records
           counts:
             overall:
               ac: 0
-              an: 0
+              an: 2706
               nhomalt: 0
               af: 0
             xx:
               ac: 0
-              an: 0
+              an: 326
               nhomalt: 0
               af: 0
             xy:
               ac: 0
-              an: 0
+              an: 2380
               nhomalt: 0
               af: 0
           faf95: ~
@@ -10581,17 +10582,17 @@ expression: records
           counts:
             overall:
               ac: 0
-              an: 0
+              an: 190
               nhomalt: 0
               af: 0
             xx:
               ac: 0
-              an: 0
+              an: 110
               nhomalt: 0
               af: 0
             xy:
               ac: 0
-              an: 0
+              an: 80
               nhomalt: 0
               af: 0
           faf95: ~
@@ -10604,17 +10605,17 @@ expression: records
           counts:
             overall:
               ac: 0
-              an: 0
+              an: 4744
               nhomalt: 0
               af: 0
             xx:
               ac: 0
-              an: 0
+              an: 2312
               nhomalt: 0
               af: 0
             xy:
               ac: 0
-              an: 0
+              an: 2432
               nhomalt: 0
               af: 0
           faf95: 0
@@ -10627,17 +10628,17 @@ expression: records
           counts:
             overall:
               ac: 0
-              an: 0
+              an: 558
               nhomalt: 0
               af: 0
             xx:
               ac: 0
-              an: 0
+              an: 288
               nhomalt: 0
               af: 0
             xy:
               ac: 0
-              an: 0
+              an: 270
               nhomalt: 0
               af: 0
           faf95: ~
@@ -10650,17 +10651,17 @@ expression: records
           counts:
             overall:
               ac: 0
-              an: 0
+              an: 2158
               nhomalt: 0
               af: 0
             xx:
               ac: 0
-              an: 0
+              an: 610
               nhomalt: 0
               af: 0
             xy:
               ac: 0
-              an: 0
+              an: 1548
               nhomalt: 0
               af: 0
           faf95: 0
@@ -10672,22 +10673,22 @@ expression: records
       by_sex:
         overall:
           ac: 0
-          an: 0
+          an: 24120
           nhomalt: 0
           af: 0
         xx:
           ac: 0
-          an: 0
+          an: 10628
           nhomalt: 0
           af: 0
         xy:
           ac: 0
-          an: 0
+          an: 13492
           nhomalt: 0
           af: 0
       raw:
         ac: 0
-        an: 0
+        an: 28832
         nhomalt: 0
         af: 0
       popmax: ~
@@ -10701,17 +10702,17 @@ expression: records
           counts:
             overall:
               ac: 0
-              an: 0
+              an: 36838
               nhomalt: 0
               af: 0
             xx:
               ac: 0
-              an: 0
+              an: 19782
               nhomalt: 0
               af: 0
             xy:
               ac: 0
-              an: 0
+              an: 17056
               nhomalt: 0
               af: 0
           faf95: 0
@@ -10724,17 +10725,17 @@ expression: records
           counts:
             overall:
               ac: 0
-              an: 0
+              an: 634
               nhomalt: 0
               af: 0
             xx:
               ac: 0
-              an: 0
+              an: 316
               nhomalt: 0
               af: 0
             xy:
               ac: 0
-              an: 0
+              an: 318
               nhomalt: 0
               af: 0
           faf95: ~
@@ -10747,17 +10748,17 @@ expression: records
           counts:
             overall:
               ac: 0
-              an: 0
+              an: 9628
               nhomalt: 0
               af: 0
             xx:
               ac: 0
-              an: 0
+              an: 4336
               nhomalt: 0
               af: 0
             xy:
               ac: 0
-              an: 0
+              an: 5292
               nhomalt: 0
               af: 0
           faf95: 0
@@ -10770,17 +10771,17 @@ expression: records
           counts:
             overall:
               ac: 0
-              an: 0
+              an: 2188
               nhomalt: 0
               af: 0
             xx:
               ac: 0
-              an: 0
+              an: 1170
               nhomalt: 0
               af: 0
             xy:
               ac: 0
-              an: 0
+              an: 1018
               nhomalt: 0
               af: 0
           faf95: ~
@@ -10793,17 +10794,17 @@ expression: records
           counts:
             overall:
               ac: 0
-              an: 0
+              an: 4456
               nhomalt: 0
               af: 0
             xx:
               ac: 0
-              an: 0
+              an: 1982
               nhomalt: 0
               af: 0
             xy:
               ac: 0
-              an: 0
+              an: 2474
               nhomalt: 0
               af: 0
           faf95: 0
@@ -10816,17 +10817,17 @@ expression: records
           counts:
             overall:
               ac: 0
-              an: 0
+              an: 5472
               nhomalt: 0
               af: 0
             xx:
               ac: 0
-              an: 0
+              an: 1494
               nhomalt: 0
               af: 0
             xy:
               ac: 0
-              an: 0
+              an: 3978
               nhomalt: 0
               af: 0
           faf95: ~
@@ -10839,17 +10840,17 @@ expression: records
           counts:
             overall:
               ac: 0
-              an: 0
+              an: 230
               nhomalt: 0
               af: 0
             xx:
               ac: 0
-              an: 0
+              an: 132
               nhomalt: 0
               af: 0
             xy:
               ac: 0
-              an: 0
+              an: 98
               nhomalt: 0
               af: 0
           faf95: ~
@@ -10862,17 +10863,17 @@ expression: records
           counts:
             overall:
               ac: 0
-              an: 0
+              an: 44500
               nhomalt: 0
               af: 0
             xx:
               ac: 0
-              an: 0
+              an: 26552
               nhomalt: 0
               af: 0
             xy:
               ac: 0
-              an: 0
+              an: 17948
               nhomalt: 0
               af: 0
           faf95: 0
@@ -10885,17 +10886,17 @@ expression: records
           counts:
             overall:
               ac: 0
-              an: 0
+              an: 1356
               nhomalt: 0
               af: 0
             xx:
               ac: 0
-              an: 0
+              an: 692
               nhomalt: 0
               af: 0
             xy:
               ac: 0
-              an: 0
+              an: 664
               nhomalt: 0
               af: 0
           faf95: ~
@@ -10908,17 +10909,17 @@ expression: records
           counts:
             overall:
               ac: 0
-              an: 0
+              an: 3110
               nhomalt: 0
               af: 0
             xx:
               ac: 0
-              an: 0
+              an: 750
               nhomalt: 0
               af: 0
             xy:
               ac: 0
-              an: 0
+              an: 2360
               nhomalt: 0
               af: 0
           faf95: 0
@@ -10930,24 +10931,24 @@ expression: records
       by_sex:
         overall:
           ac: 0
-          an: 0
+          an: 108412
           nhomalt: 0
           af: 0
         xx:
           ac: 0
-          an: 0
+          an: 57206
           nhomalt: 0
           af: 0
         xy:
           ac: 0
-          an: 0
+          an: 51206
           nhomalt: 0
           af: 0
       raw:
-        ac: 0
-        an: 0
+        ac: 1
+        an: 131384
         nhomalt: 0
-        af: 0
+        af: 0.00000761128
       popmax: ~
       af_popmax: ~
       ac_popmax: ~
@@ -10959,17 +10960,17 @@ expression: records
           counts:
             overall:
               ac: 0
-              an: 0
+              an: 29240
               nhomalt: 0
               af: 0
             xx:
               ac: 0
-              an: 0
+              an: 16914
               nhomalt: 0
               af: 0
             xy:
               ac: 0
-              an: 0
+              an: 12326
               nhomalt: 0
               af: 0
           faf95: 0
@@ -10982,17 +10983,17 @@ expression: records
           counts:
             overall:
               ac: 0
-              an: 0
+              an: 604
               nhomalt: 0
               af: 0
             xx:
               ac: 0
-              an: 0
+              an: 290
               nhomalt: 0
               af: 0
             xy:
               ac: 0
-              an: 0
+              an: 314
               nhomalt: 0
               af: 0
           faf95: ~
@@ -11005,17 +11006,17 @@ expression: records
           counts:
             overall:
               ac: 0
-              an: 0
+              an: 9492
               nhomalt: 0
               af: 0
             xx:
               ac: 0
-              an: 0
+              an: 4262
               nhomalt: 0
               af: 0
             xy:
               ac: 0
-              an: 0
+              an: 5230
               nhomalt: 0
               af: 0
           faf95: 0
@@ -11028,17 +11029,17 @@ expression: records
           counts:
             overall:
               ac: 0
-              an: 0
+              an: 2252
               nhomalt: 0
               af: 0
             xx:
               ac: 0
-              an: 0
+              an: 1236
               nhomalt: 0
               af: 0
             xy:
               ac: 0
-              an: 0
+              an: 1016
               nhomalt: 0
               af: 0
           faf95: ~
@@ -11051,17 +11052,17 @@ expression: records
           counts:
             overall:
               ac: 0
-              an: 0
+              an: 4670
               nhomalt: 0
               af: 0
             xx:
               ac: 0
-              an: 0
+              an: 2072
               nhomalt: 0
               af: 0
             xy:
               ac: 0
-              an: 0
+              an: 2598
               nhomalt: 0
               af: 0
           faf95: 0
@@ -11074,17 +11075,17 @@ expression: records
           counts:
             overall:
               ac: 0
-              an: 0
+              an: 3450
               nhomalt: 0
               af: 0
             xx:
               ac: 0
-              an: 0
+              an: 420
               nhomalt: 0
               af: 0
             xy:
               ac: 0
-              an: 0
+              an: 3030
               nhomalt: 0
               af: 0
           faf95: ~
@@ -11097,17 +11098,17 @@ expression: records
           counts:
             overall:
               ac: 0
-              an: 0
+              an: 238
               nhomalt: 0
               af: 0
             xx:
               ac: 0
-              an: 0
+              an: 136
               nhomalt: 0
               af: 0
             xy:
               ac: 0
-              an: 0
+              an: 102
               nhomalt: 0
               af: 0
           faf95: ~
@@ -11120,17 +11121,17 @@ expression: records
           counts:
             overall:
               ac: 0
-              an: 0
+              an: 44134
               nhomalt: 0
               af: 0
             xx:
               ac: 0
-              an: 0
+              an: 26354
               nhomalt: 0
               af: 0
             xy:
               ac: 0
-              an: 0
+              an: 17780
               nhomalt: 0
               af: 0
           faf95: 0
@@ -11143,17 +11144,17 @@ expression: records
           counts:
             overall:
               ac: 0
-              an: 0
+              an: 1340
               nhomalt: 0
               af: 0
             xx:
               ac: 0
-              an: 0
+              an: 682
               nhomalt: 0
               af: 0
             xy:
               ac: 0
-              an: 0
+              an: 658
               nhomalt: 0
               af: 0
           faf95: ~
@@ -11166,17 +11167,17 @@ expression: records
           counts:
             overall:
               ac: 0
-              an: 0
+              an: 3138
               nhomalt: 0
               af: 0
             xx:
               ac: 0
-              an: 0
+              an: 766
               nhomalt: 0
               af: 0
             xy:
               ac: 0
-              an: 0
+              an: 2372
               nhomalt: 0
               af: 0
           faf95: 0
@@ -11188,22 +11189,22 @@ expression: records
       by_sex:
         overall:
           ac: 0
-          an: 0
+          an: 98558
           nhomalt: 0
           af: 0
         xx:
           ac: 0
-          an: 0
+          an: 53132
           nhomalt: 0
           af: 0
         xy:
           ac: 0
-          an: 0
+          an: 45426
           nhomalt: 0
           af: 0
       raw:
         ac: 0
-        an: 0
+        an: 119214
         nhomalt: 0
         af: 0
       popmax: ~
@@ -11217,17 +11218,17 @@ expression: records
           counts:
             overall:
               ac: 0
-              an: 0
+              an: 21974
               nhomalt: 0
               af: 0
             xx:
               ac: 0
-              an: 0
+              an: 10564
               nhomalt: 0
               af: 0
             xy:
               ac: 0
-              an: 0
+              an: 11410
               nhomalt: 0
               af: 0
           faf95: 0
@@ -11240,17 +11241,17 @@ expression: records
           counts:
             overall:
               ac: 0
-              an: 0
+              an: 60
               nhomalt: 0
               af: 0
             xx:
               ac: 0
-              an: 0
+              an: 38
               nhomalt: 0
               af: 0
             xy:
               ac: 0
-              an: 0
+              an: 22
               nhomalt: 0
               af: 0
           faf95: ~
@@ -11263,17 +11264,17 @@ expression: records
           counts:
             overall:
               ac: 0
-              an: 0
+              an: 8228
               nhomalt: 0
               af: 0
             xx:
               ac: 0
-              an: 0
+              an: 3444
               nhomalt: 0
               af: 0
             xy:
               ac: 0
-              an: 0
+              an: 4784
               nhomalt: 0
               af: 0
           faf95: 0
@@ -11286,17 +11287,17 @@ expression: records
           counts:
             overall:
               ac: 0
-              an: 0
+              an: 658
               nhomalt: 0
               af: 0
             xx:
               ac: 0
-              an: 0
+              an: 184
               nhomalt: 0
               af: 0
             xy:
               ac: 0
-              an: 0
+              an: 474
               nhomalt: 0
               af: 0
           faf95: ~
@@ -11309,17 +11310,17 @@ expression: records
           counts:
             overall:
               ac: 0
-              an: 0
+              an: 3330
               nhomalt: 0
               af: 0
             xx:
               ac: 0
-              an: 0
+              an: 1258
               nhomalt: 0
               af: 0
             xy:
               ac: 0
-              an: 0
+              an: 2072
               nhomalt: 0
               af: 0
           faf95: 0
@@ -11332,17 +11333,17 @@ expression: records
           counts:
             overall:
               ac: 0
-              an: 0
+              an: 5402
               nhomalt: 0
               af: 0
             xx:
               ac: 0
-              an: 0
+              an: 1450
               nhomalt: 0
               af: 0
             xy:
               ac: 0
-              an: 0
+              an: 3952
               nhomalt: 0
               af: 0
           faf95: ~
@@ -11355,17 +11356,17 @@ expression: records
           counts:
             overall:
               ac: 0
-              an: 0
+              an: 208
               nhomalt: 0
               af: 0
             xx:
               ac: 0
-              an: 0
+              an: 118
               nhomalt: 0
               af: 0
             xy:
               ac: 0
-              an: 0
+              an: 90
               nhomalt: 0
               af: 0
           faf95: ~
@@ -11378,17 +11379,17 @@ expression: records
           counts:
             overall:
               ac: 0
-              an: 0
+              an: 13668
               nhomalt: 0
               af: 0
             xx:
               ac: 0
-              an: 0
+              an: 5924
               nhomalt: 0
               af: 0
             xy:
               ac: 0
-              an: 0
+              an: 7744
               nhomalt: 0
               af: 0
           faf95: 0
@@ -11401,17 +11402,17 @@ expression: records
           counts:
             overall:
               ac: 0
-              an: 0
+              an: 992
               nhomalt: 0
               af: 0
             xx:
               ac: 0
-              an: 0
+              an: 466
               nhomalt: 0
               af: 0
             xy:
               ac: 0
-              an: 0
+              an: 526
               nhomalt: 0
               af: 0
           faf95: ~
@@ -11424,17 +11425,17 @@ expression: records
           counts:
             overall:
               ac: 0
-              an: 0
+              an: 3124
               nhomalt: 0
               af: 0
             xx:
               ac: 0
-              an: 0
+              an: 764
               nhomalt: 0
               af: 0
             xy:
               ac: 0
-              an: 0
+              an: 2360
               nhomalt: 0
               af: 0
           faf95: 0
@@ -11446,24 +11447,24 @@ expression: records
       by_sex:
         overall:
           ac: 0
-          an: 0
+          an: 57644
           nhomalt: 0
           af: 0
         xx:
           ac: 0
-          an: 0
+          an: 24210
           nhomalt: 0
           af: 0
         xy:
           ac: 0
-          an: 0
+          an: 33434
           nhomalt: 0
           af: 0
       raw:
-        ac: 0
-        an: 0
+        ac: 1
+        an: 70540
         nhomalt: 0
-        af: 0
+        af: 0.0000141764
       popmax: ~
       af_popmax: ~
       ac_popmax: ~
@@ -11475,17 +11476,17 @@ expression: records
           counts:
             overall:
               ac: 0
-              an: 0
+              an: 25636
               nhomalt: 0
               af: 0
             xx:
               ac: 0
-              an: 0
+              an: 14188
               nhomalt: 0
               af: 0
             xy:
               ac: 0
-              an: 0
+              an: 11448
               nhomalt: 0
               af: 0
           faf95: 0
@@ -11498,17 +11499,17 @@ expression: records
           counts:
             overall:
               ac: 0
-              an: 0
+              an: 634
               nhomalt: 0
               af: 0
             xx:
               ac: 0
-              an: 0
+              an: 316
               nhomalt: 0
               af: 0
             xy:
               ac: 0
-              an: 0
+              an: 318
               nhomalt: 0
               af: 0
           faf95: ~
@@ -11521,17 +11522,17 @@ expression: records
           counts:
             overall:
               ac: 0
-              an: 0
+              an: 8738
               nhomalt: 0
               af: 0
             xx:
               ac: 0
-              an: 0
+              an: 3858
               nhomalt: 0
               af: 0
             xy:
               ac: 0
-              an: 0
+              an: 4880
               nhomalt: 0
               af: 0
           faf95: 0
@@ -11544,17 +11545,17 @@ expression: records
           counts:
             overall:
               ac: 0
-              an: 0
+              an: 2056
               nhomalt: 0
               af: 0
             xx:
               ac: 0
-              an: 0
+              an: 1146
               nhomalt: 0
               af: 0
             xy:
               ac: 0
-              an: 0
+              an: 910
               nhomalt: 0
               af: 0
           faf95: ~
@@ -11567,17 +11568,17 @@ expression: records
           counts:
             overall:
               ac: 0
-              an: 0
+              an: 2532
               nhomalt: 0
               af: 0
             xx:
               ac: 0
-              an: 0
+              an: 1198
               nhomalt: 0
               af: 0
             xy:
               ac: 0
-              an: 0
+              an: 1334
               nhomalt: 0
               af: 0
           faf95: 0
@@ -11590,17 +11591,17 @@ expression: records
           counts:
             overall:
               ac: 0
-              an: 0
+              an: 3498
               nhomalt: 0
               af: 0
             xx:
               ac: 0
-              an: 0
+              an: 616
               nhomalt: 0
               af: 0
             xy:
               ac: 0
-              an: 0
+              an: 2882
               nhomalt: 0
               af: 0
           faf95: ~
@@ -11613,17 +11614,17 @@ expression: records
           counts:
             overall:
               ac: 0
-              an: 0
+              an: 232
               nhomalt: 0
               af: 0
             xx:
               ac: 0
-              an: 0
+              an: 134
               nhomalt: 0
               af: 0
             xy:
               ac: 0
-              an: 0
+              an: 98
               nhomalt: 0
               af: 0
           faf95: ~
@@ -11636,17 +11637,17 @@ expression: records
           counts:
             overall:
               ac: 0
-              an: 0
+              an: 36264
               nhomalt: 0
               af: 0
             xx:
               ac: 0
-              an: 0
+              an: 22592
               nhomalt: 0
               af: 0
             xy:
               ac: 0
-              an: 0
+              an: 13672
               nhomalt: 0
               af: 0
           faf95: 0
@@ -11659,17 +11660,17 @@ expression: records
           counts:
             overall:
               ac: 0
-              an: 0
+              an: 1256
               nhomalt: 0
               af: 0
             xx:
               ac: 0
-              an: 0
+              an: 640
               nhomalt: 0
               af: 0
             xy:
               ac: 0
-              an: 0
+              an: 616
               nhomalt: 0
               af: 0
           faf95: ~
@@ -11682,17 +11683,17 @@ expression: records
           counts:
             overall:
               ac: 0
-              an: 0
+              an: 2404
               nhomalt: 0
               af: 0
             xx:
               ac: 0
-              an: 0
+              an: 468
               nhomalt: 0
               af: 0
             xy:
               ac: 0
-              an: 0
+              an: 1936
               nhomalt: 0
               af: 0
           faf95: 0
@@ -11704,22 +11705,22 @@ expression: records
       by_sex:
         overall:
           ac: 0
-          an: 0
+          an: 83250
           nhomalt: 0
           af: 0
         xx:
           ac: 0
-          an: 0
+          an: 45156
           nhomalt: 0
           af: 0
         xy:
           ac: 0
-          an: 0
+          an: 38094
           nhomalt: 0
           af: 0
       raw:
         ac: 0
-        an: 0
+        an: 100826
         nhomalt: 0
         af: 0
       popmax: ~
