@@ -27,7 +27,7 @@ pub struct Args {
     pub path_out_rocksdb: String,
 
     /// Windows size for TBI-based parallel import.
-    #[arg(long, default_value = "1000000")]
+    #[arg(long, default_value = "100000")]
     pub tbi_window_size: usize,
 
     /// Name of the column family to import into.
