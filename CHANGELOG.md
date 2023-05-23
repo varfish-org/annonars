@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.3.0](https://www.github.com/bihealth/annona-rs/compare/v0.2.4...v0.3.0) (2023-05-23)
+
+
+### Features
+
+* reducing window size to 100k to make par_tbi faster ([#46](https://www.github.com/bihealth/annona-rs/issues/46)) ([e69257e](https://www.github.com/bihealth/annona-rs/commit/e69257e6c59e81f0d1e29026777679bc4bcdab1e))
+
 ### [0.2.4](https://www.github.com/bihealth/annona-rs/compare/v0.2.3...v0.2.4) (2023-05-23)
 
 
