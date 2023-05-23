@@ -234,7 +234,7 @@ pub fn run(common: &common::cli::Args, args: &Args) -> Result<(), anyhow::Error>
         // can process the list of files in parallel.
         args.path_in_tsv
             .par_iter()
-            .progress_with_style(common::cli::indicatif_style())
+            .progress_with(common::cli::progress_bar(args.path_in_tsv.len()))
             .map(|path_in_tsv| no_tbi::tsv_import(&db, args, &infer_config, &schema, path_in_tsv))
             .collect::<Result<Vec<_>, _>>()?;
     }

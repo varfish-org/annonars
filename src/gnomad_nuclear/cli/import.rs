@@ -9,7 +9,7 @@ use prost::Message;
 use rayon::prelude::{IntoParallelRefIterator, ParallelIterator};
 
 use crate::{
-    common::{self, cli::indicatif_style},
+    common::{self},
     gnomad_pbs::{self, gnomad2, gnomad3},
 };
 
@@ -109,10 +109,9 @@ fn tsv_import(
             })
             .collect::<Vec<_>>();
 
-    let style = indicatif_style();
     windows
         .par_iter()
-        .progress_with_style(style)
+        .progress_with(common::cli::progress_bar(windows.len()))
         .map(|(chrom, begin, end)| {
             process_window(
                 db.clone(),
