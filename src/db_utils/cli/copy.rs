@@ -151,14 +151,12 @@ pub fn run(common: &common::cli::Args, args: &Args) -> Result<(), anyhow::Error>
     // Obtain genome release from "meta" column family if exists.
     let genome_release = if cf_names.iter().any(|s| s == "meta") {
         let cf_meta = db_read.cf_handle("meta").unwrap();
-        Some(
-            db_read
-                .get_cf(&cf_meta, "genome-release")?
-                .map(|bytes| String::from_utf8(bytes.to_vec()))
-                .ok_or(anyhow::anyhow!(
-                    "missing genome release in meta column family"
-                ))??,
-        )
+        db_read
+            .get_cf(&cf_meta, "genome-release")?
+            .map(|bytes| String::from_utf8(bytes.to_vec()))
+            .transpose()
+            .ok()
+            .flatten()
     } else {
         None
     };
