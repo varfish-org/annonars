@@ -1,5 +1,12 @@
 # Changelog
 
+### [0.2.1](https://www.github.com/bihealth/annona-rs/compare/v0.2.0...v0.2.1) (2023-05-23)
+
+
+### Bug Fixes
+
+* "db-utils copy" now accepts "--all" and "--path-beds" ([#37](https://www.github.com/bihealth/annona-rs/issues/37)) ([0b50060](https://www.github.com/bihealth/annona-rs/commit/0b5006003dd5a0b28c5730b17e5ea40558bbda82))
+
 ## [0.2.0](https://www.github.com/bihealth/annona-rs/compare/v0.1.0...v0.2.0) (2023-05-23)
 
 
