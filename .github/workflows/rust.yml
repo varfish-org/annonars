@@ -59,6 +59,17 @@ jobs:
     needs: Formatting
     runs-on: ubuntu-latest
     steps:
+      - name: show mounts
+        run: |
+          set -x
+          df -h
+          export
+        shell: bash
+
+      - name: Mount /tmp as tmpfs
+        run: |
+          sudo mount -t tmpfs -o size=2G /tmp
+
       - name: Checkout repository
         uses: actions/checkout@v3
         with:
