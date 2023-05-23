@@ -1,5 +1,18 @@
 # Changelog
 
+## [0.2.0](https://www.github.com/bihealth/annona-rs/compare/v0.1.0...v0.2.0) (2023-05-23)
+
+
+### Features
+
+* add "db-utils copy" command ([#30](https://www.github.com/bihealth/annona-rs/issues/30)) ([#31](https://www.github.com/bihealth/annona-rs/issues/31)) ([f918a27](https://www.github.com/bihealth/annona-rs/commit/f918a275e80d9c6a18a464d79346d5430248c3d5))
+* implement import and query for gnomAD-mtDNA ([#16](https://www.github.com/bihealth/annona-rs/issues/16)) ([#24](https://www.github.com/bihealth/annona-rs/issues/24)) ([95ea15d](https://www.github.com/bihealth/annona-rs/commit/95ea15d44856c19414e2bbdb3b19473b842ca18f))
+* implement import and query for UCSC conservation ([#11](https://www.github.com/bihealth/annona-rs/issues/11)) ([#14](https://www.github.com/bihealth/annona-rs/issues/14)) ([3fc2f25](https://www.github.com/bihealth/annona-rs/commit/3fc2f257901055e86dc66b8cd3519e7215c55afd))
+* implement import/query of dbsnp ([#17](https://www.github.com/bihealth/annona-rs/issues/17)) ([#21](https://www.github.com/bihealth/annona-rs/issues/21)) ([b027382](https://www.github.com/bihealth/annona-rs/commit/b027382e65ab92eb7b5bdc44be0c219b08aa9976))
+* import and query for gnomAD {ex,gen}omes ([#18](https://www.github.com/bihealth/annona-rs/issues/18)) ([#25](https://www.github.com/bihealth/annona-rs/issues/25)) ([0e63d12](https://www.github.com/bihealth/annona-rs/commit/0e63d123fb9efdf8067ab27d63b53f9e694849c8))
+* import and query for HelixMtDb VCF ([#15](https://www.github.com/bihealth/annona-rs/issues/15)) ([#23](https://www.github.com/bihealth/annona-rs/issues/23)) ([9dfa520](https://www.github.com/bihealth/annona-rs/commit/9dfa52027e37c548a7945580995bdac03c6a0f47))
+* use explicit indicatif progress bars ([#32](https://www.github.com/bihealth/annona-rs/issues/32)) ([#33](https://www.github.com/bihealth/annona-rs/issues/33)) ([2ceb2c6](https://www.github.com/bihealth/annona-rs/commit/2ceb2c6ed9584d314504438a49b6d60013fb5390))
+
 ## 0.1.0 (2023-05-16)
 
 
