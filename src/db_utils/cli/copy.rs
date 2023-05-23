@@ -37,7 +37,11 @@ pub struct ArgsQuery {
     #[arg(long, group = "query")]
     pub range: Option<spdi::Range>,
     /// Specify path(s) to BED files to read from.
+    #[arg(long, group = "query")]
     pub path_beds: Vec<PathBuf>,
+    /// Query for all variants.
+    #[arg(long, group = "query")]
+    pub all: bool,
 }
 
 /// Copy data from `db_read` to `db_write` for column family `cf_name` in the intervals in `path_bed`.
@@ -243,6 +247,7 @@ mod test {
                 position: None,
                 range: None,
                 path_beds: Vec::new(),
+                all: true,
             },
             path_wal_dir: None,
         };
@@ -263,6 +268,7 @@ mod test {
                 position: Some(spdi::Pos::from_str("17:41267752")?),
                 range: None,
                 path_beds: Vec::new(),
+                all: false,
             },
             path_wal_dir: None,
         };
@@ -283,6 +289,7 @@ mod test {
                 position: None,
                 range: Some(spdi::Range::from_str("17:41267752:41267774")?),
                 path_beds: Vec::new(),
+                all: false,
             },
             path_wal_dir: None,
         };
