@@ -181,33 +181,31 @@ pub fn run(common: &common::cli::Args, args: &Args) -> Result<(), anyhow::Error>
             tracing::info!("  ignoring query for column family meta");
 
             copy_cf(&db_read, &db_write, cf_name, None, None)?;
-        } else {
-            if !args.query.path_beds.is_empty() {
-                // If BED files were given then use each to query for ranges.
-                for path_bed in &args.query.path_beds {
-                    copy_cf_bed(&db_read, &db_write, cf_name, path_bed)?;
-                }
-            } else {
-                // Otherwise, get single range from command line arguments.
-                let (start, stop) = if let Some(position) = args.query.position.as_ref() {
-                    let position = spdi::Pos {
-                        sequence: extract_chrom::from_pos(position, genome_release.as_deref())?,
-                        ..position.clone()
-                    };
-                    (Some(position.clone()), Some(position))
-                } else if let Some(range) = args.query.range.as_ref() {
-                    let range = spdi::Range {
-                        sequence: extract_chrom::from_range(range, genome_release.as_deref())?,
-                        ..range.clone()
-                    };
-                    let (start, stop) = range.into();
-                    (Some(start), Some(stop))
-                } else {
-                    (None, None)
-                };
-
-                copy_cf(&db_read, &db_write, cf_name, start, stop)?;
+        } else if !args.query.path_beds.is_empty() {
+            // If BED files were given then use each to query for ranges.
+            for path_bed in &args.query.path_beds {
+                copy_cf_bed(&db_read, &db_write, cf_name, path_bed)?;
             }
+        } else {
+            // Otherwise, get single range from command line arguments.
+            let (start, stop) = if let Some(position) = args.query.position.as_ref() {
+                let position = spdi::Pos {
+                    sequence: extract_chrom::from_pos(position, genome_release.as_deref())?,
+                    ..position.clone()
+                };
+                (Some(position.clone()), Some(position))
+            } else if let Some(range) = args.query.range.as_ref() {
+                let range = spdi::Range {
+                    sequence: extract_chrom::from_range(range, genome_release.as_deref())?,
+                    ..range.clone()
+                };
+                let (start, stop) = range.into();
+                (Some(start), Some(stop))
+            } else {
+                (None, None)
+            };
+
+            copy_cf(&db_read, &db_write, cf_name, start, stop)?;
         }
     }
 
