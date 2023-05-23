@@ -1,5 +1,12 @@
 # Changelog
 
+### [0.2.4](https://www.github.com/bihealth/annona-rs/compare/v0.2.3...v0.2.4) (2023-05-23)
+
+
+### Bug Fixes
+
+* losening dependencies ([#44](https://www.github.com/bihealth/annona-rs/issues/44)) ([bf22efd](https://www.github.com/bihealth/annona-rs/commit/bf22efdfa62c61770726a75a8b856869943f7115))
+
 ### [0.2.3](https://www.github.com/bihealth/annona-rs/compare/v0.2.2...v0.2.3) (2023-05-23)
 
 
