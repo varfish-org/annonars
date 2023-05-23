@@ -5,6 +5,7 @@
 
 pub mod common;
 pub mod cons;
+pub mod db_utils;
 pub mod dbsnp;
 mod error;
 pub mod gnomad_mtdna;
