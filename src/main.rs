@@ -1,4 +1,4 @@
-use annonars::{common, cons, dbsnp, gnomad_mtdna, helixmtdb, tsv};
+use annonars::{common, cons, db_utils, dbsnp, gnomad_mtdna, helixmtdb, tsv};
 use anyhow::Error;
 use clap::{command, Args, Parser, Subcommand};
 
@@ -33,6 +33,8 @@ enum Commands {
     Helixmtdb(Helixmtdb),
     /// "gnomad-mtdna" sub commands
     GnomadMtdna(GnomadMtdna),
+    /// "db-utils" sub commands
+    DbUtils(DbUtils),
 }
 
 /// Parsing of "tsv" subcommand
@@ -103,7 +105,7 @@ enum HelixmtdbCommands {
     Query(helixmtdb::cli::query::Args),
 }
 
-/// Parsing of "helixmtdb" subcommands.
+/// Parsing of "gnomad-mtdna" subcommands.
 #[derive(Debug, Args, Clone)]
 struct GnomadMtdna {
     /// The sub command to run
@@ -111,13 +113,28 @@ struct GnomadMtdna {
     command: GnomadMtdnaCommands,
 }
 
-/// Enum supporting the parsing of "helixmtdb *" subcommands.
+/// Enum supporting the parsing of "gnomad-mtdna *" subcommands.
 #[derive(Debug, Subcommand, Clone)]
 enum GnomadMtdnaCommands {
     /// "import" sub command
     Import(gnomad_mtdna::cli::import::Args),
     /// "query" sub command
     Query(gnomad_mtdna::cli::query::Args),
+}
+
+/// Parsing of "db-utils" subcommands.
+#[derive(Debug, Args, Clone)]
+struct DbUtils {
+    /// The sub command to run
+    #[command(subcommand)]
+    command: DbUtilsCommands,
+}
+
+/// Enum supporting the parsing of "db-utils *" subcommands.
+#[derive(Debug, Subcommand, Clone)]
+enum DbUtilsCommands {
+    /// "copy" sub command
+    Copy(db_utils::cli::copy::Args),
 }
 
 pub fn main() -> Result<(), anyhow::Error> {
@@ -164,6 +181,9 @@ pub fn main() -> Result<(), anyhow::Error> {
                 GnomadMtdnaCommands::Query(args) => {
                     gnomad_mtdna::cli::query::run(&cli.common, args)?
                 }
+            },
+            Commands::DbUtils(args) => match &args.command {
+                DbUtilsCommands::Copy(args) => db_utils::cli::copy::run(&cli.common, args)?,
             },
         }
 

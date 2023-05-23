@@ -55,7 +55,7 @@ pub fn intersects(
 
     let fields: Vec<_> = line.split(DELIMITER).collect();
 
-    let reference_sequence_name = fields[header.reference_sequence_name_index() - 1];
+    let reference_sequence_name = fields[header.reference_sequence_name_index()];
 
     let raw_start = fields[header.start_position_index() - 1];
     let coordinate_system = header.format().coordinate_system();
