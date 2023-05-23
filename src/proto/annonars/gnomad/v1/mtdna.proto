@@ -1,116 +1,8 @@
 syntax = "proto3";
 
-package annonars.gnomad_mtdna.pbs;
+package annonars.gnomad.v1.mtdna;
 
-// Protocol buffer for `Vep.domains`
-message Domain {
-    // Domain ID.
-    string id = 1;
-    // Domain source.
-    string source = 2;
-}
-
-// Protocol buffer for `Vep.sift` and `Vep.polyphen`.
-message Prediction {
-    // Prediction.
-    string prediction = 1;
-    // Score.
-    float score = 2;
-}
-
-// Protocol buffer for the gnomAD-mtDNA VEP predictions.
-message Vep {
-    // Allele of record.
-    string allele = 1;
-    // Consequence, e.g., `"missense_variant"`.
-    string consequence = 2;
-    // Impact, e.g., `"MODERATE"`.
-    string impact = 3;
-    // Gene symbol, e.g., `"PCSK9"`.
-    string symbol = 4;
-    // Gene ID, `e.g., "ENSG00000169174"`.
-    string gene = 5;
-    // Feature type, e.g., `"Transcript"`.
-    string feature_type = 6;
-    // Feature ID, e.g., `"ENST00000302118"`.
-    string feature = 7;
-    // Feature biotype, e.g., `"protein_coding"`.
-    string feature_biotype = 8;
-    // Ranked exon number, e.g., `"1/4"`.
-    optional string exon = 9;
-    // Ranked intron number, e.g., `"1/4"`.
-    optional string intron = 10;
-    // cDNA position, e.g., `"ENST00000302118.5:c.89C>G"`.
-    optional string hgvsc = 11;
-    // Protein position, e.g., `"ENSP00000302118.5:p.Thr30Arg"`.
-    optional string hgvsp = 12;
-    // cDNA position, e.g., `"89/1863"`.
-    optional string cdna_position = 13;
-    // CDS position, e.g., `"89/1863"`.
-    optional string cds_position = 14;
-    // Protein position, e.g., `"30/620"`.
-    optional string protein_position = 15;
-    // Amino acids, e.g., `"T/R"`.
-    optional string amino_acids = 16;
-    // Codons, e.g., `"gCg/gGg"`.
-    optional string codons = 17;
-    // dbSNP ID, e.g., `"rs28942080"`.
-    optional string dbsnp_id = 18;
-    // Distance output of VEP.
-    optional string distance = 19;
-    // Strand, e.g., `"1"`.
-    optional string strand = 20;
-    // Variant class, e.g., `"SNV"`.
-    optional string variant_class = 21;
-    // Minimised output of VEP.
-    optional string minimised = 22;
-    // Symbol source, e.g., `"HGNC"`.
-    optional string symbol_source = 23;
-    // HGNC ID, e.g., `"HGNC:8706"`.
-    optional string hgnc_id = 24;
-    // Whether this is the canonical transcript.
-    optional bool canonical = 25;
-    // Transcript support level, e.g., `"1"`.
-    optional int32 tsl = 26;
-    // APPRIS annotation, e.g. `"P1"`.
-    optional string appris = 27;
-    // CCDS ID, e.g., `"CCDS30547.1"`.
-    optional string ccds = 28;
-    // Ensembl protein ID, e.g., `"ENSP00000302118"`.
-    optional string ensp = 29;
-    // SwissProt ID, e.g., `"P04114"`.
-    optional string swissprot = 30;
-    // TREMBL ID, e.g., `"Q5T4W7"`.
-    optional string trembl = 31;
-    // UniParc ID, e.g., `"UPI000002D4B2"`.
-    optional string uniparc = 32;
-    // Gene phenotype from VEP.
-    optional string gene_pheno = 33;
-    // SIFT prediction, e.g., `"tolerated(0.06)"`.
-    optional Prediction sift = 34;
-    // PolyPhen prediction, e.g., `"benign(0.001)"`.
-    optional Prediction polyphen = 35;
-    // Protein domains, e.g., `[["2p4e", "ENSP_mappings"], ["2qtw", "ENSP_mappings"]]`.
-    repeated Domain domains = 36;
-    // HGVS offset.
-    optional string hgvs_offset = 37;
-    // Motif name.
-    optional string motif_name = 38;
-    // Motif name.
-    optional string motif_pos = 39;
-    // "high inf pos" from VEP.
-    optional string high_inf_pos = 40;
-    // Motif score change.
-    optional string motif_score_change = 41;
-    // Loss of function prediction.
-    optional string lof = 42;
-    // Loss of function filter.
-    optional string lof_filter = 43;
-    // Loss of function flags.
-    optional string lof_flags = 44;
-    // Loss of function info.
-    optional string lof_info = 45;
-}
+import "annonars/gnomad/v1/vep_gnomad3.proto";
 
 // Protocol buffer enum for site-level filters.
 enum Filter {
@@ -325,8 +217,8 @@ message Record {
     // tRNA ML_probability_of_pathogenicity from PON-mt-tRNA
     optional string pon_ml_probability_of_pathogenicity = 17;
 
-    // VEP annotation records.
-    repeated Vep vep = 13;
+    // VEP v3 annotation records.
+    repeated annonars.gnomad.v1.vep_gnomad3.Vep vep = 13;
     // Summary information for variant quality interpretation.
     optional QualityInfo quality_info = 18;
     // Information related to heteroplasmy levels.

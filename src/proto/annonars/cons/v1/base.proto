@@ -1,6 +1,6 @@
 syntax = "proto3";
 
-package annonars.cons.pbs;
+package annonars.cons.v1.base;
 
 // Protocol buffer for the UCSC conservation record.
 message Record {

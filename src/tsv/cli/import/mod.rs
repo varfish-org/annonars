@@ -84,17 +84,21 @@ pub fn process_tsv_line(
     let values = values.iter().collect::<Vec<_>>();
     let var = ctx.values_to_var(&values)?;
 
-    let key: Vec<u8> = var.clone().into();
-    let value = ctx.encode_values(&values)?;
+    if let Some(var) = var.as_ref() {
+        let key: Vec<u8> = var.clone().into();
+        let value = ctx.encode_values(&values)?;
 
-    tracing::trace!(
-        "putting for var = {:?}, key = {:?}, value = {:?}",
-        &var,
-        &key,
-        &value
-    );
+        tracing::trace!(
+            "putting for var = {:?}, key = {:?}, value = {:?}",
+            &var,
+            &key,
+            &value
+        );
 
-    db.put_cf(cf_data, key, value)?;
+        db.put_cf(cf_data, key, value)?;
+    } else {
+        tracing::trace!("skipping line: {:?}", &line);
+    }
 
     Ok(())
 }
@@ -231,10 +235,8 @@ pub fn run(common: &common::cli::Args, args: &Args) -> Result<(), anyhow::Error>
         args.path_in_tsv
             .par_iter()
             .progress_with_style(common::cli::indicatif_style())
-            .for_each(|path_in_tsv| {
-                no_tbi::tsv_import(&db, args, &infer_config, &schema, path_in_tsv)
-                    .unwrap_or_else(|_| panic!("failed processing file {}", path_in_tsv));
-            });
+            .map(|path_in_tsv| no_tbi::tsv_import(&db, args, &infer_config, &schema, path_in_tsv))
+            .collect::<Result<Vec<_>, _>>()?;
     }
     tracing::info!(
         "... done importing TSV files in {:?}",

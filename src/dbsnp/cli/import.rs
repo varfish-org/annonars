@@ -83,10 +83,8 @@ fn tsv_import(
     windows
         .par_iter()
         .progress_with_style(style)
-        .for_each(|(chrom, begin, end)| {
-            process_window(db.clone(), chrom, *begin, *end, args)
-                .unwrap_or_else(|_| panic!("failed to process window {}:{}-{}", chrom, begin, end));
-        });
+        .map(|(chrom, begin, end)| process_window(db.clone(), chrom, *begin, *end, args))
+        .collect::<Result<Vec<_>, _>>()?;
     tracing::info!(
         "... done loading dbSNP VCF file into RocksDB in {:?}",
         before_loading.elapsed()

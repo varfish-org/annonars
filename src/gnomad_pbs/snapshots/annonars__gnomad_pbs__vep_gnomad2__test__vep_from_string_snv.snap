@@ -1,0 +1,83 @@
+---
+source: src/gnomad_pbs/vep_gnomad2.rs
+expression: vep
+---
+allele: G
+consequence: missense_variant
+impact: MODERATE
+symbol: PCSK9
+gene: ENSG00000169174
+feature_type: Transcript
+feature: ENST00000302118
+feature_biotype: protein_coding
+exon: 1/12
+intron: ~
+hgvsc: "ENST00000302118.5:c.89C>G"
+hgvsp: "ENSP00000303208.5:p.Ala30Gly"
+cdna_position: "379"
+cds_position: "89"
+protein_position: "30"
+amino_acids: A/G
+codons: gCg/gGg
+existing_variation: ~
+dbsnp_id: "1"
+distance: ~
+strand: "1"
+flags: ~
+variant_class: SNV
+minimised: "1"
+symbol_source: HGNC
+hgnc_id: "20001"
+canonical: true
+tsl: ~
+appris: ~
+ccds: CCDS603.1
+ensp: ENSP00000303208
+swissprot: Q8NBP7
+trembl: ~
+uniparc: UPI00001615E1
+gene_pheno: "1"
+sift:
+  prediction: deleterious_low_confidence
+  score: 0.03
+polyphen:
+  prediction: possibly_damaging
+  score: 0.583
+domains:
+  - id: SignalP-noTM
+    source: Cleavage_site_(Signalp)
+  - id: PTHR10795
+    source: hmmpanther
+  - id: PTHR10795
+    source: hmmpanther
+hgvs_offset: ~
+gmaf: ~
+afr_maf: ~
+amr_maf: ~
+eas_maf: ~
+eur_maf: ~
+sas_maf: ~
+aa_maf: ~
+ea_maf: ~
+exac_maf: ~
+exac_adj_maf: ~
+exac_afr_maf: ~
+exac_amr_maf: ~
+exac_eas_maf: ~
+exac_fin_maf: ~
+exac_nfe_maf: ~
+exac_oth_maf: ~
+exac_sas_maf: ~
+clin_sig: ~
+somatic: ~
+pheno: ~
+pubmed: ~
+motif_name: ~
+motif_pos: ~
+high_inf_pos: ~
+motif_score_change: ~
+lof: ~
+lof_filter: ~
+lof_flags: ~
+lof_info: "DE_NOVO_DONOR_PROB:0.146539915246404&MUTANT_DONOR_MES:8.16693067332728&DE_NOVO_DONOR_POS:-119&INTRON_END:55509515&DE_NOVO_DONOR_MES_POS:-122&INTRON_START:55505718&EXON_END:55505717&EXON_START:55505221&DE_NOVO_DONOR_MES:-1.61109392005567"
+

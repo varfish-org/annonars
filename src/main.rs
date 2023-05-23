@@ -1,4 +1,4 @@
-use annonars::{common, cons, db_utils, dbsnp, gnomad_mtdna, helixmtdb, tsv};
+use annonars::{common, cons, db_utils, dbsnp, gnomad_mtdna, gnomad_nuclear, helixmtdb, tsv};
 use anyhow::Error;
 use clap::{command, Args, Parser, Subcommand};
 
@@ -33,6 +33,8 @@ enum Commands {
     Helixmtdb(Helixmtdb),
     /// "gnomad-mtdna" sub commands
     GnomadMtdna(GnomadMtdna),
+    /// "gnomad-nuclear" sub commands
+    GnomadNuclear(GnomadNuclear),
     /// "db-utils" sub commands
     DbUtils(DbUtils),
 }
@@ -122,6 +124,23 @@ enum GnomadMtdnaCommands {
     Query(gnomad_mtdna::cli::query::Args),
 }
 
+/// Parsing of "gnomad-nuclear" subcommands.
+#[derive(Debug, Args, Clone)]
+struct GnomadNuclear {
+    /// The sub command to run
+    #[command(subcommand)]
+    command: GnomadNuclearCommands,
+}
+
+/// Enum supporting the parsing of "helixmtdb *" subcommands.
+#[derive(Debug, Subcommand, Clone)]
+enum GnomadNuclearCommands {
+    /// "import" sub command
+    Import(gnomad_nuclear::cli::import::Args),
+    /// "query" sub command
+    Query(gnomad_nuclear::cli::query::Args),
+}
+
 /// Parsing of "db-utils" subcommands.
 #[derive(Debug, Args, Clone)]
 struct DbUtils {
@@ -180,6 +199,14 @@ pub fn main() -> Result<(), anyhow::Error> {
                 }
                 GnomadMtdnaCommands::Query(args) => {
                     gnomad_mtdna::cli::query::run(&cli.common, args)?
+                }
+            },
+            Commands::GnomadNuclear(args) => match &args.command {
+                GnomadNuclearCommands::Import(args) => {
+                    gnomad_nuclear::cli::import::run(&cli.common, args)?
+                }
+                GnomadNuclearCommands::Query(args) => {
+                    gnomad_nuclear::cli::query::run(&cli.common, args)?
                 }
             },
             Commands::DbUtils(args) => match &args.command {

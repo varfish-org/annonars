@@ -1,6 +1,6 @@
 syntax = "proto3";
 
-package annonars.helixmtdb.pbs;
+package annonars.helixmtdb.v1.base;
 
 // Protocol buffer for the HelixMtDb VCF record.
 message Record {

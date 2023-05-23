@@ -42,24 +42,24 @@ polyphen:
   prediction: benign
   score: 0.033
 domains:
-  - id: ENSP_mappings
-    source: 5xtc
-  - id: ENSP_mappings
-    source: 5xtd
-  - id: ENSP_mappings
-    source: 5xth
-  - id: ENSP_mappings
-    source: 5xti
-  - id: ENSP_mappings
-    source: 5xti
-  - id: Pfam
-    source: PF00662
-  - id: PANTHER
-    source: PTHR42829
-  - id: PANTHER
-    source: PTHR42829
-  - id: TIGRFAM
-    source: TIGR01974
+  - id: 5xtc
+    source: ENSP_mappings
+  - id: 5xtd
+    source: ENSP_mappings
+  - id: 5xth
+    source: ENSP_mappings
+  - id: 5xti
+    source: ENSP_mappings
+  - id: 5xti
+    source: ENSP_mappings
+  - id: PF00662
+    source: Pfam
+  - id: PTHR42829
+    source: PANTHER
+  - id: PTHR42829
+    source: PANTHER
+  - id: TIGR01974
+    source: TIGRFAM
 hgvs_offset: ~
 motif_name: ~
 motif_pos: ~

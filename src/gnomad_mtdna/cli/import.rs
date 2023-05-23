@@ -9,7 +9,7 @@ use rayon::prelude::{IntoParallelRefIterator, ParallelIterator};
 
 use crate::{
     common::{self, cli::indicatif_style},
-    gnomad_mtdna::{self, pbs::DetailsOptions},
+    gnomad_pbs,
 };
 
 /// Command line arguments for `gnomad_mtdna import` sub command.
@@ -85,14 +85,8 @@ fn tsv_import(
     windows
         .par_iter()
         .progress_with_style(style)
-        .for_each(|(chrom, begin, end)| {
-            process_window(db.clone(), chrom, *begin, *end, args).unwrap_or_else(|e| {
-                panic!(
-                    "failed to process window {}:{}-{}: {}",
-                    chrom, begin, end, e
-                )
-            });
-        });
+        .map(|(chrom, begin, end)| process_window(db.clone(), chrom, *begin, *end, args))
+        .collect::<Result<Vec<_>, _>>()?;
     tracing::info!(
         "... done loading gnomad_mtdna VCF file into RocksDB in {:?}",
         before_loading.elapsed()
@@ -148,7 +142,7 @@ fn process_window(
             for allele_no in 0..vcf_record.alternate_bases().len() {
                 let key_buf: Vec<u8> =
                     common::keys::Var::from_vcf_allele(&vcf_record, allele_no).into();
-                let record = gnomad_mtdna::pbs::Record::from_vcf_allele(
+                let record = gnomad_pbs::mtdna::Record::from_vcf_allele(
                     &vcf_record,
                     allele_no,
                     &details_options,
@@ -170,13 +164,21 @@ pub fn run(common: &common::cli::Args, args: &Args) -> Result<(), anyhow::Error>
         import_fields_json: args
             .import_fields_json
             .clone()
-            .map(|v| serde_json::to_string(&serde_json::from_str::<DetailsOptions>(&v)?))
-            .or_else(|| Some(serde_json::to_string(&DetailsOptions::default())))
+            .map(|v| {
+                serde_json::to_string(&serde_json::from_str::<gnomad_pbs::mtdna::DetailsOptions>(
+                    &v,
+                )?)
+            })
+            .or_else(|| {
+                Some(serde_json::to_string(
+                    &gnomad_pbs::mtdna::DetailsOptions::default(),
+                ))
+            })
             .transpose()?,
         ..args.clone()
     };
 
-    tracing::info!("Starting 'gnomad_mtdna import' command");
+    tracing::info!("Starting 'gnomad-mtdna import' command");
     tracing::info!("common = {:#?}", &common);
     tracing::info!("args = {:#?}", &args);
 
@@ -225,7 +227,7 @@ pub fn run(common: &common::cli::Args, args: &Args) -> Result<(), anyhow::Error>
 
 #[cfg(test)]
 mod test {
-    use crate::gnomad_mtdna::pbs::DetailsOptions;
+    use crate::gnomad_pbs::mtdna::DetailsOptions;
 
     use super::*;
 

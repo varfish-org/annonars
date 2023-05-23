@@ -213,12 +213,15 @@ impl Context {
     pub fn values_to_var(
         &self,
         values: &[&serde_json::Value],
-    ) -> Result<common::keys::Var, error::Error> {
+    ) -> Result<Option<common::keys::Var>, error::Error> {
         let mut res = common::keys::Var::default();
 
         for (val, col) in values.iter().zip(self.schema.columns.iter()) {
             if col.name == self.config.col_chrom {
-                if let serde_json::Value::String(chrom) = val {
+                if val.is_null() {
+                    // skip if not lifted to this genome build
+                    return Ok(None);
+                } else if let serde_json::Value::String(chrom) = val {
                     res.chrom = chrom.clone();
                 } else {
                     return Err(error::Error::InvalidType(
@@ -265,7 +268,7 @@ impl Context {
             }
         }
 
-        Ok(res)
+        Ok(Some(res))
     }
 }
 

@@ -1,6 +1,6 @@
 syntax = "proto3";
 
-package annonars.dbsnp.pbs;
+package annonars.dbsnp.v1.base;
 
 // Protocol buffer for the dbSNP VCF record.
 message Record {

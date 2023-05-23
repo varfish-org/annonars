@@ -119,3 +119,7 @@ Examples:
 # terraform plan
 # terraform apply
 ```
+
+## Developer Notes
+
+The `v1` token in the protobuf schema refers to the **internal** version of the protocol buffer and not the version of, e.g., gnomAD.
