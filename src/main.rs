@@ -139,6 +139,7 @@ enum GnomadNuclearCommands {
     Import(gnomad_nuclear::cli::import::Args),
     /// "query" sub command
     Query(gnomad_nuclear::cli::query::Args),
+}
 
 /// Parsing of "db-utils" subcommands.
 #[derive(Debug, Args, Clone)]
@@ -207,6 +208,7 @@ pub fn main() -> Result<(), anyhow::Error> {
                 GnomadNuclearCommands::Query(args) => {
                     gnomad_nuclear::cli::query::run(&cli.common, args)?
                 }
+            },
             Commands::DbUtils(args) => match &args.command {
                 DbUtilsCommands::Copy(args) => db_utils::cli::copy::run(&cli.common, args)?,
             },
