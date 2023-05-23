@@ -18,12 +18,12 @@ name = "annonars"
 path = "src/main.rs"
 
 [dependencies]
-boolvec = "0.2.6"
-byteorder = "1.4.3"
+boolvec = "0.2"
+byteorder = "1.4"
 log = { version = "0.4"}
-rocksdb = { version = "0.21.0", features = ["multi-threaded-cf"] }
-serde = { version = "1.0.163", features = ["derive"] }
-serde_json = { version = "1.0.96", features=["preserve_order"] }
+rocksdb = { version = "0.21", features = ["multi-threaded-cf"] }
+serde = { version = "1.0", features = ["derive"] }
+serde_json = { version = "1.0", features=["preserve_order"] }
 thiserror = "1.0"
 tracing = "0.1"
 tracing-subscriber = {version = "0.3"}
@@ -35,18 +35,18 @@ rayon = { version = "1.7" }
 indicatif = { version = "0.17", features = ["rayon"] }
 flate2 = { version = "1.0" }
 bgzip = { version = "0.3" }
-noodles-bed = "0.9.0"
+noodles-bed = "0.9"
 noodles-bgzf = { version = "0.21" }
-noodles-core = "0.11.0"
-noodles-csi = "0.18.0"
+noodles-core = "0.11"
+noodles-csi = "0.18"
 noodles-tabix = { version = "0.21" }
-noodles-vcf = "0.30.0"
-noodles-util = { version = "0.11.0", features = ["variant"] }
+noodles-vcf = "0.30"
+noodles-util = { version = "0.11", features = ["variant"] }
 hgvs = { version = "0.7" }
 prost = "0.11"
-csv = "1.2.1"
-env_logger = "0.10.0"
-serde_with = "3.0.0"
+csv = "1.2"
+env_logger = "0.10"
+serde_with = "3.0"
 
 [build-dependencies]
 prost-build = "0.11"
