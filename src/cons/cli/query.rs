@@ -198,7 +198,7 @@ pub fn run(common: &common::cli::Args, args: &Args) -> Result<(), anyhow::Error>
 
                 // If we reach here then we have a record that matches the query range and HGNC gene
                 // ID (if given).
-                print_values(&mut out_writer, args.out_format, &record)?;
+                print_values(&mut out_writer, args.out_format, record)?;
             }
 
             // Proceed to the next database row.

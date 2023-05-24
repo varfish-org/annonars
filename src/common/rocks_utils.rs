@@ -153,10 +153,10 @@ where
         let entries = std::fs::read_dir(db.path()).expect("cannot list directory");
         for entry in entries {
             let entry = entry.expect("cannot read directory entry");
-            if entry.path().extension() == Some(std::ffi::OsStr::new("log")) {
-                if entry.metadata().expect("cannot read metadata").len() == 0 {
-                    std::fs::remove_file(entry.path()).expect("cannot remove file");
-                }
+            if entry.path().extension() == Some(std::ffi::OsStr::new("log"))
+                && entry.metadata().expect("cannot read metadata").len() == 0
+            {
+                std::fs::remove_file(entry.path()).expect("cannot remove file");
             }
         }
     }
