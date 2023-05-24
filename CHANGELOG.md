@@ -1,5 +1,21 @@
 # Changelog
 
+## [0.4.0](https://www.github.com/bihealth/annona-rs/compare/v0.3.0...v0.4.0) (2023-05-24)
+
+
+### ⚠ BREAKING CHANGES
+
+* store list of ucsc conservation records (#48) (#49)
+
+### Bug Fixes
+
+* store list of ucsc conservation records ([#48](https://www.github.com/bihealth/annona-rs/issues/48)) ([#49](https://www.github.com/bihealth/annona-rs/issues/49)) ([813de6f](https://www.github.com/bihealth/annona-rs/commit/813de6f26feec8105c8c9570451d7909085d70dd))
+
+
+### Miscellaneous Chores
+
+* adjusting release version ([02e7ffe](https://www.github.com/bihealth/annona-rs/commit/02e7ffe21f0aae18a472844acace3389e271c0b3))
+
 ## [0.3.0](https://www.github.com/bihealth/annona-rs/compare/v0.2.4...v0.3.0) (2023-05-23)
 
 
