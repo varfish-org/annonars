@@ -1,5 +1,12 @@
 # Changelog
 
+### [0.5.1](https://www.github.com/bihealth/annona-rs/compare/v0.5.0...v0.5.1) (2023-05-24)
+
+
+### Bug Fixes
+
+* writing gnomad-version meta info for gnomad-mtdna ([#54](https://www.github.com/bihealth/annona-rs/issues/54)) ([a051d7e](https://www.github.com/bihealth/annona-rs/commit/a051d7e8add800d44a658c29ec5a7a31a8624e7a))
+
 ## [0.5.0](https://www.github.com/bihealth/annona-rs/compare/v0.4.0...v0.5.0) (2023-05-24)
 
 
