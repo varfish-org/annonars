@@ -26,6 +26,10 @@ pub struct Args {
     #[arg(long)]
     pub path_out_rocksdb: String,
 
+    /// The gnomAD version to write out.
+    #[arg(long)]
+    pub gnomad_version: String,
+
     /// Windows size for TBI-based parallel import.
     #[arg(long, default_value = "100000")]
     pub tbi_window_size: usize,
@@ -199,6 +203,7 @@ pub fn run(common: &common::cli::Args, args: &Args) -> Result<(), anyhow::Error>
     )?);
     tracing::info!("  writing meta information");
     let cf_meta = db.cf_handle("meta").unwrap();
+    db.put_cf(&cf_meta, "gnomad-version", &args.gnomad_version)?;
     db.put_cf(&cf_meta, "annonars-version", crate::VERSION)?;
     db.put_cf(
         &cf_meta,
@@ -244,6 +249,7 @@ mod test {
             path_in_vcf: String::from("tests/gnomad-mtdna/example/gnomad-mtdna.vcf.bgz"),
             path_out_rocksdb: format!("{}", tmp_dir.join("out-rocksdb").display()),
             cf_name: String::from("gnomad_mtdna_data"),
+            gnomad_version: String::from("3.1.1"),
             path_wal_dir: None,
             tbi_window_size: 1_000_000,
             import_fields_json: Some(serde_json::to_string(&DetailsOptions::with_all_enabled())?),
