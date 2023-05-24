@@ -3,6 +3,8 @@
 use std::{fs::File, io::BufReader, path::PathBuf};
 
 use clap::Parser;
+use indicatif::ParallelProgressIterator;
+use rayon::prelude::*;
 
 use crate::common::{self, cli::extract_chrom, keys, spdi};
 
@@ -55,25 +57,36 @@ fn copy_cf_bed(
         .map(BufReader::new)
         .map(noodles_bed::Reader::new)?;
 
-    for result in reader.records::<3>() {
-        let record = result?;
-        let chrom = record.reference_sequence_name();
-        let start: usize = record.start_position().into();
-        let start = start + 1;
-        let stop: usize = record.end_position().into();
+    tracing::info!("  reading BED records...");
+    let bed_records = reader
+        .records::<3>()
+        .collect::<Result<Vec<noodles_bed::Record<3>>, _>>()?;
+    tracing::info!(
+        "  will process {} BED records in parallel...",
+        bed_records.len()
+    );
 
-        let start = spdi::Pos {
-            sequence: chrom.to_string(),
-            position: start as i32,
-        };
-        let stop = spdi::Pos {
-            sequence: chrom.to_string(),
-            position: stop as i32,
-        };
+    bed_records
+        .par_iter()
+        .progress_with(common::cli::progress_bar(bed_records.len()))
+        .map(|record| {
+            let chrom = record.reference_sequence_name();
+            let start: usize = record.start_position().into();
+            let start = start + 1;
+            let stop: usize = record.end_position().into();
 
-        copy_cf(db_read, db_write, cf_name, Some(start), Some(stop))?;
-    }
+            let start = spdi::Pos {
+                sequence: chrom.to_string(),
+                position: start as i32,
+            };
+            let stop = spdi::Pos {
+                sequence: chrom.to_string(),
+                position: stop as i32,
+            };
 
+            copy_cf(db_read, db_write, cf_name, Some(start), Some(stop))
+        })
+        .collect::<Result<Vec<_>, _>>()?;
     Ok(())
 }
 

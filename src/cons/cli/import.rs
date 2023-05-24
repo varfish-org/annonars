@@ -82,7 +82,7 @@ fn tsv_import(
         let key: Vec<u8> = last_pos.into();
         let buf = record_list.encode_to_vec();
 
-        db.put_cf(&cf_data, &key, &buf)?;
+        db.put_cf(&cf_data, key, buf)?;
     }
 
     Ok(())
