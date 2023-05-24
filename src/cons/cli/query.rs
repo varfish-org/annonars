@@ -174,30 +174,34 @@ pub fn run(common: &common::cli::Args, args: &Args) -> Result<(), anyhow::Error>
                 }
             }
 
-            // Decode the record.
-            let record = cons::pbs::Record::decode(value)?;
-
-            // Skip record if end of iterator is before start of range.  This can happen as we
-            // jump two base pairs before the start position as alignment columns span one codon.
-            if let Some(start) = start.as_ref() {
-                if record.stop < start.position {
-                    iter.next();
-                    continue;
+            // Decode the record list and iterate it.
+            let record_list = cons::pbs::RecordList::decode(value)?;
+            dbg!(&record_list);
+            for record in &record_list.records {
+                // Skip record if end of iterator is before start of range.  This can happen as we
+                // jump two base pairs before the start position as alignment columns span one codon.
+                if let Some(start) = start.as_ref() {
+                    if record.stop < start.position {
+                        iter.next();
+                        continue;
+                    }
                 }
+
+                // If the user provided a HGNC gene ID then skip all records that do not match.
+                if let Some(hgnc_id) = args.hgnc_id.as_ref() {
+                    if &record.hgnc_id != hgnc_id {
+                        tracing::debug!("  skipping record {:?}", &record);
+                        iter.next();
+                        continue;
+                    }
+                }
+
+                // If we reach here then we have a record that matches the query range and HGNC gene
+                // ID (if given).
+                print_values(&mut out_writer, args.out_format, &record)?;
             }
 
-            // If the user provided a HGNC gene ID then skip all records that do not match.
-            if let Some(hgnc_id) = args.hgnc_id.as_ref() {
-                if &record.hgnc_id != hgnc_id {
-                    tracing::debug!("  skipping record {:?}", &record);
-                    iter.next();
-                    continue;
-                }
-            }
-
-            // If we reach here then we have a record that matches the query range and HGNC gene
-            // ID (if given).
-            print_values(&mut out_writer, args.out_format, &record)?;
+            // Proceed to the next database row.
             iter.next();
         } else {
             break;
@@ -238,7 +242,7 @@ mod test {
     fn smoke_query_range_without_hgnc_id() -> Result<(), anyhow::Error> {
         let (common, args, _temp) = args(
             ArgsQuery {
-                range: Some(spdi::Range::from_str("GRCh37:13:95227036:95227038")?),
+                range: Some(spdi::Range::from_str("GRCh37:13:95248336:95248351")?),
                 all: false,
             },
             None,
@@ -270,7 +274,7 @@ mod test {
     fn smoke_query_range_with_hgnc_id_result() -> Result<(), anyhow::Error> {
         let (common, args, _temp) = args(
             ArgsQuery {
-                range: Some(spdi::Range::from_str("GRCh37:13:95227036:95227038")?),
+                range: Some(spdi::Range::from_str("GRCh37:13:95248336:95248351")?),
                 all: false,
             },
             Some(String::from("HGNC:20324")),
@@ -286,7 +290,7 @@ mod test {
     fn smoke_query_range_with_hgnc_id_no_result() -> Result<(), anyhow::Error> {
         let (common, args, _temp) = args(
             ArgsQuery {
-                range: Some(spdi::Range::from_str("GRCh37:13:95227036:95227038")?),
+                range: Some(spdi::Range::from_str("GRCh37:13:95248334:95248351")?),
                 all: false,
             },
             Some(String::from("nonexisting")),

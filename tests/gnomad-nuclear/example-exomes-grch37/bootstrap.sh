@@ -49,4 +49,3 @@ cargo run --all-features -- \
     --path-in-vcf $SCRIPT_DIR/gnomad-$data_kind.vcf.bgz \
     --path-out-rocksdb $SCRIPT_DIR/gnomad-$data_kind.vcf.bgz.db \
 || { rm -rf $SCRIPT_DIR/gnomad-$data_kind.vcf.bgz.db; exit 1; }
-rm -f $SCRIPT_DIR/gnomad-$data_kind.vcf.bgz.db/*.log

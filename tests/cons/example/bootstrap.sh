@@ -9,4 +9,3 @@ cargo run --all-features -- \
     --genome-release grch37 \
     --path-in-tsv tests/cons/example/tgds.tsv \
     --path-out-rocksdb tests/cons/example/tgds.tsv.db
-rm -f tests/cons/example/tgds.tsv.db/*.log

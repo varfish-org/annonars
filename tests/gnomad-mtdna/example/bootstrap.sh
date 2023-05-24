@@ -26,4 +26,3 @@ cargo run --all-features -- \
     --genome-release grch37 \
     --path-in-vcf tests/gnomad-mtdna/example/gnomad-mtdna.vcf.bgz \
     --path-out-rocksdb tests/gnomad-mtdna/example/gnomad-mtdna.vcf.bgz.db
-rm -f tests/gnomad-mtdna/example/gnomad-mtdna.vcf.bgz.db/*.log

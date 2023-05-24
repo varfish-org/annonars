@@ -340,7 +340,7 @@ pub fn run(common: &common::cli::Args, args: &Args) -> Result<(), anyhow::Error>
 
     tracing::info!("Running RocksDB compaction ...");
     let before_compaction = std::time::Instant::now();
-    common::rocks_utils::force_compaction_cf(&db, cf_names, Some("  "))?;
+    common::rocks_utils::force_compaction_cf(&db, cf_names, Some("  "), true)?;
     tracing::info!(
         "... done compacting RocksDB in {:?}",
         before_compaction.elapsed()
