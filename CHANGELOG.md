@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.5.0](https://www.github.com/bihealth/annona-rs/compare/v0.4.0...v0.5.0) (2023-05-24)
+
+
+### Features
+
+* parallelize "db-utils copy" for BED files ([#52](https://www.github.com/bihealth/annona-rs/issues/52)) ([e061410](https://www.github.com/bihealth/annona-rs/commit/e0614106b40fc597d0730d99b0d3cb83a4b8c965))
+
 ## [0.4.0](https://www.github.com/bihealth/annona-rs/compare/v0.3.0...v0.4.0) (2023-05-24)
 
 
