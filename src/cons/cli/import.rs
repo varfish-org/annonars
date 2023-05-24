@@ -54,15 +54,33 @@ fn tsv_import(
         .has_headers(true)
         .from_reader(reader);
 
-    // Read through all records, inserting them into the database.
+    // Read through all records.  Collect all at the same position into a `RecordList` and
+    // insert these into the database.
+    let mut record_list = cons::pbs::RecordList::default();
+    let mut last_pos = keys::Pos::default();
     for result in csv_reader.deserialize() {
         let record: cons::pbs::Record = result?;
         let pos = keys::Pos::from(&record.chrom, record.start);
-        let key: Vec<u8> = pos.into();
 
-        let record: cons::pbs::Record = record;
-        let mut buf: Vec<u8> = Vec::with_capacity(record.encoded_len());
-        record.encode(&mut buf)?;
+        if pos != last_pos {
+            if !record_list.records.is_empty() {
+                let key: Vec<u8> = last_pos.into();
+                let buf = record_list.encode_to_vec();
+
+                db.put_cf(&cf_data, &key, &buf)?;
+            }
+
+            record_list = cons::pbs::RecordList::default();
+            last_pos = pos;
+        }
+
+        record_list.records.push(record);
+    }
+
+    // Handle last record list.
+    if !record_list.records.is_empty() {
+        let key: Vec<u8> = last_pos.into();
+        let buf = record_list.encode_to_vec();
 
         db.put_cf(&cf_data, &key, &buf)?;
     }
@@ -116,7 +134,7 @@ pub fn run(common: &common::cli::Args, args: &Args) -> Result<(), anyhow::Error>
 
     tracing::info!("Running RocksDB compaction ...");
     let before_compaction = std::time::Instant::now();
-    common::rocks_utils::force_compaction_cf(&db, cf_names, Some("  "))?;
+    common::rocks_utils::force_compaction_cf(&db, cf_names, Some("  "), true)?;
     tracing::info!(
         "... done compacting RocksDB in {:?}",
         before_compaction.elapsed()

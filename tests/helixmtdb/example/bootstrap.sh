@@ -20,4 +20,3 @@ cargo run --all-features -- \
     --gnomad-kind genomes \
     --path-in-vcf tests/gnomad-nuclear/example-genomes/gnomad-genomes.vcf.bgz \
     --path-out-rocksdb tests/gnomad-nuclear/example-genomes/gnomad-genomes.vcf.bgz.db
-rm -f tests/gnomad-nuclear/example-genomes/gnomad-genomes.vcf.bgz.db/*.log

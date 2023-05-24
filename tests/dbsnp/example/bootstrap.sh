@@ -16,4 +16,3 @@ cargo run --all-features -- \
     --genome-release grch37 \
     --path-in-vcf tests/dbsnp/example/dbsnp.brca1.vcf.bgz \
     --path-out-rocksdb tests/dbsnp/example/dbsnp.brca1.vcf.bgz.db
-rm -f tests/dbsnp/example/dbsnp.brca1.vcf.bgz.db/*.log

@@ -16,4 +16,3 @@ cargo run --all-features -- \
     --col-start POS \
     --col-ref REF \
     --col-alt ALT
-rm -f tests/tsv/example/data.tsv.gz.db/*.log

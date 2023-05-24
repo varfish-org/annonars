@@ -77,7 +77,7 @@ where
         .iter()
         .map(std::string::String::as_str)
         .collect::<Vec<_>>();
-    force_compaction_cf(&db, cf_names_str, wait_msg_prefix)
+    force_compaction_cf(&db, cf_names_str, wait_msg_prefix, true)
 }
 
 /// Force manual compaction of the given column families in the given database.
@@ -86,15 +86,20 @@ where
 /// The compression will depend on the options that the database was opened with.  Using the
 /// `tune_options` function is recommended to optimize the resulting database.
 ///
+/// Note that you should only set `remove_empty_wal_files` to `true` if you are sure that
+/// you close the database just after compaction.
+///
 /// # Arguments
 ///
 /// * `db` - `RocksDB` database to compact.
 /// * `cf_names` - Names of the column families to compact.
 /// * `wait_msg_prefix` - Optional prefix for the wait message.
+/// * `remove_empty_wal_files` - Whether to remove empty write-ahead log files after compaction.
 pub fn force_compaction_cf<I, N>(
     db: &rocksdb::DBWithThreadMode<rocksdb::MultiThreaded>,
     cf_names: I,
     wait_msg_prefix: Option<&str>,
+    remove_empty_wal_files: bool,
 ) -> Result<(), error::Error>
 where
     I: IntoIterator<Item = N>,
@@ -139,6 +144,19 @@ where
                     compaction_start.elapsed()
                 );
                 last_logged = Instant::now();
+            }
+        }
+    }
+
+    if remove_empty_wal_files {
+        // Remove empty `*.log` files in the database directory.
+        let entries = std::fs::read_dir(db.path()).expect("cannot list directory");
+        for entry in entries {
+            let entry = entry.expect("cannot read directory entry");
+            if entry.path().extension() == Some(std::ffi::OsStr::new("log")) {
+                if entry.metadata().expect("cannot read metadata").len() == 0 {
+                    std::fs::remove_file(entry.path()).expect("cannot remove file");
+                }
             }
         }
     }
@@ -192,7 +210,7 @@ mod test {
         let cf_names = &["foo", "bar"];
         let db = rocksdb::DB::open_cf(&options, path_db, cf_names)?;
 
-        force_compaction_cf(&db, cf_names, Some("msg"))?;
+        force_compaction_cf(&db, cf_names, Some("msg"), true)?;
 
         Ok(())
     }
