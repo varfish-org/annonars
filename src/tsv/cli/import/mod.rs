@@ -79,23 +79,21 @@ pub fn process_tsv_line(
     db: &rocksdb::DBWithThreadMode<rocksdb::MultiThreaded>,
     cf_data: &std::sync::Arc<rocksdb::BoundColumnFamily>,
 ) -> Result<(), anyhow::Error> {
-    let line = line;
     let values = ctx.line_to_values(line)?;
     let values = values.iter().collect::<Vec<_>>();
     let var = ctx.values_to_var(&values)?;
 
     if let Some(var) = var.as_ref() {
         let key: Vec<u8> = var.clone().into();
-        let value = ctx.encode_values(&values)?;
 
         tracing::trace!(
             "putting for var = {:?}, key = {:?}, value = {:?}",
             &var,
             &key,
-            &value
+            &line.as_bytes()
         );
 
-        db.put_cf(cf_data, key, value)?;
+        db.put_cf(cf_data, key, line.as_bytes())?;
     } else {
         tracing::trace!("skipping line: {:?}", &line);
     }
