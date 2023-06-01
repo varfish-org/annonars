@@ -154,7 +154,8 @@ fn query_for_variant(
     let raw_value = db
         .get_cf(&cf_data, key)?
         .ok_or_else(|| anyhow::anyhow!("could not find variant in database"))?;
-    let values = ctx.decode_values(&raw_value)?;
+    let line = std::str::from_utf8(raw_value.as_slice())?;
+    let values = ctx.line_to_values(line)?;
 
     Ok(values)
 }
@@ -229,8 +230,8 @@ pub fn run(common: &common::cli::Args, args: &Args) -> Result<(), anyhow::Error>
 
         // Iterate over all variants until we are behind stop.
         while iter.valid() {
-            if let Some(value) = iter.value() {
-                tracing::trace!("iterator at {:?} => {:?}", &iter.key(), &value);
+            if let Some(line_raw) = iter.value() {
+                tracing::trace!("iterator at {:?} => {:?}", &iter.key(), &line_raw);
                 if let Some(stop) = stop.as_ref() {
                     let iter_key = iter.key().unwrap();
                     let iter_pos: keys::Pos = iter_key.into();
@@ -240,7 +241,8 @@ pub fn run(common: &common::cli::Args, args: &Args) -> Result<(), anyhow::Error>
                     }
                 }
 
-                let values = ctx.decode_values(value)?;
+                let line = std::str::from_utf8(line_raw)?;
+                let values = ctx.line_to_values(line)?;
                 print_values(&mut out_writer, args.out_format, &meta, values)?;
                 iter.next();
             } else {
