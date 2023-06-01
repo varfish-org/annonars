@@ -1,5 +1,13 @@
 # Changelog
 
+## [0.6.0](https://www.github.com/bihealth/annona-rs/compare/v0.5.1...v0.6.0) (2023-06-01)
+
+
+### Features
+
+* adding "db-utils dump-meta" command ([#56](https://www.github.com/bihealth/annona-rs/issues/56)) ([#60](https://www.github.com/bihealth/annona-rs/issues/60)) ([92f30c2](https://www.github.com/bihealth/annona-rs/commit/92f30c20b0ed25bf1e2694e25a35bde109f2ed39))
+* storing TSV lines as string to reduce storage size ([#57](https://www.github.com/bihealth/annona-rs/issues/57)) ([#58](https://www.github.com/bihealth/annona-rs/issues/58)) ([3a77eb6](https://www.github.com/bihealth/annona-rs/commit/3a77eb615d5805062c5cd0595277c4d950fea92d))
+
 ### [0.5.1](https://www.github.com/bihealth/annona-rs/compare/v0.5.0...v0.5.1) (2023-05-24)
 
 
