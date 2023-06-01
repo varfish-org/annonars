@@ -154,6 +154,8 @@ struct DbUtils {
 enum DbUtilsCommands {
     /// "copy" sub command
     Copy(db_utils::cli::copy::Args),
+    /// "dump-meta" sub command
+    DumpMeta(db_utils::cli::dump_meta::Args),
 }
 
 pub fn main() -> Result<(), anyhow::Error> {
@@ -211,6 +213,9 @@ pub fn main() -> Result<(), anyhow::Error> {
             },
             Commands::DbUtils(args) => match &args.command {
                 DbUtilsCommands::Copy(args) => db_utils::cli::copy::run(&cli.common, args)?,
+                DbUtilsCommands::DumpMeta(args) => {
+                    db_utils::cli::dump_meta::run(&cli.common, args)?
+                }
             },
         }
 
