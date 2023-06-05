@@ -1,66 +1,65 @@
-//! Import of gonomosomal frequencies from gnomAD.
+//! Import of gonosomal frequencies from gnomAD.
 
 use hgvs::static_data::Assembly;
 
 use crate::{common, freqs};
 
-/// Helper for reading through gnomAD mtDNA and HelixMtDb data;
+/// Helper for reading through gnomAD genomes and exomes data.
 pub struct Reader {
-    /// CSV reader for the gnomAD mitochondrial records.
-    gnomad_genomes_reader: Option<freqs::cli::reading::MultiVcfReader>,
-    /// Next variant from gnomAD.
-    gnomad_genomes_next: Option<noodles_vcf::Record>,
-    /// CSV reader for the HelixMtDb records.
-    gnomad_exomes_reader: Option<freqs::cli::reading::MultiVcfReader>,
-    /// Next variant from gnomAD.
-    gnomad_exomes_next: Option<noodles_vcf::Record>,
+    /// CSV reader for the gnomAD genomes.
+    genomes_reader: Option<freqs::cli::reading::MultiVcfReader>,
+    /// Next variant from gnomAD genomes.
+    genomes_next: Option<noodles_vcf::Record>,
+    /// CSV reader for the gnomAD exomes.
+    exomes_reader: Option<freqs::cli::reading::MultiVcfReader>,
+    /// Next variant from gnomAD exomes
+    exomes_next: Option<noodles_vcf::Record>,
 }
 
 impl Reader {
-    /// Construct new reader with optional paths to gnomAD genomes and exomes data.
+    /// Construct new reader with optional paths to gnomAD genomes and exomes files.
     ///
     /// Optionally, you can provide an assembly to validate the VCF contigs against.
     pub fn new(
-        path_gnomad_genomes: Option<&[&str]>,
-        path_gnomad_exomes: Option<&[&str]>,
+        path_genomes: Option<&str>,
+        path_exomes: Option<&str>,
         assembly: Option<Assembly>,
     ) -> Result<Self, anyhow::Error> {
-        let mut gnomad_genomes_reader = path_gnomad_genomes
-            .map(|path_gnomad_genomes| {
-                tracing::info!("Opening gnomAD exomes file {:?}", &path_gnomad_genomes);
-                freqs::cli::reading::MultiVcfReader::new(path_gnomad_genomes, assembly)
+        let mut genomes_reader = path_genomes
+            .as_ref()
+            .map(|path_genomes| {
+                tracing::info!("Opening gnomAD genome gonosomal file {}", &path_genomes);
+                freqs::cli::reading::MultiVcfReader::new(&[path_genomes], assembly)
+            })
+            .transpose()?;
+        let mut exomes_reader = path_exomes
+            .as_ref()
+            .map(|path_exomes| {
+                tracing::info!("Opening gnomAD exomes gonosomal file {}", &path_exomes);
+                freqs::cli::reading::MultiVcfReader::new(&[path_exomes], assembly)
             })
             .transpose()?;
 
-        let gnomad_genomes_next =
-            if let Some(gnomad_genomes_reader) = gnomad_genomes_reader.as_mut() {
-                gnomad_genomes_reader.pop()?.0
-            } else {
-                None
-            };
-
-        let mut gnomad_exomes_reader = path_gnomad_exomes
-            .map(|path_gnomad_exomes| {
-                tracing::info!("Opening gnomAD genomes file {:?}", &path_gnomad_exomes);
-                freqs::cli::reading::MultiVcfReader::new(path_gnomad_exomes, assembly)
-            })
-            .transpose()?;
-
-        let gnomad_exomes_next = if let Some(gnomad_exomes_reader) = gnomad_exomes_reader.as_mut() {
-            gnomad_exomes_reader.pop()?.0
+        let genomes_next = if let Some(genomes_reader) = genomes_reader.as_mut() {
+            genomes_reader.pop()?.0
+        } else {
+            None
+        };
+        let exomes_next = if let Some(exomes_reader) = exomes_reader.as_mut() {
+            exomes_reader.pop()?.0
         } else {
             None
         };
 
         Ok(Self {
-            gnomad_genomes_reader,
-            gnomad_exomes_reader,
-            gnomad_genomes_next,
-            gnomad_exomes_next,
+            genomes_reader,
+            exomes_reader,
+            genomes_next,
+            exomes_next,
         })
     }
 
-    /// Run the reading of the chrMT frequencies.
+    /// Run the reading of the gonosomal frequencies.
     ///
     /// Returns whether there is a next value.
     pub fn run<F>(&mut self, mut func: F) -> Result<bool, anyhow::Error>
@@ -71,61 +70,77 @@ impl Reader {
             freqs::serialized::xy::Counts,
         ) -> Result<(), anyhow::Error>,
     {
-        match (&self.gnomad_genomes_next, &self.gnomad_exomes_next) {
-            (None, Some(gnomad_exomes)) => {
+        match (&self.genomes_next, &self.exomes_next) {
+            (None, Some(exomes_record)) => {
+                assert_eq!(
+                    exomes_record.alternate_bases().len(),
+                    1,
+                    "only one alternate allele is supported"
+                );
                 func(
-                    common::keys::Var::from_vcf_allele(gnomad_exomes, 0),
+                    common::keys::Var::from_vcf_allele(exomes_record, 0),
                     freqs::serialized::xy::Counts::default(),
-                    freqs::serialized::xy::Counts::from_vcf_allele(gnomad_exomes, 0),
+                    freqs::serialized::xy::Counts::from_vcf_allele(exomes_record, 0),
                 )?;
-                self.gnomad_exomes_next = self.gnomad_exomes_reader.as_mut().unwrap().pop()?.0;
+                self.exomes_next = self.exomes_reader.as_mut().unwrap().pop()?.0;
             }
-            (Some(gnomad_genomes), None) => {
+            (Some(genomes_record), None) => {
+                assert_eq!(
+                    genomes_record.alternate_bases().len(),
+                    1,
+                    "only one alternate allele is supported"
+                );
                 func(
-                    common::keys::Var::from_vcf_allele(gnomad_genomes, 0),
-                    freqs::serialized::xy::Counts::from_vcf_allele(gnomad_genomes, 0),
+                    common::keys::Var::from_vcf_allele(genomes_record, 0),
+                    freqs::serialized::xy::Counts::from_vcf_allele(genomes_record, 0),
                     freqs::serialized::xy::Counts::default(),
                 )?;
-                self.gnomad_genomes_next = self.gnomad_genomes_reader.as_mut().unwrap().pop()?.0;
+                self.genomes_next = self.genomes_reader.as_mut().unwrap().pop()?.0;
             }
-            (Some(gnomad_genomes), Some(gnomad_exomes)) => {
-                let var_gnomad_genomes = common::keys::Var::from_vcf_allele(gnomad_genomes, 0);
-                let var_gnomad_exomes = common::keys::Var::from_vcf_allele(gnomad_exomes, 0);
-                match var_gnomad_genomes.cmp(&var_gnomad_exomes) {
+            (Some(genomes_record), Some(exomes_record)) => {
+                assert_eq!(
+                    exomes_record.alternate_bases().len(),
+                    1,
+                    "only one alternate allele is supported"
+                );
+                assert_eq!(
+                    genomes_record.alternate_bases().len(),
+                    1,
+                    "only one alternate allele is supported"
+                );
+                let var_genomes = common::keys::Var::from_vcf_allele(genomes_record, 0);
+                let var_exomes = common::keys::Var::from_vcf_allele(exomes_record, 0);
+                match var_genomes.cmp(&var_exomes) {
                     std::cmp::Ordering::Less => {
                         func(
-                            var_gnomad_genomes,
-                            freqs::serialized::xy::Counts::from_vcf_allele(gnomad_genomes, 0),
+                            var_genomes,
+                            freqs::serialized::xy::Counts::from_vcf_allele(genomes_record, 0),
                             freqs::serialized::xy::Counts::default(),
                         )?;
-                        self.gnomad_genomes_next =
-                            self.gnomad_genomes_reader.as_mut().unwrap().pop()?.0;
+                        self.genomes_next = self.genomes_reader.as_mut().unwrap().pop()?.0;
                     }
                     std::cmp::Ordering::Equal => {
                         func(
-                            var_gnomad_genomes,
-                            freqs::serialized::xy::Counts::from_vcf_allele(gnomad_genomes, 0),
-                            freqs::serialized::xy::Counts::from_vcf_allele(gnomad_exomes, 0),
+                            var_genomes,
+                            freqs::serialized::xy::Counts::from_vcf_allele(genomes_record, 0),
+                            freqs::serialized::xy::Counts::from_vcf_allele(exomes_record, 0),
                         )?;
-                        self.gnomad_genomes_next =
-                            self.gnomad_genomes_reader.as_mut().unwrap().pop()?.0;
-                        self.gnomad_exomes_next =
-                            self.gnomad_exomes_reader.as_mut().unwrap().pop()?.0;
+                        self.exomes_next = self.exomes_reader.as_mut().unwrap().pop()?.0;
+                        self.genomes_next = self.genomes_reader.as_mut().unwrap().pop()?.0;
                     }
                     std::cmp::Ordering::Greater => {
                         func(
-                            var_gnomad_exomes,
+                            var_exomes,
                             freqs::serialized::xy::Counts::default(),
-                            freqs::serialized::xy::Counts::from_vcf_allele(gnomad_exomes, 0),
+                            freqs::serialized::xy::Counts::from_vcf_allele(exomes_record, 0),
                         )?;
-                        self.gnomad_exomes_next =
-                            self.gnomad_exomes_reader.as_mut().unwrap().pop()?.0;
+                        self.exomes_next = self.exomes_reader.as_mut().unwrap().pop()?.0;
                     }
                 }
             }
             (None, None) => (),
         }
 
-        Ok(self.gnomad_genomes_next.is_some() || self.gnomad_exomes_next.is_some())
+        Ok(self.genomes_next.is_some() || self.exomes_next.is_some())
     }
 }

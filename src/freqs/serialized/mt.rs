@@ -53,6 +53,7 @@ impl Counts {
 }
 
 /// Record type for the "mitochondrial" column family.
+#[derive(Debug, PartialEq, Eq, Clone)]
 pub struct Record {
     /// Counts from gnomAD mtDNA.
     pub gnomad_mtdna: Counts,

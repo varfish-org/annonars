@@ -47,11 +47,27 @@ pub struct Args {
     pub path_gnomad_mtdna: Option<String>,
     /// Path(s) to the HelixMtDb TSV file.
     #[arg(long)]
-    pub path_helix_mtdb: Option<String>,
+    pub path_helixmtdb: Option<String>,
 
     /// Optional path to WAL directory.
     #[arg(long)]
     pub path_wal_dir: Option<String>,
+    /// Windows size for TBI-based parallel import.
+    #[arg(long, default_value = "100000")]
+    pub tbi_window_size: usize,
+
+    /// Version of gnomAD genomes.
+    #[arg(long)]
+    pub gnomad_genomes_version: String,
+    /// Version of gnomAD exomes.
+    #[arg(long)]
+    pub gnomad_exomes_version: String,
+    /// Version of gnomAD mtDNA.
+    #[arg(long)]
+    pub gnomad_mtdna_version: String,
+    /// Version of HelixMtDb.
+    #[arg(long)]
+    pub helixmtdb_version: String,
 }
 
 /// Guess the assembly from the given header.
@@ -184,16 +200,84 @@ fn import_autosomal(
     path_genome: Option<&String>,
     path_exome: Option<&String>,
 ) -> Result<(), anyhow::Error> {
+    let cf_auto = db.cf_handle("autosomal").unwrap();
+
+    let mut auto_written = 0usize;
+    let mut auto_reader = auto::Reader::new(
+        path_genome.map(|s| s.as_str()),
+        path_exome.map(|s| s.as_str()),
+        Some(genome_release),
+    )?;
+
+    let mut prev = std::time::Instant::now();
+    let mut has_next = true;
+    while has_next {
+        has_next = auto_reader.run(|variant, gnomad_genomes, gnomad_exomes| {
+            if prev.elapsed().as_secs() > 60 {
+                tracing::info!("at {:?}", &variant);
+                prev = std::time::Instant::now();
+            }
+
+            let key: Vec<u8> = variant.into();
+            let mut value = [0u8; 32];
+            let rec = freqs::serialized::auto::Record {
+                gnomad_genomes,
+                gnomad_exomes,
+            };
+            tracing::trace!("record = {:?}", &rec);
+            rec.to_buf(&mut value);
+            db.put_cf(&cf_auto, key, value)?;
+
+            auto_written += 1;
+
+            Ok(())
+        })?;
+    }
+
     Ok(())
 }
 
-/// Import of gonomosomal variant frequencies.
-fn import_gonomosomal(
+/// Import of gonosomal variant frequencies.
+fn import_gonosomal(
     db: &rocksdb::DBWithThreadMode<rocksdb::MultiThreaded>,
     genome_release: Assembly,
     path_genome: Option<&String>,
     path_exome: Option<&String>,
 ) -> Result<(), anyhow::Error> {
+    let cf_xy = db.cf_handle("gonosomal").unwrap();
+
+    let mut xy_written = 0usize;
+    let mut xy_reader = xy::Reader::new(
+        path_genome.map(|s| s.as_str()),
+        path_exome.map(|s| s.as_str()),
+        Some(genome_release),
+    )?;
+
+    let mut prev = std::time::Instant::now();
+    let mut has_next = true;
+    while has_next {
+        has_next = xy_reader.run(|variant, gnomad_genomes, gnomad_exomes| {
+            if prev.elapsed().as_secs() > 60 {
+                tracing::info!("at {:?}", &variant);
+                prev = std::time::Instant::now();
+            }
+
+            let key: Vec<u8> = variant.into();
+            let mut value = [0u8; 32];
+            let rec = freqs::serialized::xy::Record {
+                gnomad_genomes,
+                gnomad_exomes,
+            };
+            tracing::trace!("record = {:?}", &rec);
+            rec.to_buf(&mut value);
+            db.put_cf(&cf_xy, key, value)?;
+
+            xy_written += 1;
+
+            Ok(())
+        })?;
+    }
+
     Ok(())
 }
 
@@ -207,7 +291,7 @@ fn import_chrmt(
     let cf_mtdna = db.cf_handle("mitochondrial").unwrap();
 
     let mut chrmt_written = 0usize;
-    let mut mt_reader = auto::Reader::new(
+    let mut mt_reader = mt::Reader::new(
         path_gnomad_mtdna.map(|s| s.as_str()),
         path_helixmtdb.map(|s| s.as_str()),
         Some(genome_release),
@@ -224,11 +308,12 @@ fn import_chrmt(
 
             let key: Vec<u8> = variant.into();
             let mut value = [0u8; 24];
-            freqs::serialized::mt::Record {
+            let rec = freqs::serialized::mt::Record {
                 gnomad_mtdna,
                 helix_mtdb,
-            }
-            .to_buf(&mut value);
+            };
+            tracing::trace!("record = {:?}", &rec);
+            rec.to_buf(&mut value);
             db.put_cf(&cf_mtdna, key, value)?;
 
             chrmt_written += 1;
@@ -267,6 +352,18 @@ pub fn run(_common: &common::cli::Args, args: &Args) -> Result<(), anyhow::Error
     tracing::info!("  writing meta information");
     let cf_meta = db.cf_handle("meta").unwrap();
     db.put_cf(&cf_meta, "annonars-version", crate::VERSION)?;
+    db.put_cf(
+        &cf_meta,
+        "gnomad-exomes-version",
+        &args.gnomad_exomes_version,
+    )?;
+    db.put_cf(
+        &cf_meta,
+        "gnomad-genomoes-version",
+        &args.gnomad_genomes_version,
+    )?;
+    db.put_cf(&cf_meta, "gnomad-mtdna-version", &args.gnomad_mtdna_version)?;
+    db.put_cf(&cf_meta, "helixmtdb-version", &args.helixmtdb_version)?;
     db.put_cf(
         &cf_meta,
         "genome-release",
@@ -320,7 +417,7 @@ pub fn run(_common: &common::cli::Args, args: &Args) -> Result<(), anyhow::Error
         "... done importing autosomal variants in {:?}",
         before_auto.elapsed()
     );
-    tracing::info!("Importing gonomosomal variants...");
+    tracing::info!("Importing gonosomal variants...");
     let before_xy = std::time::Instant::now();
     for k in &xy_keys {
         let path_genome = genomes_xy_by_chrom.get(k);
@@ -328,10 +425,10 @@ pub fn run(_common: &common::cli::Args, args: &Args) -> Result<(), anyhow::Error
         tracing::info!("  k={}; from:", k);
         tracing::info!("    - genomes: {:?}", path_genome);
         tracing::info!("    - exomes:  {:?}", path_exome);
-        import_gonomosomal(&db, genome_release, path_genome, path_exome)?;
+        import_gonosomal(&db, genome_release, path_genome, path_exome)?;
     }
     tracing::info!(
-        "... done importing gonomosomal variants in {:?}",
+        "... done importing gonosomal variants in {:?}",
         before_xy.elapsed()
     );
     tracing::info!("Importing mitochondrial variants...");
@@ -340,7 +437,7 @@ pub fn run(_common: &common::cli::Args, args: &Args) -> Result<(), anyhow::Error
         &db,
         genome_release,
         args.path_gnomad_mtdna.as_ref(),
-        args.path_helix_mtdb.as_ref(),
+        args.path_helixmtdb.as_ref(),
     )?;
     tracing::info!(
         "... done importing mitochondrial variants in {:?}",

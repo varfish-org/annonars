@@ -66,8 +66,8 @@ impl Reader {
     where
         F: FnMut(
             common::keys::Var,
-            freqs::serialized::mt::Counts,
-            freqs::serialized::mt::Counts,
+            freqs::serialized::auto::Counts,
+            freqs::serialized::auto::Counts,
         ) -> Result<(), anyhow::Error>,
     {
         match (&self.genomes_next, &self.exomes_next) {
@@ -79,8 +79,8 @@ impl Reader {
                 );
                 func(
                     common::keys::Var::from_vcf_allele(exomes_record, 0),
-                    freqs::serialized::mt::Counts::default(),
-                    freqs::serialized::mt::Counts::from_vcf_allele(exomes_record, 0),
+                    freqs::serialized::auto::Counts::default(),
+                    freqs::serialized::auto::Counts::from_vcf_allele(exomes_record, 0),
                 )?;
                 self.exomes_next = self.exomes_reader.as_mut().unwrap().pop()?.0;
             }
@@ -92,8 +92,8 @@ impl Reader {
                 );
                 func(
                     common::keys::Var::from_vcf_allele(genomes_record, 0),
-                    freqs::serialized::mt::Counts::from_vcf_allele(genomes_record, 0),
-                    freqs::serialized::mt::Counts::default(),
+                    freqs::serialized::auto::Counts::from_vcf_allele(genomes_record, 0),
+                    freqs::serialized::auto::Counts::default(),
                 )?;
                 self.genomes_next = self.genomes_reader.as_mut().unwrap().pop()?.0;
             }
@@ -114,16 +114,16 @@ impl Reader {
                     std::cmp::Ordering::Less => {
                         func(
                             var_genomes,
-                            freqs::serialized::mt::Counts::from_vcf_allele(genomes_record, 0),
-                            freqs::serialized::mt::Counts::default(),
+                            freqs::serialized::auto::Counts::from_vcf_allele(genomes_record, 0),
+                            freqs::serialized::auto::Counts::default(),
                         )?;
                         self.genomes_next = self.genomes_reader.as_mut().unwrap().pop()?.0;
                     }
                     std::cmp::Ordering::Equal => {
                         func(
                             var_genomes,
-                            freqs::serialized::mt::Counts::from_vcf_allele(genomes_record, 0),
-                            freqs::serialized::mt::Counts::from_vcf_allele(exomes_record, 0),
+                            freqs::serialized::auto::Counts::from_vcf_allele(genomes_record, 0),
+                            freqs::serialized::auto::Counts::from_vcf_allele(exomes_record, 0),
                         )?;
                         self.exomes_next = self.exomes_reader.as_mut().unwrap().pop()?.0;
                         self.genomes_next = self.genomes_reader.as_mut().unwrap().pop()?.0;
@@ -131,8 +131,8 @@ impl Reader {
                     std::cmp::Ordering::Greater => {
                         func(
                             var_exomes,
-                            freqs::serialized::mt::Counts::default(),
-                            freqs::serialized::mt::Counts::from_vcf_allele(exomes_record, 0),
+                            freqs::serialized::auto::Counts::default(),
+                            freqs::serialized::auto::Counts::from_vcf_allele(exomes_record, 0),
                         )?;
                         self.exomes_next = self.exomes_reader.as_mut().unwrap().pop()?.0;
                     }

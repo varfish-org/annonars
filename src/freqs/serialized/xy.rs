@@ -1,4 +1,4 @@
-//! Gonomosomal counts.
+//! gonosomal counts.
 
 use byteorder::{ByteOrder, LittleEndian};
 
@@ -31,10 +31,10 @@ impl Counts {
 
         let ac_hom_xx = noodles::get_i32(value, "nhomalt_female")
             .or_else(|_| noodles::get_i32(value, "nhomalt_XX"))
-            .expect("neither found: nhomalt_female, nhomalt_XX") as u32;
+            .unwrap_or_default() as u32;
         let ac_xx = noodles::get_i32(value, "AC_female")
             .or_else(|_| noodles::get_i32(value, "AC_XX"))
-            .expect("neither found: AC_female, AC_XX") as u32;
+            .unwrap_or_default() as u32;
 
         let ac_hom_xy = noodles::get_i32(value, "nhomalt_male")
             .or_else(|_| noodles::get_i32(value, "nhomalt_XY"))
@@ -84,6 +84,7 @@ impl Counts {
 }
 
 /// Record type for the "mitochondrial" column family.
+#[derive(Debug, PartialEq, Eq, Clone)]
 pub struct Record {
     /// Counts from gnomAD exomes.
     pub gnomad_exomes: Counts,

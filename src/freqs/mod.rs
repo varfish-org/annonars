@@ -4,7 +4,7 @@
 //! counts that allow for annotating allele frequency.  This reduces the database size.  However,
 //! it limits us to hard-coded database support which is acceptable:
 //!
-//! - for the following, we provide information on autosomal and gonomosomal counts
+//! - for the following, we provide information on autosomal and gonosomal counts
 //!   - gnomAD-exomes
 //!   - gnomAD-genomes
 //! - for the following, we provide information for mitochondrial DNA only
