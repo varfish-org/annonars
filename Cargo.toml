@@ -40,7 +40,7 @@ noodles-bgzf = { version = "0.21" }
 noodles-core = "0.11"
 noodles-csi = "0.18"
 noodles-tabix = { version = "0.21" }
-noodles-vcf = "0.30"
+noodles-vcf = "0.31"
 noodles-util = { version = "0.11", features = ["variant"] }
 hgvs = { version = "0.8" }
 prost = "0.11"
