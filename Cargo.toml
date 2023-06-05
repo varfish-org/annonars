@@ -36,7 +36,7 @@ indicatif = { version = "0.17", features = ["rayon"] }
 flate2 = { version = "1.0" }
 bgzip = { version = "0.3" }
 noodles-bed = "0.9.0"
-noodles-bgzf = { version = "0.21" }
+noodles-bgzf = { version = "0.22" }
 noodles-core = "0.11"
 noodles-csi = "0.18"
 noodles-tabix = { version = "0.21" }
