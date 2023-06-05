@@ -19,7 +19,7 @@ pub struct Counts {
 
 impl Counts {
     /// Create from the given VCF record.
-    pub fn from_vcf_allele(value: &noodles_vcf::Record, allele_no: usize) -> Self {
+    pub fn from_vcf_allele(value: &noodles_vcf::Record, _allele_no: usize) -> Self {
         assert_eq!(
             value.alternate_bases().len(),
             1,

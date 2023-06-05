@@ -32,6 +32,7 @@ impl ContigMap {
         Self { assembly, name_map }
     }
 
+    /// Map chromosome to index.
     pub fn chrom_to_idx(&self, chrom: &noodles_vcf::record::Chromosome) -> usize {
         match chrom {
             noodles_vcf::record::Chromosome::Name(s)
