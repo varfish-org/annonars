@@ -107,8 +107,8 @@ struct Freqs {
 enum FreqsCommands {
     /// "import" sub command
     Import(freqs::cli::import::Args),
-    // /// "query" sub command
-    // Query(dbsnp::cli::query::Args),
+    /// "query" sub command
+    Query(freqs::cli::query::Args),
 }
 
 /// Parsing of "helixmtdb" subcommands.
@@ -214,6 +214,7 @@ pub fn main() -> Result<(), anyhow::Error> {
             },
             Commands::Freqs(args) => match &args.command {
                 FreqsCommands::Import(args) => freqs::cli::import::run(&cli.common, args)?,
+                FreqsCommands::Query(args) => freqs::cli::query::run(&cli.common, args)?,
             },
             Commands::Helixmtdb(args) => match &args.command {
                 HelixmtdbCommands::Import(args) => helixmtdb::cli::import::run(&cli.common, args)?,

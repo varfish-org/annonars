@@ -8,11 +8,11 @@ use crate::{common, freqs};
 /// Helper for reading through gnomAD mtDNA and HelixMtDb data;
 pub struct Reader {
     /// CSV reader for the gnomAD autosomal records.
-    gnomad_reader: Option<freqs::cli::reading::MultiVcfReader>,
+    gnomad_reader: Option<freqs::cli::import::reading::MultiVcfReader>,
     /// Next variant from gnomAD.
     gnomad_next: Option<VcfRecord>,
     /// CSV reader for the HelixMtDb records.
-    helix_reader: Option<freqs::cli::reading::MultiVcfReader>,
+    helix_reader: Option<freqs::cli::import::reading::MultiVcfReader>,
     /// Next variant from gnomAD.
     helix_next: Option<VcfRecord>,
 }
@@ -30,14 +30,14 @@ impl Reader {
             .as_ref()
             .map(|path_gnomad| {
                 tracing::info!("Opening gnomAD autosomal file {}", &path_gnomad);
-                freqs::cli::reading::MultiVcfReader::new(&[path_gnomad], assembly)
+                freqs::cli::import::reading::MultiVcfReader::new(&[path_gnomad], assembly)
             })
             .transpose()?;
         let mut helix_reader = path_helix
             .as_ref()
             .map(|path_helix| {
                 tracing::info!("Opening gnomAD autosomal file {}", &path_helix);
-                freqs::cli::reading::MultiVcfReader::new(&[path_helix], assembly)
+                freqs::cli::import::reading::MultiVcfReader::new(&[path_helix], assembly)
             })
             .transpose()?;
 

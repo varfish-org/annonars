@@ -10,7 +10,7 @@ use crate::common::noodles;
 // };
 
 /// Record type for storing AN, AC_hom, AC_het counts for chrMT.
-#[derive(Default, Debug, PartialEq, Eq, Clone)]
+#[derive(Default, Debug, PartialEq, Eq, Clone, serde::Serialize, serde::Deserialize)]
 pub struct Counts {
     /// Total number of alleles.
     pub an: u32,
@@ -53,7 +53,7 @@ impl Counts {
 }
 
 /// Record type for the "mitochondrial" column family.
-#[derive(Debug, PartialEq, Eq, Clone)]
+#[derive(Debug, PartialEq, Eq, Clone, serde::Serialize, serde::Deserialize)]
 pub struct Record {
     /// Counts from gnomAD mtDNA.
     pub gnomad_mtdna: Counts,

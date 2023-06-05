@@ -5,7 +5,7 @@ use byteorder::{ByteOrder, LittleEndian};
 use crate::common::noodles;
 
 /// Record type for storing AN, AC_hom, AC_het counts for autosomal chromosomes.
-#[derive(Default, Debug, PartialEq, Eq, Clone)]
+#[derive(Default, Debug, PartialEq, Eq, Clone, serde::Serialize, serde::Deserialize)]
 pub struct Counts {
     /// Total number of alleles.
     pub an: u32,
@@ -55,7 +55,7 @@ impl Counts {
 }
 
 /// Record type for the "autosomal" column family.
-#[derive(Debug, PartialEq, Eq, Clone)]
+#[derive(Debug, PartialEq, Eq, Clone, serde::Serialize, serde::Deserialize)]
 pub struct Record {
     /// Counts from gnomAD exomes.
     pub gnomad_exomes: Counts,

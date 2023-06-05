@@ -2,6 +2,7 @@
 
 pub mod auto;
 pub mod mt;
+pub mod reading;
 pub mod xy;
 
 use std::{collections::HashMap, sync::Arc};
@@ -17,7 +18,7 @@ use crate::{
     freqs,
 };
 
-use super::reading::ContigMap;
+use reading::ContigMap;
 
 /// Command line arguments for `db create freqs` sub command.
 #[derive(Parser, Debug, Clone)]
@@ -288,7 +289,7 @@ fn import_chrmt(
     path_gnomad_mtdna: Option<&String>,
     path_helixmtdb: Option<&String>,
 ) -> Result<(), anyhow::Error> {
-    let cf_mtdna = db.cf_handle("mitochondrial").unwrap();
+    let cf_mtdna: Arc<rocksdb::BoundColumnFamily> = db.cf_handle("mitochondrial").unwrap();
 
     let mut chrmt_written = 0usize;
     let mut mt_reader = mt::Reader::new(

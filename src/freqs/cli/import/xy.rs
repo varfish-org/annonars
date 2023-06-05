@@ -7,11 +7,11 @@ use crate::{common, freqs};
 /// Helper for reading through gnomAD genomes and exomes data.
 pub struct Reader {
     /// CSV reader for the gnomAD genomes.
-    genomes_reader: Option<freqs::cli::reading::MultiVcfReader>,
+    genomes_reader: Option<freqs::cli::import::reading::MultiVcfReader>,
     /// Next variant from gnomAD genomes.
     genomes_next: Option<noodles_vcf::Record>,
     /// CSV reader for the gnomAD exomes.
-    exomes_reader: Option<freqs::cli::reading::MultiVcfReader>,
+    exomes_reader: Option<freqs::cli::import::reading::MultiVcfReader>,
     /// Next variant from gnomAD exomes
     exomes_next: Option<noodles_vcf::Record>,
 }
@@ -29,14 +29,14 @@ impl Reader {
             .as_ref()
             .map(|path_genomes| {
                 tracing::info!("Opening gnomAD genome gonosomal file {}", &path_genomes);
-                freqs::cli::reading::MultiVcfReader::new(&[path_genomes], assembly)
+                freqs::cli::import::reading::MultiVcfReader::new(&[path_genomes], assembly)
             })
             .transpose()?;
         let mut exomes_reader = path_exomes
             .as_ref()
             .map(|path_exomes| {
                 tracing::info!("Opening gnomAD exomes gonosomal file {}", &path_exomes);
-                freqs::cli::reading::MultiVcfReader::new(&[path_exomes], assembly)
+                freqs::cli::import::reading::MultiVcfReader::new(&[path_exomes], assembly)
             })
             .transpose()?;
 

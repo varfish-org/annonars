@@ -1,30 +1,35 @@
 //! Query of sequence variant frequency information.
 
-use std::{io::Write, sync::Arc};
-
-use prost::Message;
+use std::sync::Arc;
 
 use crate::{
-    common::{self, cli::extract_chrom, keys, spdi},
-    cons::cli::args::vars::ArgsQuery,
+    common::{self, keys, spdi},
+    freqs,
 };
 
-/// Command line arguments for `tsv query` sub command.
+/// Command line arguments for `freq query` sub command.
 #[derive(clap::Parser, Debug, Clone)]
-#[command(about = "query frequency data stored in RocksDB", long_about = None)]
+#[command(about = "query frequency count stored in RocksDB", long_about = None)]
 pub struct Args {
     /// Path to RocksDB directory with data.
     #[arg(long)]
     pub path_rocksdb: String,
 
-    /// Variant or position to query for.
-    #[command(flatten)]
-    pub query: ArgsQuery,
+    /// Path to output file, use "-" for stdout.
+    #[arg(long, default_value = "-")]
+    pub path_output: String,
+    /// Output format.
+    #[arg(long, default_value = "jsonl")]
+    pub out_format: common::cli::OutputFormat,
+
+    /// Variant to query for.
+    #[arg(long)]
+    pub variant: spdi::Var,
 }
 
 /// Meta information as read from database.
-#[derive(Debug)]
-struct Meta {
+#[derive(Debug, serde::Serialize, serde::Deserialize)]
+pub struct Meta {
     /// Genome release of data in database.
     pub genome_release: String,
 }
@@ -64,27 +69,44 @@ fn open_rocksdb(
 }
 
 fn query_for_variant(
-    variant: &common::spdi::Var,
-    meta: &Meta,
+    variant: &spdi::Var,
     db: &rocksdb::DBWithThreadMode<rocksdb::MultiThreaded>,
-    cf_data: &Arc<rocksdb::BoundColumnFamily>,
+    out_writer: &mut dyn std::io::Write,
+    _out_format: common::cli::OutputFormat,
 ) -> Result<(), anyhow::Error> {
-    // Split off the genome release (checked) and convert to key as used in database.
-    let query = spdi::Var {
-        sequence: extract_chrom::from_var(variant, Some(&meta.genome_release))?,
-        ..variant.clone()
-    };
-    // Execute query.
-    tracing::debug!("query = {:?}", &query);
-    let var: keys::Var = query.into();
+    let seq = variant.sequence.to_lowercase();
+    let var: keys::Var = variant.clone().into();
     let key: Vec<u8> = var.into();
-    let raw_value = db
-        .get_cf(cf_data, key)?
-        .ok_or_else(|| anyhow::anyhow!("could not find variant in database"))?;
+    if seq.contains("m") {
+        let cf_mtdna: Arc<rocksdb::BoundColumnFamily> = db.cf_handle("mitochondrial").unwrap();
+        let raw_value = db.get_cf(&cf_mtdna, &key)?;
+        if let Some(raw_value) = raw_value {
+            let value = freqs::serialized::mt::Record::from_buf(&raw_value);
+            let json_value = serde_json::to_value(&value)?;
+            let json = serde_json::to_string(&json_value)?;
+            writeln!(out_writer, "{}", &json)?;
+        }
+    } else if seq.contains("x") || seq.contains("y") {
+        let cf_xy: Arc<rocksdb::BoundColumnFamily> = db.cf_handle("gonosomal").unwrap();
+        let raw_value = db.get_cf(&cf_xy, &key)?;
+        if let Some(raw_value) = raw_value {
+            let value = freqs::serialized::mt::Record::from_buf(&raw_value);
+            let json_value = serde_json::to_value(&value)?;
+            let json = serde_json::to_string(&json_value)?;
+            writeln!(out_writer, "{}", &json)?;
+        }
+    } else {
+        let cf_auto: Arc<rocksdb::BoundColumnFamily> = db.cf_handle("autosomal").unwrap();
+        let raw_value = db.get_cf(&cf_auto, &key)?;
+        if let Some(raw_value) = raw_value {
+            let value = freqs::serialized::mt::Record::from_buf(&raw_value);
+            let json_value = serde_json::to_value(&value)?;
+            let json = serde_json::to_string(&json_value)?;
+            writeln!(out_writer, "{}", &json)?;
+        }
+    }
 
-    // todo!()
-
-    Ok(())
+    todo!()
 }
 
 /// Implementation of `tsv query` sub command.
@@ -93,11 +115,8 @@ pub fn run(common: &common::cli::Args, args: &Args) -> Result<(), anyhow::Error>
     tracing::info!("common = {:#?}", &common);
     tracing::info!("args = {:#?}", &args);
 
-    let (db, meta) = open_rocksdb(args)?;
-    let cf_data = db.cf_handle(&args.cf_name).unwrap();
-
     // Obtain writer to output.
-    let mut out_writer = match args.out_file.as_ref() {
+    let mut out_writer = match args.path_output.as_ref() {
         "-" => Box::new(std::io::stdout()) as Box<dyn std::io::Write>,
         out_file => {
             let path = std::path::Path::new(out_file);
@@ -105,75 +124,11 @@ pub fn run(common: &common::cli::Args, args: &Args) -> Result<(), anyhow::Error>
         }
     };
 
+    let (db, _meta) = open_rocksdb(args)?;
+
     tracing::info!("Running query...");
     let before_query = std::time::Instant::now();
-    if let Some(variant) = args.query.variant.as_ref() {
-        print_record(
-            &mut out_writer,
-            args.out_format,
-            &query_for_variant(variant, &meta, &db, &cf_data)?,
-        )?;
-    } else {
-        let (start, stop) = if let Some(position) = args.query.position.as_ref() {
-            let position = spdi::Pos {
-                sequence: extract_chrom::from_pos(position, Some(&meta.genome_release))?,
-                ..position.clone()
-            };
-            (Some(position.clone()), Some(position))
-        } else if let Some(range) = args.query.range.as_ref() {
-            let range = spdi::Range {
-                sequence: extract_chrom::from_range(range, Some(&meta.genome_release))?,
-                ..range.clone()
-            };
-            let (start, stop) = range.into();
-            (Some(start), Some(stop))
-        } else if args.query.all {
-            (None, None)
-        } else {
-            unreachable!()
-        };
-
-        tracing::debug!("start = {:?}, stop = {:?}", &start, &stop);
-
-        // Obtain iterator and seek to start.
-        let mut iter = db.raw_iterator_cf(&cf_data);
-        if let Some(start) = start {
-            let pos: keys::Pos = start.into();
-            let key: Vec<u8> = pos.into();
-            tracing::debug!("seeking to key {:?}", &key);
-            iter.seek(&key);
-        } else {
-            iter.seek(b"")
-        }
-
-        // Cast stop to `keys::Pos`.
-        let stop = stop.map(|stop| -> keys::Pos { stop.into() });
-        if let Some(stop) = stop.as_ref() {
-            let stop: Vec<u8> = stop.clone().into();
-            tracing::debug!("stop = {:?}", &stop);
-        }
-
-        // Iterate over all variants until we are behind stop.
-        while iter.valid() {
-            if let Some(raw_value) = iter.value() {
-                tracing::trace!("iterator at {:?} => {:?}", &iter.key(), &raw_value);
-                if let Some(stop) = stop.as_ref() {
-                    let iter_key = iter.key().unwrap();
-                    let iter_pos: keys::Pos = iter_key.into();
-
-                    if &iter_pos > stop {
-                        break;
-                    }
-                }
-
-                // todo!();
-
-                iter.next();
-            } else {
-                break;
-            }
-        }
-    }
+    query_for_variant(&args.variant, &db, &mut out_writer, args.out_format)?;
     tracing::info!("... done querying in {:?}", before_query.elapsed());
 
     tracing::info!("All done. Have a nice day!");
@@ -188,123 +143,36 @@ mod test {
 
     use temp_testdir::TempDir;
 
-    fn args_exomes(query: ArgsQuery) -> (common::cli::Args, Args, TempDir) {
+    fn args_exomes(variant: spdi::Var) -> (common::cli::Args, Args, TempDir) {
         let temp = TempDir::default();
         let common = common::cli::Args {
             verbose: clap_verbosity_flag::Verbosity::new(1, 0),
         };
         let args = Args {
-            path_rocksdb: String::from(
-                "tests/gnomad-nuclear/example-exomes-grch37/gnomad-exomes.vcf.bgz.db",
-            ),
-            cf_name: String::from("gnomad_nuclear_data"),
-            out_file: temp.join("out").to_string_lossy().to_string(),
+            path_rocksdb: String::from("tests/freqs/example/freqs.db"),
             out_format: common::cli::OutputFormat::Jsonl,
-            query,
+            path_output: todo!(),
+            variant,
         };
 
         (common, args, temp)
     }
 
     #[test]
-    fn smoke_query_exomes_all() -> Result<(), anyhow::Error> {
-        let (common, args, _temp) = args_exomes(ArgsQuery {
-            all: true,
-            ..Default::default()
-        });
+    fn smoke_query_exomes_var_single_match() -> Result<(), anyhow::Error> {
+        let (common, args, _temp) = args_exomes(spdi::Var::from_str("GRCh37:1:55516885:G:A")?);
         run(&common, &args)?;
-        let out_data = std::fs::read_to_string(&args.out_file)?;
+        let out_data = std::fs::read_to_string(&args.path_output)?;
         insta::assert_snapshot!(&out_data);
 
         Ok(())
     }
 
     #[test]
-    fn smoke_query_exomes_var_single() -> Result<(), anyhow::Error> {
-        let (common, args, _temp) = args_exomes(ArgsQuery {
-            variant: Some(spdi::Var::from_str("GRCh37:1:55516888:G:GA")?),
-            ..Default::default()
-        });
+    fn smoke_query_exomes_var_single_nomatch() -> Result<(), anyhow::Error> {
+        let (common, args, _temp) = args_exomes(spdi::Var::from_str("GRCh37:1:55516885:G:TT")?);
         run(&common, &args)?;
-        let out_data = std::fs::read_to_string(&args.out_file)?;
-        insta::assert_snapshot!(&out_data);
-
-        Ok(())
-    }
-
-    #[test]
-    fn smoke_query_exomes_pos_single() -> Result<(), anyhow::Error> {
-        let (common, args, _temp) = args_exomes(ArgsQuery {
-            position: Some(spdi::Pos::from_str("GRCh37:1:55516888")?),
-            ..Default::default()
-        });
-        run(&common, &args)?;
-        let out_data = std::fs::read_to_string(&args.out_file)?;
-        insta::assert_snapshot!(&out_data);
-
-        Ok(())
-    }
-
-    #[test]
-    fn smoke_query_exomes_range_find_all_chr1() -> Result<(), anyhow::Error> {
-        let (common, args, _temp) = args_exomes(ArgsQuery {
-            range: Some(spdi::Range::from_str("GRCh37:1:1:249250621")?),
-            ..Default::default()
-        });
-        run(&common, &args)?;
-        let out_data = std::fs::read_to_string(&args.out_file)?;
-        insta::assert_snapshot!(&out_data);
-
-        Ok(())
-    }
-
-    #[test]
-    fn smoke_query_exomes_range_find_first() -> Result<(), anyhow::Error> {
-        let (common, args, _temp) = args_exomes(ArgsQuery {
-            range: Some(spdi::Range::from_str("GRCh37:1:55505599:55505599")?),
-            ..Default::default()
-        });
-        run(&common, &args)?;
-        let out_data = std::fs::read_to_string(&args.out_file)?;
-        insta::assert_snapshot!(&out_data);
-
-        Ok(())
-    }
-
-    #[test]
-    fn smoke_query_exomes_range_find_second() -> Result<(), anyhow::Error> {
-        let (common, args, _temp) = args_exomes(ArgsQuery {
-            range: Some(spdi::Range::from_str("GRCh37:1:55505615:55505615")?),
-            ..Default::default()
-        });
-        run(&common, &args)?;
-        let out_data = std::fs::read_to_string(&args.out_file)?;
-        insta::assert_snapshot!(&out_data);
-
-        Ok(())
-    }
-
-    #[test]
-    fn smoke_query_exomes_range_find_none_smaller() -> Result<(), anyhow::Error> {
-        let (common, args, _temp) = args_exomes(ArgsQuery {
-            range: Some(spdi::Range::from_str("GRCh37:1:1:55505598")?),
-            ..Default::default()
-        });
-        run(&common, &args)?;
-        let out_data = std::fs::read_to_string(&args.out_file)?;
-        insta::assert_snapshot!(&out_data);
-
-        Ok(())
-    }
-
-    #[test]
-    fn smoke_query_exomes_range_find_none_larger() -> Result<(), anyhow::Error> {
-        let (common, args, _temp) = args_exomes(ArgsQuery {
-            range: Some(spdi::Range::from_str("GRCh37:1:55516889:249250621")?),
-            ..Default::default()
-        });
-        run(&common, &args)?;
-        let out_data = std::fs::read_to_string(&args.out_file)?;
+        let out_data = std::fs::read_to_string(&args.path_output)?;
         insta::assert_snapshot!(&out_data);
 
         Ok(())
