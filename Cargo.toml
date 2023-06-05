@@ -38,7 +38,7 @@ bgzip = { version = "0.3" }
 noodles-bed = "0.9.0"
 noodles-bgzf = { version = "0.21" }
 noodles-core = "0.11"
-noodles-csi = "0.18"
+noodles-csi = "0.19"
 noodles-tabix = { version = "0.21" }
 noodles-vcf = "0.30"
 noodles-util = { version = "0.11", features = ["variant"] }
