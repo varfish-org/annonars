@@ -41,7 +41,7 @@ noodles-core = "0.11"
 noodles-csi = "0.19"
 noodles-tabix = { version = "0.21" }
 noodles-vcf = "0.31"
-noodles-util = { version = "0.11", features = ["variant"] }
+noodles-util = { version = "0.12", features = ["variant"] }
 hgvs = { version = "0.8" }
 prost = "0.11"
 csv = "1.2"
