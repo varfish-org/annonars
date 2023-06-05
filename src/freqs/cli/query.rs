@@ -77,21 +77,21 @@ fn query_for_variant(
     let seq = variant.sequence.to_lowercase();
     let var: keys::Var = variant.clone().into();
     let key: Vec<u8> = var.into();
-    if seq.contains("m") {
+    if seq.contains('m') {
         let cf_mtdna: Arc<rocksdb::BoundColumnFamily> = db.cf_handle("mitochondrial").unwrap();
         let raw_value = db.get_cf(&cf_mtdna, &key)?;
         if let Some(raw_value) = raw_value {
             let value = freqs::serialized::mt::Record::from_buf(&raw_value);
-            let json_value = serde_json::to_value(&value)?;
+            let json_value = serde_json::to_value(value)?;
             let json = serde_json::to_string(&json_value)?;
             writeln!(out_writer, "{}", &json)?;
         }
-    } else if seq.contains("x") || seq.contains("y") {
+    } else if seq.contains('x') || seq.contains('y') {
         let cf_xy: Arc<rocksdb::BoundColumnFamily> = db.cf_handle("gonosomal").unwrap();
         let raw_value = db.get_cf(&cf_xy, &key)?;
         if let Some(raw_value) = raw_value {
             let value = freqs::serialized::mt::Record::from_buf(&raw_value);
-            let json_value = serde_json::to_value(&value)?;
+            let json_value = serde_json::to_value(value)?;
             let json = serde_json::to_string(&json_value)?;
             writeln!(out_writer, "{}", &json)?;
         }
@@ -100,7 +100,7 @@ fn query_for_variant(
         let raw_value = db.get_cf(&cf_auto, &key)?;
         if let Some(raw_value) = raw_value {
             let value = freqs::serialized::mt::Record::from_buf(&raw_value);
-            let json_value = serde_json::to_value(&value)?;
+            let json_value = serde_json::to_value(value)?;
             let json = serde_json::to_string(&json_value)?;
             writeln!(out_writer, "{}", &json)?;
         }
