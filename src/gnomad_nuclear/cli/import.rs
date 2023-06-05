@@ -71,7 +71,7 @@ pub struct Args {
 }
 
 /// Perform TBI-parallel import of one file.
-fn tsv_import(
+fn vcf_import(
     db: Arc<rocksdb::DBWithThreadMode<rocksdb::MultiThreaded>>,
     args: &Args,
     path_in_vcf: &str,
@@ -331,7 +331,7 @@ pub fn run(common: &common::cli::Args, args: &Args) -> Result<(), anyhow::Error>
     let before_loading = std::time::Instant::now();
     for path_in_tsv in &args.path_in_vcf {
         tracing::info!("  importing file {} ...", &path_in_tsv);
-        tsv_import(db.clone(), &args, path_in_tsv, gnomad_version)?;
+        vcf_import(db.clone(), &args, path_in_tsv, gnomad_version)?;
     }
     tracing::info!(
         "... done loading gnomad_nuclear VCF file into RocksDB in {:?}",

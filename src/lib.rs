@@ -8,6 +8,7 @@ pub mod cons;
 pub mod db_utils;
 pub mod dbsnp;
 mod error;
+pub mod freqs;
 pub mod gnomad_mtdna;
 pub mod gnomad_nuclear;
 pub mod gnomad_pbs;
