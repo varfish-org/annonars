@@ -30,6 +30,8 @@ fn write_record(
     auto_record.to_buf(&mut buf);
     let key: Vec<u8> = record_key.clone().into();
 
+    tracing::info!("  key = {:?}, record = {:?}", &record_key, &auto_record);
+
     db.put_cf(cf, key, &buf)?;
 
     Ok(())
@@ -232,6 +234,17 @@ pub fn import_region(
         if record_key.as_ref() != Some(&curr_key) {
             record_key = Some(curr_key);
         }
+    }
+
+    // Write final records to database.
+    if let Some(record_key) = record_key.as_ref() {
+        write_record(
+            db,
+            &cf_auto,
+            record_key,
+            &mut record_genome,
+            &mut record_exome,
+        )?;
     }
 
     Ok(())

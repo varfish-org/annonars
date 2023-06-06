@@ -38,23 +38,25 @@ fn write_record(
 /// Import of mitochondrial variant frequencies.
 pub fn import_region(
     db: &rocksdb::DBWithThreadMode<rocksdb::MultiThreaded>,
-    path_genome: Option<&String>,
-    path_exome: Option<&String>,
+    path_gnomad: Option<&String>,
+    path_helix: Option<&String>,
     region: &noodles_core::region::Region,
 ) -> Result<(), anyhow::Error> {
-    tracing::info!(" region = {:?}", region);
     // Get handle to "mitochondrial" column family.
     let cf_mt = db.cf_handle("mitochondrial").unwrap();
     // Build `Vec` of readers and by-index map that tells whether it is genomes.
-    let mut is_genome = Vec::new();
+    let mut is_gnomad = Vec::new();
     let mut readers = Vec::new();
-    if let Some(path_genome) = path_genome {
-        is_genome.push(true);
-        readers.push(noodles_vcf::indexed_reader::Builder::default().build_from_path(path_genome)?);
+    let mut paths = Vec::new();
+    if let Some(path_gnomad) = path_gnomad {
+        is_gnomad.push(true);
+        paths.push(path_gnomad);
+        readers.push(noodles_vcf::indexed_reader::Builder::default().build_from_path(path_gnomad)?);
     }
-    if let Some(path_exome) = path_exome {
-        is_genome.push(false);
-        readers.push(noodles_vcf::indexed_reader::Builder::default().build_from_path(path_exome)?);
+    if let Some(path_helix) = path_helix {
+        is_gnomad.push(false);
+        paths.push(path_helix);
+        readers.push(noodles_vcf::indexed_reader::Builder::default().build_from_path(path_helix)?);
     }
     // Read headers.
     let headers: Vec<_> = readers
@@ -68,7 +70,9 @@ pub fn import_region(
         .zip(&headers)
         .filter_map(|(reader, header)| {
             match reader.query(header, region) {
-                Ok(result) => Ok(Some(result)),
+                Ok(result) => {
+                    Ok(Some(result))
+                },
                 Err(e) => {
                     let needle = "region reference sequence does not exist in reference sequences";
                     if e.to_string().contains(needle) {
@@ -77,52 +81,51 @@ pub fn import_region(
                         Err(e)
                     }
                 }
-            }.transpose()
+            }
+            .transpose()
         })
         .collect::<Result<_, _>>()?;
     // Construct the `MultiQuery`.
     let multi_query = super::reading::MultiQuery::new(queries)?;
 
-    tracing::info!(" --- ");
-
     // Now iterate over the `MultiQuery` and write to the database.
     //
     // The key of the records stored in `record_{genome,exome}`.
     let mut record_key = None;
-    // Record from gnomAD genomes (same position as record_exome, if either).
-    let mut record_genome = None;
-    // Record from gnomAD exomes (same position as record_genome, if either).
-    let mut record_exome = None;
+    // Record from gnomAD genomes (same position as record_helix, if either).
+    let mut record_gnomad = None;
+    // Record from gnomAD exomes (same position as record_gnomad, if either).
+    let mut record_helix = None;
     for result in multi_query {
         let (idx, record) = result?;
         // Shortcut to whether this from gnomAD genomes.
-        let is_genome = is_genome[idx];
+        let is_gnomad = is_gnomad[idx];
         // Obtain the key of the next record.
         let curr_key = common::keys::Var::from_vcf_allele(&record, 0);
 
         // Act on the current record.
         match (
-            record_genome.as_mut(),
-            record_exome.as_mut(),
-            is_genome,
+            record_gnomad.as_mut(),
+            record_helix.as_mut(),
+            is_gnomad,
             record_key.as_ref() == Some(&curr_key),
         ) {
             (None, None, _, true) => panic!("case cannot happen"),
             (None, None, true, false) => {
-                // New key (=variant) at genome, no previous record.  Just update `record_genome`.
-                record_genome = Some(record);
+                // New key (=variant) at genome, no previous record.  Just update `record_gnomad`.
+                record_gnomad = Some(record);
             }
             (None, None, false, false) => {
-                // New key (=variant) at exome, no previous record.  Just update `record_exome`.
-                record_exome = Some(record);
+                // New key (=variant) at exome, no previous record.  Just update `record_helix`.
+                record_helix = Some(record);
             }
             (None, Some(_), true, true) => {
-                // Existing key (=variant) at genome, genome is unset.  Just update `record_genome`.
-                record_genome = Some(record);
+                // Existing key (=variant) at genome, genome is unset.  Just update `record_gnomad`.
+                record_gnomad = Some(record);
             }
             (None, Some(_), true, false) => {
                 // New key (=variant) at genome, have previous exome record.  Write out records,
-                // clear `record_exome`, and set `record_genome`.
+                // clear `record_helix`, and set `record_gnomad`.
 
                 // Write out current records to database.
                 if let Some(record_key) = record_key.as_ref() {
@@ -130,14 +133,14 @@ pub fn import_region(
                         db,
                         &cf_mt,
                         record_key,
-                        &mut record_genome,
-                        &mut record_exome,
+                        &mut record_gnomad,
+                        &mut record_helix,
                     )?;
                 }
 
                 // Update current records.
-                record_genome = Some(record);
-                record_exome = None;
+                record_gnomad = Some(record);
+                record_helix = None;
             }
             (None, Some(_), false, true) => {
                 // Existing key (=variant) at exome, exome is already set.  We found a duplicate
@@ -146,10 +149,10 @@ pub fn import_region(
             }
             (None, Some(_), false, false) => {
                 // New key (=variant) at exome, have previous exome record.  Write out records,
-                // and set `record_exome`.
+                // and set `record_helix`.
 
                 // Update current records.
-                record_exome = Some(record);
+                record_helix = Some(record);
             }
             (Some(_), None, true, true) => {
                 // Existing key (=variant) at genome, genome is already set.  We found a duplicate.
@@ -157,7 +160,7 @@ pub fn import_region(
             }
             (Some(_), None, true, false) => {
                 // New key (=variant) at genome, have previous genome record.  Write out records,
-                // and set `record_genome`.
+                // and set `record_gnomad`.
 
                 // Write out current records to database.
                 if let Some(record_key) = record_key.as_ref() {
@@ -165,23 +168,23 @@ pub fn import_region(
                         db,
                         &cf_mt,
                         record_key,
-                        &mut record_genome,
-                        &mut record_exome,
+                        &mut record_gnomad,
+                        &mut record_helix,
                     )?;
                 }
 
                 // Update current records.
-                record_genome = Some(record);
+                record_gnomad = Some(record);
             }
             (Some(_), None, false, true) => {
-                // Existing key (=variant) at exome, exome is unset.  Just update `record_exome`.
+                // Existing key (=variant) at exome, exome is unset.  Just update `record_helix`.
 
                 // Update current records.
-                record_exome = Some(record);
+                record_helix = Some(record);
             }
             (Some(_), None, false, false) => {
                 // New key (=variant) at exome, have previous genome record.  Write out records,
-                // clear `record_genome`, and set `record_exome`.
+                // clear `record_gnomad`, and set `record_helix`.
 
                 // Write out current records to database.
                 if let Some(record_key) = record_key.as_ref() {
@@ -189,14 +192,14 @@ pub fn import_region(
                         db,
                         &cf_mt,
                         record_key,
-                        &mut record_genome,
-                        &mut record_exome,
+                        &mut record_gnomad,
+                        &mut record_helix,
                     )?;
                 }
 
                 // Update current records.
-                record_genome = None;
-                record_exome = Some(record);
+                record_gnomad = None;
+                record_helix = Some(record);
             }
             (Some(_), Some(_), true, true) => {
                 // Existing key (=variant) at genome, genome is already set.  We found a duplicate.
@@ -204,7 +207,7 @@ pub fn import_region(
             }
             (Some(_), Some(_), true, false) => {
                 // New key (=variant) at genome, have both exome and genome record.  Write out
-                // both records, set `record_genome`, clear `record_exome`.
+                // both records, set `record_gnomad`, clear `record_helix`.
 
                 // Write out current records to database.
                 if let Some(record_key) = record_key.as_ref() {
@@ -212,14 +215,14 @@ pub fn import_region(
                         db,
                         &cf_mt,
                         record_key,
-                        &mut record_genome,
-                        &mut record_exome,
+                        &mut record_gnomad,
+                        &mut record_helix,
                     )?;
                 }
 
                 // Update current records.
-                record_genome = Some(record);
-                record_exome = None;
+                record_gnomad = Some(record);
+                record_helix = None;
             }
             (Some(_), Some(_), false, true) => {
                 // Existing key (=variant) at exome, exome is already set.  We found a duplicate.
@@ -232,14 +235,14 @@ pub fn import_region(
                         db,
                         &cf_mt,
                         record_key,
-                        &mut record_genome,
-                        &mut record_exome,
+                        &mut record_gnomad,
+                        &mut record_helix,
                     )?;
                 }
 
                 // Update current records.
-                record_genome = None;
-                record_exome = Some(record);
+                record_gnomad = None;
+                record_helix = Some(record);
             }
         }
 
@@ -247,6 +250,17 @@ pub fn import_region(
         if record_key.as_ref() != Some(&curr_key) {
             record_key = Some(curr_key);
         }
+    }
+
+    // Write final records to database.
+    if let Some(record_key) = record_key.as_ref() {
+        write_record(
+            db,
+            &cf_mt,
+            record_key,
+            &mut record_gnomad,
+            &mut record_helix,
+        )?;
     }
 
     Ok(())

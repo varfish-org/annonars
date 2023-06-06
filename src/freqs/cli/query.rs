@@ -90,7 +90,7 @@ fn query_for_variant(
         let cf_xy: Arc<rocksdb::BoundColumnFamily> = db.cf_handle("gonosomal").unwrap();
         let raw_value = db.get_cf(&cf_xy, &key)?;
         if let Some(raw_value) = raw_value {
-            let value = freqs::serialized::mt::Record::from_buf(&raw_value);
+            let value = freqs::serialized::xy::Record::from_buf(&raw_value);
             let json_value = serde_json::to_value(value)?;
             let json = serde_json::to_string(&json_value)?;
             writeln!(out_writer, "{}", &json)?;
@@ -99,7 +99,7 @@ fn query_for_variant(
         let cf_auto: Arc<rocksdb::BoundColumnFamily> = db.cf_handle("autosomal").unwrap();
         let raw_value = db.get_cf(&cf_auto, &key)?;
         if let Some(raw_value) = raw_value {
-            let value = freqs::serialized::mt::Record::from_buf(&raw_value);
+            let value = freqs::serialized::auto::Record::from_buf(&raw_value);
             let json_value = serde_json::to_value(value)?;
             let json = serde_json::to_string(&json_value)?;
             writeln!(out_writer, "{}", &json)?;

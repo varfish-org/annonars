@@ -75,7 +75,6 @@ fn assign_to_chrom(
     let mut res = HashMap::new();
 
     for path in paths {
-        tracing::debug!("    path = {}", path);
         let mut reader = noodles_vcf::indexed_reader::Builder::default().build_from_path(path)?;
         let header = Box::new(reader.read_header()?);
         freqs::cli::import::reading::guess_assembly(header.as_ref(), true, Some(assembly))?;
@@ -86,10 +85,8 @@ fn assign_to_chrom(
             .ok_or(anyhow::anyhow!("No records in VCF file {}", path))?;
         let k = contig_map.chrom_to_idx(record.chromosome());
         let v = path.clone();
-        tracing::debug!("    k = {}, v = {}", &k, &v);
         res.insert(k, v);
     }
-    tracing::debug!("    result = {:?}", &res);
 
     Ok(res)
 }
@@ -145,7 +142,11 @@ pub fn build_windows(
 }
 
 /// Implementation of `gnomad_nuclear import` sub command.
-pub fn run(_common: &common::cli::Args, args: &Args) -> Result<(), anyhow::Error> {
+pub fn run(common: &common::cli::Args, args: &Args) -> Result<(), anyhow::Error> {
+    tracing::info!("Starting mehari frequency import ...");
+    tracing::info!("  common = {:#?}", &common);
+    tracing::info!("  args =   {:#?}", &args);
+
     // Guess genome release from paths.
     let genome_release = match args.genome_release {
         common::cli::GenomeRelease::Grch37 => hgvs::static_data::Assembly::Grch37p10, // has chrMT!
@@ -313,8 +314,9 @@ pub fn run(_common: &common::cli::Args, args: &Args) -> Result<(), anyhow::Error
     };
     let windows = build_windows(genome_release, args.tbi_window_size, &paths)?;
     windows
-        .par_iter()
-        .progress_with(common::cli::progress_bar(windows.len()))
+        // .par_iter()
+        // .progress_with(common::cli::progress_bar(windows.len()))
+        .iter()
         .map(|(chrom, begin, end)| {
             let start = noodles_core::position::Position::try_from(begin + 1)?;
             let stop = noodles_core::position::Position::try_from(*end)?;
