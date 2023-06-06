@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.7.0](https://www.github.com/bihealth/annona-rs/compare/v0.6.0...v0.7.0) (2023-06-06)
+
+
+### Features
+
+* port over mehari freq counts code ([#67](https://www.github.com/bihealth/annona-rs/issues/67)) ([a99a9bb](https://www.github.com/bihealth/annona-rs/commit/a99a9bbaa31e764e456156d03789c8efdec552ab))
+
 ## [0.6.0](https://www.github.com/bihealth/annona-rs/compare/v0.5.1...v0.6.0) (2023-06-01)
 
 
