@@ -1,4 +1,6 @@
-use annonars::{common, cons, db_utils, dbsnp, gnomad_mtdna, gnomad_nuclear, helixmtdb, tsv};
+use annonars::{
+    common, cons, db_utils, dbsnp, freqs, gnomad_mtdna, gnomad_nuclear, helixmtdb, tsv,
+};
 use anyhow::Error;
 use clap::{command, Args, Parser, Subcommand};
 
@@ -27,6 +29,8 @@ enum Commands {
     Tsv(Tsv),
     /// "cons" sub commands
     Cons(Cons),
+    /// "freqs" sub commands
+    Freqs(Freqs),
     /// "dbsnp" sub commands
     Dbsnp(Dbsnp),
     /// "helixmtdb" sub commands
@@ -88,6 +92,23 @@ enum DbsnpCommands {
     Import(dbsnp::cli::import::Args),
     /// "query" sub command
     Query(dbsnp::cli::query::Args),
+}
+
+/// Parsing of "freqs" subcommands.
+#[derive(Debug, Args, Clone)]
+struct Freqs {
+    /// The sub command to run
+    #[command(subcommand)]
+    command: FreqsCommands,
+}
+
+/// Enum supporting the parsing of "freqs *" subcommands.
+#[derive(Debug, Subcommand, Clone)]
+enum FreqsCommands {
+    /// "import" sub command
+    Import(freqs::cli::import::Args),
+    /// "query" sub command
+    Query(freqs::cli::query::Args),
 }
 
 /// Parsing of "helixmtdb" subcommands.
@@ -190,6 +211,10 @@ pub fn main() -> Result<(), anyhow::Error> {
             Commands::Dbsnp(args) => match &args.command {
                 DbsnpCommands::Import(args) => dbsnp::cli::import::run(&cli.common, args)?,
                 DbsnpCommands::Query(args) => dbsnp::cli::query::run(&cli.common, args)?,
+            },
+            Commands::Freqs(args) => match &args.command {
+                FreqsCommands::Import(args) => freqs::cli::import::run(&cli.common, args)?,
+                FreqsCommands::Query(args) => freqs::cli::query::run(&cli.common, args)?,
             },
             Commands::Helixmtdb(args) => match &args.command {
                 HelixmtdbCommands::Import(args) => helixmtdb::cli::import::run(&cli.common, args)?,

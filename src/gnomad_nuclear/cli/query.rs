@@ -33,14 +33,14 @@ pub struct Args {
 }
 
 /// Meta information as read from database.
-#[derive(Debug)]
-struct Meta {
+#[derive(Debug, serde::Deserialize, serde::Serialize)]
+pub struct Meta {
     /// Genome release of data in database.
     pub genome_release: String,
 }
 
 /// Open RocksDB database.
-fn open_rocksdb(
+pub fn open_rocksdb(
     args: &Args,
 ) -> Result<(Arc<rocksdb::DBWithThreadMode<rocksdb::MultiThreaded>>, Meta), anyhow::Error> {
     tracing::info!("Opening RocksDB database ...");
