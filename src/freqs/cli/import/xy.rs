@@ -12,7 +12,7 @@ fn write_record(
 ) -> Result<(), anyhow::Error> {
     if record_genome.is_none() && record_exome.is_none() {
         // Early exit, nothing to write out.
-        return Ok(())
+        return Ok(());
     }
 
     let count_genomes = if let Some(record_genome) = record_genome {

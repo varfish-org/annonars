@@ -12,7 +12,7 @@ fn write_record(
 ) -> Result<(), anyhow::Error> {
     if record_gnomad.is_none() && record_helix.is_none() {
         // Early exit, nothing to write out.
-        return Ok(())
+        return Ok(());
     }
 
     let count_gnomad = if let Some(record_gnomad) = record_gnomad {
@@ -78,9 +78,7 @@ pub fn import_region(
         .zip(&headers)
         .filter_map(|(reader, header)| {
             match reader.query(header, region) {
-                Ok(result) => {
-                    Ok(Some(result))
-                },
+                Ok(result) => Ok(Some(result)),
                 Err(e) => {
                     let needle = "region reference sequence does not exist in reference sequences";
                     if e.to_string().contains(needle) {
