@@ -1,9 +1,8 @@
 //! Reading of variants.
 
-use std::{collections::HashMap, io::BufRead};
+use std::collections::HashMap;
 
 use hgvs::static_data::{Assembly, ASSEMBLY_INFOS};
-use noodles_util::variant::reader::{Builder as VariantReaderBuilder, Reader as VariantReader};
 
 use crate::common::cli::CANONICAL;
 
@@ -50,7 +49,7 @@ pub struct MultiVcfReader {
     contig_map: ContigMap,
     /// One reader per file to read from.
     #[allow(clippy::vec_box)]
-    readers: Vec<Box<VariantReader<Box<dyn BufRead>>>>,
+    readers: Vec<Box<noodles_vcf::indexed_reader::IndexedReader<std::fs::File>>>,
     /// The headers as read from `readers`.
     #[allow(clippy::vec_box)]
     headers: Vec<Box<noodles_vcf::Header>>,
@@ -70,7 +69,8 @@ impl MultiVcfReader {
         let mut nexts = Vec::new();
         for path in paths {
             tracing::trace!("Opening file {}", path);
-            let mut reader = Box::new(VariantReaderBuilder::default().build_from_path(path)?);
+            let mut reader =
+                Box::new(noodles_vcf::indexed_reader::Builder::default().build_from_path(path)?);
             let header = Box::new(reader.as_mut().read_header()?);
             assembly = Some(guess_assembly(header.as_ref(), true, initial_assembly)?);
             nexts.push(
@@ -240,12 +240,11 @@ mod test {
     use hgvs::static_data::Assembly;
 
     use super::*;
-    use noodles_util::variant::reader::Builder as VariantReaderBuilder;
 
     #[test]
     fn guess_assembly_helix_chrmt_ambiguous_ok_initial_none() -> Result<(), anyhow::Error> {
         let path = "tests/freqs/reading/helix.chrM.vcf";
-        let mut reader = VariantReaderBuilder::default().build_from_path(path)?;
+        let mut reader = noodles_vcf::reader::Builder::default().build_from_path(path)?;
         let header = reader.read_header()?;
 
         let actual = guess_assembly(&header, true, None)?;
@@ -257,7 +256,7 @@ mod test {
     #[test]
     fn guess_assembly_helix_chrmt_ambiguous_ok_initial_override() -> Result<(), anyhow::Error> {
         let path = "tests/freqs/reading/helix.chrM.vcf";
-        let mut reader = VariantReaderBuilder::default().build_from_path(path)?;
+        let mut reader = noodles_vcf::reader::Builder::default().build_from_path(path)?;
         let header = reader.read_header()?;
 
         let actual = guess_assembly(&header, true, Some(Assembly::Grch37p10))?;
@@ -270,7 +269,7 @@ mod test {
     fn guess_assembly_helix_chrmt_ambiguous_ok_initial_override_fails() -> Result<(), anyhow::Error>
     {
         let path = "tests/freqs/reading/helix.chrM.vcf";
-        let mut reader = VariantReaderBuilder::default().build_from_path(path)?;
+        let mut reader = noodles_vcf::reader::Builder::default().build_from_path(path)?;
         let header = reader.read_header()?;
 
         assert!(guess_assembly(&header, false, Some(Assembly::Grch37)).is_err());
@@ -281,7 +280,7 @@ mod test {
     #[test]
     fn guess_assembly_helix_chrmt_ambiguous_fail() -> Result<(), anyhow::Error> {
         let path = "tests/freqs/reading/helix.chrM.vcf";
-        let mut reader = VariantReaderBuilder::default().build_from_path(path)?;
+        let mut reader = noodles_vcf::reader::Builder::default().build_from_path(path)?;
         let header = reader.read_header()?;
 
         assert!(guess_assembly(&header, false, None).is_err());

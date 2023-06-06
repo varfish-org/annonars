@@ -75,7 +75,7 @@ fn assign_to_chrom(
 
     for path in paths {
         tracing::debug!("    path = {}", path);
-        let mut reader = noodles_util::variant::reader::Builder::default().build_from_path(path)?;
+        let mut reader = noodles_vcf::indexed_reader::Builder::default().build_from_path(path)?;
         let header = Box::new(reader.read_header()?);
         freqs::cli::import::reading::guess_assembly(header.as_ref(), true, Some(assembly))?;
         let record = reader
