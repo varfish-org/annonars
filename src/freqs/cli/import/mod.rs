@@ -8,7 +8,8 @@ pub mod xy;
 use std::{collections::HashMap, sync::Arc};
 
 use clap::Parser;
-use hgvs::static_data::Assembly;
+use indicatif::ParallelProgressIterator;
+use rayon::prelude::*;
 
 use crate::{common, freqs};
 
@@ -68,7 +69,7 @@ pub struct Args {
 /// Return mapping from chromosome to path.
 fn assign_to_chrom(
     paths: &Vec<String>,
-    assembly: Assembly,
+    assembly: hgvs::static_data::Assembly,
 ) -> Result<HashMap<usize, String>, anyhow::Error> {
     let contig_map = ContigMap::new(assembly);
     let mut res = HashMap::new();
@@ -93,144 +94,62 @@ fn assign_to_chrom(
     Ok(res)
 }
 
-/// Import of autosomal variant frequencies.
-fn import_autosomal(
-    db: &rocksdb::DBWithThreadMode<rocksdb::MultiThreaded>,
-    genome_release: Assembly,
-    path_genome: Option<&String>,
-    path_exome: Option<&String>,
-) -> Result<(), anyhow::Error> {
-    let cf_auto = db.cf_handle("autosomal").unwrap();
+/// Get windows for the up to two given paths.
+pub fn build_windows(
+    genome_release: hgvs::static_data::Assembly,
+    tbi_window_size: usize,
+    paths: &Vec<String>,
+) -> Result<Vec<(String, usize, usize)>, anyhow::Error> {
+    let mut result = Vec::new();
 
-    let mut auto_written = 0usize;
-    let mut auto_reader = auto::Reader::new(
-        path_genome.map(|s| s.as_str()),
-        path_exome.map(|s| s.as_str()),
-        Some(genome_release),
-    )?;
-
-    let mut prev = std::time::Instant::now();
-    let mut has_next = true;
-    while has_next {
-        has_next = auto_reader.run(|variant, gnomad_genomes, gnomad_exomes| {
-            if prev.elapsed().as_secs() > 60 {
-                tracing::info!("at {:?}", &variant);
-                prev = std::time::Instant::now();
-            }
-
-            let key: Vec<u8> = variant.into();
-            let mut value = [0u8; 32];
-            let rec = freqs::serialized::auto::Record {
-                gnomad_genomes,
-                gnomad_exomes,
-            };
-            tracing::trace!("record = {:?}", &rec);
-            rec.to_buf(&mut value);
-            db.put_cf(&cf_auto, key, value)?;
-
-            auto_written += 1;
-
-            Ok(())
+    for path in paths.iter() {
+        // Load tabix header and create BGZF reader with tabix index.
+        let tabix_src = format!("{}.tbi", path);
+        let index = noodles_tabix::read(tabix_src)?;
+        let header = index.header().ok_or_else(|| {
+            std::io::Error::new(std::io::ErrorKind::InvalidInput, "missing tabix header")
         })?;
+
+        // Build list of canonical chromosome names from header.
+        let canonical_header_chroms = header
+            .reference_sequence_names()
+            .iter()
+            .filter_map(|chrom| {
+                let canon_chrom = chrom.strip_prefix("chr").unwrap_or(chrom);
+                if common::cli::is_canonical(canon_chrom) {
+                    Some((common::cli::canonicalize(canon_chrom), chrom.clone()))
+                } else {
+                    None
+                }
+            })
+            .collect::<std::collections::HashMap<String, String>>();
+
+        // Generate list of regions on canonical chromosomes, limited to those present in header.
+        result.append(
+            &mut common::cli::build_genome_windows(genome_release, Some(tbi_window_size))?
+                .into_iter()
+                .filter_map(|(window_chrom, begin, end)| {
+                    let canon_chrom = common::cli::canonicalize(&window_chrom);
+                    canonical_header_chroms
+                        .get(&canon_chrom)
+                        .map(|header_chrom| (header_chrom.clone(), begin, end))
+                })
+                .collect::<Vec<_>>(),
+        );
     }
 
-    Ok(())
-}
+    result.sort();
+    result.dedup();
 
-/// Import of gonosomal variant frequencies.
-fn import_gonosomal(
-    db: &rocksdb::DBWithThreadMode<rocksdb::MultiThreaded>,
-    genome_release: Assembly,
-    path_genome: Option<&String>,
-    path_exome: Option<&String>,
-) -> Result<(), anyhow::Error> {
-    let cf_xy = db.cf_handle("gonosomal").unwrap();
-
-    let mut xy_written = 0usize;
-    let mut xy_reader = xy::Reader::new(
-        path_genome.map(|s| s.as_str()),
-        path_exome.map(|s| s.as_str()),
-        Some(genome_release),
-    )?;
-
-    let mut prev = std::time::Instant::now();
-    let mut has_next = true;
-    while has_next {
-        has_next = xy_reader.run(|variant, gnomad_genomes, gnomad_exomes| {
-            if prev.elapsed().as_secs() > 60 {
-                tracing::info!("at {:?}", &variant);
-                prev = std::time::Instant::now();
-            }
-
-            let key: Vec<u8> = variant.into();
-            let mut value = [0u8; 32];
-            let rec = freqs::serialized::xy::Record {
-                gnomad_genomes,
-                gnomad_exomes,
-            };
-            tracing::trace!("record = {:?}", &rec);
-            rec.to_buf(&mut value);
-            db.put_cf(&cf_xy, key, value)?;
-
-            xy_written += 1;
-
-            Ok(())
-        })?;
-    }
-
-    Ok(())
-}
-
-/// Import of mitochondrial variant frequencies.
-fn import_chrmt(
-    db: &rocksdb::DBWithThreadMode<rocksdb::MultiThreaded>,
-    genome_release: Assembly,
-    path_gnomad_mtdna: Option<&String>,
-    path_helixmtdb: Option<&String>,
-) -> Result<(), anyhow::Error> {
-    let cf_mtdna: Arc<rocksdb::BoundColumnFamily> = db.cf_handle("mitochondrial").unwrap();
-
-    let mut chrmt_written = 0usize;
-    let mut mt_reader = mt::Reader::new(
-        path_gnomad_mtdna.map(|s| s.as_str()),
-        path_helixmtdb.map(|s| s.as_str()),
-        Some(genome_release),
-    )?;
-
-    let mut prev = std::time::Instant::now();
-    let mut has_next = true;
-    while has_next {
-        has_next = mt_reader.run(|variant, gnomad_mtdna, helix_mtdb| {
-            if prev.elapsed().as_secs() > 60 {
-                tracing::info!("at {:?}", &variant);
-                prev = std::time::Instant::now();
-            }
-
-            let key: Vec<u8> = variant.into();
-            let mut value = [0u8; 24];
-            let rec = freqs::serialized::mt::Record {
-                gnomad_mtdna,
-                helix_mtdb,
-            };
-            tracing::trace!("record = {:?}", &rec);
-            rec.to_buf(&mut value);
-            db.put_cf(&cf_mtdna, key, value)?;
-
-            chrmt_written += 1;
-
-            Ok(())
-        })?;
-    }
-
-    Ok(())
+    Ok(result)
 }
 
 /// Implementation of `gnomad_nuclear import` sub command.
 pub fn run(_common: &common::cli::Args, args: &Args) -> Result<(), anyhow::Error> {
     // Guess genome release from paths.
     let genome_release = match args.genome_release {
-        common::cli::GenomeRelease::Grch37 => Assembly::Grch37p10, // has chrMT!
-        common::cli::GenomeRelease::Grch38 => Assembly::Grch38,
+        common::cli::GenomeRelease::Grch37 => hgvs::static_data::Assembly::Grch37p10, // has chrMT!
+        common::cli::GenomeRelease::Grch38 => hgvs::static_data::Assembly::Grch38,
     };
 
     // Open the RocksDB for writing.
@@ -308,10 +227,31 @@ pub fn run(_common: &common::cli::Args, args: &Args) -> Result<(), anyhow::Error
     for k in &auto_keys {
         let path_genome = genomes_auto_by_chrom.get(k);
         let path_exome = exomes_auto_by_chrom.get(k);
-        tracing::info!("  k={}; from:", k);
+        tracing::info!("  contig {} from:", common::cli::CANONICAL[*k]);
         tracing::info!("    - genomes: {:?}", path_genome);
         tracing::info!("    - exomes:  {:?}", path_exome);
-        import_autosomal(&db, genome_release, path_genome, path_exome)?;
+
+        let paths = {
+            let mut paths = Vec::new();
+            if let Some(path_genome) = path_genome {
+                paths.push(path_genome.clone());
+            }
+            if let Some(path_exome) = path_exome {
+                paths.push(path_exome.clone());
+            }
+            paths
+        };
+        let windows = build_windows(genome_release, args.tbi_window_size, &paths)?;
+        windows
+            .par_iter()
+            .progress_with(common::cli::progress_bar(windows.len()))
+            .map(|(chrom, begin, end)| {
+                let start = noodles_core::position::Position::try_from(begin + 1)?;
+                let stop = noodles_core::position::Position::try_from(*end)?;
+                let region = noodles_core::region::Region::new(chrom, start..=stop);
+                auto::import_region(&db, path_genome, path_exome, &region)
+            })
+            .collect::<Result<Vec<_>, _>>()?;
     }
     tracing::info!(
         "... done importing autosomal variants in {:?}",
@@ -322,10 +262,31 @@ pub fn run(_common: &common::cli::Args, args: &Args) -> Result<(), anyhow::Error
     for k in &xy_keys {
         let path_genome = genomes_xy_by_chrom.get(k);
         let path_exome = exomes_xy_by_chrom.get(k);
-        tracing::info!("  k={}; from:", k);
+        tracing::info!("  contig {} from:", common::cli::CANONICAL[*k]);
         tracing::info!("    - genomes: {:?}", path_genome);
         tracing::info!("    - exomes:  {:?}", path_exome);
-        import_gonosomal(&db, genome_release, path_genome, path_exome)?;
+
+        let paths = {
+            let mut paths = Vec::new();
+            if let Some(path_genome) = path_genome {
+                paths.push(path_genome.clone());
+            }
+            if let Some(path_exome) = path_exome {
+                paths.push(path_exome.clone());
+            }
+            paths
+        };
+        let windows = build_windows(genome_release, args.tbi_window_size, &paths)?;
+        windows
+            .par_iter()
+            .progress_with(common::cli::progress_bar(windows.len()))
+            .map(|(chrom, begin, end)| {
+                let start = noodles_core::position::Position::try_from(begin + 1)?;
+                let stop = noodles_core::position::Position::try_from(*end)?;
+                let region = noodles_core::region::Region::new(chrom, start..=stop);
+                xy::import_region(&db, path_genome, path_exome, &region)
+            })
+            .collect::<Result<Vec<_>, _>>()?;
     }
     tracing::info!(
         "... done importing gonosomal variants in {:?}",
@@ -333,12 +294,35 @@ pub fn run(_common: &common::cli::Args, args: &Args) -> Result<(), anyhow::Error
     );
     tracing::info!("Importing mitochondrial variants...");
     let before_mito = std::time::Instant::now();
-    import_chrmt(
-        &db,
-        genome_release,
-        args.path_gnomad_mtdna.as_ref(),
-        args.path_helixmtdb.as_ref(),
-    )?;
+
+    let path_gnomad = args.path_gnomad_mtdna.as_ref();
+    let path_helix = args.path_helixmtdb.as_ref();
+    tracing::info!("  contig MT from:");
+    tracing::info!("    - gnomAD:     {:?}", &path_gnomad);
+    tracing::info!("    - HelixMtDb:  {:?}", &path_helix);
+
+    let paths = {
+        let mut paths = Vec::new();
+        if let Some(path_gnomad) = path_gnomad {
+            paths.push(path_gnomad.clone());
+        }
+        if let Some(path_helix) = path_helix {
+            paths.push(path_helix.clone());
+        }
+        paths
+    };
+    let windows = build_windows(genome_release, args.tbi_window_size, &paths)?;
+    windows
+        .par_iter()
+        .progress_with(common::cli::progress_bar(windows.len()))
+        .map(|(chrom, begin, end)| {
+            let start = noodles_core::position::Position::try_from(begin + 1)?;
+            let stop = noodles_core::position::Position::try_from(*end)?;
+            let region = noodles_core::region::Region::new(chrom, start..=stop);
+            mt::import_region(&db, path_gnomad, path_helix, &region)
+        })
+        .collect::<Result<Vec<_>, _>>()?;
+
     tracing::info!(
         "... done importing mitochondrial variants in {:?}",
         before_mito.elapsed()

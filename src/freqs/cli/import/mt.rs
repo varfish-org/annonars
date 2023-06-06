@@ -1,147 +1,238 @@
-//! Reading of autosomal records.
-
-use hgvs::static_data::Assembly;
-use noodles_vcf::Record as VcfRecord;
+//! Import of mitochondrial variant frequencies.
 
 use crate::{common, freqs};
 
-/// Helper for reading through gnomAD mtDNA and HelixMtDb data;
-pub struct Reader {
-    /// CSV reader for the gnomAD autosomal records.
-    gnomad_reader: Option<freqs::cli::import::reading::MultiVcfReader>,
-    /// Next variant from gnomAD.
-    gnomad_next: Option<VcfRecord>,
-    /// CSV reader for the HelixMtDb records.
-    helix_reader: Option<freqs::cli::import::reading::MultiVcfReader>,
-    /// Next variant from gnomAD.
-    helix_next: Option<VcfRecord>,
+/// Write out the given record to the database.
+fn write_record(
+    db: &rocksdb::DBWithThreadMode<rocksdb::MultiThreaded>,
+    cf: &std::sync::Arc<rocksdb::BoundColumnFamily>,
+    record_key: &common::keys::Var,
+    record_gnomad: &mut Option<noodles_vcf::Record>,
+    record_helix: &mut Option<noodles_vcf::Record>,
+) -> Result<(), anyhow::Error> {
+    let count_gnomad = if let Some(record_gnomad) = record_gnomad {
+        freqs::serialized::mt::Counts::from_vcf_allele(record_gnomad, 0)
+    } else {
+        freqs::serialized::mt::Counts::default()
+    };
+    let count_helix = if let Some(record_helix) = record_helix {
+        freqs::serialized::mt::Counts::from_vcf_allele(record_helix, 0)
+    } else {
+        freqs::serialized::mt::Counts::default()
+    };
+
+    let mito_record = freqs::serialized::mt::Record {
+        gnomad_mtdna: count_gnomad,
+        helixmtdb: count_helix,
+    };
+
+    let mut buf = vec![0u8; freqs::serialized::mt::Record::buf_len()];
+    mito_record.to_buf(&mut buf);
+    let key: Vec<u8> = record_key.clone().into();
+
+    db.put_cf(cf, &key, &buf)?;
+
+    Ok(())
 }
 
-impl Reader {
-    /// Construct new reader with optional paths to HelixMtDb and gnomAD mtDNA.
-    ///
-    /// Optionally, you can provide an assembly to validate the VCF contigs against.
-    pub fn new(
-        path_gnomad: Option<&str>,
-        path_helix: Option<&str>,
-        assembly: Option<Assembly>,
-    ) -> Result<Self, anyhow::Error> {
-        let mut gnomad_reader = path_gnomad
-            .as_ref()
-            .map(|path_gnomad| {
-                tracing::info!("Opening gnomAD autosomal file {}", &path_gnomad);
-                freqs::cli::import::reading::MultiVcfReader::new(&[path_gnomad], assembly)
-            })
-            .transpose()?;
-        let mut helix_reader = path_helix
-            .as_ref()
-            .map(|path_helix| {
-                tracing::info!("Opening gnomAD autosomal file {}", &path_helix);
-                freqs::cli::import::reading::MultiVcfReader::new(&[path_helix], assembly)
-            })
-            .transpose()?;
-
-        let gnomad_next = if let Some(gnomad_reader) = gnomad_reader.as_mut() {
-            gnomad_reader.pop()?.0
-        } else {
-            None
-        };
-        let helix_next = if let Some(helix_reader) = helix_reader.as_mut() {
-            helix_reader.pop()?.0
-        } else {
-            None
-        };
-
-        Ok(Self {
-            gnomad_reader,
-            helix_reader,
-            gnomad_next,
-            helix_next,
-        })
+/// Import of mitochondrial variant frequencies.
+pub fn import_region(
+    db: &rocksdb::DBWithThreadMode<rocksdb::MultiThreaded>,
+    path_genome: Option<&String>,
+    path_exome: Option<&String>,
+    region: &noodles_core::region::Region,
+) -> Result<(), anyhow::Error> {
+    // Get handle to "mitochondrial" column family.
+    let cf_mt = db.cf_handle("mitochondrial").unwrap();
+    // Build `Vec` of readers and by-index map that tells whether it is genomes.
+    let mut is_genome = Vec::new();
+    let mut readers = Vec::new();
+    if let Some(path_genome) = path_genome {
+        is_genome.push(true);
+        readers.push(noodles_vcf::indexed_reader::Builder::default().build_from_path(path_genome)?);
     }
+    if let Some(path_exome) = path_exome {
+        is_genome.push(false);
+        readers.push(noodles_vcf::indexed_reader::Builder::default().build_from_path(path_exome)?);
+    }
+    // Read headers.
+    let headers: Vec<_> = readers
+        .iter_mut()
+        .map(|reader| reader.read_header())
+        .collect::<Result<_, _>>()?;
 
-    /// Run the reading of the chrMT frequencies.
-    ///
-    /// Returns whether there is a next value.
-    pub fn run<F>(&mut self, mut func: F) -> Result<bool, anyhow::Error>
-    where
-        F: FnMut(
-            common::keys::Var,
-            freqs::serialized::mt::Counts,
-            freqs::serialized::mt::Counts,
-        ) -> Result<(), anyhow::Error>,
-    {
-        match (&self.gnomad_next, &self.helix_next) {
-            (None, Some(helix)) => {
-                assert_eq!(
-                    helix.alternate_bases().len(),
-                    1,
-                    "only one alternate allele is supported"
-                );
-                func(
-                    common::keys::Var::from_vcf_allele(helix, 0),
-                    freqs::serialized::mt::Counts::default(),
-                    freqs::serialized::mt::Counts::from_vcf_allele(helix, 0),
-                )?;
-                self.helix_next = self.helix_reader.as_mut().unwrap().pop()?.0;
+    // Seek to region obtaining `ueries`.
+    let queries: Vec<_> = readers
+        .iter_mut()
+        .zip(&headers)
+        .map(|(reader, header)| reader.query(header, region))
+        .collect::<Result<_, _>>()?;
+    // Construct the `MultiQuery`.
+    let multi_query = super::reading::MultiQuery::new(queries)?;
+
+    // Now iterate over the `MultiQuery` and write to the database.
+    //
+    // The key of the records stored in `record_{genome,exome}`.
+    let mut record_key = None;
+    // Record from gnomAD genomes (same position as record_exome, if either).
+    let mut record_genome = None;
+    // Record from gnomAD exomes (same position as record_genome, if either).
+    let mut record_exome = None;
+    for result in multi_query {
+        let (idx, record) = result?;
+        // Shortcut to whether this from gnomAD genomes.
+        let is_genome = is_genome[idx];
+        // Obtain the key of the next record.
+        let curr_key = common::keys::Var::from_vcf_allele(&record, 0);
+
+        // Act on the current record.
+        match (
+            record_genome.as_mut(),
+            record_exome.as_mut(),
+            is_genome,
+            record_key.as_ref() == Some(&curr_key),
+        ) {
+            (None, None, _, true) => panic!("case cannot happen"),
+            (None, None, true, false) => {
+                // New key (=variant) at genome, no previous record.  Just update `record_genome`.
+                record_genome = Some(record);
             }
-            (Some(gnomad), None) => {
-                assert_eq!(
-                    gnomad.alternate_bases().len(),
-                    1,
-                    "only one alternate allele is supported"
-                );
-                func(
-                    common::keys::Var::from_vcf_allele(gnomad, 0),
-                    freqs::serialized::mt::Counts::from_vcf_allele(gnomad, 0),
-                    freqs::serialized::mt::Counts::default(),
-                )?;
-                self.gnomad_next = self.gnomad_reader.as_mut().unwrap().pop()?.0;
+            (None, None, false, false) => {
+                // New key (=variant) at exome, no previous record.  Just update `record_exome`.
+                record_exome = Some(record);
             }
-            (Some(gnomad), Some(helix)) => {
-                assert_eq!(
-                    helix.alternate_bases().len(),
-                    1,
-                    "only one alternate allele is supported"
-                );
-                assert_eq!(
-                    gnomad.alternate_bases().len(),
-                    1,
-                    "only one alternate allele is supported"
-                );
-                let var_gnomad = common::keys::Var::from_vcf_allele(gnomad, 0);
-                let var_helix = common::keys::Var::from_vcf_allele(helix, 0);
-                match var_gnomad.cmp(&var_helix) {
-                    std::cmp::Ordering::Less => {
-                        func(
-                            var_gnomad,
-                            freqs::serialized::mt::Counts::from_vcf_allele(gnomad, 0),
-                            freqs::serialized::mt::Counts::default(),
-                        )?;
-                        self.gnomad_next = self.gnomad_reader.as_mut().unwrap().pop()?.0;
-                    }
-                    std::cmp::Ordering::Equal => {
-                        func(
-                            var_gnomad,
-                            freqs::serialized::mt::Counts::from_vcf_allele(gnomad, 0),
-                            freqs::serialized::mt::Counts::from_vcf_allele(helix, 0),
-                        )?;
-                        self.helix_next = self.helix_reader.as_mut().unwrap().pop()?.0;
-                        self.gnomad_next = self.gnomad_reader.as_mut().unwrap().pop()?.0;
-                    }
-                    std::cmp::Ordering::Greater => {
-                        func(
-                            var_helix,
-                            freqs::serialized::mt::Counts::default(),
-                            freqs::serialized::mt::Counts::from_vcf_allele(helix, 0),
-                        )?;
-                        self.helix_next = self.helix_reader.as_mut().unwrap().pop()?.0;
-                    }
+            (None, Some(_), true, true) => {
+                // Existing key (=variant) at genome, genome is unset.  Just update `record_genome`.
+                record_genome = Some(record);
+            }
+            (None, Some(_), true, false) => {
+                // New key (=variant) at genome, have previous exome record.  Write out records,
+                // clear `record_exome`, and set `record_genome`.
+
+                // Write out current records to database.
+                if let Some(record_key) = record_key.as_ref() {
+                    write_record(
+                        &db,
+                        &cf_mt,
+                        record_key,
+                        &mut record_genome,
+                        &mut record_exome,
+                    )?;
                 }
+
+                // Update current records.
+                record_genome = Some(record);
+                record_exome = None;
             }
-            (None, None) => (),
+            (None, Some(_), false, true) => {
+                // Existing key (=variant) at exome, exome is already set.  We found a duplicate
+                // record in exome which is an error.
+                anyhow::bail!("Duplicate record in exomes at {:?}", &record);
+            }
+            (None, Some(_), false, false) => {
+                // New key (=variant) at exome, have previous exome record.  Write out records,
+                // and set `record_exome`.
+
+                // Update current records.
+                record_exome = Some(record);
+            }
+            (Some(_), None, true, true) => {
+                // Existing key (=variant) at genome, genome is already set.  We found a duplicate.
+                anyhow::bail!("Duplicate record in genomes at {:?}", &record);
+            }
+            (Some(_), None, true, false) => {
+                // New key (=variant) at genome, have previous genome record.  Write out records,
+                // and set `record_genome`.
+
+                // Write out current records to database.
+                if let Some(record_key) = record_key.as_ref() {
+                    write_record(
+                        &db,
+                        &cf_mt,
+                        record_key,
+                        &mut record_genome,
+                        &mut record_exome,
+                    )?;
+                }
+
+                // Update current records.
+                record_genome = Some(record);
+            }
+            (Some(_), None, false, true) => {
+                // Existing key (=variant) at exome, exome is unset.  Just update `record_exome`.
+
+                // Update current records.
+                record_exome = Some(record);
+            }
+            (Some(_), None, false, false) => {
+                // New key (=variant) at exome, have previous genome record.  Write out records,
+                // clear `record_genome`, and set `record_exome`.
+
+                // Write out current records to database.
+                if let Some(record_key) = record_key.as_ref() {
+                    write_record(
+                        &db,
+                        &cf_mt,
+                        record_key,
+                        &mut record_genome,
+                        &mut record_exome,
+                    )?;
+                }
+
+                // Update current records.
+                record_genome = None;
+                record_exome = Some(record);
+            }
+            (Some(_), Some(_), true, true) => {
+                // Existing key (=variant) at genome, genome is already set.  We found a duplicate.
+                anyhow::bail!("Duplicate record in genomes at {:?}", &record);
+            }
+            (Some(_), Some(_), true, false) => {
+                // New key (=variant) at genome, have both exome and genome record.  Write out
+                // both records, set `record_genome`, clear `record_exome`.
+
+                // Write out current records to database.
+                if let Some(record_key) = record_key.as_ref() {
+                    write_record(
+                        &db,
+                        &cf_mt,
+                        record_key,
+                        &mut record_genome,
+                        &mut record_exome,
+                    )?;
+                }
+
+                // Update current records.
+                record_genome = Some(record);
+                record_exome = None;
+            }
+            (Some(_), Some(_), false, true) => {
+                // Existing key (=variant) at exome, exome is already set.  We found a duplicate.
+                anyhow::bail!("Duplicate record in exomes at {:?}", &record);
+            }
+            (Some(_), Some(_), false, false) => {
+                // Write out current records to database.
+                if let Some(record_key) = record_key.as_ref() {
+                    write_record(
+                        &db,
+                        &cf_mt,
+                        record_key,
+                        &mut record_genome,
+                        &mut record_exome,
+                    )?;
+                }
+
+                // Update current records.
+                record_genome = None;
+                record_exome = Some(record);
+            }
         }
 
-        Ok(self.gnomad_next.is_some() || self.helix_next.is_some())
+        // Update record key when necessary.
+        if record_key.as_ref() != Some(&curr_key) {
+            record_key = Some(curr_key);
+        }
     }
+
+    Ok(())
 }

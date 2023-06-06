@@ -1,146 +1,238 @@
-//! Import of autosomal frequencies from gnomAD.
-
-use hgvs::static_data::Assembly;
+//! Import of autosomal variant frequencies.
 
 use crate::{common, freqs};
 
-/// Helper for reading through gnomAD genomes and exomes data.
-pub struct Reader {
-    /// CSV reader for the gnomAD genomes.
-    genomes_reader: Option<freqs::cli::import::reading::MultiVcfReader>,
-    /// Next variant from gnomAD genomes.
-    genomes_next: Option<noodles_vcf::Record>,
-    /// CSV reader for the gnomAD exomes.
-    exomes_reader: Option<freqs::cli::import::reading::MultiVcfReader>,
-    /// Next variant from gnomAD exomes
-    exomes_next: Option<noodles_vcf::Record>,
+/// Write out the given record to the database.
+fn write_record(
+    db: &rocksdb::DBWithThreadMode<rocksdb::MultiThreaded>,
+    cf: &std::sync::Arc<rocksdb::BoundColumnFamily>,
+    record_key: &common::keys::Var,
+    record_genome: &mut Option<noodles_vcf::Record>,
+    record_exome: &mut Option<noodles_vcf::Record>,
+) -> Result<(), anyhow::Error> {
+    let count_genomes = if let Some(record_genome) = record_genome {
+        freqs::serialized::auto::Counts::from_vcf_allele(record_genome, 0)
+    } else {
+        freqs::serialized::auto::Counts::default()
+    };
+    let counts_exomes = if let Some(record_exome) = record_exome {
+        freqs::serialized::auto::Counts::from_vcf_allele(record_exome, 0)
+    } else {
+        freqs::serialized::auto::Counts::default()
+    };
+
+    let auto_record = freqs::serialized::auto::Record {
+        gnomad_genomes: count_genomes,
+        gnomad_exomes: counts_exomes,
+    };
+
+    let mut buf = vec![0u8; freqs::serialized::auto::Record::buf_len()];
+    auto_record.to_buf(&mut buf);
+    let key: Vec<u8> = record_key.clone().into();
+
+    db.put_cf(cf, &key, &buf)?;
+
+    Ok(())
 }
 
-impl Reader {
-    /// Construct new reader with optional paths to gnomAD genomes and exomes files.
-    ///
-    /// Optionally, you can provide an assembly to validate the VCF contigs against.
-    pub fn new(
-        path_genomes: Option<&str>,
-        path_exomes: Option<&str>,
-        assembly: Option<Assembly>,
-    ) -> Result<Self, anyhow::Error> {
-        let mut genomes_reader = path_genomes
-            .as_ref()
-            .map(|path_genomes| {
-                tracing::info!("Opening gnomAD genome autosomal file {}", &path_genomes);
-                freqs::cli::import::reading::MultiVcfReader::new(&[path_genomes], assembly)
-            })
-            .transpose()?;
-        let mut exomes_reader = path_exomes
-            .as_ref()
-            .map(|path_exomes| {
-                tracing::info!("Opening gnomAD exomes autosomal file {}", &path_exomes);
-                freqs::cli::import::reading::MultiVcfReader::new(&[path_exomes], assembly)
-            })
-            .transpose()?;
-
-        let genomes_next = if let Some(genomes_reader) = genomes_reader.as_mut() {
-            genomes_reader.pop()?.0
-        } else {
-            None
-        };
-        let exomes_next = if let Some(exomes_reader) = exomes_reader.as_mut() {
-            exomes_reader.pop()?.0
-        } else {
-            None
-        };
-
-        Ok(Self {
-            genomes_reader,
-            exomes_reader,
-            genomes_next,
-            exomes_next,
-        })
+/// Import of autosomal variant frequencies.
+pub fn import_region(
+    db: &rocksdb::DBWithThreadMode<rocksdb::MultiThreaded>,
+    path_genome: Option<&String>,
+    path_exome: Option<&String>,
+    region: &noodles_core::region::Region,
+) -> Result<(), anyhow::Error> {
+    // Get handle to "autosomal" column family.
+    let cf_auto = db.cf_handle("autosomal").unwrap();
+    // Build `Vec` of readers and by-index map that tells whether it is genomes.
+    let mut is_genome = Vec::new();
+    let mut readers = Vec::new();
+    if let Some(path_genome) = path_genome {
+        is_genome.push(true);
+        readers.push(noodles_vcf::indexed_reader::Builder::default().build_from_path(path_genome)?);
     }
+    if let Some(path_exome) = path_exome {
+        is_genome.push(false);
+        readers.push(noodles_vcf::indexed_reader::Builder::default().build_from_path(path_exome)?);
+    }
+    // Read headers.
+    let headers: Vec<_> = readers
+        .iter_mut()
+        .map(|reader| reader.read_header())
+        .collect::<Result<_, _>>()?;
 
-    /// Run the reading of the autosomal frequencies.
-    ///
-    /// Returns whether there is a next value.
-    pub fn run<F>(&mut self, mut func: F) -> Result<bool, anyhow::Error>
-    where
-        F: FnMut(
-            common::keys::Var,
-            freqs::serialized::auto::Counts,
-            freqs::serialized::auto::Counts,
-        ) -> Result<(), anyhow::Error>,
-    {
-        match (&self.genomes_next, &self.exomes_next) {
-            (None, Some(exomes_record)) => {
-                assert_eq!(
-                    exomes_record.alternate_bases().len(),
-                    1,
-                    "only one alternate allele is supported"
-                );
-                func(
-                    common::keys::Var::from_vcf_allele(exomes_record, 0),
-                    freqs::serialized::auto::Counts::default(),
-                    freqs::serialized::auto::Counts::from_vcf_allele(exomes_record, 0),
-                )?;
-                self.exomes_next = self.exomes_reader.as_mut().unwrap().pop()?.0;
+    // Seek to region obtaining `ueries`.
+    let queries: Vec<_> = readers
+        .iter_mut()
+        .zip(&headers)
+        .map(|(reader, header)| reader.query(header, region))
+        .collect::<Result<_, _>>()?;
+    // Construct the `MultiQuery`.
+    let multi_query = super::reading::MultiQuery::new(queries)?;
+
+    // Now iterate over the `MultiQuery` and write to the database.
+    //
+    // The key of the records stored in `record_{genome,exome}`.
+    let mut record_key = None;
+    // Record from gnomAD genomes (same position as record_exome, if either).
+    let mut record_genome = None;
+    // Record from gnomAD exomes (same position as record_genome, if either).
+    let mut record_exome = None;
+    for result in multi_query {
+        let (idx, record) = result?;
+        // Shortcut to whether this from gnomAD genomes.
+        let is_genome = is_genome[idx];
+        // Obtain the key of the next record.
+        let curr_key = common::keys::Var::from_vcf_allele(&record, 0);
+
+        // Act on the current record.
+        match (
+            record_genome.as_mut(),
+            record_exome.as_mut(),
+            is_genome,
+            record_key.as_ref() == Some(&curr_key),
+        ) {
+            (None, None, _, true) => panic!("case cannot happen"),
+            (None, None, true, false) => {
+                // New key (=variant) at genome, no previous record.  Just update `record_genome`.
+                record_genome = Some(record);
             }
-            (Some(genomes_record), None) => {
-                assert_eq!(
-                    genomes_record.alternate_bases().len(),
-                    1,
-                    "only one alternate allele is supported"
-                );
-                func(
-                    common::keys::Var::from_vcf_allele(genomes_record, 0),
-                    freqs::serialized::auto::Counts::from_vcf_allele(genomes_record, 0),
-                    freqs::serialized::auto::Counts::default(),
-                )?;
-                self.genomes_next = self.genomes_reader.as_mut().unwrap().pop()?.0;
+            (None, None, false, false) => {
+                // New key (=variant) at exome, no previous record.  Just update `record_exome`.
+                record_exome = Some(record);
             }
-            (Some(genomes_record), Some(exomes_record)) => {
-                assert_eq!(
-                    exomes_record.alternate_bases().len(),
-                    1,
-                    "only one alternate allele is supported"
-                );
-                assert_eq!(
-                    genomes_record.alternate_bases().len(),
-                    1,
-                    "only one alternate allele is supported"
-                );
-                let var_genomes = common::keys::Var::from_vcf_allele(genomes_record, 0);
-                let var_exomes = common::keys::Var::from_vcf_allele(exomes_record, 0);
-                match var_genomes.cmp(&var_exomes) {
-                    std::cmp::Ordering::Less => {
-                        func(
-                            var_genomes,
-                            freqs::serialized::auto::Counts::from_vcf_allele(genomes_record, 0),
-                            freqs::serialized::auto::Counts::default(),
-                        )?;
-                        self.genomes_next = self.genomes_reader.as_mut().unwrap().pop()?.0;
-                    }
-                    std::cmp::Ordering::Equal => {
-                        func(
-                            var_genomes,
-                            freqs::serialized::auto::Counts::from_vcf_allele(genomes_record, 0),
-                            freqs::serialized::auto::Counts::from_vcf_allele(exomes_record, 0),
-                        )?;
-                        self.exomes_next = self.exomes_reader.as_mut().unwrap().pop()?.0;
-                        self.genomes_next = self.genomes_reader.as_mut().unwrap().pop()?.0;
-                    }
-                    std::cmp::Ordering::Greater => {
-                        func(
-                            var_exomes,
-                            freqs::serialized::auto::Counts::default(),
-                            freqs::serialized::auto::Counts::from_vcf_allele(exomes_record, 0),
-                        )?;
-                        self.exomes_next = self.exomes_reader.as_mut().unwrap().pop()?.0;
-                    }
+            (None, Some(_), true, true) => {
+                // Existing key (=variant) at genome, genome is unset.  Just update `record_genome`.
+                record_genome = Some(record);
+            }
+            (None, Some(_), true, false) => {
+                // New key (=variant) at genome, have previous exome record.  Write out records,
+                // clear `record_exome`, and set `record_genome`.
+
+                // Write out current records to database.
+                if let Some(record_key) = record_key.as_ref() {
+                    write_record(
+                        &db,
+                        &cf_auto,
+                        record_key,
+                        &mut record_genome,
+                        &mut record_exome,
+                    )?;
                 }
+
+                // Update current records.
+                record_genome = Some(record);
+                record_exome = None;
             }
-            (None, None) => (),
+            (None, Some(_), false, true) => {
+                // Existing key (=variant) at exome, exome is already set.  We found a duplicate
+                // record in exome which is an error.
+                anyhow::bail!("Duplicate record in exomes at {:?}", &record);
+            }
+            (None, Some(_), false, false) => {
+                // New key (=variant) at exome, have previous exome record.  Write out records,
+                // and set `record_exome`.
+
+                // Update current records.
+                record_exome = Some(record);
+            }
+            (Some(_), None, true, true) => {
+                // Existing key (=variant) at genome, genome is already set.  We found a duplicate.
+                anyhow::bail!("Duplicate record in genomes at {:?}", &record);
+            }
+            (Some(_), None, true, false) => {
+                // New key (=variant) at genome, have previous genome record.  Write out records,
+                // and set `record_genome`.
+
+                // Write out current records to database.
+                if let Some(record_key) = record_key.as_ref() {
+                    write_record(
+                        &db,
+                        &cf_auto,
+                        record_key,
+                        &mut record_genome,
+                        &mut record_exome,
+                    )?;
+                }
+
+                // Update current records.
+                record_genome = Some(record);
+            }
+            (Some(_), None, false, true) => {
+                // Existing key (=variant) at exome, exome is unset.  Just update `record_exome`.
+
+                // Update current records.
+                record_exome = Some(record);
+            }
+            (Some(_), None, false, false) => {
+                // New key (=variant) at exome, have previous genome record.  Write out records,
+                // clear `record_genome`, and set `record_exome`.
+
+                // Write out current records to database.
+                if let Some(record_key) = record_key.as_ref() {
+                    write_record(
+                        &db,
+                        &cf_auto,
+                        record_key,
+                        &mut record_genome,
+                        &mut record_exome,
+                    )?;
+                }
+
+                // Update current records.
+                record_genome = None;
+                record_exome = Some(record);
+            }
+            (Some(_), Some(_), true, true) => {
+                // Existing key (=variant) at genome, genome is already set.  We found a duplicate.
+                anyhow::bail!("Duplicate record in genomes at {:?}", &record);
+            }
+            (Some(_), Some(_), true, false) => {
+                // New key (=variant) at genome, have both exome and genome record.  Write out
+                // both records, set `record_genome`, clear `record_exome`.
+
+                // Write out current records to database.
+                if let Some(record_key) = record_key.as_ref() {
+                    write_record(
+                        &db,
+                        &cf_auto,
+                        record_key,
+                        &mut record_genome,
+                        &mut record_exome,
+                    )?;
+                }
+
+                // Update current records.
+                record_genome = Some(record);
+                record_exome = None;
+            }
+            (Some(_), Some(_), false, true) => {
+                // Existing key (=variant) at exome, exome is already set.  We found a duplicate.
+                anyhow::bail!("Duplicate record in exomes at {:?}", &record);
+            }
+            (Some(_), Some(_), false, false) => {
+                // Write out current records to database.
+                if let Some(record_key) = record_key.as_ref() {
+                    write_record(
+                        &db,
+                        &cf_auto,
+                        record_key,
+                        &mut record_genome,
+                        &mut record_exome,
+                    )?;
+                }
+
+                // Update current records.
+                record_genome = None;
+                record_exome = Some(record);
+            }
         }
 
-        Ok(self.genomes_next.is_some() || self.exomes_next.is_some())
+        // Update record key when necessary.
+        if record_key.as_ref() != Some(&curr_key) {
+            record_key = Some(curr_key);
+        }
     }
+
+    Ok(())
 }

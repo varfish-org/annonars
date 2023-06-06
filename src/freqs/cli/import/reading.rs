@@ -1,6 +1,6 @@
 //! Reading of variants.
 
-use std::collections::HashMap;
+use std::collections::{BTreeMap, HashMap};
 
 use hgvs::static_data::{Assembly, ASSEMBLY_INFOS};
 
@@ -43,100 +43,93 @@ impl ContigMap {
     }
 }
 
-/// Read through multiple VCF files at the same time, using
-pub struct MultiVcfReader {
-    /// The contig mapping to use.
-    contig_map: ContigMap,
-    /// One reader per file to read from.
-    #[allow(clippy::vec_box)]
-    readers: Vec<Box<noodles_vcf::indexed_reader::IndexedReader<std::fs::File>>>,
-    /// The headers as read from `readers`.
-    #[allow(clippy::vec_box)]
-    headers: Vec<Box<noodles_vcf::Header>>,
-    /// The next record from each reader, if any.
-    nexts: Vec<Option<noodles_vcf::Record>>,
-    /// The smallest from nexts.
-    next: usize,
+/// Key for sorting the records.
+#[derive(Debug, PartialEq, Eq, PartialOrd, Ord)]
+struct Key {
+    /// Chromosome.
+    chrom: String,
+    /// Noodles position.
+    pos: noodles_vcf::record::Position,
+    /// Reference allele.
+    reference: String,
+    /// First (and only) alternate allelele.
+    alternative: String,
+    /// Index of the reader.
+    idx: usize,
 }
 
-impl MultiVcfReader {
-    /// Create a new multi VCF reader.
-    pub fn new(paths: &[&str], initial_assembly: Option<Assembly>) -> Result<Self, anyhow::Error> {
-        let mut assembly: Option<Assembly> = None;
-
-        let mut readers = Vec::new();
-        let mut headers = Vec::new();
-        let mut nexts = Vec::new();
-        for path in paths {
-            tracing::trace!("Opening file {}", path);
-            let mut reader =
-                Box::new(noodles_vcf::indexed_reader::Builder::default().build_from_path(path)?);
-            let header = Box::new(reader.as_mut().read_header()?);
-            assembly = Some(guess_assembly(header.as_ref(), true, initial_assembly)?);
-            nexts.push(
-                reader
-                    .as_mut()
-                    .records(header.as_ref())
-                    .next()
-                    .transpose()?,
-            );
-            readers.push(reader);
-            headers.push(header);
-        }
-
-        let contig_map = ContigMap::new(assembly.unwrap());
-
-        Ok(Self {
-            contig_map,
-            readers,
-            headers,
-            nexts,
-            next: 0,
-        })
+/// Build a key from a VCF record.
+fn build_key(record: &noodles_vcf::Record, i: usize) -> Key {
+    Key {
+        chrom: record.chromosome().to_string(),
+        pos: record.position(),
+        reference: record.reference_bases().to_string(),
+        alternative: record
+            .alternate_bases()
+            .first()
+            .expect("must have alternate allele")
+            .to_string(),
+        idx: i,
     }
+}
 
-    /// Obtain the number of input files.
-    pub fn input_count(&self) -> usize {
-        self.readers.len()
-    }
+/// Read through multiple `noodles_vcf::vcf::reader::Query`s at once.
+pub struct MultiQuery<'r, 'h, R>
+where
+    R: std::io::Read + std::io::Seek,
+{
+    /// One query for each input file.
+    queries: Vec<noodles_vcf::reader::Query<'r, 'h, R>>,
+    /// The current smallest-by-coordinate records.
+    records: BTreeMap<Key, noodles_vcf::Record>,
+}
 
-    /// Helper that returns integer pair for `noodles_vcf::Record`.
-    fn record_to_pair(&self, record: &noodles_vcf::Record) -> (usize, usize) {
-        let chrom = self.contig_map.chrom_to_idx(record.chromosome());
-        let pos: usize = record.position().into();
-        (chrom, pos)
-    }
+impl<'r, 'h, R> MultiQuery<'r, 'h, R>
+where
+    R: std::io::Read + std::io::Seek,
+{
+    /// Construct a new `MultiQuery`.
+    pub fn new(
+        mut record_iters: Vec<noodles_vcf::reader::Query<'r, 'h, R>>,
+    ) -> std::io::Result<Self> {
+        let mut records = BTreeMap::new();
 
-    /// Return reference to next record from all input files.
-    pub fn peek(&self) -> (&Option<noodles_vcf::Record>, usize) {
-        (&self.nexts[self.next], self.next)
-    }
-
-    /// Pop the next record and read next record from that file into reader.
-    pub fn pop(&mut self) -> Result<(Option<noodles_vcf::Record>, usize), anyhow::Error> {
-        let result = (self.nexts[self.next].clone(), self.next);
-        self.nexts[self.next] = self.readers[self.next]
-            .as_mut()
-            .records(&self.headers[self.next])
-            .next()
-            .transpose()?;
-
-        self.next = 0;
-        for i in 1..self.nexts.len() {
-            match (&self.nexts[self.next], &self.nexts[i]) {
-                (None, Some(_)) => self.next = i,
-                (Some(lhs), Some(rhs)) => {
-                    let lhs = self.record_to_pair(lhs);
-                    let rhs = self.record_to_pair(rhs);
-                    if rhs < lhs {
-                        self.next = i;
-                    }
-                }
-                _ => (), // noop
+        for (i, iter) in record_iters.iter_mut().enumerate() {
+            if let Some(result) = iter.next() {
+                let record = result?;
+                let key = build_key(&record, i);
+                records.insert(key, record);
             }
         }
 
-        Ok(result)
+        Ok(Self {
+            queries: record_iters,
+            records,
+        })
+    }
+}
+
+impl<'r, 'h, R> Iterator for MultiQuery<'r, 'h, R>
+where
+    R: std::io::Read + std::io::Seek,
+{
+    type Item = std::io::Result<(usize, noodles_vcf::Record)>;
+
+    /// Return next item if any.
+    fn next(&mut self) -> Option<Self::Item> {
+        let (Key { idx, .. }, record) = self.records.pop_first()?;
+
+        if let Some(result) = self.queries[idx].next() {
+            match result {
+                Ok(record) => {
+                    let key = build_key(&record, idx);
+                    self.records.insert(key, record);
+                }
+                Err(e) => return Some(Err(e)),
+            }
+        }
+
+        Some(Ok((idx, record)))
     }
 }
 
@@ -295,25 +288,37 @@ mod test {
     }
 
     #[test]
-    fn test_multivcf_reader() -> Result<(), anyhow::Error> {
-        let mut reader = MultiVcfReader::new(
-            &[
-                "tests/freqs/reading/gnomad.chrM.vcf.bgz",
-                "tests/freqs/reading/helix.chrM.vcf.bgz",
-            ],
-            Some(Assembly::Grch37p10),
-        )?;
+    fn test_multiquery() -> Result<(), anyhow::Error> {
+        let mut readers = vec![
+            noodles_vcf::indexed_reader::Builder::default()
+                .build_from_path("tests/freqs/reading/gnomad.chrM.vcf.bgz")?,
+            noodles_vcf::indexed_reader::Builder::default()
+                .build_from_path("tests/freqs/reading/helix.chrM.vcf.bgz")?,
+        ];
 
-        let top = reader.peek();
-        assert_eq!(top.1, 0);
-        if let Some(record) = top.0 {
-            assert_eq!(Into::<usize>::into(record.position()), 3);
-        };
+        let headers: Vec<_> = readers
+            .iter_mut()
+            .map(|reader| reader.read_header())
+            .collect::<Result<_, _>>()?;
 
-        for _i in 0..6 {
-            assert!(reader.pop()?.0.is_some());
+        let start = noodles_core::position::Position::try_from(1)?;
+        let stop = noodles_core::position::Position::try_from(16569)?;
+        let region = noodles_core::region::Region::new("chrM", start..=stop);
+
+        let queries: Vec<_> = readers
+            .iter_mut()
+            .zip(&headers)
+            .map(|(reader, header)| reader.query(header, &region))
+            .collect::<Result<_, _>>()?;
+
+        let multi_query = MultiQuery::new(queries)?;
+
+        let mut records = Vec::new();
+        for result in multi_query {
+            records.push(result?);
         }
-        assert!(reader.peek().0.is_none());
+
+        insta::assert_debug_snapshot!(records);
 
         Ok(())
     }

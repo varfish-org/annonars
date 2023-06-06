@@ -106,4 +106,9 @@ impl Record {
         self.gnomad_exomes.to_buf(&mut buf[0..16]);
         self.gnomad_genomes.to_buf(&mut buf[16..32]);
     }
+
+    /// Length of the buffer.
+    pub fn buf_len() -> usize {
+        32
+    }
 }

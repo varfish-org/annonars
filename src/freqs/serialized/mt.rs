@@ -58,7 +58,7 @@ pub struct Record {
     /// Counts from gnomAD mtDNA.
     pub gnomad_mtdna: Counts,
     /// Counts from HelixMtDb.
-    pub helix_mtdb: Counts,
+    pub helixmtdb: Counts,
 }
 
 impl Record {
@@ -66,13 +66,18 @@ impl Record {
     pub fn from_buf(buf: &[u8]) -> Self {
         Self {
             gnomad_mtdna: Counts::from_buf(&buf[0..12]),
-            helix_mtdb: Counts::from_buf(&buf[12..24]),
+            helixmtdb: Counts::from_buf(&buf[12..24]),
         }
     }
 
     /// Write to buffer.
     pub fn to_buf(&self, buf: &mut [u8]) {
         self.gnomad_mtdna.to_buf(&mut buf[0..12]);
-        self.helix_mtdb.to_buf(&mut buf[12..24]);
+        self.helixmtdb.to_buf(&mut buf[12..24]);
+    }
+
+    /// Length of the buffer.
+    pub fn buf_len() -> usize {
+        24
     }
 }
