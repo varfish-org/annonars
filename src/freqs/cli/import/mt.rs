@@ -42,6 +42,7 @@ pub fn import_region(
     path_exome: Option<&String>,
     region: &noodles_core::region::Region,
 ) -> Result<(), anyhow::Error> {
+    tracing::info!(" region = {:?}", region);
     // Get handle to "mitochondrial" column family.
     let cf_mt = db.cf_handle("mitochondrial").unwrap();
     // Build `Vec` of readers and by-index map that tells whether it is genomes.
@@ -61,14 +62,28 @@ pub fn import_region(
         .map(|reader| reader.read_header())
         .collect::<Result<_, _>>()?;
 
-    // Seek to region obtaining `ueries`.
+    // Seek to region obtaining `queries`.
     let queries: Vec<_> = readers
         .iter_mut()
         .zip(&headers)
-        .map(|(reader, header)| reader.query(header, region))
+        .filter_map(|(reader, header)| {
+            match reader.query(header, region) {
+                Ok(result) => Ok(Some(result)),
+                Err(e) => {
+                    let needle = "region reference sequence does not exist in reference sequences";
+                    if e.to_string().contains(needle) {
+                        Ok(None)
+                    } else {
+                        Err(e)
+                    }
+                }
+            }.transpose()
+        })
         .collect::<Result<_, _>>()?;
     // Construct the `MultiQuery`.
     let multi_query = super::reading::MultiQuery::new(queries)?;
+
+    tracing::info!(" --- ");
 
     // Now iterate over the `MultiQuery` and write to the database.
     //
