@@ -1,0 +1,6 @@
+---
+source: src/freqs/cli/query.rs
+expression: "&out_data"
+---
+{"gnomad_mtdna":{"an":0,"ac_hom":0,"ac_het":0},"helix_mtdb":{"an":196554,"ac_hom":0,"ac_het":1}}
+

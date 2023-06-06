@@ -244,7 +244,7 @@ mod test {
 
     #[test]
     fn guess_assembly_helix_chrmt_ambiguous_ok_initial_none() -> Result<(), anyhow::Error> {
-        let path = "tests/data/db/create/seqvar_freqs/mt/helix.chrM.vcf";
+        let path = "tests/freqs/reading/helix.chrM.vcf";
         let mut reader = VariantReaderBuilder::default().build_from_path(path)?;
         let header = reader.read_header()?;
 
@@ -256,7 +256,7 @@ mod test {
 
     #[test]
     fn guess_assembly_helix_chrmt_ambiguous_ok_initial_override() -> Result<(), anyhow::Error> {
-        let path = "tests/data/db/create/seqvar_freqs/mt/helix.chrM.vcf";
+        let path = "tests/freqs/reading/helix.chrM.vcf";
         let mut reader = VariantReaderBuilder::default().build_from_path(path)?;
         let header = reader.read_header()?;
 
@@ -269,7 +269,7 @@ mod test {
     #[test]
     fn guess_assembly_helix_chrmt_ambiguous_ok_initial_override_fails() -> Result<(), anyhow::Error>
     {
-        let path = "tests/data/db/create/seqvar_freqs/mt/helix.chrM.vcf";
+        let path = "tests/freqs/reading/helix.chrM.vcf";
         let mut reader = VariantReaderBuilder::default().build_from_path(path)?;
         let header = reader.read_header()?;
 
@@ -280,7 +280,7 @@ mod test {
 
     #[test]
     fn guess_assembly_helix_chrmt_ambiguous_fail() -> Result<(), anyhow::Error> {
-        let path = "tests/data/db/create/seqvar_freqs/mt/helix.chrM.vcf";
+        let path = "tests/freqs/reading/helix.chrM.vcf";
         let mut reader = VariantReaderBuilder::default().build_from_path(path)?;
         let header = reader.read_header()?;
 
@@ -299,8 +299,8 @@ mod test {
     fn test_multivcf_reader() -> Result<(), anyhow::Error> {
         let mut reader = MultiVcfReader::new(
             &[
-                "tests/data/db/create/seqvar_freqs/mt/gnomad.chrM.vcf",
-                "tests/data/db/create/seqvar_freqs/mt/helix.chrM.vcf",
+                "tests/freqs/reading/gnomad.chrM.vcf.bgz",
+                "tests/freqs/reading/helix.chrM.vcf.bgz",
             ],
             Some(Assembly::Grch37p10),
         )?;

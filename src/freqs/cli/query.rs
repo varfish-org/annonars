@@ -106,7 +106,7 @@ fn query_for_variant(
         }
     }
 
-    todo!()
+    Ok(())
 }
 
 /// Implementation of `tsv query` sub command.
@@ -151,7 +151,7 @@ mod test {
         let args = Args {
             path_rocksdb: String::from("tests/freqs/example/freqs.db"),
             out_format: common::cli::OutputFormat::Jsonl,
-            path_output: todo!(),
+            path_output: temp.join("out").to_string_lossy().to_string(),
             variant,
         };
 
@@ -159,8 +159,37 @@ mod test {
     }
 
     #[test]
-    fn smoke_query_exomes_var_single_match() -> Result<(), anyhow::Error> {
-        let (common, args, _temp) = args_exomes(spdi::Var::from_str("GRCh37:1:55516885:G:A")?);
+    fn smoke_query_exomes_var_single_match_chr_1() -> Result<(), anyhow::Error> {
+        let (common, args, _temp) = args_exomes(spdi::Var::from_str("1:55516885:G:A")?);
+        run(&common, &args)?;
+        let out_data = std::fs::read_to_string(&args.path_output)?;
+        insta::assert_snapshot!(&out_data);
+
+        Ok(())
+    }
+
+    #[test]
+    fn smoke_query_exomes_var_single_match_chr_x() -> Result<(), anyhow::Error> {
+        let (common, args, _temp) = args_exomes(spdi::Var::from_str("X:69902557:G:T")?);
+        run(&common, &args)?;
+        let out_data = std::fs::read_to_string(&args.path_output)?;
+        insta::assert_snapshot!(&out_data);
+
+        Ok(())
+    }
+
+    #[test]
+    fn smoke_query_exomes_var_single_match_chr_y() -> Result<(), anyhow::Error> {
+        let (common, args, _temp) = args_exomes(spdi::Var::from_str("Y:4967199:G:T")?);
+        run(&common, &args)?;
+        let out_data = std::fs::read_to_string(&args.path_output)?;
+        insta::assert_snapshot!(&out_data);
+
+        Ok(())
+    }
+    #[test]
+    fn smoke_query_exomes_var_single_match_chr_mt() -> Result<(), anyhow::Error> {
+        let (common, args, _temp) = args_exomes(spdi::Var::from_str("M:11:C:T")?);
         run(&common, &args)?;
         let out_data = std::fs::read_to_string(&args.path_output)?;
         insta::assert_snapshot!(&out_data);
@@ -170,7 +199,7 @@ mod test {
 
     #[test]
     fn smoke_query_exomes_var_single_nomatch() -> Result<(), anyhow::Error> {
-        let (common, args, _temp) = args_exomes(spdi::Var::from_str("GRCh37:1:55516885:G:TT")?);
+        let (common, args, _temp) = args_exomes(spdi::Var::from_str("1:55516885:G:TT")?);
         run(&common, &args)?;
         let out_data = std::fs::read_to_string(&args.path_output)?;
         insta::assert_snapshot!(&out_data);

@@ -8,15 +8,9 @@ pub mod xy;
 use std::{collections::HashMap, sync::Arc};
 
 use clap::Parser;
-use hgvs::static_data::{Assembly, ASSEMBLY_INFOS};
+use hgvs::static_data::Assembly;
 
-use crate::{
-    common::{
-        self,
-        cli::{GenomeRelease, CANONICAL},
-    },
-    freqs,
-};
+use crate::{common, freqs};
 
 use reading::ContigMap;
 
@@ -71,101 +65,6 @@ pub struct Args {
     pub helixmtdb_version: String,
 }
 
-/// Guess the assembly from the given header.
-///
-/// If the header only contains chrM, for example, the result may be ambiguous. Use `ambiguous_ok`
-/// to allow or disallow this.  You can specify an initial value for the assembly to overcome
-/// issues.  If the result is incompatible with the `initial_assembly` then an error will
-/// be returned.
-pub fn guess_assembly(
-    vcf_header: &noodles_vcf::Header,
-    ambiguous_ok: bool,
-    initial_assembly: Option<Assembly>,
-) -> Result<Assembly, anyhow::Error> {
-    let mut result = initial_assembly;
-
-    let assembly_infos = vec![
-        (Assembly::Grch37p10, &ASSEMBLY_INFOS[Assembly::Grch37p10]),
-        (Assembly::Grch38, &ASSEMBLY_INFOS[Assembly::Grch38]),
-    ];
-
-    // Check each assembly.
-    for (assembly, info) in assembly_infos.iter() {
-        // Collect contig name / length pairs for the assembly.
-        let contig_map = ContigMap::new(*assembly);
-        let mut lengths = HashMap::new();
-        for seq in &info.sequences {
-            if CANONICAL.contains(&seq.name.as_str()) {
-                lengths.insert(
-                    contig_map.name_map.get(seq.name.as_str()).unwrap(),
-                    seq.length,
-                );
-            }
-        }
-
-        // Count compatible and incompatible contigs.
-        let mut incompatible = 0;
-        let mut compatible = 0;
-        for (name, data) in vcf_header.contigs() {
-            if let Some(length) = data.length() {
-                let idx = contig_map.name_map.get(name.as_ref());
-                if let Some(idx) = idx {
-                    let name = &info.sequences[*idx].name;
-                    if CANONICAL.contains(&name.as_ref()) {
-                        if *lengths.get(idx).unwrap() == length {
-                            compatible += 1;
-                        } else {
-                            incompatible += 1;
-                        }
-                    }
-                }
-            } else {
-                tracing::warn!(
-                    "Cannot guess assembly because no length for contig {}",
-                    &name
-                );
-                compatible = 0;
-                break;
-            }
-        }
-
-        if compatible > 0 && incompatible == 0 {
-            // Found a compatible assembly.  Check if we already have one and bail out if
-            // ambiguity is not allowed.  Anyway, we only keep the first found compatible
-            // assembly.
-            if let Some(result) = result {
-                if result != *assembly && !ambiguous_ok {
-                    return Err(anyhow::anyhow!(
-                        "Found ambiguity;  initial={:?}, previous={:?}, current={:?}",
-                        initial_assembly,
-                        result,
-                        assembly,
-                    ));
-                }
-                // else: do not re-assign
-            } else {
-                result = Some(*assembly);
-            }
-        } else {
-            // Found incompatible assembly, bail out if is the initial assembly.
-            if let Some(initial_assembly) = initial_assembly {
-                if initial_assembly == *assembly {
-                    return Err(anyhow::anyhow!(
-                        "Incompatible with initial assembly {:?}",
-                        result.unwrap()
-                    ));
-                }
-            }
-        }
-    }
-
-    if let Some(result) = result {
-        Ok(result)
-    } else {
-        Err(anyhow::anyhow!("No matching assembly found"))
-    }
-}
-
 /// Return mapping from chromosome to path.
 fn assign_to_chrom(
     paths: &Vec<String>,
@@ -178,7 +77,7 @@ fn assign_to_chrom(
         tracing::debug!("    path = {}", path);
         let mut reader = noodles_util::variant::reader::Builder::default().build_from_path(path)?;
         let header = Box::new(reader.read_header()?);
-        guess_assembly(header.as_ref(), true, Some(assembly))?;
+        freqs::cli::import::reading::guess_assembly(header.as_ref(), true, Some(assembly))?;
         let record = reader
             .records(header.as_ref())
             .next()
@@ -330,8 +229,8 @@ fn import_chrmt(
 pub fn run(_common: &common::cli::Args, args: &Args) -> Result<(), anyhow::Error> {
     // Guess genome release from paths.
     let genome_release = match args.genome_release {
-        GenomeRelease::Grch37 => Assembly::Grch37p10, // has chrMT!
-        GenomeRelease::Grch38 => Assembly::Grch38,
+        common::cli::GenomeRelease::Grch37 => Assembly::Grch37p10, // has chrMT!
+        common::cli::GenomeRelease::Grch38 => Assembly::Grch38,
     };
 
     // Open the RocksDB for writing.
@@ -455,59 +354,4 @@ pub fn run(_common: &common::cli::Args, args: &Args) -> Result<(), anyhow::Error
 
     tracing::info!("All done. Have a nice day!");
     Ok(())
-}
-
-#[cfg(test)]
-mod test {
-    use hgvs::static_data::Assembly;
-
-    use super::*;
-    use noodles_util::variant::reader::Builder as VariantReaderBuilder;
-
-    #[test]
-    fn guess_assembly_helix_chrmt_ambiguous_ok_initial_none() -> Result<(), anyhow::Error> {
-        let path = "tests/freqs/import/guess_assembly/helix.chrM.vcf";
-        let mut reader = VariantReaderBuilder::default().build_from_path(path)?;
-        let header = reader.read_header()?;
-
-        let actual = guess_assembly(&header, true, None)?;
-        assert_eq!(actual, Assembly::Grch37p10);
-
-        Ok(())
-    }
-
-    #[test]
-    fn guess_assembly_helix_chrmt_ambiguous_ok_initial_override() -> Result<(), anyhow::Error> {
-        let path = "tests/freqs/import/guess_assembly/helix.chrM.vcf";
-        let mut reader = VariantReaderBuilder::default().build_from_path(path)?;
-        let header = reader.read_header()?;
-
-        let actual = guess_assembly(&header, true, Some(Assembly::Grch37p10))?;
-        assert_eq!(actual, Assembly::Grch37p10);
-
-        Ok(())
-    }
-
-    #[test]
-    fn guess_assembly_helix_chrmt_ambiguous_ok_initial_override_fails() -> Result<(), anyhow::Error>
-    {
-        let path = "tests/freqs/import/guess_assembly/helix.chrM.vcf";
-        let mut reader = VariantReaderBuilder::default().build_from_path(path)?;
-        let header = reader.read_header()?;
-
-        assert!(guess_assembly(&header, false, Some(Assembly::Grch37)).is_err());
-
-        Ok(())
-    }
-
-    #[test]
-    fn guess_assembly_helix_chrmt_ambiguous_fail() -> Result<(), anyhow::Error> {
-        let path = "tests/freqs/import/guess_assembly/helix.chrM.vcf";
-        let mut reader = VariantReaderBuilder::default().build_from_path(path)?;
-        let header = reader.read_header()?;
-
-        assert!(guess_assembly(&header, false, None).is_err());
-
-        Ok(())
-    }
 }
