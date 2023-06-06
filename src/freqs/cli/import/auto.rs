@@ -10,6 +10,11 @@ fn write_record(
     record_genome: &mut Option<noodles_vcf::Record>,
     record_exome: &mut Option<noodles_vcf::Record>,
 ) -> Result<(), anyhow::Error> {
+    if record_genome.is_none() && record_exome.is_none() {
+        // Early exit, nothing to write out.
+        return Ok(())
+    }
+
     let count_genomes = if let Some(record_genome) = record_genome {
         freqs::serialized::auto::Counts::from_vcf_allele(record_genome, 0)
     } else {
@@ -30,7 +35,7 @@ fn write_record(
     auto_record.to_buf(&mut buf);
     let key: Vec<u8> = record_key.clone().into();
 
-    tracing::info!("  key = {:?}, record = {:?}", &record_key, &auto_record);
+    // tracing::info!("  key = {:?}, record = {:?}", &record_key, &auto_record);
 
     db.put_cf(cf, key, &buf)?;
 
@@ -82,158 +87,33 @@ pub fn import_region(
     let mut record_exome = None;
     for result in multi_query {
         let (idx, record) = result?;
-        // Shortcut to whether this from gnomAD genomes.
-        let is_genome = is_genome[idx];
         // Obtain the key of the next record.
         let curr_key = common::keys::Var::from_vcf_allele(&record, 0);
 
-        // Act on the current record.
-        match (
-            record_genome.as_mut(),
-            record_exome.as_mut(),
-            is_genome,
-            record_key.as_ref() == Some(&curr_key),
-        ) {
-            (None, None, _, true) => panic!("case cannot happen"),
-            (None, None, true, false) => {
-                // New key (=variant) at genome, no previous record.  Just update `record_genome`.
-                record_genome = Some(record);
-            }
-            (None, None, false, false) => {
-                // New key (=variant) at exome, no previous record.  Just update `record_exome`.
-                record_exome = Some(record);
-            }
-            (None, Some(_), true, true) => {
-                // Existing key (=variant) at genome, genome is unset.  Just update `record_genome`.
-                record_genome = Some(record);
-            }
-            (None, Some(_), true, false) => {
-                // New key (=variant) at genome, have previous exome record.  Write out records,
-                // clear `record_exome`, and set `record_genome`.
-
-                // Write out current records to database.
-                if let Some(record_key) = record_key.as_ref() {
-                    write_record(
-                        db,
-                        &cf_auto,
-                        record_key,
-                        &mut record_genome,
-                        &mut record_exome,
-                    )?;
-                }
-
-                // Update current records.
-                record_genome = Some(record);
-                record_exome = None;
-            }
-            (None, Some(_), false, true) => {
-                // Existing key (=variant) at exome, exome is already set.  We found a duplicate
-                // record in exome which is an error.
-                anyhow::bail!("Duplicate record in exomes at {:?}", &record);
-            }
-            (None, Some(_), false, false) => {
-                // New key (=variant) at exome, have previous exome record.  Write out records,
-                // and set `record_exome`.
-
-                // Update current records.
-                record_exome = Some(record);
-            }
-            (Some(_), None, true, true) => {
-                // Existing key (=variant) at genome, genome is already set.  We found a duplicate.
-                anyhow::bail!("Duplicate record in genomes at {:?}", &record);
-            }
-            (Some(_), None, true, false) => {
-                // New key (=variant) at genome, have previous genome record.  Write out records,
-                // and set `record_genome`.
-
-                // Write out current records to database.
-                if let Some(record_key) = record_key.as_ref() {
-                    write_record(
-                        db,
-                        &cf_auto,
-                        record_key,
-                        &mut record_genome,
-                        &mut record_exome,
-                    )?;
-                }
-
-                // Update current records.
-                record_genome = Some(record);
-            }
-            (Some(_), None, false, true) => {
-                // Existing key (=variant) at exome, exome is unset.  Just update `record_exome`.
-
-                // Update current records.
-                record_exome = Some(record);
-            }
-            (Some(_), None, false, false) => {
-                // New key (=variant) at exome, have previous genome record.  Write out records,
-                // clear `record_genome`, and set `record_exome`.
-
-                // Write out current records to database.
-                if let Some(record_key) = record_key.as_ref() {
-                    write_record(
-                        db,
-                        &cf_auto,
-                        record_key,
-                        &mut record_genome,
-                        &mut record_exome,
-                    )?;
-                }
-
-                // Update current records.
-                record_genome = None;
-                record_exome = Some(record);
-            }
-            (Some(_), Some(_), true, true) => {
-                // Existing key (=variant) at genome, genome is already set.  We found a duplicate.
-                anyhow::bail!("Duplicate record in genomes at {:?}", &record);
-            }
-            (Some(_), Some(_), true, false) => {
-                // New key (=variant) at genome, have both exome and genome record.  Write out
-                // both records, set `record_genome`, clear `record_exome`.
-
-                // Write out current records to database.
-                if let Some(record_key) = record_key.as_ref() {
-                    write_record(
-                        db,
-                        &cf_auto,
-                        record_key,
-                        &mut record_genome,
-                        &mut record_exome,
-                    )?;
-                }
-
-                // Update current records.
-                record_genome = Some(record);
-                record_exome = None;
-            }
-            (Some(_), Some(_), false, true) => {
-                // Existing key (=variant) at exome, exome is already set.  We found a duplicate.
-                anyhow::bail!("Duplicate record in exomes at {:?}", &record);
-            }
-            (Some(_), Some(_), false, false) => {
-                // Write out current records to database.
-                if let Some(record_key) = record_key.as_ref() {
-                    write_record(
-                        db,
-                        &cf_auto,
-                        record_key,
-                        &mut record_genome,
-                        &mut record_exome,
-                    )?;
-                }
-
-                // Update current records.
-                record_genome = None;
-                record_exome = Some(record);
-            }
-        }
-
-        // Update record key when necessary.
+        // Write out current records to database if we advance.
         if record_key.as_ref() != Some(&curr_key) {
-            record_key = Some(curr_key);
+            if let Some(record_key) = record_key.as_ref() {
+                write_record(
+                    db,
+                    &cf_auto,
+                    record_key,
+                    &mut record_genome,
+                    &mut record_exome,
+                )?;
+            }
+            record_genome = None;
+            record_exome = None;
         }
+
+        // Shortcut to whether this from gnomAD genomes.
+        if is_genome[idx] {
+            record_genome = Some(record);
+        } else {
+            record_exome = Some(record);
+        }
+
+        // Updating the current key cannot cause harm.
+        record_key = Some(curr_key);
     }
 
     // Write final records to database.

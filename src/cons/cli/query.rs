@@ -176,7 +176,6 @@ pub fn run(common: &common::cli::Args, args: &Args) -> Result<(), anyhow::Error>
 
             // Decode the record list and iterate it.
             let record_list = cons::pbs::RecordList::decode(value)?;
-            dbg!(&record_list);
             for record in &record_list.records {
                 // Skip record if end of iterator is before start of range.  This can happen as we
                 // jump two base pairs before the start position as alignment columns span one codon.

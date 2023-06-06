@@ -64,7 +64,7 @@ cargo run --all-features -- \
     --path-gnomad-genomes-xy tests/freqs/gnomad-genomes.X.vcf.bgz \
     \
     --gnomad-mtdna-version "3.1.1" \
-    --path-gnomad-mtdna tests/gnomad-mtdna/example/gnomad-mtdna.vcf.bgz \
+    --path-gnomad-mtdna tests/freqs/reading/gnomad.chrM.vcf.bgz \
     \
     --helixmtdb-version "20200327" \
-    --path-helixmtdb tests/helixmtdb/example/helixmtdb.vcf.bgz
+    --path-helixmtdb tests/freqs/reading/helix.chrM.vcf.bgz

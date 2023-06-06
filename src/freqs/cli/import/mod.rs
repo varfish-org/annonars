@@ -314,9 +314,8 @@ pub fn run(common: &common::cli::Args, args: &Args) -> Result<(), anyhow::Error>
     };
     let windows = build_windows(genome_release, args.tbi_window_size, &paths)?;
     windows
-        // .par_iter()
-        // .progress_with(common::cli::progress_bar(windows.len()))
-        .iter()
+        .par_iter()
+        .progress_with(common::cli::progress_bar(windows.len()))
         .map(|(chrom, begin, end)| {
             let start = noodles_core::position::Position::try_from(begin + 1)?;
             let stop = noodles_core::position::Position::try_from(*end)?;
