@@ -30,7 +30,7 @@ fn write_record(
     gono_record.to_buf(&mut buf);
     let key: Vec<u8> = record_key.clone().into();
 
-    db.put_cf(cf, &key, &buf)?;
+    db.put_cf(cf, key, &buf)?;
 
     Ok(())
 }
@@ -112,7 +112,7 @@ pub fn import_region(
                 // Write out current records to database.
                 if let Some(record_key) = record_key.as_ref() {
                     write_record(
-                        &db,
+                        db,
                         &cf_gono,
                         record_key,
                         &mut record_genome,
@@ -147,7 +147,7 @@ pub fn import_region(
                 // Write out current records to database.
                 if let Some(record_key) = record_key.as_ref() {
                     write_record(
-                        &db,
+                        db,
                         &cf_gono,
                         record_key,
                         &mut record_genome,
@@ -171,7 +171,7 @@ pub fn import_region(
                 // Write out current records to database.
                 if let Some(record_key) = record_key.as_ref() {
                     write_record(
-                        &db,
+                        db,
                         &cf_gono,
                         record_key,
                         &mut record_genome,
@@ -194,7 +194,7 @@ pub fn import_region(
                 // Write out current records to database.
                 if let Some(record_key) = record_key.as_ref() {
                     write_record(
-                        &db,
+                        db,
                         &cf_gono,
                         record_key,
                         &mut record_genome,
@@ -214,7 +214,7 @@ pub fn import_region(
                 // Write out current records to database.
                 if let Some(record_key) = record_key.as_ref() {
                     write_record(
-                        &db,
+                        db,
                         &cf_gono,
                         record_key,
                         &mut record_genome,

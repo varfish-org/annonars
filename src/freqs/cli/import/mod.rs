@@ -98,7 +98,7 @@ fn assign_to_chrom(
 pub fn build_windows(
     genome_release: hgvs::static_data::Assembly,
     tbi_window_size: usize,
-    paths: &Vec<String>,
+    paths: &[String],
 ) -> Result<Vec<(String, usize, usize)>, anyhow::Error> {
     let mut result = Vec::new();
 
