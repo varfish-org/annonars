@@ -279,11 +279,11 @@ impl Record {
     /// Extract the quality-related fields from the VCF record.
     fn extract_quality(record: &noodles_vcf::record::Record) -> Result<QualityInfo, anyhow::Error> {
         Ok(QualityInfo {
-            fs: common::noodles::get_f32(record, "FS")?,
+            fs: common::noodles::get_f32(record, "FS").ok(),
             inbreeding_coeff: common::noodles::get_f32(record, "InbreedingCoeff").ok(),
-            mq: common::noodles::get_f32(record, "MQ")?,
+            mq: common::noodles::get_f32(record, "MQ").ok(),
             mq_rank_sum: common::noodles::get_f32(record, "MQRankSum").ok(),
-            qd: common::noodles::get_f32(record, "QD")?,
+            qd: common::noodles::get_f32(record, "QD").ok(),
             read_pos_rank_sum: common::noodles::get_f32(record, "ReadPosRankSum").ok(),
             sor: common::noodles::get_f32(record, "SOR").ok(),
             vqsr_positive_train_site: common::noodles::get_flag(
@@ -296,7 +296,7 @@ impl Record {
             )?,
             base_q_rank_sum: common::noodles::get_f32(record, "BaseQRankSum").ok(),
             clipping_rank_sum: common::noodles::get_f32(record, "ClippingRankSum").ok(),
-            dp: common::noodles::get_i32(record, "DP")?,
+            dp: common::noodles::get_i32(record, "DP").ok(),
             vqslod: common::noodles::get_f32(record, "VQSLOD").ok(),
             vqsr_culprit: common::noodles::get_string(record, "VQSR_culprit").ok(),
             segdup: common::noodles::get_flag(record, "segdup")?,

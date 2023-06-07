@@ -147,7 +147,7 @@ message QualityInfo {
     // against the Hardy-Weinberg expectation.
     optional float inbreeding_coeff = 2;
     // Allele-specific root mean square of the mapping quality of reads across all samples
-    float as_mq = 3;
+    optional float as_mq = 3;
     // Z-score from Wilcoxon rank sum test of alternate vs. reference read mapping qualities.
     optional float mq_rank_sum = 4;
     // Allele-specific z-score from Wilcoxon rank sum test of alternate vs. reference read
@@ -155,21 +155,21 @@ message QualityInfo {
     optional float as_mq_rank_sum = 5;
     // Allele-specific variant call confidence normalized by depth of sample reads supporting a
     // variant.
-    float as_qd = 6;
+    optional float as_qd = 6;
     // Z-score from Wilcoxon rank sum test of alternate vs. reference read position bias.
     optional float read_pos_rank_sum = 7;
     // Allele-specific z-score from Wilcoxon rank sum test of alternate vs. reference read position bias.
     optional float as_read_pos_rank_sum = 8;
     // Allele-specific strand bias estimated by the symmetric odds ratio test.
-    float as_sor = 9;
+    optional float as_sor = 9;
     // Variant was used to build the positive training set of high-quality variants for VQSR.
     bool positive_train_site = 10;
     // Variant was used to build the negative training set of low-quality variants for VQSR.
     bool negative_train_site = 11;
     // Allele-specific log-odds ratio of being a true variant versus being a false positive under the trained VQSR Gaussian mixture model.
-    float as_vqslod = 12;
+    optional float as_vqslod = 12;
     // Allele-specific worst-performing annotation in the VQSR Gaussian mixture model.
-    string as_culprit = 13;
+    optional string as_culprit = 13;
     // Variant falls within a segmental duplication region.
     bool segdup = 14;
     // Variant falls within a low complexity region.
