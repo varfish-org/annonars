@@ -250,8 +250,8 @@ impl Record {
     /// Extract the quality-related fields from the VCF record.
     fn extract_quality(record: &noodles_vcf::record::Record) -> Result<QualityInfo, anyhow::Error> {
         Ok(QualityInfo {
-            as_fs: common::noodles::get_f32(record, "AS_FS")?,
-            inbreeding_coeff: common::noodles::get_f32(record, "InbreedingCoeff")?,
+            as_fs: common::noodles::get_f32(record, "AS_FS").ok(),
+            inbreeding_coeff: common::noodles::get_f32(record, "InbreedingCoeff").ok(),
             as_mq: common::noodles::get_f32(record, "AS_MQ")?,
             mq_rank_sum: common::noodles::get_f32(record, "MQRankSum").ok(),
             as_mq_rank_sum: common::noodles::get_f32(record, "AS_MQRankSum").ok(),

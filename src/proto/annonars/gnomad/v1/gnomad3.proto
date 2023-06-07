@@ -142,10 +142,10 @@ message DepthInfo {
 // Encapsulate quality-related information.
 message QualityInfo {
     // Allele-specific phred-scaled p-value of Fisher's exact test for strand bias.
-    float as_fs = 1;
+    optional float as_fs = 1;
     // Inbreeding coefficient as estimated from the genotype likelihoods per-sample when compared
     // against the Hardy-Weinberg expectation.
-    float inbreeding_coeff = 2;
+    optional float inbreeding_coeff = 2;
     // Allele-specific root mean square of the mapping quality of reads across all samples
     float as_mq = 3;
     // Z-score from Wilcoxon rank sum test of alternate vs. reference read mapping qualities.

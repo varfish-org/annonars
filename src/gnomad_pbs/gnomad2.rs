@@ -280,7 +280,7 @@ impl Record {
     fn extract_quality(record: &noodles_vcf::record::Record) -> Result<QualityInfo, anyhow::Error> {
         Ok(QualityInfo {
             fs: common::noodles::get_f32(record, "FS")?,
-            inbreeding_coeff: common::noodles::get_f32(record, "InbreedingCoeff")?,
+            inbreeding_coeff: common::noodles::get_f32(record, "InbreedingCoeff").ok(),
             mq: common::noodles::get_f32(record, "MQ")?,
             mq_rank_sum: common::noodles::get_f32(record, "MQRankSum").ok(),
             qd: common::noodles::get_f32(record, "QD")?,
@@ -297,8 +297,8 @@ impl Record {
             base_q_rank_sum: common::noodles::get_f32(record, "BaseQRankSum").ok(),
             clipping_rank_sum: common::noodles::get_f32(record, "ClippingRankSum").ok(),
             dp: common::noodles::get_i32(record, "DP")?,
-            vqslod: common::noodles::get_f32(record, "VQSLOD")?,
-            vqsr_culprit: common::noodles::get_string(record, "VQSR_culprit")?,
+            vqslod: common::noodles::get_f32(record, "VQSLOD").ok(),
+            vqsr_culprit: common::noodles::get_string(record, "VQSR_culprit").ok(),
             segdup: common::noodles::get_flag(record, "segdup")?,
             lcr: common::noodles::get_flag(record, "lcr")?,
             decoy: common::noodles::get_flag(record, "decoy")?,

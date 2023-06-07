@@ -120,7 +120,7 @@ message QualityInfo {
     float fs = 1;
     // Inbreeding coefficient as estimated from the genotype likelihoods per-sample when compared
     // against the Hardy-Weinberg expectation.
-    float inbreeding_coeff = 2;
+    optional float inbreeding_coeff = 2;
     // Root mean square of the mapping quality of reads across all samples.
     float mq = 3;
     // Z-score from Wilcoxon rank sum test of alternate vs. reference read mapping qualities.
@@ -144,9 +144,9 @@ message QualityInfo {
     int32 dp = 12;
     // Log-odds ratio of being a true variant versus being a false positive under the trained VQSR
     // Gaussian mixture model.
-    float vqslod = 13;
+    optional float vqslod = 13;
     // Allele-specific worst-performing annotation in the VQSR Gaussian mixture model
-    string vqsr_culprit = 14;
+    optional string vqsr_culprit = 14;
     // Variant falls within a segmental duplication region
     bool segdup = 15;
     // Variant falls within a low complexity region.
