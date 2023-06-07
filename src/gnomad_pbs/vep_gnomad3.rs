@@ -20,6 +20,10 @@ impl FromStr for Vep {
     fn from_str(s: &str) -> Result<Self, Self::Err> {
         let values = s.split('|').collect::<Vec<_>>();
 
+        if values.len() < 2 {
+            dbg!(s);
+        }
+
         Ok(Vep {
             allele: values[0].to_string(),
             consequence: values[1].to_string(),
