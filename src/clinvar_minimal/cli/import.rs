@@ -99,7 +99,12 @@ fn tsv_import(
         };
         let buf = record.encode_to_vec();
 
-        let var = keys::Var::from(&record.chromosome, record.start as i32, &record.reference, &record.alternative);
+        let var = keys::Var::from(
+            &record.chromosome,
+            record.start as i32,
+            &record.reference,
+            &record.alternative,
+        );
         let key: Vec<u8> = var.into();
 
         db.put_cf(&cf_data, key, buf)?;
