@@ -79,6 +79,19 @@ impl From<Pathogenicity> for pbs::Pathogenicity {
     }
 }
 
+impl From<i32> for Pathogenicity {
+    fn from(value: i32) -> Self {
+        match value {
+            0 => Pathogenicity::Pathogenic,
+            1 => Pathogenicity::LikelyPathogenic,
+            2 => Pathogenicity::UncertainSignificance,
+            3 => Pathogenicity::LikelyBenign,
+            4 => Pathogenicity::Benign,
+            _ => unreachable!(),
+        }
+    }
+}
+
 /// Representation of a record from the `clinvar-tsv` output.
 ///
 /// Note that the pathogenicity and review status are available in two fashions.  The first is
