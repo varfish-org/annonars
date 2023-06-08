@@ -19,10 +19,10 @@ Also:
 
 ## Running the CLI
 
-You can enable the annonars CLI by building the project with the `cli` feature:
+You can enable the annonars CLI by building the project with the `cli` feature (easiest done with `--all-features`):
 
 ```
-# cargo run --all-features cli -- --help
+# cargo run --all-features -- --help
 ```
 
 ## Working with TSV Files

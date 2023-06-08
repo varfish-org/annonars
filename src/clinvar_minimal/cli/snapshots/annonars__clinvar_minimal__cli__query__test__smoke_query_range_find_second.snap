@@ -1,0 +1,6 @@
+---
+source: src/clinvar_minimal/cli/query.rs
+expression: "&out_data"
+---
+{"release":"GRCh37","chromosome":"13","start":95227093,"end":95227093,"reference":"T","alternative":"C","vcv":"VCV000792370","summary_clinvar_pathogenicity":[3],"summary_clinvar_gold_stars":1,"summary_paranoid_pathogenicity":[3],"summary_paranoid_gold_stars":1}
+
