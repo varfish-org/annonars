@@ -1,8 +1,9 @@
+//! Genome annotation stored in `RocksDB`.
 #![allow(clippy::must_use_candidate)]
 #![allow(clippy::module_name_repetitions)]
 #![warn(missing_docs)]
-//! Genome annotation stored in `RocksDB`.
 
+pub mod clinvar_minimal;
 pub mod common;
 pub mod cons;
 pub mod db_utils;

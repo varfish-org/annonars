@@ -1,6 +1,7 @@
 // The custom build script, needed as we use flatbuffers.
 
 fn main() {
+    println!("cargo:rerun-if-changed=annonars/clinvar/v1/minimal.proto");
     println!("cargo:rerun-if-changed=annonars/cons/v1/base.proto");
     println!("cargo:rerun-if-changed=annonars/dbsnp/v1/base.proto");
     println!("cargo:rerun-if-changed=annonars/gnomad/v1/mtdna.proto");
@@ -32,6 +33,7 @@ fn main() {
         // Define the protobuf files to compile.
         .compile_protos(
             &[
+                "annonars/clinvar/v1/minimal.proto",
                 "annonars/cons/v1/base.proto",
                 "annonars/dbsnp/v1/base.proto",
                 "annonars/gnomad/v1/mtdna.proto",

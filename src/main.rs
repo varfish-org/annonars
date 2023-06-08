@@ -1,5 +1,6 @@
 use annonars::{
-    common, cons, db_utils, dbsnp, freqs, gnomad_mtdna, gnomad_nuclear, helixmtdb, tsv,
+    clinvar_minimal, common, cons, db_utils, dbsnp, freqs, gnomad_mtdna, gnomad_nuclear, helixmtdb,
+    tsv,
 };
 use anyhow::Error;
 use clap::{command, Args, Parser, Subcommand};
@@ -29,6 +30,8 @@ enum Commands {
     Tsv(Tsv),
     /// "cons" sub commands
     Cons(Cons),
+    /// "clinvar-minimal" sub commands
+    ClinvarMinimal(ClinvarMinimal),
     /// "freqs" sub commands
     Freqs(Freqs),
     /// "dbsnp" sub commands
@@ -58,6 +61,23 @@ enum TsvCommands {
     Import(tsv::cli::import::Args),
     /// "query" sub command
     Query(tsv::cli::query::Args),
+}
+
+/// Parsing of "clinvar-minimal" subcommand.
+#[derive(Debug, Args, Clone)]
+struct ClinvarMinimal {
+    /// The sub command to run
+    #[command(subcommand)]
+    command: ClinvarMinimalCommands,
+}
+
+/// Enum supporting the parsing of "clinvar-minimal *" subcommands.
+#[derive(Debug, Subcommand, Clone)]
+enum ClinvarMinimalCommands {
+    /// "import" sub command
+    Import(clinvar_minimal::cli::import::Args),
+    /// "query" sub command
+    Query(clinvar_minimal::cli::query::Args),
 }
 
 /// Parsing of "cons" subcommand.
@@ -203,6 +223,14 @@ pub fn main() -> Result<(), anyhow::Error> {
             Commands::Tsv(args) => match &args.command {
                 TsvCommands::Import(args) => tsv::cli::import::run(&cli.common, args)?,
                 TsvCommands::Query(args) => tsv::cli::query::run(&cli.common, args)?,
+            },
+            Commands::ClinvarMinimal(args) => match &args.command {
+                ClinvarMinimalCommands::Import(args) => {
+                    clinvar_minimal::cli::import::run(&cli.common, args)?
+                }
+                ClinvarMinimalCommands::Query(args) => {
+                    clinvar_minimal::cli::query::run(&cli.common, args)?
+                }
             },
             Commands::Cons(args) => match &args.command {
                 ConsCommands::Import(args) => cons::cli::import::run(&cli.common, args)?,

@@ -1,0 +1,45 @@
+// Minimal ClinVar variant information for use in Mehari.
+
+syntax = "proto3";
+
+package annonars.clinvar.v1.minimal;
+
+// Enumeration for ClinVar pathogenicity.
+enum Pathogenicity {
+    // Pathogenic.
+    PATHOGENIC = 0;
+    // Likely pathogenic.
+    LIKELY_PATHOGENIC = 1;
+    // Uncertain significance.
+    UNCERTAIN_SIGNIFICANCE = 2;
+    // Likely benign.
+    LIKELY_BENIGN = 3;
+    // Benign.
+    BENIGN = 4;
+}
+
+// Record for storing minimal information on ClinVar for Mehari.
+message Record {
+    // Genome release.
+    string release = 1;
+    // Chromosome name.
+    string chromosome = 2;
+    // 1-based start position.
+    uint32 start = 3;
+    // 1-based end position.
+    uint32 end = 4;
+    // Reference allele bases in VCF notation.
+    string reference = 5;
+    // Alternative allele bases in VCF notation.
+    string alternative = 6;
+    // VCV accession identifier.
+    string vcv = 7;
+    // Pathogenicity summary for the variant (ClinVar style).
+    repeated Pathogenicity summary_clinvar_pathogenicity = 8;
+    // Pathogenicity gold stars (ClinVar style).
+    uint32 summary_clinvar_gold_stars = 9;
+    // Pathogenicity summary for the variant ("paranoid" style).
+    repeated Pathogenicity summary_paranoid_pathogenicity = 10;
+    // Pathogenicity gold stars ("paranoid" style).
+    uint32 summary_paranoid_gold_stars = 11;
+}

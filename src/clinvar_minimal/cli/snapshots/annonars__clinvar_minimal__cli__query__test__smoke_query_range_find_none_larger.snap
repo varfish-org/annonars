@@ -1,0 +1,5 @@
+---
+source: src/clinvar_minimal/cli/query.rs
+expression: "&out_data"
+---
+
