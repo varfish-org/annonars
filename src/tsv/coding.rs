@@ -268,6 +268,11 @@ impl Context {
             }
         }
 
+        if !common::cli::is_canonical(&res.chrom) {
+            tracing::trace!("skipping on non-canonical chrom: {}", &res.chrom);
+            return Ok(None);
+        }
+
         Ok(Some(res))
     }
 }
