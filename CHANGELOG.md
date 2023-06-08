@@ -1,5 +1,12 @@
 # Changelog
 
+### [0.7.1](https://www.github.com/bihealth/annona-rs/compare/v0.7.0...v0.7.1) (2023-06-08)
+
+
+### Bug Fixes
+
+* various import issues occurring with varfish-db-downloader ([#71](https://www.github.com/bihealth/annona-rs/issues/71)) ([52296f9](https://www.github.com/bihealth/annona-rs/commit/52296f99a2e91bf05f64dab32dc762a4cc09cf93))
+
 ## [0.7.0](https://www.github.com/bihealth/annona-rs/compare/v0.6.0...v0.7.0) (2023-06-06)
 
 
