@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.9.0](https://www.github.com/bihealth/annona-rs/compare/v0.8.0...v0.9.0) (2023-06-09)
+
+
+### Code Refactoring
+
+* replace rocks_utils by rocksdb-utils-lookup crate ([#76](https://www.github.com/bihealth/annona-rs/issues/76)) ([52ccb96](https://www.github.com/bihealth/annona-rs/commit/52ccb96cc766ac2d3fb32eea0b98dcce781cfc91))
+
 ## [0.8.0](https://www.github.com/bihealth/annona-rs/compare/v0.7.0...v0.8.0) (2023-06-08)
 
 
