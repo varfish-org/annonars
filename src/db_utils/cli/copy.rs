@@ -175,7 +175,7 @@ pub fn run(common: &common::cli::Args, args: &Args) -> Result<(), anyhow::Error>
     };
 
     tracing::info!("Opening output database");
-    let options = common::rocks_utils::tune_options(
+    let options = rocksdb_utils_lookup::tune_options(
         rocksdb::Options::default(),
         args.path_wal_dir.as_ref().map(|s| s.as_ref()),
     );
@@ -227,7 +227,7 @@ pub fn run(common: &common::cli::Args, args: &Args) -> Result<(), anyhow::Error>
     // Finally, compact manually.
     tracing::info!("Running RocksDB compaction ...");
     let before_compaction = std::time::Instant::now();
-    common::rocks_utils::force_compaction_cf(&db_write, cf_names, Some("  "), true)?;
+    rocksdb_utils_lookup::force_compaction_cf(&db_write, cf_names, Some("  "), true)?;
     tracing::info!(
         "... done compacting RocksDB in {:?}",
         before_compaction.elapsed()
