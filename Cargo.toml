@@ -5,7 +5,7 @@ edition = "2021"
 authors = ["Manuel Holtgrewe <manuel.holtgrewe@bih-charite.de>"]
 description = "Rust template repository"
 license = "Apache-2.0"
-homepage = "https://github.com/bihealth/annonars"
+homepage = "https://github.com/bihealth/annona-rs"
 readme = "README.md"
 autobins = false
 
@@ -18,35 +18,35 @@ name = "annonars"
 path = "src/main.rs"
 
 [dependencies]
+anyhow = "1.0"
+bgzip = "0.3"
 boolvec = "0.2"
 byteorder = "1.4"
-log = "0.4"
-rocksdb = { version = "0.21", features = ["multi-threaded-cf"] }
-rocksdb-utils-lookup = "0.1"
-serde = { version = "1.0", features = ["derive"] }
-serde_json = { version = "1.0", features=["preserve_order"] }
-thiserror = "1.0"
-tracing = "0.1"
-tracing-subscriber = "0.3"
 clap = { version = "4.1", features = ["derive", "env"] }
 clap-verbosity-flag = "2.0"
-anyhow = "1.0"
-strum = { version = "0.24", features = ["strum_macros", "derive"] }
-rayon = "1.7"
-indicatif = { version = "0.17", features = ["rayon"] }
+csv = "1.2"
+env_logger = "0.10"
 flate2 = "1.0"
-bgzip = "0.3"
+hgvs = "0.9"
+indicatif = { version = "0.17", features = ["rayon"] }
+log = "0.4"
 noodles-bed = "0.9.0"
 noodles-bgzf = "0.22"
 noodles-core = "0.11"
 noodles-csi = "0.19"
 noodles-tabix = "0.22"
 noodles-vcf = "0.31"
-hgvs = "0.8"
 prost = "0.11"
-csv = "1.2"
-env_logger = "0.10"
+rayon = "1.7"
+rocksdb = { version = "0.21", features = ["multi-threaded-cf"] }
+rocksdb-utils-lookup = "0.1"
+serde = { version = "1.0", features = ["derive"] }
+serde_json = { version = "1.0", features=["preserve_order"] }
 serde_with = "3.0"
+strum = { version = "0.24", features = ["strum_macros", "derive"] }
+thiserror = "1.0"
+tracing = "0.1"
+tracing-subscriber = "0.3"
 
 [build-dependencies]
 prost-build = "0.11"
