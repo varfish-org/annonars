@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.10.0](https://www.github.com/bihealth/annona-rs/compare/v0.9.0...v0.10.0) (2023-06-12)
+
+
+### Features
+
+* thread safety in hgvs dependency ([#78](https://www.github.com/bihealth/annona-rs/issues/78)) ([e642397](https://www.github.com/bihealth/annona-rs/commit/e642397bad4a88702ed146c3d7027f3d6c81df9a))
+
 ## [0.9.0](https://www.github.com/bihealth/annona-rs/compare/v0.8.0...v0.9.0) (2023-06-09)
 
 
