@@ -1,6 +1,6 @@
 use annonars::{
     clinvar_minimal, common, cons, db_utils, dbsnp, freqs, gnomad_mtdna, gnomad_nuclear, helixmtdb,
-    tsv,
+    server, tsv,
 };
 use anyhow::Error;
 use clap::{command, Args, Parser, Subcommand};
@@ -44,6 +44,8 @@ enum Commands {
     GnomadNuclear(GnomadNuclear),
     /// "db-utils" sub commands
     DbUtils(DbUtils),
+    /// "run-server" command.
+    RunServer(server::Args),
 }
 
 /// Parsing of "tsv" subcommand
@@ -270,6 +272,7 @@ pub fn main() -> Result<(), anyhow::Error> {
                     db_utils::cli::dump_meta::run(&cli.common, args)?
                 }
             },
+            Commands::RunServer(args) => server::run(&cli.common, args)?,
         }
 
         Ok::<(), Error>(())

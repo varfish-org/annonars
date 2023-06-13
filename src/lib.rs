@@ -14,6 +14,7 @@ pub mod gnomad_mtdna;
 pub mod gnomad_nuclear;
 pub mod gnomad_pbs;
 pub mod helixmtdb;
+pub mod server;
 pub mod tsv;
 
 pub use crate::error::*;
