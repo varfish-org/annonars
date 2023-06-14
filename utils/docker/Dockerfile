@@ -18,7 +18,7 @@ FROM rust:1-buster AS builder
 #
 # Install dependencies for compilation of C code (e.g., rocksdb).
 RUN apt-get update && \
-    apt-get install -y clang cmake
+    apt-get install -y clang
 # Add the needed Cargo components.
 RUN rustup component add rustfmt
 # Install build dependency `protoc`.
