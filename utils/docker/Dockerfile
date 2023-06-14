@@ -4,6 +4,8 @@
 #
 # We don't do cross compilation at the moment but build the dependencies first
 # anyway to get the ability to increment.
+#
+#
 
 # ---------------------------------------------------------------------------
 # Builder
@@ -33,6 +35,7 @@ WORKDIR /usr/src
 RUN USER=root cargo new annona-rs
 # We want dependencies cached, so copy those first.
 COPY Cargo.toml Cargo.lock /usr/src/annona-rs/
+RUN touch /usr/src/annona-rs/src/lib.rs
 # Set the working directory.
 WORKDIR /usr/src/annona-rs
 # This is a dummy build to get the dependencies cached.
@@ -57,7 +60,7 @@ FROM debian:buster-slim AS runtime
 
 # Copy application binary from builder image
 COPY --from=builder \
-    /usr/src/annona-rs/target/release/annona-rs \
+    /usr/src/annona-rs/target/release/annonars \
     /usr/local/bin
 
 # Copy the entrypoint script and make it executable.
