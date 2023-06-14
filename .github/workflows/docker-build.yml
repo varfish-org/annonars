@@ -4,7 +4,6 @@ on:
       - 'v**'
     branches:
       - main
-      - ci-build-docker-images
 
 name: Docker Build
 
