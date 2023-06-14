@@ -1,7 +1,7 @@
 .vscode
 
 /target
-/Cargo.lock
+#/Cargo.lock
 
 *~
 .*.sw?
