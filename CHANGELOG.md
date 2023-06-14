@@ -1,5 +1,17 @@
 # Changelog
 
+## [0.11.0](https://www.github.com/bihealth/annona-rs/compare/v0.10.0...v0.11.0) (2023-06-14)
+
+
+### Features
+
+* moved REST API server code from worker ([#80](https://www.github.com/bihealth/annona-rs/issues/80)) ([#83](https://www.github.com/bihealth/annona-rs/issues/83)) ([cd97a44](https://www.github.com/bihealth/annona-rs/commit/cd97a44035b1fed96152e4a8f080ccd6ce8e9446))
+
+
+### Bug Fixes
+
+* remove unused dependencies ([#81](https://www.github.com/bihealth/annona-rs/issues/81)) ([5f861c4](https://www.github.com/bihealth/annona-rs/commit/5f861c4a654614ae7861e12cc83bad30f5902ac0))
+
 ## [0.10.0](https://www.github.com/bihealth/annona-rs/compare/v0.9.0...v0.10.0) (2023-06-12)
 
 
