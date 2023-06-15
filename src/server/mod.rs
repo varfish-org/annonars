@@ -88,6 +88,13 @@ impl AnnoDb {
     }
 }
 
+/// Gene information database.
+#[derive(Debug)]
+pub struct GeneInfoDb {
+    /// The database.
+    pub db: rocksdb::DBWithThreadMode<rocksdb::MultiThreaded>,
+}
+
 /// Genome-release specific annotation for each database.
 pub type ReleaseAnnos =
     enum_map::EnumMap<AnnoDb, Option<rocksdb::DBWithThreadMode<rocksdb::MultiThreaded>>>;
@@ -137,6 +144,8 @@ fn fetch_db_info(
 /// Data for the web server.
 #[derive(Debug, Default)]
 pub struct WebServerData {
+    /// Gene information database.
+    pub genes: Option<GeneInfoDb>,
     /// Release-specific annotations for each `GenomeRelease`.
     pub annos: enum_map::EnumMap<GenomeRelease, ReleaseAnnos>,
     /// Version information for each database.
@@ -148,8 +157,11 @@ pub struct WebServerData {
 /// Each path can be given more than one time to support multiple releases.  When the server
 /// is started, it needs to be given a file for each database with each release.
 #[derive(Parser, Debug, Clone)]
-#[command(author, version, about = "Run variant annotation REST API", long_about = None)]
+#[command(author, version, about = "Run annonars REST API", long_about = None)]
 pub struct Args {
+    /// Path to genes database.
+    #[arg(long)]
+    pub path_genes: Option<String>,
     /// CADD database(s), one for each release.
     #[arg(long)]
     pub path_cadd: Vec<String>,
@@ -226,6 +238,20 @@ pub fn run(args_common: &common::cli::Args, args: &Args) -> Result<(), anyhow::E
 
     tracing::info!("Opening databases...");
     let before_opening = Instant::now();
+    if let Some(path_genes) = args.path_genes.as_ref() {
+        tracing::info!("Opening genes database {}...", path_genes);
+        let before_open = Instant::now();
+        let genes = open_db(path_genes, "genes")?;
+        tracing::info!(
+            "...done opening genes database in {:?}",
+            before_open.elapsed()
+        );
+        let genes = GeneInfoDb { db: genes };
+        tracing::info!(
+            "...done opening genes database in {:?}",
+            before_opening.elapsed()
+        );
+    }
     // Argument lists from the command line with the corresponding database enum value.
     let paths_db_pairs = vec![
         (&args.path_cadd, AnnoDb::Cadd),
@@ -277,6 +303,11 @@ pub fn run(args_common: &common::cli::Args, args: &Args) -> Result<(), anyhow::E
 
     tracing::info!(
         "Launching server main on http://{}:{} ...",
+        args.listen_host.as_str(),
+        args.listen_port
+    );
+    tracing::info!(
+        "  try: http://{}:{}/genes/info?hgnc-id=HGNC:12403",
         args.listen_host.as_str(),
         args.listen_port
     );
