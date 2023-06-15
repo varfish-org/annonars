@@ -70,7 +70,7 @@ async fn handle(
         .get_cf(&cf_meta, "builder-version")
         .map_err(|e| CustomError::new(anyhow::anyhow!("problem querying database: {}", e)))?
         .expect("database missing 'builder-version' key?");
-    let builder_version = std::str::from_utf8(raw_builder_version)
+    let _builder_version = std::str::from_utf8(raw_builder_version)
         .map_err(|e| CustomError::new(anyhow::anyhow!("problem decoding value: {}", e)))?
         .to_string();
 

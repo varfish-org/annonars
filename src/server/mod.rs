@@ -246,7 +246,7 @@ pub fn run(args_common: &common::cli::Args, args: &Args) -> Result<(), anyhow::E
             "...done opening genes database in {:?}",
             before_open.elapsed()
         );
-        let genes = GeneInfoDb { db: genes };
+        let _genes = GeneInfoDb { db: genes };
         tracing::info!(
             "...done opening genes database in {:?}",
             before_opening.elapsed()
