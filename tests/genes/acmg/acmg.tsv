@@ -1,0 +1,4 @@
+hgnc_id	ensembl_gene_id	ncbi_gene_id	gene_symbol	mim_gene_id	disease_phenotype	disorder_mim	phenotype_category	inheritance	sf_list_version	variants_to_report
+HGNC:130	ENSG00000107796	59	ACTA2	102620	Familial thoracic aortic aneurysm	611788	Cardiovascular	AD	1.0	All P and LP
+HGNC:143	ENSG00000159251	70	ACTC1	102540	Hypertrophic cardiomyopathy	612098	Cardiovascular	AD	1.0	All P and LP
+HGNC:175	ENSG00000139567	94	ACVRL1	601284	Hereditary hemorrhagic telangiectasia	600376	Miscellaneous	AD	3.0	All P and LP
