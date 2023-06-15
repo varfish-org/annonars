@@ -1,6 +1,6 @@
 use annonars::{
-    clinvar_minimal, common, cons, db_utils, dbsnp, freqs, genes, gnomad_mtdna, gnomad_nuclear, helixmtdb,
-    server, tsv,
+    clinvar_minimal, common, cons, db_utils, dbsnp, freqs, genes, gnomad_mtdna, gnomad_nuclear,
+    helixmtdb, server, tsv,
 };
 use anyhow::Error;
 use clap::{command, Args, Parser, Subcommand};

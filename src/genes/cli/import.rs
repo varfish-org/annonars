@@ -11,9 +11,12 @@ use indicatif::ProgressIterator;
 use prost::Message;
 use tracing::info;
 
-use crate::{genes::pbs, common::{version, self}};
+use crate::{
+    common::{self, version},
+    genes::pbs,
+};
 
-use super::data::{acmg_sf, dbnsfp_gene, gnomad_constraints, hgnc, ncbi, self};
+use super::data::{self, acmg_sf, dbnsfp_gene, gnomad_constraints, hgnc, ncbi};
 
 /// Command line arguments for `genes import` sub command.
 #[derive(Parser, Debug, Clone)]

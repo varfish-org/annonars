@@ -1,0 +1,154 @@
+---
+source: src/genes/cli/data.rs
+expression: records
+---
+- hgnc_id: "HGNC:12403"
+  symbol: TTN
+  name: titin
+  locus_group: protein-coding gene
+  locus_type: gene with protein product
+  status: Approved
+  location: 2q31.2
+  location_sortable: 02q31.2
+  alias_symbol:
+    - CMPD4
+    - FLJ32040
+    - TMD
+    - CMH9
+    - LGMD2J
+    - MYLK5
+  prev_symbol:
+    - CMD1G
+  prev_name:
+    - "cardiomyopathy, dilated 1G (autosomal dominant)"
+  gene_group:
+    - Fibronectin type III domain containing
+    - I-set domain containing
+    - Myosin light chain kinase family
+  gene_group_id:
+    - 555
+    - 593
+    - 1668
+  date_approved_reserved: 1991-06-07
+  date_name_changed: 2004-02-13
+  date_modified: 2023-03-15
+  entrez_id: "7273"
+  ensembl_gene_id: ENSG00000155657
+  vega_id: OTTHUMG00000154448
+  ucsc_id: uc031rqc.3
+  ena:
+    - X90568
+  refseq_accession:
+    - NM_133378
+  ccds_id:
+    - CCDS54423
+    - CCDS54424
+    - CCDS33337
+    - CCDS54421
+    - CCDS54422
+    - CCDS59435
+  uniprot_ids:
+    - Q8WZ42
+  pubmed_id:
+    - 2129545
+    - 10051295
+  mgd_id:
+    - "MGI:98864"
+  rgd_id:
+    - "RGD:621114"
+  lsdb:
+    - "http://www.angis.org.au/Databases/Heart/heartbreak.html|FHC Mutation Database"
+    - "http://www.LOVD.nl/TTN|TTN @ LOVD"
+    - "http://www.dmd.nl/nmdb2/home.php?select_db=TTN|Leiden Muscular Dystrophy pages"
+    - "http://ftp.ebi.ac.uk/pub/databases/lrgex/LRG_391.xml|LRG_391"
+  omim_id:
+    - "188840"
+  orphanet: 120326
+  iuphar: "objectId:2265"
+  agr: "HGNC:12403"
+  mane_select:
+    - ENST00000589042.5
+    - NM_001267550.2
+- hgnc_id: "HGNC:1097"
+  symbol: BRAF
+  name: "B-Raf proto-oncogene, serine/threonine kinase"
+  locus_group: protein-coding gene
+  locus_type: gene with protein product
+  status: Approved
+  location: 7q34
+  location_sortable: 07q34
+  alias_symbol:
+    - BRAF1
+    - BRAF-1
+  prev_name:
+    - v-raf murine sarcoma viral oncogene homolog B
+  gene_group:
+    - Mitogen-activated protein kinase kinase kinases
+    - RAF family
+  gene_group_id:
+    - 654
+    - 1157
+  date_approved_reserved: 1991-07-16
+  date_name_changed: 2014-06-26
+  date_modified: 2023-01-20
+  entrez_id: "673"
+  ensembl_gene_id: ENSG00000157764
+  vega_id: OTTHUMG00000157457
+  ucsc_id: uc003vwc.5
+  ena:
+    - M95712
+  refseq_accession:
+    - NM_004333
+  ccds_id:
+    - CCDS94219
+    - CCDS87555
+    - CCDS94218
+    - CCDS5863
+  uniprot_ids:
+    - P15056
+  pubmed_id:
+    - 2284096
+    - 1565476
+  mgd_id:
+    - "MGI:88190"
+  rgd_id:
+    - "RGD:619908"
+  lsdb:
+    - "http://ftp.ebi.ac.uk/pub/databases/lrgex/LRG_299.xml|LRG_299"
+  cosmic: BRAF
+  omim_id:
+    - "164757"
+  orphanet: 119066
+  iuphar: "objectId:1943"
+  agr: "HGNC:1097"
+  mane_select:
+    - ENST00000646891.2
+    - NM_004333.6
+- hgnc_id: "HGNC:8"
+  symbol: A2MP1
+  name: alpha-2-macroglobulin pseudogene 1
+  locus_group: pseudogene
+  locus_type: pseudogene
+  status: Approved
+  location: 12p13.31
+  location_sortable: 12p13.31
+  prev_symbol:
+    - A2MP
+  prev_name:
+    - alpha-2-macroglobulin pseudogene
+  date_approved_reserved: 1991-09-12
+  date_symbol_changed: 2010-02-24
+  date_name_changed: 2010-02-24
+  date_modified: 2016-08-22
+  entrez_id: "3"
+  ensembl_gene_id: ENSG00000256069
+  vega_id: OTTHUMG00000168334
+  ena:
+    - M24415
+  refseq_accession:
+    - NG_001067
+  pubmed_id:
+    - 2478422
+  pseudogene.org: PGOHUM00000291221
+  agr: "HGNC:8"
+

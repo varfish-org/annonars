@@ -1347,7 +1347,7 @@ mod tests {
 
     #[test]
     fn deserialize_acmg_sf_record() -> Result<(), anyhow::Error> {
-        let path_json = "tests/db/genes/ncbi/gene_info.jsonl";
+        let path_json = "tests/genes/ncbi/gene_info.jsonl";
         let str_json = std::fs::read_to_string(path_json)?;
         let records = str_json
             .lines()
@@ -1361,7 +1361,7 @@ mod tests {
 
     #[test]
     fn deserialize_dbnsfp_record() -> Result<(), anyhow::Error> {
-        let path_tsv = "tests/db/genes/dbnsfp/genes.tsv";
+        let path_tsv = "tests/genes/dbnsfp/genes.tsv";
         let str_tsv = std::fs::read_to_string(path_tsv)?;
         let mut rdr = csv::ReaderBuilder::new()
             .delimiter(b'\t')
@@ -1376,7 +1376,7 @@ mod tests {
 
     #[test]
     fn deserialize_hgnc_record() -> Result<(), anyhow::Error> {
-        let path_json = "tests/db/genes/hgnc/hgnc_info.jsonl";
+        let path_json = "tests/genes/hgnc/hgnc_info.jsonl";
         let str_json = std::fs::read_to_string(path_json)?;
         let records = str_json
             .lines()
@@ -1390,7 +1390,7 @@ mod tests {
 
     #[test]
     fn deserialize_gnomad_constraints() -> Result<(), anyhow::Error> {
-        let path_tsv = "tests/db/genes/gnomad_constraints/gnomad_constraints.tsv";
+        let path_tsv = "tests/genes/gnomad_constraints/gnomad_constraints.tsv";
         let str_tsv = std::fs::read_to_string(path_tsv)?;
         let mut rdr = csv::ReaderBuilder::new()
             .delimiter(b'\t')
@@ -1405,7 +1405,7 @@ mod tests {
 
     #[test]
     fn deserialize_ncbi_record() -> Result<(), anyhow::Error> {
-        let path_tsv = "tests/db/genes/acmg/acmg.tsv";
+        let path_tsv = "tests/genes/acmg/acmg.tsv";
         let str_tsv = std::fs::read_to_string(path_tsv).unwrap();
         let mut rdr = csv::ReaderBuilder::new()
             .delimiter(b'\t')
