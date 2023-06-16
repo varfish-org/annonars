@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.12.0](https://www.github.com/bihealth/annona-rs/compare/v0.11.0...v0.12.0) (2023-06-16)
+
+
+### Features
+
+* port over genes db from worker ([#86](https://www.github.com/bihealth/annona-rs/issues/86)) ([#87](https://www.github.com/bihealth/annona-rs/issues/87)) ([608a36b](https://www.github.com/bihealth/annona-rs/commit/608a36bf7716ebe63f0a1624d7f9553403cef15d))
+
 ## [0.11.0](https://www.github.com/bihealth/annona-rs/compare/v0.10.0...v0.11.0) (2023-06-14)
 
 
