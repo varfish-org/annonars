@@ -30,6 +30,8 @@ set -euo pipefail
 #   PATH_DB_HELIXMTDB_38      -- path to HelixMTdb database for GRCh38, defaults to $PATH_DB_BASE/grch38/helixmtdb/rocksdb
 #   PATH_DB_CONS_37           -- path to UCSC conservation database for GRCh37, defaults to $PATH_DB_BASE/grch37/cons/rocksdb
 #   PATH_DB_CONS_38           -- path to UCSC conservation database for GRCh38, defaults to $PATH_DB_BASE/grch38/cons/rocksdb
+#
+#   PATH_GENES                -- path to the genes RocksDB, defaults to $PATH_DB_BASE/genes/rocksdb
 
 PATH_DB_BASE=${PATH_HPO_DIR-/data/annonars}
 HTTP_HOST=${HTTP_HOST-0.0.0.0}
@@ -53,6 +55,7 @@ PATH_DB_HELIXMTDB_37=${PATH_DB_HELIXMTDB_37-$PATH_DB_BASE/grch37/helixmtdb/rocks
 PATH_DB_HELIXMTDB_38=${PATH_DB_HELIXMTDB_38-$PATH_DB_BASE/grch38/helixmtdb/rocksdb}
 PATH_DB_CONS_37=${PATH_DB_CONS_37-$PATH_DB_BASE/grch37/cons/rocksdb}
 PATH_DB_CONS_38=${PATH_DB_CONS_38-$PATH_DB_BASE/grch38/cons/rocksdb}
+PATH_GENES=${PATH_GENES-$PATH_DB_BASE/genes/rocksdb}
 
 first=${1-}
 
@@ -81,6 +84,7 @@ else
       $(test -e $PATH_DB_HELIXMTDB_38 && echo --path-helixmtdb $PATH_DB_HELIXMTDB_38) \
       $(test -e $PATH_DB_CONS_37 && echo --path-ucsc-conservation $PATH_DB_CONS_37) \
       $(test -e $PATH_DB_CONS_38 && echo --path-ucsc-conservation $PATH_DB_CONS_38) \
+      $(test -e $PATH_GENES && echo --path-ucsc-conservation $PATH_GENES) \
       \
       --listen-host "$HTTP_HOST" \
       --listen-port "$HTTP_PORT"

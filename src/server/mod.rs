@@ -237,7 +237,9 @@ pub fn run(args_common: &common::cli::Args, args: &Args) -> Result<(), anyhow::E
     }
 
     tracing::info!("Opening databases...");
+    let mut data = WebServerData::default();
     let before_opening = Instant::now();
+
     if let Some(path_genes) = args.path_genes.as_ref() {
         tracing::info!("Opening genes database {}...", path_genes);
         let before_open = Instant::now();
@@ -246,7 +248,7 @@ pub fn run(args_common: &common::cli::Args, args: &Args) -> Result<(), anyhow::E
             "...done opening genes database in {:?}",
             before_open.elapsed()
         );
-        let _genes = GeneInfoDb { db: genes };
+        data.genes = Some(GeneInfoDb { db: genes });
         tracing::info!(
             "...done opening genes database in {:?}",
             before_opening.elapsed()
@@ -279,7 +281,6 @@ pub fn run(args_common: &common::cli::Args, args: &Args) -> Result<(), anyhow::E
         .collect::<Vec<_>>();
     // Open the corresponding databases in parallel and extract database infos.  Store the
     // resulting database infos in `data`.
-    let mut data = WebServerData::default();
     path_db_pairs
         .par_iter()
         .progress_with(crate::common::cli::progress_bar(path_db_pairs.len()))
