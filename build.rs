@@ -36,6 +36,7 @@ fn main() {
                 "annonars/clinvar/v1/minimal.proto",
                 "annonars/cons/v1/base.proto",
                 "annonars/dbsnp/v1/base.proto",
+                "annonars/gene/v1/base.proto",
                 "annonars/gnomad/v1/mtdna.proto",
                 "annonars/gnomad/v1/gnomad2.proto",
                 "annonars/gnomad/v1/gnomad3.proto",

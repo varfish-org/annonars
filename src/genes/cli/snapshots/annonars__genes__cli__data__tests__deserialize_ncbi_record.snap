@@ -1,0 +1,38 @@
+---
+source: src/genes/cli/data.rs
+expression: records
+---
+- hgnc_id: "HGNC:130"
+  ensembl_gene_id: ENSG00000107796
+  ncbi_gene_id: "59"
+  gene_symbol: ACTA2
+  mim_gene_id: "102620"
+  disease_phenotype: Familial thoracic aortic aneurysm
+  disorder_mim: "611788"
+  phenotype_category: Cardiovascular
+  inheritance: AD
+  sf_list_version: "1.0"
+  variants_to_report: All P and LP
+- hgnc_id: "HGNC:143"
+  ensembl_gene_id: ENSG00000159251
+  ncbi_gene_id: "70"
+  gene_symbol: ACTC1
+  mim_gene_id: "102540"
+  disease_phenotype: Hypertrophic cardiomyopathy
+  disorder_mim: "612098"
+  phenotype_category: Cardiovascular
+  inheritance: AD
+  sf_list_version: "1.0"
+  variants_to_report: All P and LP
+- hgnc_id: "HGNC:175"
+  ensembl_gene_id: ENSG00000139567
+  ncbi_gene_id: "94"
+  gene_symbol: ACVRL1
+  mim_gene_id: "601284"
+  disease_phenotype: Hereditary hemorrhagic telangiectasia
+  disorder_mim: "600376"
+  phenotype_category: Miscellaneous
+  inheritance: AD
+  sf_list_version: "3.0"
+  variants_to_report: All P and LP
+

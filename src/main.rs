@@ -1,6 +1,6 @@
 use annonars::{
-    clinvar_minimal, common, cons, db_utils, dbsnp, freqs, gnomad_mtdna, gnomad_nuclear, helixmtdb,
-    server, tsv,
+    clinvar_minimal, common, cons, db_utils, dbsnp, freqs, genes, gnomad_mtdna, gnomad_nuclear,
+    helixmtdb, server, tsv,
 };
 use anyhow::Error;
 use clap::{command, Args, Parser, Subcommand};
@@ -26,6 +26,8 @@ struct Cli {
 /// Enum supporting the parsing of top-level commands.
 #[derive(Debug, Subcommand, Clone)]
 enum Commands {
+    /// "genes" sub commands
+    Gene(Gene),
     /// "tsv" sub commands
     Tsv(Tsv),
     /// "cons" sub commands
@@ -46,6 +48,23 @@ enum Commands {
     DbUtils(DbUtils),
     /// "run-server" command.
     RunServer(server::Args),
+}
+
+/// Parsing of "gene" subcommand
+#[derive(Debug, Args, Clone)]
+struct Gene {
+    /// The sub command to run
+    #[command(subcommand)]
+    command: GeneCommands,
+}
+
+/// Enum supporting the parsing of "gene *" subcommands.
+#[derive(Debug, Subcommand, Clone)]
+enum GeneCommands {
+    /// "import" sub command
+    Import(genes::cli::import::Args),
+    /// "query" sub command
+    Query(genes::cli::query::Args),
 }
 
 /// Parsing of "tsv" subcommand
@@ -222,6 +241,10 @@ pub fn main() -> Result<(), anyhow::Error> {
 
     tracing::subscriber::with_default(collector, || {
         match &cli.command {
+            Commands::Gene(args) => match &args.command {
+                GeneCommands::Import(args) => genes::cli::import::run(&cli.common, args)?,
+                GeneCommands::Query(args) => genes::cli::query::run(&cli.common, args)?,
+            },
             Commands::Tsv(args) => match &args.command {
                 TsvCommands::Import(args) => tsv::cli::import::run(&cli.common, args)?,
                 TsvCommands::Query(args) => tsv::cli::query::run(&cli.common, args)?,
