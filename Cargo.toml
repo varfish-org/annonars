@@ -34,12 +34,12 @@ hgvs = "0.9"
 indexmap = { version = "1.9", features = ["serde"] }
 indicatif = { version = "0.17", features = ["rayon"] }
 log = "0.4"
-noodles-bed = "0.9.0"
+noodles-bed = "0.10"
 noodles-bgzf = "0.22"
-noodles-core = "0.11"
-noodles-csi = "0.19"
-noodles-tabix = "0.22"
-noodles-vcf = "0.31"
+noodles-core = "0.12"
+noodles-csi = "0.20"
+noodles-tabix = "0.23"
+noodles-vcf = "0.32"
 prost = "0.11"
 rayon = "1.7"
 rocksdb = { version = "0.21", features = ["multi-threaded-cf"] }
@@ -47,7 +47,7 @@ rocksdb-utils-lookup = "0.2"
 serde = { version = "1.0", features = ["derive"] }
 serde_json = { version = "1.0", features=["preserve_order"] }
 serde_with = "3.0"
-strum = { version = "0.24", features = ["strum_macros", "derive"] }
+strum = { version = "0.25", features = ["strum_macros", "derive"] }
 thiserror = "1.0"
 tracing = "0.1"
 tracing-subscriber = "0.3"
