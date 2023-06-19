@@ -49,6 +49,11 @@ jobs:
         with:
           repo-token: ${{ secrets.GITHUB_TOKEN }}
 
+      - uses: Swatinem/rust-cache@v2
+        with:
+          cache-directories: |
+            ~/.cargo/registry/src/**/librocksdb-sys-*
+
       - name: Lint with clippy
         uses: actions-rs/clippy-check@v1
         with:
