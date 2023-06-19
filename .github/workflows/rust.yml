@@ -76,6 +76,9 @@ jobs:
           repo-token: ${{ secrets.GITHUB_TOKEN }}
 
       - uses: Swatinem/rust-cache@v2
+        with:
+          cache-directories: |
+            ~/.cargo/registry/src/**/librocksdb-sys-*
 
       - name: Run cargo-tarpaulin
         uses: actions-rs/tarpaulin@v0.1
