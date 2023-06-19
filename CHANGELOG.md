@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.12.2](https://github.com/bihealth/annona-rs/compare/v0.12.1...v0.12.2) (2023-06-19)
+
+
+### Build System
+
+* fix docker builds ([#93](https://github.com/bihealth/annona-rs/issues/93)) ([3cf065f](https://github.com/bihealth/annona-rs/commit/3cf065facfed5a19e00a554c3dd2ac88e8d2bd02))
+
 ### [0.12.1](https://www.github.com/bihealth/annona-rs/compare/v0.12.0...v0.12.1) (2023-06-17)
 
 
