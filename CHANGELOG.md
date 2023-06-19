@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.12.3](https://github.com/bihealth/annona-rs/compare/v0.12.2...v0.12.3) (2023-06-19)
+
+
+### Build System
+
+* some small fixes to CI ([#96](https://github.com/bihealth/annona-rs/issues/96)) ([b72d249](https://github.com/bihealth/annona-rs/commit/b72d24902a82dbe73ab828ceef8a67dd07a2b0f2))
+
 ## [0.12.2](https://github.com/bihealth/annona-rs/compare/v0.12.1...v0.12.2) (2023-06-19)
 
 
