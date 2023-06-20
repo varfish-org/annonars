@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.12.5](https://github.com/bihealth/annona-rs/compare/v0.12.4...v0.12.5) (2023-06-20)
+
+
+### Bug Fixes
+
+* add missing libsqlite3-0 to Docker image ([#100](https://github.com/bihealth/annona-rs/issues/100)) ([dcf0f3e](https://github.com/bihealth/annona-rs/commit/dcf0f3e9b4cf3a38374636c55e88304661617a8e))
+
 ## [0.12.4](https://github.com/bihealth/annona-rs/compare/v0.12.3...v0.12.4) (2023-06-19)
 
 
