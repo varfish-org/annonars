@@ -63,6 +63,13 @@ COPY --from=builder \
     /usr/src/annona-rs/target/release/annonars \
     /usr/local/bin
 
+# Install dependencies (and cleanup afterwards)
+RUN apt-get update && \
+    apt-get install -y libsqlite3-0 && \
+    apt-get clean autoclean && \
+    apt-get autoremove --yes && \
+    rm -rf /var/lib/{apt,dpkg,cache,log}
+
 # Copy the entrypoint script and make it executable.
 COPY utils/docker/entrypoint.sh /
 RUN chmod a+rx /entrypoint.sh
