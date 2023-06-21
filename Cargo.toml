@@ -5,7 +5,7 @@ edition = "2021"
 authors = ["Manuel Holtgrewe <manuel.holtgrewe@bih-charite.de>"]
 description = "Rust template repository"
 license = "Apache-2.0"
-homepage = "https://github.com/bihealth/annona-rs"
+homepage = "https://github.com/bihealth/annonars"
 readme = "README.md"
 autobins = false
 

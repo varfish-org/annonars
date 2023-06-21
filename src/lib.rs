@@ -20,5 +20,5 @@ pub mod tsv;
 
 pub use crate::error::*;
 
-/// The version of the `annona-rs` package.
+/// The version of the `annonars` package.
 pub const VERSION: &str = env!("CARGO_PKG_VERSION");

@@ -1,7 +1,7 @@
 # Mangement of the GitHub project.
 
-resource "github_repository" "annona-rs" {
-  name        = "annona-rs"
+resource "github_repository" "annonars" {
+  name        = "annonars"
   description = "Genome annotation based on Rust and RocksDB"
 
   has_issues = true

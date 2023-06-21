@@ -12,7 +12,7 @@ GIT_TAG=${GIT_TAG-$GIT_DESCRIBE}
 DOCKER_VERSION=$(echo $GIT_TAG | sed -e 's/^v//')
 
 ORG=bihealth
-REPO=annona-rs
+REPO=annonars
 
 GIT_DEPTH=$(($(git rev-list HEAD ^$(git describe --abbrev=0 --tags) --count) + 1))
 GIT_URL=https://github.com/$ORG/$REPO.git

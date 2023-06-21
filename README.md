@@ -1,13 +1,13 @@
 [![install with bioconda](https://img.shields.io/badge/install%20with-bioconda-brightgreen.svg?style=flat)](http://bioconda.github.io/recipes/annonars/README.html)
-[![CI](https://github.com/bihealth/annona-rs/actions/workflows/rust.yml/badge.svg)](https://github.com/bihealth/annona-rs/actions/workflows/rust.yml)
-[![codecov](https://codecov.io/gh/bihealth/annona-rs/branch/main/graph/badge.svg?token=UjTNKN6kCI)](https://codecov.io/gh/bihealth/annona-rs)
+[![CI](https://github.com/bihealth/annonars/actions/workflows/rust.yml/badge.svg)](https://github.com/bihealth/annonars/actions/workflows/rust.yml)
+[![codecov](https://codecov.io/gh/bihealth/annonars/branch/main/graph/badge.svg?token=UjTNKN6kCI)](https://codecov.io/gh/bihealth/annonars)
 [![Crates.io](https://img.shields.io/crates/d/annonars.svg)](https://crates.io/crates/annonars)
 [![Crates.io](https://img.shields.io/crates/v/annonars.svg)](https://crates.io/crates/annonars)
 [![Crates.io](https://img.shields.io/crates/l/annonars.svg)](https://crates.io/crates/annonars)
 
-<a href="https://commons.wikimedia.org/wiki/File:Annona_squamosa_Blanco1.192.png"><img src="https://github.com/bihealth/annona-rs/blob/main/utils/img/annona-wikimedia.jpg?raw=true" width="200px" height="321px" align="right"></a>
+<a href="https://commons.wikimedia.org/wiki/File:Annona_squamosa_Blanco1.192.png"><img src="https://github.com/bihealth/annonars/blob/main/utils/img/annona-wikimedia.jpg?raw=true" width="200px" height="321px" align="right"></a>
 
-# annona-rs
+# annonars
 
 Genome annotation with Rust and RocksDB.
 
@@ -112,7 +112,7 @@ Examples:
 ```
 # export GITHUB_OWNER=bihealth
 # export GITHUB_TOKEN=ghp_<thetoken>
-# terraform import github_repository.annona-rs annona-rs
+# terraform import github_repository.annonars annonars
 
 # cd utils/terraform
 # terraform validate
