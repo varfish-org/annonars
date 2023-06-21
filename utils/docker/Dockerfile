@@ -32,23 +32,23 @@ RUN CMAKE_INSTALL_PREFIX=/usr/local bash /tmp/install-protoc.sh
 # Set initial workdir.
 WORKDIR /usr/src
 # Create blank project.
-RUN USER=root cargo new annona-rs
+RUN USER=root cargo new annonars
 # We want dependencies cached, so copy those first.
-COPY Cargo.toml Cargo.lock /usr/src/annona-rs/
-RUN touch /usr/src/annona-rs/src/lib.rs
+COPY Cargo.toml Cargo.lock /usr/src/annonars/
+RUN touch /usr/src/annonars/src/lib.rs
 # Set the working directory.
-WORKDIR /usr/src/annona-rs
+WORKDIR /usr/src/annonars
 # This is a dummy build to get the dependencies cached.
 RUN cargo build --release
 #
 # Now copy in the rest of the sources.
-COPY build.rs /usr/src/annona-rs/
-COPY src /usr/src/annona-rs/src/
-COPY utils/alpine-linker-script.sh /usr/src/annona-rs/utils/
-RUN chmod a+rx /usr/src/annona-rs/utils/alpine-linker-script.sh
-COPY .cargo /usr/src/annona-rs/.cargo/
+COPY build.rs /usr/src/annonars/
+COPY src /usr/src/annonars/src/
+COPY utils/alpine-linker-script.sh /usr/src/annonars/utils/
+RUN chmod a+rx /usr/src/annonars/utils/alpine-linker-script.sh
+COPY .cargo /usr/src/annonars/.cargo/
 ## Touch main.rs to prevent cached release build.
-RUN touch /usr/src/annona-rs/src/main.rs
+RUN touch /usr/src/annonars/src/main.rs
 # This is the actual application build.
 RUN cargo build --release
 
@@ -60,7 +60,7 @@ FROM debian:buster-slim AS runtime
 
 # Copy application binary from builder image
 COPY --from=builder \
-    /usr/src/annona-rs/target/release/annonars \
+    /usr/src/annonars/target/release/annonars \
     /usr/local/bin
 
 # Install dependencies (and cleanup afterwards)
