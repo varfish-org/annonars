@@ -130,7 +130,7 @@ fn copy_cf(
             if let Some(stop) = stop.as_ref() {
                 let iter_pos: keys::Pos = iter_key.into();
 
-                if &iter_pos > stop {
+                if &iter_pos.chrom != &stop.chrom || iter_pos.pos > stop.pos {
                     break;
                 }
             }
