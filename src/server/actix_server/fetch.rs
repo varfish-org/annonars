@@ -63,7 +63,7 @@ where
             let iter_key = iter.key().unwrap();
             let iter_pos: crate::common::keys::Pos = iter_key.into();
 
-            if iter_pos > stop {
+            if iter_pos.chrom != stop.chrom || iter_pos.pos > stop.pos {
                 break;
             }
 
@@ -156,7 +156,7 @@ pub fn fetch_pos_tsv_json(
             let iter_key = iter.key().unwrap();
             let iter_pos: keys::Pos = iter_key.into();
 
-            if iter_pos > stop {
+            if iter_pos.chrom != stop.chrom || iter_pos.pos > stop.pos {
                 break;
             }
 
