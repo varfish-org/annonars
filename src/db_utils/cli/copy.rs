@@ -3,6 +3,7 @@
 use std::{fs::File, io::BufReader, path::PathBuf};
 
 use clap::Parser;
+
 use indicatif::ParallelProgressIterator;
 use rayon::prelude::*;
 
@@ -116,10 +117,12 @@ fn copy_cf(
     }
 
     // Cast stop to `keys::Pos`.
-    let stop = stop.map(|stop| -> keys::Pos { stop.into() });
+    let stop = stop.map(|stop| {
+        let stop: keys::Pos = stop.into();
+        stop.with_key_as_chrom()
+    });
     if let Some(stop) = stop.as_ref() {
-        let stop: Vec<u8> = stop.clone().into();
-        tracing::debug!("stop = {:?}", &stop);
+        tracing::debug!("stop x= {:?}", &stop);
     }
 
     // Iterate over all variants until we are behind stop.
@@ -129,8 +132,10 @@ fn copy_cf(
             let iter_key = iter.key().unwrap();
             if let Some(stop) = stop.as_ref() {
                 let iter_pos: keys::Pos = iter_key.into();
+                let iter_pos = iter_pos.with_key_as_chrom();
 
-                if &iter_pos.chrom != &stop.chrom || iter_pos.pos > stop.pos {
+                if iter_pos.chrom != stop.chrom || iter_pos.pos > stop.pos {
+                    tracing::trace!("stopping {:?} vs. {:?}", &iter_pos, &stop);
                     break;
                 }
             }

@@ -17,9 +17,17 @@ impl Pos {
 
     /// Create from the given chrom/pos pair.
     pub fn from(chrom: &str, pos: i32) -> Self {
-        Pos {
+        Self {
             chrom: chrom.to_string(),
             pos,
+        }
+    }
+
+    /// Normalize chrom with `chrom_name_to_key`.
+    pub fn with_key_as_chrom(&self) -> Self {
+        Self {
+            chrom: chrom_name_to_key(&self.chrom),
+            pos: self.pos,
         }
     }
 }
