@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.12.7](https://github.com/bihealth/annonars/compare/v0.12.6...v0.12.7) (2023-06-23)
+
+
+### Bug Fixes
+
+* "db-utils copy" for chr prefixes ([#105](https://github.com/bihealth/annonars/issues/105)) ([a8d9f00](https://github.com/bihealth/annonars/commit/a8d9f0031940b9c647f84dc7f34f91abadb6f96d))
+
 ## [0.12.6](https://github.com/bihealth/annonars/compare/v0.12.5...v0.12.6) (2023-06-22)
 
 
