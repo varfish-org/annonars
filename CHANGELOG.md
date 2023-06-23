@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.12.6](https://github.com/bihealth/annonars/compare/v0.12.5...v0.12.6) (2023-06-22)
+
+
+### Bug Fixes
+
+* issue with "db-utils copy" on chrY ([#103](https://github.com/bihealth/annonars/issues/103)) ([93d08df](https://github.com/bihealth/annonars/commit/93d08dfd284201e7664463c4693500ef337a6663))
+
 ## [0.12.5](https://github.com/bihealth/annonars/compare/v0.12.4...v0.12.5) (2023-06-20)
 
 
