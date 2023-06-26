@@ -31,7 +31,7 @@ enum-map = { version = "2.5.0", features = ["serde"] }
 env_logger = "0.10"
 flate2 = "1.0"
 hgvs = "0.9"
-indexmap = { version = "1.9", features = ["serde"] }
+indexmap = { version = "2.0", features = ["serde"] }
 indicatif = { version = "0.17", features = ["rayon"] }
 log = "0.4"
 noodles-bed = "0.10"
