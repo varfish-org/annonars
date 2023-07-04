@@ -281,8 +281,8 @@ dependencies = [
  "noodles-bed",
  "noodles-bgzf",
  "noodles-core 0.12.0",
- "noodles-csi 0.20.0",
- "noodles-tabix 0.23.0",
+ "noodles-csi",
+ "noodles-tabix",
  "noodles-vcf",
  "pretty_assertions",
  "prost",
@@ -990,7 +990,7 @@ checksum = "8560b409800a72d2d7860f8e5f4e0b0bd22bea6a352ea2a9ce30ccdef7f16d2f"
 dependencies = [
  "proc-macro2",
  "quote",
- "syn 2.0.18",
+ "syn 2.0.23",
 ]
 
 [[package]]
@@ -1802,19 +1802,6 @@ checksum = "94fbe3192fe33acacabaedd387657f39b0fc606f1996d546db0dfe14703b843a"
 
 [[package]]
 name = "noodles-csi"
-version = "0.20.0"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "37ae443ab9055f9fd5021ab75ec6085940888c2379d5c6f55d5898f9d5cf42b3"
-dependencies = [
- "bit-vec",
- "byteorder",
- "indexmap 1.9.3",
- "noodles-bgzf",
- "noodles-core 0.12.0",
-]
-
-[[package]]
-name = "noodles-csi"
 version = "0.21.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "f967502cfb925c863664248a844b64f0aa62c9250680e0cd613149932129e67d"
@@ -1840,19 +1827,6 @@ dependencies = [
 
 [[package]]
 name = "noodles-tabix"
-version = "0.23.0"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "b8a8a5a5367adbf867516ee662b810cbd51f4431158cd1c32f3e12f8c19fb24a"
-dependencies = [
- "bit-vec",
- "byteorder",
- "noodles-bgzf",
- "noodles-core 0.12.0",
- "noodles-csi 0.20.0",
-]
-
-[[package]]
-name = "noodles-tabix"
 version = "0.24.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "c2a6c228f3f55a16d58491116b70421cf74c3230609dd0e5433367998dbe2ac1"
@@ -1861,7 +1835,7 @@ dependencies = [
  "byteorder",
  "noodles-bgzf",
  "noodles-core 0.12.0",
- "noodles-csi 0.21.0",
+ "noodles-csi",
 ]
 
 [[package]]
@@ -1875,8 +1849,8 @@ dependencies = [
  "nom",
  "noodles-bgzf",
  "noodles-core 0.12.0",
- "noodles-csi 0.21.0",
- "noodles-tabix 0.24.0",
+ "noodles-csi",
+ "noodles-tabix",
  "percent-encoding",
 ]
 
