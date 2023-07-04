@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.12.8](https://github.com/bihealth/annonars/compare/v0.12.7...v0.12.8) (2023-07-04)
+
+
+### Bug Fixes
+
+* properly configure dependabot for noodles ([#127](https://github.com/bihealth/annonars/issues/127)) ([656d297](https://github.com/bihealth/annonars/commit/656d297d5bc5675574d3daf7a4f9addec4d22233))
+
 ## [0.12.7](https://github.com/bihealth/annonars/compare/v0.12.6...v0.12.7) (2023-06-23)
 
 
