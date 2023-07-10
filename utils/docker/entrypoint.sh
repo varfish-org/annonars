@@ -84,7 +84,7 @@ else
       $(test -e $PATH_DB_HELIXMTDB_38 && echo --path-helixmtdb $PATH_DB_HELIXMTDB_38) \
       $(test -e $PATH_DB_CONS_37 && echo --path-ucsc-conservation $PATH_DB_CONS_37) \
       $(test -e $PATH_DB_CONS_38 && echo --path-ucsc-conservation $PATH_DB_CONS_38) \
-      $(test -e $PATH_GENES && echo --path-ucsc-conservation $PATH_GENES) \
+      $(test -e $PATH_GENES && echo --path-genes $PATH_GENES) \
       \
       --listen-host "$HTTP_HOST" \
       --listen-port "$HTTP_PORT"
