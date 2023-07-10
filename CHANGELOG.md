@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.12.9](https://github.com/bihealth/annonars/compare/v0.12.8...v0.12.9) (2023-07-10)
+
+
+### Bug Fixes
+
+* docker startup with genes ([#129](https://github.com/bihealth/annonars/issues/129)) ([a7fbfef](https://github.com/bihealth/annonars/commit/a7fbfef17375e29cf0a1635e93b69f23a8323fd7))
+
 ## [0.12.8](https://github.com/bihealth/annonars/compare/v0.12.7...v0.12.8) (2023-07-04)
 
 
