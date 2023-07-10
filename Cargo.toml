@@ -1,6 +1,6 @@
 [package]
 name = "annonars"
-version = "0.12.8"
+version = "0.12.9"
 edition = "2021"
 authors = ["Manuel Holtgrewe <manuel.holtgrewe@bih-charite.de>"]
 description = "Rust template repository"
