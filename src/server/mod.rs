@@ -52,6 +52,8 @@ pub enum AnnoDb {
     Helixmtdb,
     /// UCSC conservation annotations.
     UcscConservation,
+    /// ClinVar with minimal data extracted.
+    Clinvar,
 }
 
 impl AnnoDb {
@@ -67,6 +69,7 @@ impl AnnoDb {
             AnnoDb::GnomadGenomes => "gnomad_nuclear_data",
             AnnoDb::Helixmtdb => "helixmtdb_data",
             AnnoDb::UcscConservation => "ucsc_conservation",
+            AnnoDb::Clinvar => "clinvar",
             AnnoDb::Other => panic!("cannot get CF name for 'Other'"),
         }
     }
@@ -83,6 +86,7 @@ impl AnnoDb {
             AnnoDb::GnomadGenomes => Some("gnomad-version"),
             AnnoDb::Helixmtdb => None,
             AnnoDb::UcscConservation => None,
+            AnnoDb::Clinvar => None,
             AnnoDb::Other => panic!("cannot get meta version name name for 'Other'"),
         }
     }
@@ -162,6 +166,9 @@ pub struct Args {
     /// Path to genes database.
     #[arg(long)]
     pub path_genes: Option<String>,
+    /// ClinVar database(s), one for each release.
+    #[arg(long)]
+    pub path_clinvar: Vec<String>,
     /// CADD database(s), one for each release.
     #[arg(long)]
     pub path_cadd: Vec<String>,
@@ -256,6 +263,7 @@ pub fn run(args_common: &common::cli::Args, args: &Args) -> Result<(), anyhow::E
     }
     // Argument lists from the command line with the corresponding database enum value.
     let paths_db_pairs = vec![
+        (&args.path_clinvar, AnnoDb::Clinvar),
         (&args.path_cadd, AnnoDb::Cadd),
         (&args.path_dbnsfp, AnnoDb::Dbnsfp),
         (&args.path_dbsnp, AnnoDb::Dbsnp),

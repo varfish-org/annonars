@@ -12,6 +12,8 @@ set -euo pipefail
 #   HTTP_PORT       -- port
 #                      default: 8080
 #
+#   PATH_DB_CLINVAR_37        -- path to ClinVar database for GRCh37, defaults to $PATH_DB_BAE/grch37/clinvar/rocksdb
+#   PATH_DB_CLINVAR_38        -- path to ClinVar database for GRCh37, defaults to $PATH_DB_BAE/grch38/clinvar/rocksdb
 #   PATH_DB_CADD_37           -- path to CADD database for GRCh37, defaults to $PATH_DB_BASE/grch37/cadd/rocksdb
 #   PATH_DB_CADD_38           -- path to CADD database for GRCh38, defaults to $PATH_DB_BASE/grch38/cadd/rocksdb
 #   PATH_DB_DBSNP_37          -- path to dbSNP database for GRCh37, defaults to $PATH_DB_BASE/grch37/dbsnp/rocksdb
@@ -37,6 +39,8 @@ PATH_DB_BASE=${PATH_HPO_DIR-/data/annonars}
 HTTP_HOST=${HTTP_HOST-0.0.0.0}
 HTTP_PORT=${HTTP_PORT-8080}
 
+PATH_DB_CLINVAR_37=${PATH_DB_CLINVAR_37-$PATH_DB_BASE/grch37/clinvar/rocksdb}
+PATH_DB_CLINVAR_38=${PATH_DB_CLINVAR_38-$PATH_DB_BASE/grch38/clinvar/rocksdb}
 PATH_DB_CADD_37=${PATH_DB_CADD_37-$PATH_DB_BASE/grch37/cadd/rocksdb}
 PATH_DB_CADD_38=${PATH_DB_CADD_38-$PATH_DB_BASE/grch38/cadd/rocksdb}
 PATH_DB_DBSNP_37=${PATH_DB_DBSNP_37-$PATH_DB_BASE/grch37/dbsnp/rocksdb}
@@ -66,8 +70,10 @@ else
   exec \
     annonars \
     run-server \
-      $(test -e $PATH_DB_CADD_37 && echo --path-cadd $PATH_DB_CADD_37) \
-      $(test -e $PATH_DB_CADD_38 && echo --path-cadd $PATH_DB_CADD_38) \
+      $(test -e $PATH_DB_CLINVAR_37 && echo --path-clinvar $PATH_DB_CLINVAR_37) \
+      $(test -e $PATH_DB_CLINVAR_38 && echo --path-clinvar $PATH_DB_CLINVAR_38) \
+      $(test -e $PATH_DB_CLINVAR_37 && echo --path-cadd $PATH_DB_CLINVAR_37) \
+      $(test -e $PATH_DB_CLINVAR_38 && echo --path-cadd $PATH_DB_CLINVAR_38) \
       $(test -e $PATH_DB_DBSNP_37 && echo --path-dbsnp $PATH_DB_DBSNP_37) \
       $(test -e $PATH_DB_DBSNP_38 && echo --path-dbsnp $PATH_DB_DBSNP_38) \
       $(test -e $PATH_DB_DBNSFP_37 && echo --path-dbnsfp $PATH_DB_DBNSFP_37) \
