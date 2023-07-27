@@ -1,5 +1,17 @@
 # Changelog
 
+## [0.13.0](https://github.com/bihealth/annonars/compare/v0.12.9...v0.13.0) (2023-07-27)
+
+
+### Features
+
+* serving clinvar information through REST API ([#155](https://github.com/bihealth/annonars/issues/155)) ([46cbe74](https://github.com/bihealth/annonars/commit/46cbe74a17723b7b02a9e5d04be37c9c6ea42c19))
+
+
+### Bug Fixes
+
+* proper decoding in variant annotation server ([#151](https://github.com/bihealth/annonars/issues/151)) ([48f996b](https://github.com/bihealth/annonars/commit/48f996b1246d5c905adac5e732eae6d69aaf9a01))
+
 ## [0.12.9](https://github.com/bihealth/annonars/compare/v0.12.8...v0.12.9) (2023-07-10)
 
 
