@@ -100,24 +100,29 @@ pub fn fetch_var_tsv_json(
         )))?;
 
     let key: Vec<u8> = key.into();
-    let raw_values = db.get_cf(&cf_data, key).map_err(|e| {
+    let raw_value = db.get_cf(&cf_data, key).map_err(|e| {
         CustomError::new(anyhow::anyhow!(
             "problem querying database (cf_name={}): {}",
             cf_name,
             e
         ))
     })?;
-    let values = raw_values
-        .map(|v| {
-            ctx.decode_values(&v).map_err(|e| {
-                CustomError::new(anyhow::anyhow!(
-                    "problem decoding data (cf_name={}): {}",
-                    cf_name,
-                    e
-                ))
-            })
-        })
-        .transpose()?;
+    let values = if let Some(raw_value) = raw_value {
+        let line = std::str::from_utf8(raw_value.as_slice()).map_err(|e| {
+            CustomError::new(anyhow::anyhow!(
+                "problem decoding value from database: {}",
+                e
+            ))
+        })?;
+        Some(ctx.line_to_values(line).map_err(|e| {
+            CustomError::new(anyhow::anyhow!(
+                "problem decoding value from database: {}",
+                e
+            ))
+        })?)
+    } else {
+        None
+    };
 
     fetch_tsv_json_prepare_result(values, db_schema)
 }
@@ -160,13 +165,20 @@ pub fn fetch_pos_tsv_json(
                 break;
             }
 
-            values.append(&mut ctx.decode_values(raw_value).map_err(|e| {
+            let line = std::str::from_utf8(raw_value).map_err(|e| {
                 CustomError::new(anyhow::anyhow!(
-                    "problem decoding data (cf_name={}): {}",
-                    cf_name,
+                    "problem decoding value from database: {}",
                     e
                 ))
-            })?);
+            })?;
+            let mut tmp = ctx.line_to_values(line).map_err(|e| {
+                CustomError::new(anyhow::anyhow!(
+                    "problem decoding value from database: {}",
+                    e
+                ))
+            })?;
+            values.append(&mut tmp);
+
             iter.next();
         } else {
             break;
