@@ -89,6 +89,19 @@ async fn handle(
     for anno_db in AnnoDb::iter() {
         match anno_db {
             AnnoDb::Other => (),
+            AnnoDb::Clinvar => {
+                data.annos[genome_release][anno_db]
+                    .as_ref()
+                    .map(|db| {
+                        fetch_var_protobuf::<crate::clinvar_minimal::pbs::Record>(
+                            db,
+                            anno_db.cf_name(),
+                            query.clone().into_inner().into(),
+                        )
+                    })
+                    .transpose()?
+                    .map(|v| annotations.insert(anno_db, v));
+            }
             AnnoDb::Cadd | AnnoDb::Dbnsfp | AnnoDb::Dbscsnv => {
                 data.annos[genome_release][anno_db]
                     .as_ref()
