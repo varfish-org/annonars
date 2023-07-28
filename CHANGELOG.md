@@ -1,5 +1,17 @@
 # Changelog
 
+## [0.14.0](https://github.com/bihealth/annonars/compare/v0.13.0...v0.14.0) (2023-07-28)
+
+
+### Features
+
+* using snake_case rather than kebab-case ([#158](https://github.com/bihealth/annonars/issues/158)) ([d8b0836](https://github.com/bihealth/annonars/commit/d8b08364a777db46fd089c796addd8451b34ed14))
+
+
+### Bug Fixes
+
+* remove redundancy in ucsc conservation import ([#159](https://github.com/bihealth/annonars/issues/159)) ([e749269](https://github.com/bihealth/annonars/commit/e7492692865af0abdc0b9106e1bc8d8ee3132adb))
+
 ## [0.13.0](https://github.com/bihealth/annonars/compare/v0.12.9...v0.13.0) (2023-07-27)
 
 
