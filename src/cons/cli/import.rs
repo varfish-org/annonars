@@ -1,6 +1,6 @@
 //! Import of UCSC 100 vertebrate conservation data
 
-use std::sync::Arc;
+use std::{sync::Arc};
 
 use clap::Parser;
 use prost::Message;
@@ -30,6 +30,26 @@ pub struct Args {
     /// Optional path to RocksDB WAL directory.
     #[arg(long)]
     pub path_wal_dir: Option<String>,
+}
+
+/// Utility to make a `Vec<cons::pbs::Record>` unique.
+///
+/// Will sort the records first.
+fn dedup_records(records: &mut Vec<cons::pbs::Record>) {
+    records.sort_by(|a, b| {
+        (a.chrom.as_str(), a.start, a.enst_id.as_str()).cmp(&(
+            b.chrom.as_str(),
+            b.start,
+            b.enst_id.as_str(),
+        ))
+    });
+    records.dedup_by(|a, b| {
+        (a.chrom.as_str(), a.start, a.enst_id.as_str()).eq(&(
+            b.chrom.as_str(),
+            b.start,
+            b.enst_id.as_str(),
+        ))
+    })
 }
 
 /// Perform import of the TSV file.
@@ -64,6 +84,8 @@ fn tsv_import(
 
         if pos != last_pos {
             if !record_list.records.is_empty() {
+                dedup_records(&mut record_list.records);
+
                 let key: Vec<u8> = last_pos.into();
                 let buf = record_list.encode_to_vec();
 
@@ -79,6 +101,7 @@ fn tsv_import(
 
     // Handle last record list.
     if !record_list.records.is_empty() {
+        dedup_records(&mut record_list.records);
         let key: Vec<u8> = last_pos.into();
         let buf = record_list.encode_to_vec();
 
