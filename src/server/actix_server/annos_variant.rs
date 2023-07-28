@@ -20,7 +20,7 @@ use super::fetch::{fetch_pos_protobuf, fetch_var_protobuf, fetch_var_tsv_json};
 #[serde_with::skip_serializing_none]
 #[serde_with::serde_as]
 #[derive(serde::Serialize, serde::Deserialize, Debug, Clone)]
-#[serde(rename_all = "kebab-case")]
+#[serde(rename_all = "snake_case")]
 struct Request {
     /// Genome release specification.
     #[allow(dead_code)]

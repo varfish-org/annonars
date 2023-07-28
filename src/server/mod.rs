@@ -28,8 +28,8 @@ use crate::common::{self, cli::GenomeRelease};
     serde::Deserialize,
     enum_map::Enum,
 )]
-#[strum(serialize_all = "kebab-case")]
-#[serde(rename_all = "kebab-case")]
+#[strum(serialize_all = "snake_case")]
+#[serde(rename_all = "snake_case")]
 pub enum AnnoDb {
     /// Other database.
     #[default]
