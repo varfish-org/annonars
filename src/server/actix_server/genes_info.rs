@@ -16,7 +16,7 @@ use serde_with::{formats::CommaSeparator, StringWithSeparator};
 #[serde_with::skip_serializing_none]
 #[serde_with::serde_as]
 #[derive(serde::Serialize, serde::Deserialize, Debug, Clone)]
-#[serde(rename_all = "kebab-case")]
+#[serde(rename_all = "snake_case")]
 struct Request {
     /// The HGNC IDs to search for.
     #[serde_as(as = "Option<StringWithSeparator::<CommaSeparator, String>>")]

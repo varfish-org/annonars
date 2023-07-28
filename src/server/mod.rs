@@ -28,8 +28,8 @@ use crate::common::{self, cli::GenomeRelease};
     serde::Deserialize,
     enum_map::Enum,
 )]
-#[strum(serialize_all = "kebab-case")]
-#[serde(rename_all = "kebab-case")]
+#[strum(serialize_all = "snake_case")]
+#[serde(rename_all = "snake_case")]
 pub enum AnnoDb {
     /// Other database.
     #[default]
@@ -316,27 +316,27 @@ pub fn run(args_common: &common::cli::Args, args: &Args) -> Result<(), anyhow::E
         args.listen_port
     );
     tracing::info!(
-        "  try: http://{}:{}/genes/info?hgnc-id=HGNC:12403",
+        "  try: http://{}:{}/genes/info?hgnc_id=HGNC:12403",
         args.listen_host.as_str(),
         args.listen_port
     );
     tracing::info!(
-        "  try: http://{}:{}/annos/db-info?genome-release=grch37",
+        "  try: http://{}:{}/annos/db-info?genome_release=grch37",
         args.listen_host.as_str(),
         args.listen_port
     );
     tracing::info!(
-        "  try: http://{}:{}/annos/variant?genome-release=grch37&chromosome=1&pos=55505599&reference=C&alternative=G",
+        "  try: http://{}:{}/annos/variant?genome_release=grch37&chromosome=1&pos=55505599&reference=C&alternative=G",
         args.listen_host.as_str(),
         args.listen_port
     );
     tracing::info!(
-        "  try: http://{}:{}/annos/variant?genome-release=grch37&chromosome=1&pos=10001&reference=T&alternative=A",
+        "  try: http://{}:{}/annos/variant?genome_release=grch37&chromosome=1&pos=10001&reference=T&alternative=A",
         args.listen_host.as_str(),
         args.listen_port
     );
     tracing::info!(
-        "  try: http://{}:{}/annos/range?genome-release=grch37&chromosome=1&start=1&stop=55516888",
+        "  try: http://{}:{}/annos/range?genome_release=grch37&chromosome=1&start=1&stop=55516888",
         args.listen_host.as_str(),
         args.listen_port
     );

@@ -15,7 +15,7 @@ use super::{error::CustomError, WebServerData};
 #[serde_with::skip_serializing_none]
 #[serde_with::serde_as]
 #[derive(Deserialize, Debug, Clone)]
-#[serde(rename_all = "kebab-case")]
+#[serde(rename_all = "snake_case")]
 struct Request {
     pub genome_release: String,
 }
