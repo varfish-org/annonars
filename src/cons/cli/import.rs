@@ -1,6 +1,6 @@
 //! Import of UCSC 100 vertebrate conservation data
 
-use std::{sync::Arc};
+use std::sync::Arc;
 
 use clap::Parser;
 use prost::Message;
