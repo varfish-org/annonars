@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.14.1](https://github.com/bihealth/annonars/compare/v0.14.0...v0.14.1) (2023-07-31)
+
+
+### Bug Fixes
+
+* path to CADD in docker entrypoint script ([#161](https://github.com/bihealth/annonars/issues/161)) ([bb1b884](https://github.com/bihealth/annonars/commit/bb1b884ca3a17a2903d24a484145e50c0468e444))
+
 ## [0.14.0](https://github.com/bihealth/annonars/compare/v0.13.0...v0.14.0) (2023-07-28)
 
 
