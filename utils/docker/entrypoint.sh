@@ -72,8 +72,8 @@ else
     run-server \
       $(test -e $PATH_DB_CLINVAR_37 && echo --path-clinvar $PATH_DB_CLINVAR_37) \
       $(test -e $PATH_DB_CLINVAR_38 && echo --path-clinvar $PATH_DB_CLINVAR_38) \
-      $(test -e $PATH_DB_CLINVAR_37 && echo --path-cadd $PATH_DB_CLINVAR_37) \
-      $(test -e $PATH_DB_CLINVAR_38 && echo --path-cadd $PATH_DB_CLINVAR_38) \
+      $(test -e $PATH_DB_CADD_37 && echo --path-cadd $PATH_DB_CADD_37) \
+      $(test -e $PATH_DB_CADD_38 && echo --path-cadd $PATH_DB_CADD_38) \
       $(test -e $PATH_DB_DBSNP_37 && echo --path-dbsnp $PATH_DB_DBSNP_37) \
       $(test -e $PATH_DB_DBSNP_38 && echo --path-dbsnp $PATH_DB_DBSNP_38) \
       $(test -e $PATH_DB_DBNSFP_37 && echo --path-dbnsfp $PATH_DB_DBNSFP_37) \
