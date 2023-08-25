@@ -20,6 +20,8 @@ pub struct Record {
     pub hgnc: hgnc::Record,
     /// Information from the NCBI gene database (aka "Entrez").
     pub ncbi: Option<ncbi::Record>,
+    /// Information about OMIM diseases for a gene.
+    pub omim: Option<omim::Record>,
     /// Information from rCNV (Collins et al., 2022).
     pub rcnv: Option<rcnv::Record>,
     /// Information from sHet (Weghorn et al., 2019).
@@ -1429,6 +1431,40 @@ pub mod ncbi {
     }
 }
 
+/// Code for reading gene to OMIM disease associations.
+pub mod omim {
+    use serde::{Deserialize, Serialize};
+
+    /// A single OMIM disease.
+    #[derive(Debug, Clone, Serialize, Deserialize)]
+    pub struct OmimTerm {
+        /// The OMIM disease ID.
+        pub omim_id: String,
+        /// The OMIM disease label.
+        pub label: String,
+    }
+
+    /// Multiple omim terms for one gene.
+    #[derive(Debug, Clone, Serialize, Deserialize)]
+    pub struct Record {
+        /// HGNC gene ID.
+        pub hgnc_id: String,
+        /// The OMIM diseases.
+        pub diseases: Vec<OmimTerm>,
+    }
+
+    /// A record from the OMIM disease table.
+    #[derive(Debug, Clone, Serialize, Deserialize)]
+    pub struct RawRecord {
+        /// HGNC gene ID.
+        pub hgnc_id: String,
+        /// The OMIM disease ID.
+        pub omim_id: String,
+        /// The OMIM disease label.
+        pub disease_name: String,
+    }
+}
+
 /// Code for data from rCNV (Collins et al., 2022).
 pub mod rcnv {
     use serde::{Deserialize, Serialize};
@@ -1444,7 +1480,8 @@ pub mod rcnv {
         pub p_triplo: f64,
     }
 }
-/// Code for data from rCNV (Weghorn et al., 2019).
+
+/// Code for data from sHet (Weghorn et al., 2019).
 pub mod shet {
     use serde::{Deserialize, Serialize};
 
@@ -1532,6 +1569,22 @@ mod tests {
             .deserialize()
             .collect::<Result<Vec<gnomad_constraints::Record>, csv::Error>>()?;
         insta::assert_yaml_snapshot!(records);
+        Ok(())
+    }
+
+    #[test]
+    fn deserialize_omim_record() -> Result<(), anyhow::Error> {
+        let path_tsv = "tests/genes/omim/omim_diseases.tsv";
+        let str_tsv = std::fs::read_to_string(path_tsv).unwrap();
+        let mut rdr = csv::ReaderBuilder::new()
+            .delimiter(b'\t')
+            .has_headers(true)
+            .from_reader(str_tsv.as_bytes());
+        let records = rdr
+            .deserialize()
+            .collect::<Result<Vec<omim::RawRecord>, csv::Error>>()?;
+        insta::assert_yaml_snapshot!(records);
+
         Ok(())
     }
 
