@@ -10,6 +10,8 @@ use serde::{Deserialize, Serialize};
 pub struct Record {
     /// Information from the ACMG secondary finding list.
     pub acmg_sf: Option<acmg_sf::Record>,
+    /// Information from the ClinGen gene curation.
+    pub clingen: Option<clingen_gene::Record>,
     /// Information from dbNSFP genes.
     pub dbnsfp: Option<dbnsfp_gene::Record>,
     /// Information from the gnomAD constraints database.
@@ -49,6 +51,88 @@ pub mod acmg_sf {
         pub sf_list_version: String,
         /// The variants to report according to ACMG SF.
         pub variants_to_report: String,
+    }
+}
+
+/// Code for deserializing data from ClinGen CSV file.
+pub mod clingen_gene {
+    use serde::{Deserialize, Deserializer, Serialize, Serializer};
+
+    /// A record from the ClinGen gene curation.
+    #[derive(Debug, Clone, Serialize, Deserialize)]
+    pub struct Record {
+        /// HGNC gene symbol.
+        pub gene_symbol: String,
+        /// HGNC gene ID.
+        pub hgnc_id: String,
+        /// URL in clinicalgenome.org knowledge base for gene.
+        pub gene_url: String,
+        /// ClinGen disease label.
+        pub disease_label: Option<String>,
+        /// MONDO disease ID.
+        pub mondo_id: Option<String>,
+        /// URL in clinicalgenome.org knowledge base for disease.
+        pub disease_url: Option<String>,
+        /// Annotated mode of inheritance.
+        #[serde(serialize_with = "serialize_vec", deserialize_with = "deserialize_vec")]
+        pub mode_of_inheritance: Vec<String>,
+        /// Dosage haploinsufficiency assertion.
+        pub dosage_haploinsufficiency_assertion: Option<String>,
+        /// Dosage triplosensitivity assertion.
+        pub dosage_triplosensitivity_assertion: Option<String>,
+        /// URL of dosage report in clinicalgenome.org knowledge base.
+        pub dosage_report: Option<String>,
+        /// Working group with dosage report (always "Dosage Working Group") or empty.
+        pub dosage_group: Option<String>,
+        /// Validity assertion classifications.
+        #[serde(serialize_with = "serialize_vec", deserialize_with = "deserialize_vec")]
+        pub gene_disease_validity_assertion_classifications: Vec<String>,
+        /// Validity assertion report URLs.
+        #[serde(serialize_with = "serialize_vec", deserialize_with = "deserialize_vec")]
+        pub gene_disease_validity_assertion_reports: Vec<String>,
+        /// Validity assertion Gene Curation Expert Panels.
+        #[serde(serialize_with = "serialize_vec", deserialize_with = "deserialize_vec")]
+        pub gene_disease_validity_gceps: Vec<String>,
+        /// Actionability assertion classifications.
+        #[serde(serialize_with = "serialize_vec", deserialize_with = "deserialize_vec")]
+        pub actionability_assertion_classifications: Vec<String>,
+        /// Actionability assertion report URLs.
+        #[serde(serialize_with = "serialize_vec", deserialize_with = "deserialize_vec")]
+        pub actionability_assertion_reports: Vec<String>,
+        /// Actionability assertion Gene Curation Expert Panels.
+        #[serde(serialize_with = "serialize_vec", deserialize_with = "deserialize_vec")]
+        pub actionability_groups: Vec<String>,
+    }
+
+    /// Deserialize `Vec<String>` as " | "-separated string, empty is "".
+    ///
+    /// cf. https://stackoverflow.com/a/56384732/84349
+    fn deserialize_vec<'de, D>(deserializer: D) -> Result<Vec<String>, D::Error>
+    where
+        D: Deserializer<'de>,
+    {
+        let value: String = Deserialize::deserialize(deserializer)?;
+        if value.is_empty() {
+            Ok(Vec::new())
+        } else {
+            Ok(value
+                .split(" | ")
+                .map(|s| s.trim().to_string())
+                .filter(|s| !s.is_empty())
+                .collect())
+        }
+    }
+
+    /// Serialize `Vec<String>`, counterpart to `deserialize_vec`.
+    fn serialize_vec<S>(x: &Vec<String>, s: S) -> Result<S::Ok, S::Error>
+    where
+        S: Serializer,
+    {
+        if x.is_empty() {
+            s.serialize_str("")
+        } else {
+            s.serialize_str(&x.join(" | "))
+        }
     }
 }
 
