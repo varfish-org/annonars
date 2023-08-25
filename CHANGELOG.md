@@ -1,5 +1,15 @@
 # Changelog
 
+## [0.15.0](https://github.com/bihealth/annonars/compare/v0.14.1...v0.15.0) (2023-08-25)
+
+
+### Features
+
+* adding import of clingen gene curation ([#145](https://github.com/bihealth/annonars/issues/145)) ([#178](https://github.com/bihealth/annonars/issues/178)) ([5d50940](https://github.com/bihealth/annonars/commit/5d509405bd685b172d92e0a2b1be1b8db2657d15))
+* adding pHaplo, pTriplo, sHet as seen in DECIPHER ([#128](https://github.com/bihealth/annonars/issues/128)) ([#180](https://github.com/bihealth/annonars/issues/180)) ([1ac1a64](https://github.com/bihealth/annonars/commit/1ac1a646684ae0a9a07d0eb588bc149f1e8748e7))
+* import of OMIM disease names ([#165](https://github.com/bihealth/annonars/issues/165)) ([#181](https://github.com/bihealth/annonars/issues/181)) ([7632438](https://github.com/bihealth/annonars/commit/7632438e8a8d29f57dbbe69819dd989b562c49b8))
+* import of Orphanet disease names ([#165](https://github.com/bihealth/annonars/issues/165)) ([#182](https://github.com/bihealth/annonars/issues/182)) ([ff44a10](https://github.com/bihealth/annonars/commit/ff44a10b9b6228f2adc7093ed7f3825c6e158b1c))
+
 ## [0.14.1](https://github.com/bihealth/annonars/compare/v0.14.0...v0.14.1) (2023-07-31)
 
 
