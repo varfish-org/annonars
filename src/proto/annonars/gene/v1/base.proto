@@ -549,6 +549,22 @@ message OmimRecord {
     repeated OmimTerm omim_diseases = 2;
 }
 
+// Description of an ORDO record.
+message OrphaTerm {
+    // The ORPHA ID.
+    string orpha_id = 1;
+    // The disease name.
+    string label = 2;
+}
+
+// A record from the ORDO gene association.
+message OrphaRecord {
+    // The HGNC gene ID.
+    string hgnc_id = 1;
+    // The associated ORPHA diseases.
+    repeated OrphaTerm orpha_diseases = 2;
+}
+
 // Entry in the rCNV dosage sensitivity scores (Collins et al., 2022).
 message RcnvRecord {
     // The HGNC ID.
@@ -583,6 +599,8 @@ message Record {
     NcbiRecord ncbi = 5;
     // Information about gene to OMIM term annotation, composed from clingen and HPO.
     OmimRecord omim = 9;
+    // Information about gene to Orphanet annotation, derived from Orphapacket.
+    OrphaRecord orpha = 10;
     // Information from the rCNV dosage sensitivity scores (Collins et al., 2022).
     RcnvRecord rcnv = 7;
     // Information from the sHet score (Weghor et al., 2019)

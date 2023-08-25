@@ -22,6 +22,8 @@ pub struct Record {
     pub ncbi: Option<ncbi::Record>,
     /// Information about OMIM diseases for a gene.
     pub omim: Option<omim::Record>,
+    /// Information about ORPHA diseases for a gene.
+    pub orpha: Option<orpha::Record>,
     /// Information from rCNV (Collins et al., 2022).
     pub rcnv: Option<rcnv::Record>,
     /// Information from sHet (Weghorn et al., 2019).
@@ -1461,6 +1463,40 @@ pub mod omim {
         /// The OMIM disease ID.
         pub omim_id: String,
         /// The OMIM disease label.
+        pub disease_name: String,
+    }
+}
+
+/// Code for reading gene to ORPHA disease associations.
+pub mod orpha {
+    use serde::{Deserialize, Serialize};
+
+    /// A single OMIM disease.
+    #[derive(Debug, Clone, Serialize, Deserialize)]
+    pub struct OrphaTerm {
+        /// The ORPHA disease ID.
+        pub orpha_id: String,
+        /// The ORPHA disease label.
+        pub label: String,
+    }
+
+    /// Multiple ORPHA terms for one gene.
+    #[derive(Debug, Clone, Serialize, Deserialize)]
+    pub struct Record {
+        /// HGNC gene ID.
+        pub hgnc_id: String,
+        /// The ORPHA diseases.
+        pub diseases: Vec<OrphaTerm>,
+    }
+
+    /// A record from the ORPHA disease table.
+    #[derive(Debug, Clone, Serialize, Deserialize)]
+    pub struct RawRecord {
+        /// HGNC gene ID.
+        pub hgnc_id: String,
+        /// The ORPHA disease ID.
+        pub orpha_id: String,
+        /// The ORPHA disease label.
         pub disease_name: String,
     }
 }
