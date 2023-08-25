@@ -533,6 +533,24 @@ message NcbiRecord {
     repeated RifEntry rif_entries = 3;
 }
 
+// Entry in the rCNV dosage sensitivity scores (Collins et al., 2022).
+message RcnvRecord {
+    // The HGNC ID.
+    string hgnc_id = 1;
+    // The pHaplo value.
+    double p_haplo = 2;
+    // The pTriplo value.
+    double p_triplo = 3;
+}
+
+// Entry with sHet information (Weghorn et al., 2019).
+message ShetRecord {
+    // The HGNC ID.
+    string hgnc_id = 1;
+    // The sHet value.
+    double s_het = 2;
+}
+
 // Entry in the genes RocksDB database.
 message Record {
     // Information from the ACMG secondary finding list.
@@ -547,4 +565,8 @@ message Record {
     HgncRecord hgnc = 4;
     // Information from the NCBI gene database (aka "Entrez").
     NcbiRecord ncbi = 5;
+    // Information from the rCNV dosage sensitivity scores (Collins et al., 2022).
+    RcnvRecord rcnv = 7;
+    // Information from the sHet score (Weghor et al., 2019)
+    ShetRecord shet = 8;
 }
