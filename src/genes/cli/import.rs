@@ -17,7 +17,7 @@ use crate::{
 };
 
 use super::data::{
-    self, acmg_sf, clingen_gene, dbnsfp_gene, gnomad_constraints, hgnc, ncbi, rcnv, shet,
+    self, acmg_sf, clingen_gene, dbnsfp_gene, gnomad_constraints, hgnc, ncbi, omim, rcnv, shet,
 };
 
 /// Command line arguments for `genes import` sub command.
@@ -42,6 +42,9 @@ pub struct Args {
     /// Path to the JSONL file with NCBI information.
     #[arg(long, required = true)]
     pub path_in_ncbi: String,
+    /// Path to the TSV file with OMIM disease information.
+    #[arg(long, required = true)]
+    pub path_in_omim: String,
     /// Path to the TSV file with rCNV information.
     #[arg(long, required = true)]
     pub path_in_rcnv: String,
@@ -176,6 +179,45 @@ fn load_ncbi(path: &str) -> Result<HashMap<String, ncbi::Record>, anyhow::Error>
     Ok(result)
 }
 
+/// Load OMIM disease mapping.
+///
+/// # Result
+///
+/// A map from HGNC ID to OMIM diseases record.
+fn load_omim(path: &str) -> Result<HashMap<String, omim::Record>, anyhow::Error> {
+    info!("  loading OMIM disease information from {}", path);
+    let mut result: HashMap<String, omim::Record> = HashMap::new();
+
+    let mut reader = csv::ReaderBuilder::new().delimiter(b'\t').from_path(path)?;
+    for raw_record in reader.deserialize::<omim::RawRecord>() {
+        let raw_record = raw_record?;
+        if let Some(record) = result.get_mut(&raw_record.hgnc_id) {
+            record.diseases.push(omim::OmimTerm {
+                omim_id: raw_record.omim_id,
+                label: raw_record.disease_name,
+            });
+        } else {
+            let omim::RawRecord {
+                hgnc_id,
+                omim_id,
+                disease_name: omim_label,
+            } = raw_record;
+            result.insert(
+                hgnc_id.clone(),
+                omim::Record {
+                    hgnc_id: hgnc_id,
+                    diseases: vec![omim::OmimTerm {
+                        omim_id,
+                        label: omim_label,
+                    }],
+                },
+            );
+        }
+    }
+
+    Ok(result)
+}
+
 /// Load rCNV (Collins et al., 2022) information.
 ///
 /// # Result
@@ -221,6 +263,7 @@ fn convert_record(record: data::Record) -> pbs::Record {
         gnomad_constraints,
         hgnc,
         ncbi,
+        omim,
         rcnv,
         shet,
     } = record;
@@ -700,6 +743,20 @@ fn convert_record(record: data::Record) -> pbs::Record {
         }
     });
 
+    let omim = omim.map(|omim| {
+        let omim::Record { hgnc_id, diseases } = omim;
+        pbs::OmimRecord {
+            hgnc_id,
+            omim_diseases: diseases
+                .into_iter()
+                .map(|disease| pbs::OmimTerm {
+                    omim_id: disease.omim_id,
+                    label: disease.label,
+                })
+                .collect(),
+        }
+    });
+
     let rcnv = rcnv.map(|rcnv| {
         let rcnv::Record {
             hgnc_id,
@@ -725,6 +782,7 @@ fn convert_record(record: data::Record) -> pbs::Record {
         gnomad_constraints,
         hgnc,
         ncbi,
+        omim,
         rcnv,
         shet,
     }
@@ -739,6 +797,7 @@ fn write_rocksdb(
     constraints_by_ensembl_id: HashMap<String, gnomad_constraints::Record>,
     hgnc: HashMap<String, hgnc::Record>,
     ncbi_by_ncbi_id: HashMap<String, ncbi::Record>,
+    omim_by_hgnc_id: HashMap<String, omim::Record>,
     rcnv_by_hgnc_id: HashMap<String, rcnv::Record>,
     shet_by_hgnc_id: HashMap<String, shet::Record>,
     args: &&Args,
@@ -777,6 +836,7 @@ fn write_rocksdb(
                 .map(|ensembl_gene_id| constraints_by_ensembl_id.get(ensembl_gene_id).cloned())
                 .unwrap_or_default(),
             hgnc: hgnc_record.clone(),
+            omim: omim_by_hgnc_id.get(&hgnc_id).cloned(),
             ncbi: hgnc_record
                 .entrez_id
                 .as_ref()
@@ -810,6 +870,7 @@ pub fn run(common_args: &common::cli::Args, args: &Args) -> Result<(), anyhow::E
     let dbnsfp_by_symbol = load_dbnsfp(&args.path_in_dbnsfp)?;
     let hgnc = load_hgnc(&args.path_in_hgnc)?;
     let ncbi_by_ncbi_id = load_ncbi(&args.path_in_ncbi)?;
+    let omim_by_hgnc_id = load_omim(&args.path_in_omim)?;
     let rcnv_by_hgnc_id = load_rcnv(&args.path_in_rcnv)?;
     let shet_by_hgnc_id = load_shet(&args.path_in_shet)?;
     info!(
@@ -826,6 +887,7 @@ pub fn run(common_args: &common::cli::Args, args: &Args) -> Result<(), anyhow::E
         constraints_by_ensembl_id,
         hgnc,
         ncbi_by_ncbi_id,
+        omim_by_hgnc_id,
         rcnv_by_hgnc_id,
         shet_by_hgnc_id,
         &args,
@@ -861,6 +923,7 @@ pub mod test {
             path_in_dbnsfp: String::from("tests/genes/dbnsfp/genes.tsv"),
             path_in_hgnc: String::from("tests/genes/hgnc/hgnc_info.jsonl"),
             path_in_ncbi: String::from("tests/genes/ncbi/gene_info.jsonl"),
+            path_in_omim: String::from("tests/genes/omim/omim_diseases.tsv"),
             path_in_rcnv: String::from("tests/genes/rcnv/rcnv.tsv"),
             path_in_shet: String::from("tests/genes/shet/shet.tsv"),
             path_out_rocksdb: tmp_dir

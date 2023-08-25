@@ -533,6 +533,22 @@ message NcbiRecord {
     repeated RifEntry rif_entries = 3;
 }
 
+// Description of an OMIM record.
+message OmimTerm {
+    // The OMIM ID.
+    string omim_id = 1;
+    // The OMIM label.
+    string label = 2;
+}
+
+// A record from the OMIM gene association.
+message OmimRecord {
+    // The HGNC gene ID.
+    string hgnc_id = 1;
+    // The associated OMIM records.
+    repeated OmimTerm omim_diseases = 2;
+}
+
 // Entry in the rCNV dosage sensitivity scores (Collins et al., 2022).
 message RcnvRecord {
     // The HGNC ID.
@@ -565,6 +581,8 @@ message Record {
     HgncRecord hgnc = 4;
     // Information from the NCBI gene database (aka "Entrez").
     NcbiRecord ncbi = 5;
+    // Information about gene to OMIM term annotation, composed from clingen and HPO.
+    OmimRecord omim = 9;
     // Information from the rCNV dosage sensitivity scores (Collins et al., 2022).
     RcnvRecord rcnv = 7;
     // Information from the sHet score (Weghor et al., 2019)
