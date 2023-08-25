@@ -16,7 +16,9 @@ use crate::{
     genes::pbs,
 };
 
-use super::data::{self, acmg_sf, clingen_gene, dbnsfp_gene, gnomad_constraints, hgnc, ncbi};
+use super::data::{
+    self, acmg_sf, clingen_gene, dbnsfp_gene, gnomad_constraints, hgnc, ncbi, rcnv, shet,
+};
 
 /// Command line arguments for `genes import` sub command.
 #[derive(Parser, Debug, Clone)]
@@ -40,6 +42,12 @@ pub struct Args {
     /// Path to the JSONL file with NCBI information.
     #[arg(long, required = true)]
     pub path_in_ncbi: String,
+    /// Path to the TSV file with rCNV information.
+    #[arg(long, required = true)]
+    pub path_in_rcnv: String,
+    /// Path to the TSV file with sHet information.
+    #[arg(long, required = true)]
+    pub path_in_shet: String,
 
     /// Path to output RocksDB.
     #[arg(long, required = true)]
@@ -168,6 +176,42 @@ fn load_ncbi(path: &str) -> Result<HashMap<String, ncbi::Record>, anyhow::Error>
     Ok(result)
 }
 
+/// Load rCNV (Collins et al., 2022) information.
+///
+/// # Result
+///
+/// A map from HGNC ID to rCNV record.
+fn load_rcnv(path: &str) -> Result<HashMap<String, rcnv::Record>, anyhow::Error> {
+    info!("  loading rCNV information from {}", path);
+    let mut result = HashMap::new();
+
+    let mut reader = csv::ReaderBuilder::new().delimiter(b'\t').from_path(path)?;
+    for record in reader.deserialize::<rcnv::Record>() {
+        let record = record?;
+        result.insert(record.hgnc_id.clone(), record);
+    }
+
+    Ok(result)
+}
+
+/// Load sHet (Weghorn et al., 2019) information.
+///
+/// # Result
+///
+/// A map from HGNC ID to sHet record.
+fn load_shet(path: &str) -> Result<HashMap<String, shet::Record>, anyhow::Error> {
+    info!("  loading sHet information from {}", path);
+    let mut result = HashMap::new();
+
+    let mut reader = csv::ReaderBuilder::new().delimiter(b'\t').from_path(path)?;
+    for record in reader.deserialize::<shet::Record>() {
+        let record = record?;
+        result.insert(record.hgnc_id.clone(), record);
+    }
+
+    Ok(result)
+}
+
 /// Convert from `data::*` records to `pbs::*` records.
 fn convert_record(record: data::Record) -> pbs::Record {
     let data::Record {
@@ -177,6 +221,8 @@ fn convert_record(record: data::Record) -> pbs::Record {
         gnomad_constraints,
         hgnc,
         ncbi,
+        rcnv,
+        shet,
     } = record;
 
     let acmg_sf = acmg_sf.map(|acmg_sf| {
@@ -654,6 +700,24 @@ fn convert_record(record: data::Record) -> pbs::Record {
         }
     });
 
+    let rcnv = rcnv.map(|rcnv| {
+        let rcnv::Record {
+            hgnc_id,
+            p_haplo,
+            p_triplo,
+        } = rcnv;
+        pbs::RcnvRecord {
+            hgnc_id,
+            p_haplo,
+            p_triplo,
+        }
+    });
+
+    let shet = shet.map(|shet| {
+        let shet::Record { hgnc_id, s_het } = shet;
+        pbs::ShetRecord { hgnc_id, s_het }
+    });
+
     pbs::Record {
         acmg_sf,
         clingen,
@@ -661,10 +725,13 @@ fn convert_record(record: data::Record) -> pbs::Record {
         gnomad_constraints,
         hgnc,
         ncbi,
+        rcnv,
+        shet,
     }
 }
 
 /// Write gene database to a RocksDB.
+#[allow(clippy::too_many_arguments)]
 fn write_rocksdb(
     acmg_by_hgnc_id: HashMap<String, acmg_sf::Record>,
     clingen_by_hgnc_id: HashMap<String, clingen_gene::Record>,
@@ -672,6 +739,8 @@ fn write_rocksdb(
     constraints_by_ensembl_id: HashMap<String, gnomad_constraints::Record>,
     hgnc: HashMap<String, hgnc::Record>,
     ncbi_by_ncbi_id: HashMap<String, ncbi::Record>,
+    rcnv_by_hgnc_id: HashMap<String, rcnv::Record>,
+    shet_by_hgnc_id: HashMap<String, shet::Record>,
     args: &&Args,
 ) -> Result<(), anyhow::Error> {
     // Construct RocksDB options and open file for writing.
@@ -713,6 +782,8 @@ fn write_rocksdb(
                 .as_ref()
                 .map(|entrez_id| ncbi_by_ncbi_id.get(entrez_id).cloned())
                 .unwrap_or_default(),
+            rcnv: rcnv_by_hgnc_id.get(&hgnc_id).cloned(),
+            shet: shet_by_hgnc_id.get(&hgnc_id).cloned(),
         });
         tracing::debug!("writing {:?} -> {:?}", &hgnc, &record);
         db.put_cf(&cf_genes, hgnc_id, &record.encode_to_vec())?;
@@ -739,6 +810,8 @@ pub fn run(common_args: &common::cli::Args, args: &Args) -> Result<(), anyhow::E
     let dbnsfp_by_symbol = load_dbnsfp(&args.path_in_dbnsfp)?;
     let hgnc = load_hgnc(&args.path_in_hgnc)?;
     let ncbi_by_ncbi_id = load_ncbi(&args.path_in_ncbi)?;
+    let rcnv_by_hgnc_id = load_rcnv(&args.path_in_rcnv)?;
+    let shet_by_hgnc_id = load_shet(&args.path_in_shet)?;
     info!(
         "... done loadin genes data files in {:?}",
         before_loading.elapsed()
@@ -753,6 +826,8 @@ pub fn run(common_args: &common::cli::Args, args: &Args) -> Result<(), anyhow::E
         constraints_by_ensembl_id,
         hgnc,
         ncbi_by_ncbi_id,
+        rcnv_by_hgnc_id,
+        shet_by_hgnc_id,
         &args,
     )?;
     info!(
@@ -786,6 +861,8 @@ pub mod test {
             path_in_dbnsfp: String::from("tests/genes/dbnsfp/genes.tsv"),
             path_in_hgnc: String::from("tests/genes/hgnc/hgnc_info.jsonl"),
             path_in_ncbi: String::from("tests/genes/ncbi/gene_info.jsonl"),
+            path_in_rcnv: String::from("tests/genes/rcnv/rcnv.tsv"),
+            path_in_shet: String::from("tests/genes/shet/shet.tsv"),
             path_out_rocksdb: tmp_dir
                 .to_path_buf()
                 .into_os_string()

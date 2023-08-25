@@ -20,6 +20,10 @@ pub struct Record {
     pub hgnc: hgnc::Record,
     /// Information from the NCBI gene database (aka "Entrez").
     pub ncbi: Option<ncbi::Record>,
+    /// Information from rCNV (Collins et al., 2022).
+    pub rcnv: Option<rcnv::Record>,
+    /// Information from sHet (Weghorn et al., 2019).
+    pub shet: Option<shet::Record>,
 }
 
 /// Code for data from the ACMG secondary findings list.
@@ -1425,6 +1429,35 @@ pub mod ncbi {
     }
 }
 
+/// Code for data from rCNV (Collins et al., 2022).
+pub mod rcnv {
+    use serde::{Deserialize, Serialize};
+
+    /// A record from the rCNV table.
+    #[derive(Debug, Clone, Serialize, Deserialize)]
+    pub struct Record {
+        /// HGNC gene ID.
+        pub hgnc_id: String,
+        /// The pHaplo value.
+        pub p_haplo: f64,
+        /// The pTriplo value.
+        pub p_triplo: f64,
+    }
+}
+/// Code for data from rCNV (Weghorn et al., 2019).
+pub mod shet {
+    use serde::{Deserialize, Serialize};
+
+    /// A record from the sHet table.
+    #[derive(Debug, Clone, Serialize, Deserialize)]
+    pub struct Record {
+        /// HGNC gene ID.
+        pub hgnc_id: String,
+        /// The sHet value.
+        pub s_het: f64,
+    }
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -1438,6 +1471,21 @@ mod tests {
             .map(|s| serde_json::from_str::<ncbi::Record>(s).unwrap())
             .collect::<Vec<_>>();
 
+        insta::assert_yaml_snapshot!(records);
+
+        Ok(())
+    }
+
+    #[test]
+    fn deserialize_clingen_record() -> Result<(), anyhow::Error> {
+        let path_csv = "tests/genes/clingen/clingen.csv";
+        let str_csv = std::fs::read_to_string(path_csv)?;
+        let mut rdr = csv::ReaderBuilder::new()
+            .has_headers(true)
+            .from_reader(str_csv.as_bytes());
+        let records = rdr
+            .deserialize()
+            .collect::<Result<Vec<clingen_gene::Record>, csv::Error>>()?;
         insta::assert_yaml_snapshot!(records);
 
         Ok(())
@@ -1498,6 +1546,38 @@ mod tests {
         let records = rdr
             .deserialize()
             .collect::<Result<Vec<acmg_sf::Record>, csv::Error>>()?;
+        insta::assert_yaml_snapshot!(records);
+
+        Ok(())
+    }
+
+    #[test]
+    fn deserialize_rcnv_record() -> Result<(), anyhow::Error> {
+        let path_tsv = "tests/genes/rcnv/rcnv.tsv";
+        let str_tsv = std::fs::read_to_string(path_tsv).unwrap();
+        let mut rdr = csv::ReaderBuilder::new()
+            .delimiter(b'\t')
+            .has_headers(true)
+            .from_reader(str_tsv.as_bytes());
+        let records = rdr
+            .deserialize()
+            .collect::<Result<Vec<rcnv::Record>, csv::Error>>()?;
+        insta::assert_yaml_snapshot!(records);
+
+        Ok(())
+    }
+
+    #[test]
+    fn deserialize_shet_record() -> Result<(), anyhow::Error> {
+        let path_tsv = "tests/genes/shet/shet.tsv";
+        let str_tsv = std::fs::read_to_string(path_tsv).unwrap();
+        let mut rdr = csv::ReaderBuilder::new()
+            .delimiter(b'\t')
+            .has_headers(true)
+            .from_reader(str_tsv.as_bytes());
+        let records = rdr
+            .deserialize()
+            .collect::<Result<Vec<shet::Record>, csv::Error>>()?;
         insta::assert_yaml_snapshot!(records);
 
         Ok(())
