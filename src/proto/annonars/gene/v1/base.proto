@@ -28,7 +28,39 @@ message AcmgSecondaryFindingRecord {
     string variants_to_report = 11;
 }
 
-// Code for data from the ClinGen gene curation.
+// Per-disease annotation of ClinGen curation.
+message ClingenCurationDiseaseRecord {
+    // ClinGen disease label.
+    optional string disease_label = 1;
+    // MONDO disease ID.
+    optional string mondo_id = 2;
+    // URL in clinicalgenome.org knowledge base for disease.
+    optional string disease_url = 3;
+    // Annotated mode of inheritance.
+    repeated string mode_of_inheritance = 4;
+    // Dosage haploinsufficiency assertion.
+    optional string dosage_haploinsufficiency_assertion = 5;
+    // Dosage triplosensitivity assertion.
+    optional string dosage_triplosensitivity_assertion = 6;
+    // URL of dosage report in clinicalgenome.org knowledge base.
+    optional string dosage_report = 7;
+    // Working group with dosage report (always "Dosage Working Group") or empty.
+    optional string dosage_group = 8;
+    // Validity assertion classifications.
+    repeated string gene_disease_validity_assertion_classifications = 9;
+    // Validity assertion report URLs.
+    repeated string gene_disease_validity_assertion_reports = 10;
+    // Validity assertion Gene Curation Expert Panels.
+    repeated string gene_disease_validity_gceps = 11;
+    // Actionability assertion classifications.
+    repeated string actionability_assertion_classifications = 12;
+    // Actionability assertion report URLs.
+    repeated string actionability_assertion_reports = 13;
+    // Actionability assertion Gene Curation Expert Panels.
+    repeated string actionability_groups = 14;
+}
+
+// Code for data from the ClinGen curation.
 message ClingenCurationRecord {
     // HGNC gene symbol.
     string gene_symbol = 1;
@@ -36,34 +68,8 @@ message ClingenCurationRecord {
     string hgnc_id = 2;
     // URL in clinicalgenome.org knowledge base for gene.
     string gene_url = 3;
-    // ClinGen disease label.
-    optional string disease_label = 4;
-    // MONDO disease ID.
-    optional string mondo_id = 5;
-    // URL in clinicalgenome.org knowledge base for disease.
-    optional string disease_url = 6;
-    // Annotated mode of inheritance.
-    repeated string mode_of_inheritance = 7;
-    // Dosage haploinsufficiency assertion.
-    optional string dosage_haploinsufficiency_assertion = 8;
-    // Dosage triplosensitivity assertion.
-    optional string dosage_triplosensitivity_assertion = 9;
-    // URL of dosage report in clinicalgenome.org knowledge base.
-    optional string dosage_report = 10;
-    // Working group with dosage report (always "Dosage Working Group") or empty.
-    optional string dosage_group = 11;
-    // Validity assertion classifications.
-    repeated string gene_disease_validity_assertion_classifications = 12;
-    // Validity assertion report URLs.
-    repeated string gene_disease_validity_assertion_reports = 13;
-    // Validity assertion Gene Curation Expert Panels.
-    repeated string gene_disease_validity_gceps = 14;
-    // Actionability assertion classifications.
-    repeated string actionability_assertion_classifications = 15;
-    // Actionability assertion report URLs.
-    repeated string actionability_assertion_reports = 16;
-    // Actionability assertion Gene Curation Expert Panels.
-    repeated string actionability_groups = 17;
+    // The ClinGen per-gene curation records.
+    repeated ClingenCurationDiseaseRecord disease_records = 4;
 }
 
 // Code for data from the dbNSFP database.
@@ -588,21 +594,21 @@ message Record {
     // Information from the ACMG secondary finding list.
     AcmgSecondaryFindingRecord acmg_sf = 1;
     // Information from ClinGen curation.
-    ClingenCurationRecord clingen = 6;
+    ClingenCurationRecord clingen = 2;
     // Information from dbNSFP.
-    DbnsfpRecord dbnsfp = 2;
+    DbnsfpRecord dbnsfp = 3;
     // Information from the gnomAD constraints database.
-    GnomadConstraintsRecord gnomad_constraints = 3;
+    GnomadConstraintsRecord gnomad_constraints = 4;
     // Information from the HGNC database.
-    HgncRecord hgnc = 4;
+    HgncRecord hgnc = 5;
     // Information from the NCBI gene database (aka "Entrez").
-    NcbiRecord ncbi = 5;
+    NcbiRecord ncbi = 6;
     // Information about gene to OMIM term annotation, composed from clingen and HPO.
-    OmimRecord omim = 9;
+    OmimRecord omim = 7;
     // Information about gene to Orphanet annotation, derived from Orphapacket.
-    OrphaRecord orpha = 10;
+    OrphaRecord orpha = 8;
     // Information from the rCNV dosage sensitivity scores (Collins et al., 2022).
-    RcnvRecord rcnv = 7;
+    RcnvRecord rcnv = 9;
     // Information from the sHet score (Weghor et al., 2019)
-    ShetRecord shet = 8;
+    ShetRecord shet = 10;
 }

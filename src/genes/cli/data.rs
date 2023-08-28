@@ -11,7 +11,7 @@ pub struct Record {
     /// Information from the ACMG secondary finding list.
     pub acmg_sf: Option<acmg_sf::Record>,
     /// Information from the ClinGen gene curation.
-    pub clingen: Option<clingen_gene::Record>,
+    pub clingen: Option<Vec<clingen_gene::Record>>,
     /// Information from dbNSFP genes.
     pub dbnsfp: Option<dbnsfp_gene::Record>,
     /// Information from the gnomAD constraints database.
