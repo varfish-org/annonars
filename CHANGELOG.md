@@ -1,5 +1,16 @@
 # Changelog
 
+## [0.16.0](https://github.com/bihealth/annonars/compare/v0.15.0...v0.16.0) (2023-08-28)
+
+
+### ⚠ BREAKING CHANGES
+
+* fixing overrides in clingen import ([#184](https://github.com/bihealth/annonars/issues/184))
+
+### Bug Fixes
+
+* fixing overrides in clingen import ([#184](https://github.com/bihealth/annonars/issues/184)) ([e1e9e9f](https://github.com/bihealth/annonars/commit/e1e9e9f49606647f476a2fde1036b310629de260))
+
 ## [0.15.0](https://github.com/bihealth/annonars/compare/v0.14.1...v0.15.0) (2023-08-25)
 
 
