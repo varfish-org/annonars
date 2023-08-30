@@ -6,9 +6,13 @@ use std::time::Instant;
 
 use clap::Parser;
 use indicatif::ParallelProgressIterator;
+use prost::Message;
 use rayon::prelude::*;
 
-use crate::common::{self, cli::GenomeRelease};
+use crate::{
+    common::{self, cli::GenomeRelease},
+    genes::pbs,
+};
 
 /// Encode annotation database.
 #[derive(
@@ -92,11 +96,32 @@ impl AnnoDb {
     }
 }
 
+/// Identifier / name information for one gene.
+#[derive(Debug, serde::Serialize, serde::Deserialize, Clone)]
+pub struct GeneNames {
+    /// HGNC gene ID.
+    pub hgnc_id: String,
+    /// HGNC gene symbol.
+    pub symbol: String,
+    /// Gene name from HGNC.
+    pub name: String,
+    /// HGNC alias symbols.
+    pub alias_symbol: Vec<String>,
+    /// HGNC alias names.
+    pub alias_name: Vec<String>,
+    /// ENSEMBL gene ID.
+    pub ensembl_gene_id: Option<String>,
+    /// NCBI gene ID.
+    pub ncbi_gene_id: Option<String>,
+}
+
 /// Gene information database.
 #[derive(Debug)]
 pub struct GeneInfoDb {
     /// The database.
     pub db: rocksdb::DBWithThreadMode<rocksdb::MultiThreaded>,
+    /// Gene information to keep in memory (for `/genes/search`).
+    pub gene_strings: Vec<GeneNames>,
 }
 
 /// Genome-release specific annotation for each database.
@@ -228,6 +253,47 @@ fn open_db(
     res
 }
 
+/// Obtain gene names from the genes RocksDB.
+fn extract_gene_names(
+    genes_db: &rocksdb::DBWithThreadMode<rocksdb::MultiThreaded>,
+) -> Result<Vec<GeneNames>, anyhow::Error> {
+    let mut result = Vec::new();
+
+    let cf_read = genes_db.cf_handle("genes").unwrap();
+    let mut iter = genes_db.raw_iterator_cf(&cf_read);
+    iter.seek(b"");
+    while iter.valid() {
+        if let Some(iter_value) = iter.value() {
+            let record = pbs::Record::decode(std::io::Cursor::new(iter_value))?;
+            let pbs::Record { hgnc, .. } = record;
+            if let Some(hgnc) = hgnc {
+                let pbs::HgncRecord {
+                    hgnc_id,
+                    symbol,
+                    name,
+                    alias_symbol,
+                    alias_name,
+                    ensembl_gene_id,
+                    entrez_id,
+                    ..
+                } = hgnc;
+                result.push(GeneNames {
+                    hgnc_id,
+                    symbol,
+                    name,
+                    alias_symbol,
+                    alias_name,
+                    ensembl_gene_id,
+                    ncbi_gene_id: entrez_id,
+                })
+            }
+        }
+        iter.next();
+    }
+
+    Ok(result)
+}
+
 /// Main entry point for `server rest` sub command.
 pub fn run(args_common: &common::cli::Args, args: &Args) -> Result<(), anyhow::Error> {
     tracing::info!("args_common = {:?}", &args_common);
@@ -255,11 +321,14 @@ pub fn run(args_common: &common::cli::Args, args: &Args) -> Result<(), anyhow::E
             "...done opening genes database in {:?}",
             before_open.elapsed()
         );
-        data.genes = Some(GeneInfoDb { db: genes });
-        tracing::info!(
-            "...done opening genes database in {:?}",
-            before_opening.elapsed()
-        );
+        tracing::info!("Building gene names...");
+        let before_open = Instant::now();
+        let gene_names = extract_gene_names(&genes)?;
+        tracing::info!("...done building genes names {:?}", before_open.elapsed());
+        data.genes = Some(GeneInfoDb {
+            db: genes,
+            gene_strings: gene_names,
+        });
     }
     // Argument lists from the command line with the corresponding database enum value.
     let paths_db_pairs = vec![
@@ -312,6 +381,16 @@ pub fn run(args_common: &common::cli::Args, args: &Args) -> Result<(), anyhow::E
 
     tracing::info!(
         "Launching server main on http://{}:{} ...",
+        args.listen_host.as_str(),
+        args.listen_port
+    );
+    tracing::info!(
+        "  try: http://{}:{}/genes/search?q=BRCA",
+        args.listen_host.as_str(),
+        args.listen_port
+    );
+    tracing::info!(
+        "  try: http://{}:{}/genes/search?q=BRCA&fields=hgnc_id,ensembl_gene_id,ncbi_gene_id,symbol",
         args.listen_host.as_str(),
         args.listen_port
     );
