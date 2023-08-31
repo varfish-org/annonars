@@ -1,5 +1,13 @@
 # Changelog
 
+## [0.17.0](https://github.com/bihealth/annonars/compare/v0.16.0...v0.17.0) (2023-08-31)
+
+
+### Features
+
+* adding /genes/lookup endpoint ([#193](https://github.com/bihealth/annonars/issues/193)) ([eeb5753](https://github.com/bihealth/annonars/commit/eeb57530ada50898cf860348f3a69f7eff1abf79))
+* adding /genes/search to annonars ([#191](https://github.com/bihealth/annonars/issues/191)) ([bc39d84](https://github.com/bihealth/annonars/commit/bc39d8443946a456ebf06aeddd5e73bd3bc96ec6))
+
 ## [0.16.0](https://github.com/bihealth/annonars/compare/v0.15.0...v0.16.0) (2023-08-28)
 
 
