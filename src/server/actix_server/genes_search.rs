@@ -1,4 +1,7 @@
 //! Implementation of `/genes/search` that allows to search for genes by symbol etc.
+//!
+//! Gene identifiers (HGNC, NCBI, ENSEMBL) must match.  As for symbols and names, the
+//! search string may also be a substring.
 use actix_web::{
     get,
     web::{self, Data, Json, Path},
@@ -105,7 +108,7 @@ async fn handle(
     let fields_contains = |field: &Fields| -> bool { fields.is_empty() || fields.contains(field) };
 
     let mut genes = genes_db
-        .gene_strings
+        .gene_names
         .iter()
         .map(|gn| -> Scored<GeneNames> {
             let score = if (fields_contains(&Fields::HgncId) && &gn.hgnc_id == q)

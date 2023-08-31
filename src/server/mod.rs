@@ -2,7 +2,7 @@
 
 pub mod actix_server;
 
-use std::time::Instant;
+use std::{collections::HashMap, time::Instant};
 
 use clap::Parser;
 use indicatif::ParallelProgressIterator;
@@ -121,7 +121,9 @@ pub struct GeneInfoDb {
     /// The database.
     pub db: rocksdb::DBWithThreadMode<rocksdb::MultiThreaded>,
     /// Gene information to keep in memory (for `/genes/search`).
-    pub gene_strings: Vec<GeneNames>,
+    pub gene_names: Vec<GeneNames>,
+    /// Mapping from allowed gene name string to index in `gene_names`.
+    pub name_to_hgnc_idx: HashMap<String, usize>,
 }
 
 /// Genome-release specific annotation for each database.
@@ -316,18 +318,33 @@ pub fn run(args_common: &common::cli::Args, args: &Args) -> Result<(), anyhow::E
     if let Some(path_genes) = args.path_genes.as_ref() {
         tracing::info!("Opening genes database {}...", path_genes);
         let before_open = Instant::now();
-        let genes = open_db(path_genes, "genes")?;
+        let db = open_db(path_genes, "genes")?;
         tracing::info!(
             "...done opening genes database in {:?}",
             before_open.elapsed()
         );
         tracing::info!("Building gene names...");
         let before_open = Instant::now();
-        let gene_names = extract_gene_names(&genes)?;
+        let gene_names = extract_gene_names(&db)?;
+        let name_to_hgnc_idx = {
+            let mut result = HashMap::new();
+            for (idx, gene_name) in gene_names.iter().enumerate() {
+                result.insert(gene_name.hgnc_id.clone(), idx);
+                if let Some(ensembl_gene_id) = gene_name.ensembl_gene_id.as_ref() {
+                    result.insert(ensembl_gene_id.clone(), idx);
+                }
+                if let Some(ncbi_gene_id) = gene_name.ncbi_gene_id.as_ref() {
+                    result.insert(ncbi_gene_id.clone(), idx);
+                }
+                result.insert(gene_name.symbol.clone(), idx);
+            }
+            result
+        };
         tracing::info!("...done building genes names {:?}", before_open.elapsed());
         data.genes = Some(GeneInfoDb {
-            db: genes,
-            gene_strings: gene_names,
+            db,
+            gene_names,
+            name_to_hgnc_idx,
         });
     }
     // Argument lists from the command line with the corresponding database enum value.
@@ -391,6 +408,11 @@ pub fn run(args_common: &common::cli::Args, args: &Args) -> Result<(), anyhow::E
     );
     tracing::info!(
         "  try: http://{}:{}/genes/search?q=BRCA&fields=hgnc_id,ensembl_gene_id,ncbi_gene_id,symbol",
+        args.listen_host.as_str(),
+        args.listen_port
+    );
+    tracing::info!(
+        "  try: http://{}:{}/genes/lookup?q=BRCA,BRCA1,HGNC:1100",
         args.listen_host.as_str(),
         args.listen_port
     );
