@@ -18,7 +18,7 @@ name = "annonars"
 path = "src/main.rs"
 
 [dependencies]
-actix-web = "4.3.1"
+actix-web = "4.4.0"
 anyhow = "1.0"
 bgzip = "0.3"
 boolvec = "0.2"
