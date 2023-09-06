@@ -244,13 +244,12 @@ fn open_db(
 ) -> Result<rocksdb::DBWithThreadMode<rocksdb::MultiThreaded>, anyhow::Error> {
     tracing::info!("Opening database {}...", path);
     let before_open = Instant::now();
-    let res = rocksdb::DB::open_cf_for_read_only(
-        &rocksdb::Options::default(),
-        path,
-        ["meta", cf_name],
-        true,
-    )
-    .map_err(|e| anyhow::anyhow!("problem opening database: {}", e));
+    let mut block_opts = rocksdb::BlockBasedOptions::default();
+    block_opts.set_cache_index_and_filter_blocks(true);
+    let mut opts = rocksdb::Options::default();
+    opts.set_block_based_table_factory(&block_opts);
+    let res = rocksdb::DB::open_cf_for_read_only(&opts, path, ["meta", cf_name], true)
+        .map_err(|e| anyhow::anyhow!("problem opening database: {}", e));
     tracing::info!("...done opening database in {:?}", before_open.elapsed());
     res
 }
