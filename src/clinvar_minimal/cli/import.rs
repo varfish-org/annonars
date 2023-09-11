@@ -59,6 +59,7 @@ fn jsonl_import(
             clinical_significance,
             review_status,
             sequence_location,
+            ..
         } = record;
         let clinical_significance: clinvar_minimal::pbs::ClinicalSignificance =
             clinical_significance.into();

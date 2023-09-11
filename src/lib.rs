@@ -3,6 +3,7 @@
 #![allow(clippy::module_name_repetitions)]
 #![warn(missing_docs)]
 
+pub mod clinvar_genes;
 pub mod clinvar_minimal;
 pub mod common;
 pub mod cons;

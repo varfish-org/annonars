@@ -219,6 +219,8 @@ impl From<i32> for ReviewStatus {
 pub struct Record {
     /// RCV accession identifier.
     pub rcv: String,
+    /// HGNC ids
+    pub hgnc_ids: Vec<String>,
     /// ClinVar clinical significance
     pub clinical_significance: ClinicalSignificance,
     /// ClinVar review status
