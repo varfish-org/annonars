@@ -5,7 +5,7 @@ syntax = "proto3";
 package annonars.clinvar.v1.minimal;
 
 // Enumeration for ClinVar pathogenicity.
-enum Pathogenicity {
+enum ClinicalSignificance {
     // Pathogenic.
     PATHOGENIC = 0;
     // Likely pathogenic.
@@ -18,6 +18,24 @@ enum Pathogenicity {
     BENIGN = 4;
 }
 
+/// Enumeration for ClinVar review status.
+enum ReviewStatus {
+    // "no assertion provided"
+    NO_ASSERTION_PROVIDED = 0;
+    // "no assertion criteria provided"
+    NO_ASSERTION_CRITERIA_PROVIDED = 1;
+    // "criteria provided, conflicting interpretations"
+    CRITERIA_PROVIDED_CONFLICTING_INTERPRETATIONS = 2;
+    // "criteria provided, single submitter"
+    CRITERIA_PROVIDED_SINGLE_SUBMITTER = 3;
+    // "criteria provided, multiple submitters, no conflicts"
+    CRITERIA_PROVIDED_MULTIPLE_SUBMITTERS_NO_CONFLICTS = 4;
+    // "reviewed by expert panel"
+    REVIEWED_BY_EXPERT_PANEL = 5;
+    // "practice guideline"
+    PRACTICE_GUIDELINE = 6;
+}
+
 // Record for storing minimal information on ClinVar for Mehari.
 message Record {
     // Genome release.
@@ -27,19 +45,15 @@ message Record {
     // 1-based start position.
     uint32 start = 3;
     // 1-based end position.
-    uint32 end = 4;
+    uint32 stop = 4;
     // Reference allele bases in VCF notation.
     string reference = 5;
     // Alternative allele bases in VCF notation.
     string alternative = 6;
-    // VCV accession identifier.
-    string vcv = 7;
-    // Pathogenicity summary for the variant (ClinVar style).
-    repeated Pathogenicity summary_clinvar_pathogenicity = 8;
-    // Pathogenicity gold stars (ClinVar style).
-    uint32 summary_clinvar_gold_stars = 9;
-    // Pathogenicity summary for the variant ("paranoid" style).
-    repeated Pathogenicity summary_paranoid_pathogenicity = 10;
-    // Pathogenicity gold stars ("paranoid" style).
-    uint32 summary_paranoid_gold_stars = 11;
+    // RCV accession identifier.
+    string rcv = 7;
+    // Clinical significance for variant.
+    ClinicalSignificance clinical_significance = 8;
+    // Review status.
+    ReviewStatus review_status = 9;
 }

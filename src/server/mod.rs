@@ -348,7 +348,7 @@ pub fn run(args_common: &common::cli::Args, args: &Args) -> Result<(), anyhow::E
         });
     }
     // Argument lists from the command line with the corresponding database enum value.
-    let paths_db_pairs = vec![
+    let paths_db_pairs = [
         (&args.path_clinvar, AnnoDb::Clinvar),
         (&args.path_cadd, AnnoDb::Cadd),
         (&args.path_dbnsfp, AnnoDb::Dbnsfp),

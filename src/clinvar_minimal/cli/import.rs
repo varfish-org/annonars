@@ -1,6 +1,6 @@
 //! Import of minimal ClinVar data.
 
-use std::sync::Arc;
+use std::{io::BufRead, sync::Arc};
 
 use clap::Parser;
 use prost::Message;
@@ -10,16 +10,16 @@ use crate::{
     common::{self, keys},
 };
 
-/// Command line arguments for `tsv import` sub command.
+/// Command line arguments for `clinvar-minimal import` sub command.
 #[derive(Parser, Debug, Clone)]
 #[command(about = "import minimal ClinVar data into RocksDB", long_about = None)]
 pub struct Args {
     /// Genome build to use in the build.
     #[arg(long, value_enum)]
     pub genome_release: common::cli::GenomeRelease,
-    /// Path to input TSV file(s).
+    /// Path to input JSONL file(s).
     #[arg(long, required = true)]
-    pub path_in_tsv: String,
+    pub path_in_jsonl: String,
     /// Path to output RocksDB directory.
     #[arg(long)]
     pub path_out_rocksdb: String,
@@ -32,82 +32,71 @@ pub struct Args {
     pub path_wal_dir: Option<String>,
 }
 
-/// Perform import of the TSV file.
-fn tsv_import(
+/// Perform import of the JSONL file.
+fn jsonl_import(
     db: &rocksdb::DBWithThreadMode<rocksdb::MultiThreaded>,
     args: &Args,
 ) -> Result<(), anyhow::Error> {
     let cf_data = db.cf_handle(&args.cf_name).unwrap();
 
     // Open reader, possibly decompressing gziped files.
-    let reader: Box<dyn std::io::Read> = if args.path_in_tsv.ends_with(".gz") {
+    let reader: Box<dyn std::io::Read> = if args.path_in_jsonl.ends_with(".gz") {
         Box::new(flate2::read::GzDecoder::new(std::fs::File::open(
-            &args.path_in_tsv,
+            &args.path_in_jsonl,
         )?))
     } else {
-        Box::new(std::fs::File::open(&args.path_in_tsv)?)
+        Box::new(std::fs::File::open(&args.path_in_jsonl)?)
     };
 
-    // Construct CSV reader.
-    let mut csv_reader = csv::ReaderBuilder::new()
-        .delimiter(b'\t')
-        .has_headers(true)
-        .from_reader(reader);
+    let reader = std::io::BufReader::new(reader);
 
-    // Read through all records and insert each into the database.
-    for result in csv_reader.deserialize() {
-        let record: clinvar_minimal::cli::reading::Record = result?;
+    for line in reader.lines() {
+        let line = line?;
+        let record = serde_json::from_str::<clinvar_minimal::cli::reading::Record>(&line)?;
+
         let clinvar_minimal::cli::reading::Record {
-            release,
-            chromosome,
-            start,
-            end,
-            reference,
-            alternative,
-            vcv,
-            summary_clinvar_pathogenicity,
-            summary_clinvar_gold_stars,
-            summary_paranoid_pathogenicity,
-            summary_paranoid_gold_stars,
+            rcv,
+            clinical_significance,
+            review_status,
+            sequence_location,
         } = record;
-        let summary_clinvar_pathogenicity = summary_clinvar_pathogenicity
-            .into_iter()
-            .map(|p| {
-                let p: clinvar_minimal::pbs::Pathogenicity = p.into();
-                p as i32
-            })
-            .collect();
-        let summary_paranoid_pathogenicity = summary_paranoid_pathogenicity
-            .into_iter()
-            .map(|p| {
-                let p: clinvar_minimal::pbs::Pathogenicity = p.into();
-                p as i32
-            })
-            .collect();
-        let record = clinvar_minimal::pbs::Record {
-            release,
-            chromosome,
+        let clinical_significance: clinvar_minimal::pbs::ClinicalSignificance =
+            clinical_significance.into();
+        let review_status: clinvar_minimal::pbs::ReviewStatus = review_status.into();
+        let clinvar_minimal::cli::reading::SequenceLocation {
+            assembly,
+            chr,
             start,
-            end,
-            reference,
-            alternative,
-            vcv,
-            summary_clinvar_pathogenicity,
-            summary_clinvar_gold_stars,
-            summary_paranoid_pathogenicity,
-            summary_paranoid_gold_stars,
-        };
-        let buf = record.encode_to_vec();
+            stop,
+            reference_allele_vcf,
+            alternate_allele_vcf,
+        } = sequence_location;
+        if let (Some(reference_allele_vcf), Some(alternate_allele_vcf)) =
+            (reference_allele_vcf, alternate_allele_vcf)
+        {
+            let record = clinvar_minimal::pbs::Record {
+                release: assembly,
+                chromosome: chr,
+                start,
+                stop,
+                reference: reference_allele_vcf,
+                alternative: alternate_allele_vcf,
+                rcv,
+                clinical_significance: clinical_significance.into(),
+                review_status: review_status.into(),
+            };
+            let buf = record.encode_to_vec();
 
-        let var = keys::Var::from(
-            &record.chromosome,
-            record.start as i32,
-            &record.reference,
-            &record.alternative,
-        );
-        let key: Vec<u8> = var.into();
+            let var = keys::Var::from(
+                &record.chromosome,
+                record.start as i32,
+                &record.reference,
+                &record.alternative,
+            );
+            let key: Vec<u8> = var.into();
 
-        db.put_cf(&cf_data, key, buf)?;
+            db.put_cf(&cf_data, key, buf)?;
+        }
     }
 
     Ok(())
@@ -149,11 +138,11 @@ pub fn run(common: &common::cli::Args, args: &Args) -> Result<(), anyhow::Error>
         before_opening_rocksdb.elapsed()
     );
 
-    tracing::info!("Importing TSV files ...");
+    tracing::info!("Importing JSONL file ...");
     let before_import = std::time::Instant::now();
-    tsv_import(&db, args)?;
+    jsonl_import(&db, args)?;
     tracing::info!(
-        "... done importing TSV files in {:?}",
+        "... done importing JSONL file in {:?}",
         before_import.elapsed()
     );
 
@@ -177,14 +166,14 @@ mod test {
     use temp_testdir::TempDir;
 
     #[test]
-    fn smoke_test_import_tsv() {
+    fn smoke_test_import_jsonl() {
         let tmp_dir = TempDir::default();
         let common = common::cli::Args {
             verbose: Verbosity::new(1, 0),
         };
         let args = Args {
             genome_release: common::cli::GenomeRelease::Grch37,
-            path_in_tsv: String::from("tests/clinvar-minimal/clinvar-seqvars-grch37-tgds.tsv"),
+            path_in_jsonl: String::from("tests/clinvar-minimal/clinvar-seqvars-grch37-tgds.jsonl"),
             path_out_rocksdb: format!("{}", tmp_dir.join("out-rocksdb").display()),
             cf_name: String::from("clinvar"),
             path_wal_dir: None,

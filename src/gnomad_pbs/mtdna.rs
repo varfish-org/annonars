@@ -308,7 +308,7 @@ mod test {
     #[test]
     fn test_record_from_vcf_allele() -> Result<(), anyhow::Error> {
         let path_vcf = "tests/gnomad-mtdna/example/gnomad-mtdna.vcf";
-        let mut reader_vcf = noodles_vcf::reader::Builder::default().build_from_path(path_vcf)?;
+        let mut reader_vcf = noodles_vcf::reader::Builder.build_from_path(path_vcf)?;
         let header = reader_vcf.read_header()?;
 
         let mut records = Vec::new();
