@@ -17,8 +17,8 @@ use crate::{
 };
 
 use super::data::{
-    self, acmg_sf, clingen_gene, dbnsfp_gene, gnomad_constraints, hgnc, ncbi, omim, orpha, rcnv,
-    shet,
+    self, acmg_sf, clingen_gene, dbnsfp_gene, gnomad_constraints, gtex, hgnc, ncbi, omim, orpha,
+    rcnv, shet,
 };
 
 /// Command line arguments for `genes import` sub command.
@@ -55,6 +55,9 @@ pub struct Args {
     /// Path to the TSV file with sHet information.
     #[arg(long, required = true)]
     pub path_in_shet: String,
+    /// Path to the JSONL file with the GTex informatino.
+    #[arg(long, required = true)]
+    pub path_in_gtex: String,
 
     /// Path to output RocksDB.
     #[arg(long, required = true)]
@@ -301,6 +304,34 @@ fn load_shet(path: &str) -> Result<HashMap<String, shet::Record>, anyhow::Error>
     Ok(result)
 }
 
+/// Load GTex information
+///
+/// # Result
+///
+/// A map from HGNC ID to GTex gene record.
+fn load_gtex(path: &str) -> Result<HashMap<String, gtex::Record>, anyhow::Error> {
+    info!("  loading GTex information from {}", path);
+    let mut result = HashMap::new();
+
+    let reader: Box<dyn Read> = if path.ends_with(".gz") {
+        Box::new(flate2::bufread::MultiGzDecoder::new(BufReader::new(
+            std::fs::File::open(path)?,
+        )))
+    } else {
+        Box::new(BufReader::new(std::fs::File::open(path)?))
+    };
+
+    let reader: Box<dyn BufRead> = Box::new(BufReader::new(reader));
+
+    for line in reader.lines() {
+        let line = line?;
+        let record = serde_json::from_str::<gtex::Record>(&line)?;
+        result.insert(record.hgnc_id.clone(), record);
+    }
+
+    Ok(result)
+}
+
 /// Convert from `data::*` records to `pbs::*` records.
 fn convert_record(record: data::Record) -> pbs::Record {
     let data::Record {
@@ -314,6 +345,7 @@ fn convert_record(record: data::Record) -> pbs::Record {
         orpha,
         rcnv,
         shet,
+        gtex,
     } = record;
 
     let acmg_sf = acmg_sf.map(|acmg_sf| {
@@ -838,6 +870,28 @@ fn convert_record(record: data::Record) -> pbs::Record {
         pbs::ShetRecord { hgnc_id, s_het }
     });
 
+    let gtex = gtex.map(|gtex| {
+        let gtex::Record {
+            hgnc_id,
+            records,
+            ensembl_gene_id,
+            ensembl_gene_version,
+        } = gtex;
+        let records = records
+            .into_iter()
+            .map(|record| {
+                let gtex::PerTissueRecord { tissue, tpms } = record;
+                pbs::GtexTissueRecord { tissue, tpms }
+            })
+            .collect::<Vec<_>>();
+        pbs::GtexRecord {
+            hgnc_id,
+            ensembl_gene_id,
+            ensembl_gene_version,
+            records,
+        }
+    });
+
     pbs::Record {
         acmg_sf,
         clingen,
@@ -849,6 +903,7 @@ fn convert_record(record: data::Record) -> pbs::Record {
         orpha,
         rcnv,
         shet,
+        gtex,
     }
 }
 
@@ -865,6 +920,7 @@ fn write_rocksdb(
     orpha_by_hgnc_id: HashMap<String, orpha::Record>,
     rcnv_by_hgnc_id: HashMap<String, rcnv::Record>,
     shet_by_hgnc_id: HashMap<String, shet::Record>,
+    gtex_by_hgnc_id: HashMap<String, gtex::Record>,
     args: &&Args,
 ) -> Result<(), anyhow::Error> {
     // Construct RocksDB options and open file for writing.
@@ -910,6 +966,7 @@ fn write_rocksdb(
                 .unwrap_or_default(),
             rcnv: rcnv_by_hgnc_id.get(&hgnc_id).cloned(),
             shet: shet_by_hgnc_id.get(&hgnc_id).cloned(),
+            gtex: gtex_by_hgnc_id.get(&hgnc_id).cloned(),
         });
         tracing::debug!("writing {:?} -> {:?}", &hgnc, &record);
         db.put_cf(&cf_genes, hgnc_id, &record.encode_to_vec())?;
@@ -940,6 +997,7 @@ pub fn run(common_args: &common::cli::Args, args: &Args) -> Result<(), anyhow::E
     let orpha_by_hgnc_id = load_orpha(&args.path_in_orpha)?;
     let rcnv_by_hgnc_id = load_rcnv(&args.path_in_rcnv)?;
     let shet_by_hgnc_id = load_shet(&args.path_in_shet)?;
+    let gtex_by_hgnc_id = load_gtex(&args.path_in_gtex)?;
     info!(
         "... done loadin genes data files in {:?}",
         before_loading.elapsed()
@@ -958,6 +1016,7 @@ pub fn run(common_args: &common::cli::Args, args: &Args) -> Result<(), anyhow::E
         orpha_by_hgnc_id,
         rcnv_by_hgnc_id,
         shet_by_hgnc_id,
+        gtex_by_hgnc_id,
         &args,
     )?;
     info!(
@@ -995,6 +1054,7 @@ pub mod test {
             path_in_orpha: String::from("tests/genes/orphanet/orphanet_diseases.tsv"),
             path_in_rcnv: String::from("tests/genes/rcnv/rcnv.tsv"),
             path_in_shet: String::from("tests/genes/shet/shet.tsv"),
+            path_in_gtex: String::from("tests/genes/gtex/genes_tpm.jsonl"),
             path_out_rocksdb: tmp_dir
                 .to_path_buf()
                 .into_os_string()

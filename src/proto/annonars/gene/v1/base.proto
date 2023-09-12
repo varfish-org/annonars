@@ -589,6 +589,26 @@ message ShetRecord {
     double s_het = 2;
 }
 
+// Entry with the tissue-specific information for a gene.
+message GtexTissueRecord {
+    // The tissue type / name
+    string tissue = 1;
+    // TPM counts
+    repeated float tpms = 2;
+}
+
+// Entry with the GTex information.
+message GtexRecord {
+    // The HGNC ID.
+    string hgnc_id = 1;
+    // ENSEMBL gene ID.
+    string ensembl_gene_id = 2;
+    // ENSEMBL gene version.
+    string ensembl_gene_version = 3;
+    // Counts per tissue
+    repeated GtexTissueRecord records = 4;
+}
+
 // Entry in the genes RocksDB database.
 message Record {
     // Information from the ACMG secondary finding list.
@@ -611,4 +631,6 @@ message Record {
     RcnvRecord rcnv = 9;
     // Information from the sHet score (Weghor et al., 2019)
     ShetRecord shet = 10;
+    // Information from GTex data
+    GtexRecord gtex = 11;
 }
