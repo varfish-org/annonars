@@ -5,6 +5,7 @@ pub mod annos_range;
 pub mod annos_variant;
 pub mod error;
 pub mod fetch;
+pub mod genes_clinvar;
 pub mod genes_info;
 pub mod genes_lookup;
 pub mod genes_search;
@@ -26,6 +27,7 @@ pub async fn main(args: &Args, dbs: Data<WebServerData>) -> std::io::Result<()> 
             .service(annos_variant::handle)
             .service(annos_range::handle)
             .service(annos_db_info::handle)
+            .service(genes_clinvar::handle)
             .service(genes_info::handle)
             .service(genes_search::handle)
             .service(genes_lookup::handle);

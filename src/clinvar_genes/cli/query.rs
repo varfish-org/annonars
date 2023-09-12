@@ -4,7 +4,7 @@ use std::sync::Arc;
 
 use prost::Message;
 
-use crate::{common, genes::pbs};
+use crate::{common, clinvar_genes};
 
 /// Command line arguments for `clinvar-gene query` sub command.
 #[derive(clap::Parser, Debug, Clone)]
@@ -54,7 +54,7 @@ fn open_rocksdb(
 fn print_record(
     out_writer: &mut Box<dyn std::io::Write>,
     output_format: common::cli::OutputFormat,
-    value: &pbs::Record,
+    value: &clinvar_genes::pbs::ClinvarPerGeneRecord,
 ) -> Result<(), anyhow::Error> {
     match output_format {
         common::cli::OutputFormat::Jsonl => {
@@ -90,7 +90,9 @@ pub fn run(common: &common::cli::Args, args: &Args) -> Result<(), anyhow::Error>
         print_record(
             &mut out_writer,
             args.out_format,
-            &pbs::Record::decode(&mut std::io::Cursor::new(&raw_value))?,
+            &clinvar_genes::pbs::ClinvarPerGeneRecord::decode(&mut std::io::Cursor::new(
+                &raw_value,
+            ))?,
         )?;
     } else {
         tracing::info!("No data found for HGNC ID {}", args.hgnc_id);

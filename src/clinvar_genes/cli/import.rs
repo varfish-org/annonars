@@ -19,9 +19,6 @@ use crate::{
 #[derive(Parser, Debug, Clone)]
 #[command(about = "import ClinVar per-gene data into RocksDB", long_about = None)]
 pub struct Args {
-    /// Genome build to use in the build.
-    #[arg(long, value_enum)]
-    pub genome_release: common::cli::GenomeRelease,
     /// Path to input per-impact JSONL file(s).
     #[arg(long, required = true)]
     pub path_per_impact_jsonl: String,
@@ -224,7 +221,15 @@ fn jsonl_import(
 
     tracing::info!("Writing to database ...");
     let before_write_to_db = std::time::Instant::now();
-    let hgnc_ids = counts_per_freq.keys().cloned().collect::<HashSet<_>>();
+    let mut hgnc_ids = counts_per_impact
+        .keys()
+        .cloned()
+        .chain(counts_per_freq.keys().cloned())
+        .chain(vars_per_gene.keys().cloned())
+        .collect::<HashSet<_>>()
+        .into_iter()
+        .collect::<Vec<_>>();
+    hgnc_ids.sort();
 
     // Read through all records and insert each into the database.
     for hgnc_id in hgnc_ids.iter() {
@@ -235,6 +240,7 @@ fn jsonl_import(
         };
         let buf = record.encode_to_vec();
 
+        eprintln!("{} => {:?}", &hgnc_id, &record);
         db.put_cf(&cf_data, hgnc_id, buf)?;
     }
     tracing::info!(
@@ -245,9 +251,9 @@ fn jsonl_import(
     Ok(())
 }
 
-/// Implementation of `clinvar-minimal import` sub command.
+/// Implementation of `clinvar-genes import` sub command.
 pub fn run(common: &common::cli::Args, args: &Args) -> Result<(), anyhow::Error> {
-    tracing::info!("Starting 'clinvar-minimal import' command");
+    tracing::info!("Starting 'clinvar-genes import' command");
     tracing::info!("common = {:#?}", &common);
     tracing::info!("args = {:#?}", &args);
 
@@ -270,12 +276,7 @@ pub fn run(common: &common::cli::Args, args: &Args) -> Result<(), anyhow::Error>
     tracing::info!("  writing meta information");
     let cf_meta = db.cf_handle("meta").unwrap();
     db.put_cf(&cf_meta, "annonars-version", crate::VERSION)?;
-    db.put_cf(
-        &cf_meta,
-        "genome-release",
-        format!("{}", args.genome_release),
-    )?;
-    db.put_cf(&cf_meta, "db-name", "clinvar-minimal")?;
+    db.put_cf(&cf_meta, "db-name", "clinvar-genes")?;
     tracing::info!(
         "... done opening RocksDB for writing in {:?}",
         before_opening_rocksdb.elapsed()
@@ -315,14 +316,13 @@ mod test {
             verbose: Verbosity::new(1, 0),
         };
         let args = Args {
-            genome_release: common::cli::GenomeRelease::Grch37,
-            path_per_impact_jsonl: String::from("tests/clinvar-genes/gene-variant-report.jsonl"),
+            path_per_impact_jsonl: String::from("tests/clinvar_genes/gene-variant-report.jsonl"),
             path_per_frequency_jsonl: String::from(
-                "tests/clinvar-genes/gene-frequency-report.jsonl",
+                "tests/clinvar_genes/gene-frequency-report.jsonl",
             ),
             paths_variant_jsonl: vec![
-                String::from("tests/clinvar-genes/clinvar-variants-grch37-seqvars.jsonl"),
-                String::from("tests/clinvar-genes/clinvar-variants-grch38-seqvars.jsonl"),
+                String::from("tests/clinvar_genes/clinvar-variants-grch37-seqvars.jsonl"),
+                String::from("tests/clinvar_genes/clinvar-variants-grch38-seqvars.jsonl"),
             ],
             path_out_rocksdb: format!("{}", tmp_dir.join("out-rocksdb").display()),
             cf_name: String::from("clinvar"),
