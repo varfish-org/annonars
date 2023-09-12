@@ -240,7 +240,6 @@ fn jsonl_import(
         };
         let buf = record.encode_to_vec();
 
-        eprintln!("{} => {:?}", &hgnc_id, &record);
         db.put_cf(&cf_data, hgnc_id, buf)?;
     }
     tracing::info!(
@@ -316,13 +315,13 @@ mod test {
             verbose: Verbosity::new(1, 0),
         };
         let args = Args {
-            path_per_impact_jsonl: String::from("tests/clinvar_genes/gene-variant-report.jsonl"),
+            path_per_impact_jsonl: String::from("tests/clinvar-genes/gene-variant-report.jsonl"),
             path_per_frequency_jsonl: String::from(
-                "tests/clinvar_genes/gene-frequency-report.jsonl",
+                "tests/clinvar-genes/gene-frequency-report.jsonl",
             ),
             paths_variant_jsonl: vec![
-                String::from("tests/clinvar_genes/clinvar-variants-grch37-seqvars.jsonl"),
-                String::from("tests/clinvar_genes/clinvar-variants-grch38-seqvars.jsonl"),
+                String::from("tests/clinvar-genes/clinvar-variants-grch37-seqvars.jsonl"),
+                String::from("tests/clinvar-genes/clinvar-variants-grch38-seqvars.jsonl"),
             ],
             path_out_rocksdb: format!("{}", tmp_dir.join("out-rocksdb").display()),
             cf_name: String::from("clinvar"),

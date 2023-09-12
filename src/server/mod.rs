@@ -442,6 +442,11 @@ pub fn run(args_common: &common::cli::Args, args: &Args) -> Result<(), anyhow::E
         args.listen_port
     );
     tracing::info!(
+        "  try: http://{}:{}/genes/clinvar?hgnc_id=HGNC:12403",
+        args.listen_host.as_str(),
+        args.listen_port
+    );
+    tracing::info!(
         "  try: http://{}:{}/annos/db-info?genome_release=grch37",
         args.listen_host.as_str(),
         args.listen_port
