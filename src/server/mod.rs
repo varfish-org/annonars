@@ -118,8 +118,10 @@ pub struct GeneNames {
 /// Gene information database.
 #[derive(Debug)]
 pub struct GeneInfoDb {
-    /// The database.
+    /// The database with overall genes information.
     pub db: rocksdb::DBWithThreadMode<rocksdb::MultiThreaded>,
+    /// ClinVar gene information.
+    pub db_clinvar: Option<rocksdb::DBWithThreadMode<rocksdb::MultiThreaded>>,
     /// Gene information to keep in memory (for `/genes/search`).
     pub gene_names: Vec<GeneNames>,
     /// Mapping from allowed gene name string to index in `gene_names`.
@@ -193,6 +195,9 @@ pub struct Args {
     /// Path to genes database.
     #[arg(long)]
     pub path_genes: Option<String>,
+    /// ClinVar per-gene database(s), one for each release.
+    #[arg(long)]
+    pub path_clinvar_genes: Option<String>,
     /// ClinVar database(s), one for each release.
     #[arg(long)]
     pub path_clinvar: Vec<String>,
@@ -323,6 +328,20 @@ pub fn run(args_common: &common::cli::Args, args: &Args) -> Result<(), anyhow::E
             "...done opening genes database in {:?}",
             before_open.elapsed()
         );
+
+        let db_clinvar = if let Some(path_clinvar_genes) = args.path_clinvar_genes.as_ref() {
+            tracing::info!("Opening ClinVar genes database {}...", path_clinvar_genes);
+            let before_open = Instant::now();
+            let clinvar_db = open_db(path_clinvar_genes, "clinvar-genes")?;
+            tracing::info!(
+                "...done opening ClinVar genes database in {:?}",
+                before_open.elapsed()
+            );
+            Some(clinvar_db)
+        } else {
+            None
+        };
+
         tracing::info!("Building gene names...");
         let before_open = Instant::now();
         let gene_names = extract_gene_names(&db)?;
@@ -343,6 +362,7 @@ pub fn run(args_common: &common::cli::Args, args: &Args) -> Result<(), anyhow::E
         tracing::info!("...done building genes names {:?}", before_open.elapsed());
         data.genes = Some(GeneInfoDb {
             db,
+            db_clinvar,
             gene_names,
             name_to_hgnc_idx,
         });
@@ -418,6 +438,11 @@ pub fn run(args_common: &common::cli::Args, args: &Args) -> Result<(), anyhow::E
     );
     tracing::info!(
         "  try: http://{}:{}/genes/info?hgnc_id=HGNC:12403",
+        args.listen_host.as_str(),
+        args.listen_port
+    );
+    tracing::info!(
+        "  try: http://{}:{}/genes/clinvar?hgnc_id=HGNC:12403",
         args.listen_host.as_str(),
         args.listen_port
     );

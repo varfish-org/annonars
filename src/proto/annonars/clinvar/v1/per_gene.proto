@@ -1,0 +1,135 @@
+// Detailed ClinVar per-gene information.
+
+syntax = "proto3";
+
+package annonars.clinvar.v1.per_gene;
+
+// Impact on gene in ClinVar.
+enum Impact {
+    // 3' UTR variant
+    THREE_PRIME_UTR_VARIANT = 0;
+    // 5' UTR variant
+    FIVE_PRIME_UTR_VARIANT = 1;
+    // downstream gene variant
+    DOWNSTREAM_TRANSCRIPT_VARIANT = 2;
+    // frameshift variant
+    FRAMESHIFT_VARIANT = 3;
+    // inframe indel
+    INFRAME_INDEL = 4;
+    // start lost
+    START_LOST = 5;
+    // intron variant
+    INTRON_VARIANT = 6;
+    // missense variant
+    MISSENSE_VARIANT = 7;
+    // non-coding transcript variant
+    NON_CODING_TRANSCRIPT_VARIANT = 8;
+    // stop gained
+    STOP_GAINED = 9;
+    // no sequence alteration
+    NO_SEQUENCE_ALTERATION = 10;
+    // splice acceptor variant
+    SPLICE_ACCEPTOR_VARIANT = 11;
+    // splice donor variant
+    SPLICE_DONOR_VARIANT = 12;
+    // stop lost
+    STOP_LOST = 13;
+    // synonymous variant
+    SYNONYMOUS_VARIANT = 14;
+    // upstream gene variant
+    UPSTREAM_TRANSCRIPT_VARIANT = 15;
+}
+
+// Counts of variants by impact.
+message GeneImpactRecordCounts {
+    // Impact
+    Impact impact = 1;
+    // Counts for ACMG1..5
+    repeated uint32 counts = 2;
+}
+
+// Coarsened clinical significance
+enum CoarseClinicalSignificance {
+    // benign / likely benign
+    COARSE_BENIGN = 0;
+    // uncertain signifiance
+    COARSE_UNCERTAIN = 1;
+    // pathogenic / likely pathogenic
+    COARSE_PATHOGENIC = 2;
+}
+
+// Counts per frequency and impact.
+message GeneFreqRecordCounts {
+    // Frequency
+    CoarseClinicalSignificance coarse_clinsig = 1;
+    // Counts for ACMG1..5
+    repeated uint32 counts = 2;
+}
+
+// Enumeration for ClinVar pathogenicity.
+enum ClinicalSignificance {
+    // Pathogenic.
+    PATHOGENIC = 0;
+    // Likely pathogenic.
+    LIKELY_PATHOGENIC = 1;
+    // Uncertain significance.
+    UNCERTAIN_SIGNIFICANCE = 2;
+    // Likely benign.
+    LIKELY_BENIGN = 3;
+    // Benign.
+    BENIGN = 4;
+}
+
+/// Enumeration for ClinVar review status.
+enum ReviewStatus {
+    // "no assertion provided"
+    NO_ASSERTION_PROVIDED = 0;
+    // "no assertion criteria provided"
+    NO_ASSERTION_CRITERIA_PROVIDED = 1;
+    // "criteria provided, conflicting interpretations"
+    CRITERIA_PROVIDED_CONFLICTING_INTERPRETATIONS = 2;
+    // "criteria provided, single submitter"
+    CRITERIA_PROVIDED_SINGLE_SUBMITTER = 3;
+    // "criteria provided, multiple submitters, no conflicts"
+    CRITERIA_PROVIDED_MULTIPLE_SUBMITTERS_NO_CONFLICTS = 4;
+    // "reviewed by expert panel"
+    REVIEWED_BY_EXPERT_PANEL = 5;
+    // "practice guideline"
+    PRACTICE_GUIDELINE = 6;
+}
+
+// Sequence variant with ClinVar accession and assertion.
+message SequenceVariant {
+    // chromosome name
+    string chrom = 1;
+    // 1-based start position
+    uint32 pos = 2;
+    // Reference allele
+    string reference = 3;
+    // Alternative allele
+    string alternative = 4;
+    // RCV identifier
+    string rcv = 5;
+    // Clinical significance
+    ClinicalSignificance clinsig = 6;
+    // Review status
+    ReviewStatus review_status = 7;
+}
+
+// Variants for a given genome release / assembly.
+message GeneVariantsForRelease {
+    // Genome release / assembly
+    string genome_release = 1;
+    // Variants
+    repeated SequenceVariant variants = 2;
+}
+
+// ClinVar detailed information per gene.
+message ClinvarPerGeneRecord {
+    // Counts of variants per impact
+    repeated GeneImpactRecordCounts per_impact_counts = 1;
+    // Counts of variants per impact / frequency
+    repeated GeneFreqRecordCounts per_freq_counts = 2;
+    // Variants for the given gene.
+    repeated GeneVariantsForRelease variants = 3;
+}

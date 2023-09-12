@@ -1,6 +1,6 @@
 use annonars::{
-    clinvar_minimal, common, cons, db_utils, dbsnp, freqs, genes, gnomad_mtdna, gnomad_nuclear,
-    helixmtdb, server, tsv,
+    clinvar_genes, clinvar_minimal, common, cons, db_utils, dbsnp, freqs, genes, gnomad_mtdna,
+    gnomad_nuclear, helixmtdb, server, tsv,
 };
 use anyhow::Error;
 use clap::{command, Args, Parser, Subcommand};
@@ -32,6 +32,8 @@ enum Commands {
     Tsv(Tsv),
     /// "cons" sub commands
     Cons(Cons),
+    /// "clinvar-genes" sub commands
+    ClinvarGenes(ClinvarGenes),
     /// "clinvar-minimal" sub commands
     ClinvarMinimal(ClinvarMinimal),
     /// "freqs" sub commands
@@ -82,6 +84,23 @@ enum TsvCommands {
     Import(tsv::cli::import::Args),
     /// "query" sub command
     Query(tsv::cli::query::Args),
+}
+
+/// Parsing of "clinvar-minimal" subcommand.
+#[derive(Debug, Args, Clone)]
+struct ClinvarGenes {
+    /// The sub command to run
+    #[command(subcommand)]
+    command: ClinvarGeneCommands,
+}
+
+/// Enum supporting the parsing of "clinvar-gene *" subcommands.
+#[derive(Debug, Subcommand, Clone)]
+enum ClinvarGeneCommands {
+    /// "import" sub command
+    Import(clinvar_genes::cli::import::Args),
+    /// "query" sub command
+    Query(clinvar_genes::cli::query::Args),
 }
 
 /// Parsing of "clinvar-minimal" subcommand.
@@ -248,6 +267,14 @@ pub fn main() -> Result<(), anyhow::Error> {
             Commands::Tsv(args) => match &args.command {
                 TsvCommands::Import(args) => tsv::cli::import::run(&cli.common, args)?,
                 TsvCommands::Query(args) => tsv::cli::query::run(&cli.common, args)?,
+            },
+            Commands::ClinvarGenes(args) => match &args.command {
+                ClinvarGeneCommands::Import(args) => {
+                    clinvar_genes::cli::import::run(&cli.common, args)?
+                }
+                ClinvarGeneCommands::Query(args) => {
+                    clinvar_genes::cli::query::run(&cli.common, args)?
+                }
             },
             Commands::ClinvarMinimal(args) => match &args.command {
                 ClinvarMinimalCommands::Import(args) => {

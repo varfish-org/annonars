@@ -2,6 +2,7 @@
 
 fn main() {
     println!("cargo:rerun-if-changed=src/proto/annonars/clinvar/v1/minimal.proto");
+    println!("cargo:rerun-if-changed=src/proto/annonars/clinvar/v1/per_gene.proto");
     println!("cargo:rerun-if-changed=src/proto/annonars/cons/v1/base.proto");
     println!("cargo:rerun-if-changed=src/proto/annonars/dbsnp/v1/base.proto");
     println!("cargo:rerun-if-changed=src/proto/annonars/gene/v1/base.proto");
@@ -36,6 +37,7 @@ fn main() {
         .compile_protos(
             &[
                 "annonars/clinvar/v1/minimal.proto",
+                "annonars/clinvar/v1/per_gene.proto",
                 "annonars/cons/v1/base.proto",
                 "annonars/dbsnp/v1/base.proto",
                 "annonars/gene/v1/base.proto",
