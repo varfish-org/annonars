@@ -1,5 +1,14 @@
 # Changelog
 
+## [0.18.0](https://github.com/bihealth/annonars/compare/v0.17.0...v0.18.0) (2023-09-12)
+
+
+### Features
+
+* adding support for clinvar-genes ([#202](https://github.com/bihealth/annonars/issues/202)) ([#205](https://github.com/bihealth/annonars/issues/205)) ([857c5dd](https://github.com/bihealth/annonars/commit/857c5dd1e9a46839f68e8a8f75a76c35e4819288))
+* adding support for gtex gene expression ([#126](https://github.com/bihealth/annonars/issues/126)) ([#210](https://github.com/bihealth/annonars/issues/210)) ([033041e](https://github.com/bihealth/annonars/commit/033041e9bcffc3af31e3bb52dd0c3767d8a090de))
+* switching to clinvar-data-jsonl for clinvar-minimal ([#202](https://github.com/bihealth/annonars/issues/202)) ([#203](https://github.com/bihealth/annonars/issues/203)) ([0e17128](https://github.com/bihealth/annonars/commit/0e171283269218973c20aceb62f6621b7217425c))
+
 ## [0.17.0](https://github.com/bihealth/annonars/compare/v0.16.0...v0.17.0) (2023-08-31)
 
 
