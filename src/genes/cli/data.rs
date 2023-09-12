@@ -28,6 +28,8 @@ pub struct Record {
     pub rcnv: Option<rcnv::Record>,
     /// Information from sHet (Weghorn et al., 2019).
     pub shet: Option<shet::Record>,
+    /// Information from GTex.
+    pub gtex: Option<gtex::Record>,
 }
 
 /// Code for data from the ACMG secondary findings list.
@@ -1531,6 +1533,33 @@ pub mod shet {
     }
 }
 
+/// Code for data from GTex
+pub mod gtex {
+    use serde::{Deserialize, Serialize};
+
+    /// Per-tissue record.
+    #[derive(Debug, Clone, Serialize, Deserialize)]
+    pub struct PerTissueRecord {
+        /// Tissue name.
+        pub tissue: String,
+        /// The TPM counts.
+        pub tpms: Vec<f32>,
+    }
+
+    /// A record from the GTex dataset.
+    #[derive(Debug, Clone, Serialize, Deserialize)]
+    pub struct Record {
+        /// HGNC gene ID.
+        pub hgnc_id: String,
+        /// ENSEMBL gene ID.
+        pub ensembl_gene_id: String,
+        /// ENSEMBL gene version.
+        pub ensembl_gene_version: String,
+        /// Per-tissue records.
+        pub records: Vec<PerTissueRecord>,
+    }
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -1667,6 +1696,20 @@ mod tests {
         let records = rdr
             .deserialize()
             .collect::<Result<Vec<shet::Record>, csv::Error>>()?;
+        insta::assert_yaml_snapshot!(records);
+
+        Ok(())
+    }
+
+    #[test]
+    fn deserialize_gtex_record() -> Result<(), anyhow::Error> {
+        let path_jsonl = "tests/genes/gtex/genes_tpm.jsonl";
+        let str_jsonl = std::fs::read_to_string(path_jsonl)?;
+        let records = str_jsonl
+            .lines()
+            .map(|s| serde_json::from_str::<gtex::Record>(s).unwrap())
+            .collect::<Vec<_>>();
+
         insta::assert_yaml_snapshot!(records);
 
         Ok(())
