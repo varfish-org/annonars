@@ -60,6 +60,7 @@ PATH_DB_HELIXMTDB_38=${PATH_DB_HELIXMTDB_38-$PATH_DB_BASE/grch38/helixmtdb/rocks
 PATH_DB_CONS_37=${PATH_DB_CONS_37-$PATH_DB_BASE/grch37/cons/rocksdb}
 PATH_DB_CONS_38=${PATH_DB_CONS_38-$PATH_DB_BASE/grch38/cons/rocksdb}
 PATH_GENES=${PATH_GENES-$PATH_DB_BASE/genes/rocksdb}
+PATH_GENES_CLINVAR=${PATH_GENES_CLINVAR-$PATH_DB_BASE/clinvar-genes/rocksdb}
 
 first=${1-}
 
@@ -91,6 +92,7 @@ else
       $(test -e $PATH_DB_CONS_37 && echo --path-ucsc-conservation $PATH_DB_CONS_37) \
       $(test -e $PATH_DB_CONS_38 && echo --path-ucsc-conservation $PATH_DB_CONS_38) \
       $(test -e $PATH_GENES && echo --path-genes $PATH_GENES) \
+      $(test -e $PATH_GENES_CLINVAR && echo --path-clinvar-genes $PATH_GENES_CLINVAR) \
       \
       --listen-host "$HTTP_HOST" \
       --listen-port "$HTTP_PORT"
