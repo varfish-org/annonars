@@ -28,7 +28,7 @@ pub struct Record {
     pub rcnv: Option<rcnv::Record>,
     /// Information from sHet (Weghorn et al., 2019).
     pub shet: Option<shet::Record>,
-    /// Information from GTex.
+    /// Information from GTEx.
     pub gtex: Option<gtex::Record>,
 }
 
@@ -1533,20 +1533,450 @@ pub mod shet {
     }
 }
 
-/// Code for data from GTex
+/// Code for data from GTEx
 pub mod gtex {
     use serde::{Deserialize, Serialize};
+
+    use crate::genes::pbs::{GtexTissue, GtexTissueDetailed};
+
+    /// GTEx V8 tissue types.
+    #[derive(Debug, Clone, Serialize, Deserialize)]
+    pub enum Tissue {
+        /// Adipose Tissue
+        #[serde(rename = "Adipose Tissue")]
+        AdiposeTissue,
+        /// Adrenal Gland
+        #[serde(rename = "Adrenal Gland")]
+        AdrenalGland,
+        /// Bladder
+        #[serde(rename = "Bladder")]
+        Bladder,
+        /// Blood
+        #[serde(rename = "Blood")]
+        Blood,
+        /// Blood Vessel
+        #[serde(rename = "Blood Vessel")]
+        BloodVessel,
+        /// Bone Marrow
+        #[serde(rename = "Bone Marrow")]
+        BoneMarrow,
+        /// Brain
+        #[serde(rename = "Brain")]
+        Brain,
+        /// Breast
+        #[serde(rename = "Breast")]
+        Breast,
+        /// Cervix Uteri
+        #[serde(rename = "Cervix Uteri")]
+        CervixUteri,
+        /// Colon
+        #[serde(rename = "Colon")]
+        Colon,
+        /// Esophagus
+        #[serde(rename = "Esophagus")]
+        Esophagus,
+        /// Fallopian Tube
+        #[serde(rename = "Fallopian Tube")]
+        FallopianTube,
+        /// Heart
+        #[serde(rename = "Heart")]
+        Heart,
+        /// Kidney
+        #[serde(rename = "Kidney")]
+        Kidney,
+        /// Liver
+        #[serde(rename = "Liver")]
+        Liver,
+        /// Lung
+        #[serde(rename = "Lung")]
+        Lung,
+        /// Muscle
+        #[serde(rename = "Muscle")]
+        Muscle,
+        /// Nerve
+        #[serde(rename = "Nerve")]
+        Nerve,
+        /// Ovary
+        #[serde(rename = "Ovary")]
+        Ovary,
+        /// Pancreas
+        #[serde(rename = "Pancreas")]
+        Pancreas,
+        /// Pituitary
+        #[serde(rename = "Pituitary")]
+        Pituitary,
+        /// Prostate
+        #[serde(rename = "Prostate")]
+        Prostate,
+        /// Salivary Gland
+        #[serde(rename = "Salivary Gland")]
+        SalivaryGland,
+        /// Skin
+        #[serde(rename = "Skin")]
+        Skin,
+        /// Small Intestine
+        #[serde(rename = "Small Intestine")]
+        SmallIntestine,
+        /// Spleen
+        #[serde(rename = "Spleen")]
+        Spleen,
+        /// Stomach
+        #[serde(rename = "Stomach")]
+        Stomach,
+        /// Testis
+        #[serde(rename = "Testis")]
+        Testis,
+        /// Thyroid
+        #[serde(rename = "Thyroid")]
+        Thyroid,
+        /// Uterus
+        #[serde(rename = "Uterus")]
+        Uterus,
+        /// Vagina
+        #[serde(rename = "Vagina")]
+        Vagina,
+    }
+
+    impl From<Tissue> for GtexTissue {
+        fn from(val: Tissue) -> Self {
+            match val {
+                Tissue::AdiposeTissue => GtexTissue::TissueAdiposeTissue,
+                Tissue::AdrenalGland => GtexTissue::TissueAdrenalGland,
+                Tissue::Bladder => GtexTissue::TissueBladder,
+                Tissue::Blood => GtexTissue::TissueBlood,
+                Tissue::BloodVessel => GtexTissue::TissueBloodVessel,
+                Tissue::BoneMarrow => GtexTissue::TissueBoneMarrow,
+                Tissue::Brain => GtexTissue::TissueBrain,
+                Tissue::Breast => GtexTissue::TissueBreast,
+                Tissue::CervixUteri => GtexTissue::TissueCervixUteri,
+                Tissue::Colon => GtexTissue::TissueColon,
+                Tissue::Esophagus => GtexTissue::TissueEsophagus,
+                Tissue::FallopianTube => GtexTissue::TissueFallopianTube,
+                Tissue::Heart => GtexTissue::TissueHeart,
+                Tissue::Kidney => GtexTissue::TissueKidney,
+                Tissue::Liver => GtexTissue::TissueLiver,
+                Tissue::Lung => GtexTissue::TissueLung,
+                Tissue::Muscle => GtexTissue::TissueMuscle,
+                Tissue::Nerve => GtexTissue::TissueNerve,
+                Tissue::Ovary => GtexTissue::TissueOvary,
+                Tissue::Pancreas => GtexTissue::TissuePancreas,
+                Tissue::Pituitary => GtexTissue::TissuePituitary,
+                Tissue::Prostate => GtexTissue::TissueProstate,
+                Tissue::SalivaryGland => GtexTissue::TissueSalivaryGland,
+                Tissue::Skin => GtexTissue::TissueSkin,
+                Tissue::SmallIntestine => GtexTissue::TissueSmallIntestine,
+                Tissue::Spleen => GtexTissue::TissueSpleen,
+                Tissue::Stomach => GtexTissue::TissueStomach,
+                Tissue::Testis => GtexTissue::TissueTestis,
+                Tissue::Thyroid => GtexTissue::TissueThyroid,
+                Tissue::Uterus => GtexTissue::TissueUterus,
+                Tissue::Vagina => GtexTissue::TissueVagina,
+            }
+        }
+    }
+
+    /// GTEx V8 detailed tissue types.
+    #[derive(Debug, Clone, Serialize, Deserialize)]
+    pub enum TissueDetailed {
+        /// Adipose - Subcutaneous
+        #[serde(rename = "Adipose - Subcutaneous")]
+        AdiposeSubcutaneous,
+        /// Adipose - Visceral (Omentum)
+        #[serde(rename = "Adipose - Visceral (Omentum)")]
+        AdiposeVisceralOmentum,
+        /// Adrenal Gland
+        #[serde(rename = "Adrenal Gland")]
+        AdrenalGland,
+        /// Artery - Aorta
+        #[serde(rename = "Artery - Aorta")]
+        ArteryAorta,
+        /// Artery - Coronary
+        #[serde(rename = "Artery - Coronary")]
+        ArteryCoronary,
+        /// Artery - Tibial
+        #[serde(rename = "Artery - Tibial")]
+        ArteryTibial,
+        /// Bladder
+        #[serde(rename = "Bladder")]
+        Bladder,
+        /// Brain - Amygdala
+        #[serde(rename = "Brain - Amygdala")]
+        BrainAmygdala,
+        /// Brain - Anterior cingulate cortex (BA24)
+        #[serde(rename = "Brain - Anterior cingulate cortex (BA24)")]
+        BrainAnteriorCingulateCortex,
+        /// Brain - Caudate (basal ganglia)
+        #[serde(rename = "Brain - Caudate (basal ganglia)")]
+        BrainCaudateBasalGanglia,
+        /// Brain - Cerebellar Hemisphere
+        #[serde(rename = "Brain - Cerebellar Hemisphere")]
+        BrainCerebellarHemisphere,
+        /// Brain - Cerebellum
+        #[serde(rename = "Brain - Cerebellum")]
+        BrainCerebellum,
+        /// Brain - Cortex
+        #[serde(rename = "Brain - Cortex")]
+        BrainCortex,
+        /// Brain - Frontal Cortex (BA9)
+        #[serde(rename = "Brain - Frontal Cortex (BA9)")]
+        BrainFrontalCortex,
+        /// Brain - Hippocampus
+        #[serde(rename = "Brain - Hippocampus")]
+        BrainHippocampus,
+        /// Brain - Hypothalamus
+        #[serde(rename = "Brain - Hypothalamus")]
+        BrainHypothalamus,
+        /// Brain - Nucleus accumbens (basal ganglia)
+        #[serde(rename = "Brain - Nucleus accumbens (basal ganglia)")]
+        BrainNucleusAccumbens,
+        /// Brain - Putamen (basal ganglia)
+        #[serde(rename = "Brain - Putamen (basal ganglia)")]
+        BrainPutamenBasalGanglia,
+        /// Brain - Spinal cord (cervical c-1)
+        #[serde(rename = "Brain - Spinal cord (cervical c-1)")]
+        BrainSpinalCord,
+        /// Brain - Substantia nigra
+        #[serde(rename = "Brain - Substantia nigra")]
+        BrainSubstantiaNigra,
+        /// Breast - Mammary Tissue
+        #[serde(rename = "Breast - Mammary Tissue")]
+        BreastMammaryTissue,
+        /// Cells - Cultured fibroblasts
+        #[serde(rename = "Cells - Cultured fibroblasts")]
+        CellsCulturedFibroblasts,
+        /// Cells - EBV-transformed lymphocytes
+        #[serde(rename = "Cells - EBV-transformed lymphocytes")]
+        CellsEbvTransformedLymphocytes,
+        /// Cells - Leukemia cell line (CML)
+        #[serde(rename = "Cells - Leukemia cell line (CML)")]
+        CellsLeukemiaCellLine,
+        /// Cervix - Ectocervix
+        #[serde(rename = "Cervix - Ectocervix")]
+        CervixEctocervix,
+        /// Cervix - Endocervix
+        #[serde(rename = "Cervix - Endocervix")]
+        CervixEndocervix,
+        /// Colon - Sigmoid
+        #[serde(rename = "Colon - Sigmoid")]
+        ColonSigmoid,
+        /// Colon - Transverse
+        #[serde(rename = "Colon - Transverse")]
+        ColonTransverse,
+        /// Esophagus - Gastroesophageal Junction
+        #[serde(rename = "Esophagus - Gastroesophageal Junction")]
+        EsophagusGastroesophagealJunction,
+        /// Esophagus - Mucosa
+        #[serde(rename = "Esophagus - Mucosa")]
+        EsophagusMucosa,
+        /// Esophagus - Muscularis
+        #[serde(rename = "Esophagus - Muscularis")]
+        EsophagusMuscularis,
+        /// Fallopian Tube
+        #[serde(rename = "Fallopian Tube")]
+        FallopianTube,
+        /// Heart - Atrial Appendage
+        #[serde(rename = "Heart - Atrial Appendage")]
+        HeartAtrialAppendage,
+        /// Heart - Left Ventricle
+        #[serde(rename = "Heart - Left Ventricle")]
+        HeartLeftVentricle,
+        /// Kidney - Cortex
+        #[serde(rename = "Kidney - Cortex")]
+        KidneyCortex,
+        /// Kidney - Medulla
+        #[serde(rename = "Kidney - Medulla")]
+        KidneyMedulla,
+        /// Liver
+        #[serde(rename = "Liver")]
+        Liver,
+        /// Lung
+        #[serde(rename = "Lung")]
+        Lung,
+        /// Minor Salivary Gland
+        #[serde(rename = "Minor Salivary Gland")]
+        MinorSalivaryGland,
+        /// Muscle - Skeletal
+        #[serde(rename = "Muscle - Skeletal")]
+        MuscleSkeletal,
+        /// Nerve - Tibial
+        #[serde(rename = "Nerve - Tibial")]
+        NerveTibial,
+        /// Ovary
+        #[serde(rename = "Ovary")]
+        Ovary,
+        /// Pancreas
+        #[serde(rename = "Pancreas")]
+        Pancreas,
+        /// Pituitary
+        #[serde(rename = "Pituitary")]
+        Pituitary,
+        /// Prostate
+        #[serde(rename = "Prostate")]
+        Prostate,
+        /// Skin - Not Sun Exposed (Suprapubic)
+        #[serde(rename = "Skin - Not Sun Exposed (Suprapubic)")]
+        SkinNotSunExposedSuprapubic,
+        /// Skin - Sun Exposed (Lower leg)
+        #[serde(rename = "Skin - Sun Exposed (Lower leg)")]
+        SkinSunExposedLowerLeg,
+        /// Small Intestine - Terminal Ileum
+        #[serde(rename = "Small Intestine - Terminal Ileum")]
+        SmallIntestineTerminalIleum,
+        /// Spleen
+        #[serde(rename = "Spleen")]
+        Spleen,
+        /// Stomach
+        #[serde(rename = "Stomach")]
+        Stomach,
+        /// Testis
+        #[serde(rename = "Testis")]
+        Testis,
+        /// Thyroid
+        #[serde(rename = "Thyroid")]
+        Thyroid,
+        /// Uterus
+        #[serde(rename = "Uterus")]
+        Uterus,
+        /// Vagina
+        #[serde(rename = "Vagina")]
+        Vagina,
+        /// Whole Blood
+        #[serde(rename = "Whole Blood")]
+        WholeBlood,
+    }
+
+    impl From<TissueDetailed> for GtexTissueDetailed {
+        fn from(val: TissueDetailed) -> Self {
+            match val {
+                TissueDetailed::AdiposeSubcutaneous => {
+                    GtexTissueDetailed::TissueDetailedAdiposeSubcutaneous
+                }
+                TissueDetailed::AdiposeVisceralOmentum => {
+                    GtexTissueDetailed::TissueDetailedAdiposeVisceralOmentum
+                }
+                TissueDetailed::AdrenalGland => GtexTissueDetailed::TissueDetailedAdrenalGland,
+                TissueDetailed::ArteryAorta => GtexTissueDetailed::TissueDetailedArteryAorta,
+                TissueDetailed::ArteryCoronary => GtexTissueDetailed::TissueDetailedArteryCoronary,
+                TissueDetailed::ArteryTibial => GtexTissueDetailed::TissueDetailedArteryTibial,
+                TissueDetailed::Bladder => GtexTissueDetailed::TissueDetailedBladder,
+                TissueDetailed::BrainAmygdala => GtexTissueDetailed::TissueDetailedBrainAmygdala,
+                TissueDetailed::BrainAnteriorCingulateCortex => {
+                    GtexTissueDetailed::TissueDetailedBrainAnteriorCingulateCortex
+                }
+                TissueDetailed::BrainCaudateBasalGanglia => {
+                    GtexTissueDetailed::TissueDetailedBrainCaudateBasalGanglia
+                }
+                TissueDetailed::BrainCerebellarHemisphere => {
+                    GtexTissueDetailed::TissueDetailedBrainCerebellarHemisphere
+                }
+                TissueDetailed::BrainCerebellum => {
+                    GtexTissueDetailed::TissueDetailedBrainCerebellum
+                }
+                TissueDetailed::BrainCortex => GtexTissueDetailed::TissueDetailedBrainCortex,
+                TissueDetailed::BrainFrontalCortex => {
+                    GtexTissueDetailed::TissueDetailedBrainFrontalCortex
+                }
+                TissueDetailed::BrainHippocampus => {
+                    GtexTissueDetailed::TissueDetailedBrainHippocampus
+                }
+                TissueDetailed::BrainHypothalamus => {
+                    GtexTissueDetailed::TissueDetailedBrainHypothalamus
+                }
+                TissueDetailed::BrainNucleusAccumbens => {
+                    GtexTissueDetailed::TissueDetailedBrainNucleusAccumbens
+                }
+                TissueDetailed::BrainPutamenBasalGanglia => {
+                    GtexTissueDetailed::TissueDetailedBrainPutamenBasalGanglia
+                }
+                TissueDetailed::BrainSpinalCord => {
+                    GtexTissueDetailed::TissueDetailedBrainSpinalCord
+                }
+                TissueDetailed::BrainSubstantiaNigra => {
+                    GtexTissueDetailed::TissueDetailedBrainSubstantiaNigra
+                }
+                TissueDetailed::BreastMammaryTissue => {
+                    GtexTissueDetailed::TissueDetailedBreastMammaryTissue
+                }
+                TissueDetailed::CellsCulturedFibroblasts => {
+                    GtexTissueDetailed::TissueDetailedCellsCulturedFibroblasts
+                }
+                TissueDetailed::CellsEbvTransformedLymphocytes => {
+                    GtexTissueDetailed::TissueDetailedCellsEbvTransformedLymphocytes
+                }
+                TissueDetailed::CellsLeukemiaCellLine => {
+                    GtexTissueDetailed::TissueDetailedCellsLeukemiaCellLine
+                }
+                TissueDetailed::CervixEctocervix => {
+                    GtexTissueDetailed::TissueDetailedCervixEctocervix
+                }
+                TissueDetailed::CervixEndocervix => {
+                    GtexTissueDetailed::TissueDetailedCervixEndocervix
+                }
+                TissueDetailed::ColonSigmoid => GtexTissueDetailed::TissueDetailedColonSigmoid,
+                TissueDetailed::ColonTransverse => {
+                    GtexTissueDetailed::TissueDetailedColonTransverse
+                }
+                TissueDetailed::EsophagusGastroesophagealJunction => {
+                    GtexTissueDetailed::TissueDetailedEsophagusGastroesophagealJunction
+                }
+                TissueDetailed::EsophagusMucosa => {
+                    GtexTissueDetailed::TissueDetailedEsophagusMucosa
+                }
+                TissueDetailed::EsophagusMuscularis => {
+                    GtexTissueDetailed::TissueDetailedEsophagusMuscularis
+                }
+                TissueDetailed::FallopianTube => GtexTissueDetailed::TissueDetailedFallopianTube,
+                TissueDetailed::HeartAtrialAppendage => {
+                    GtexTissueDetailed::TissueDetailedHeartAtrialAppendage
+                }
+                TissueDetailed::HeartLeftVentricle => {
+                    GtexTissueDetailed::TissueDetailedHeartLeftVentricle
+                }
+                TissueDetailed::KidneyCortex => GtexTissueDetailed::TissueDetailedKidneyCortex,
+                TissueDetailed::KidneyMedulla => GtexTissueDetailed::TissueDetailedKidneyMedulla,
+                TissueDetailed::Liver => GtexTissueDetailed::TissueDetailedLiver,
+                TissueDetailed::Lung => GtexTissueDetailed::TissueDetailedLung,
+                TissueDetailed::MinorSalivaryGland => {
+                    GtexTissueDetailed::TissueDetailedMinorSalivaryGland
+                }
+                TissueDetailed::MuscleSkeletal => GtexTissueDetailed::TissueDetailedMuscleSkeletal,
+                TissueDetailed::NerveTibial => GtexTissueDetailed::TissueDetailedNerveTibial,
+                TissueDetailed::Ovary => GtexTissueDetailed::TissueDetailedOvary,
+                TissueDetailed::Pancreas => GtexTissueDetailed::TissueDetailedPancreas,
+                TissueDetailed::Pituitary => GtexTissueDetailed::TissueDetailedPituitary,
+                TissueDetailed::Prostate => GtexTissueDetailed::TissueDetailedProstate,
+                TissueDetailed::SkinNotSunExposedSuprapubic => {
+                    GtexTissueDetailed::TissueDetailedSkinNotSunExposedSuprapubic
+                }
+                TissueDetailed::SkinSunExposedLowerLeg => {
+                    GtexTissueDetailed::TissueDetailedSkinSunExposedLowerLeg
+                }
+                TissueDetailed::SmallIntestineTerminalIleum => {
+                    GtexTissueDetailed::TissueDetailedSmallIntestineTerminalIleum
+                }
+                TissueDetailed::Spleen => GtexTissueDetailed::TissueDetailedSpleen,
+                TissueDetailed::Stomach => GtexTissueDetailed::TissueDetailedStomach,
+                TissueDetailed::Testis => GtexTissueDetailed::TissueDetailedTestis,
+                TissueDetailed::Thyroid => GtexTissueDetailed::TissueDetailedThyroid,
+                TissueDetailed::Uterus => GtexTissueDetailed::TissueDetailedUterus,
+                TissueDetailed::Vagina => GtexTissueDetailed::TissueDetailedVagina,
+                TissueDetailed::WholeBlood => GtexTissueDetailed::TissueDetailedWholeBlood,
+            }
+        }
+    }
 
     /// Per-tissue record.
     #[derive(Debug, Clone, Serialize, Deserialize)]
     pub struct PerTissueRecord {
         /// Tissue name.
-        pub tissue: String,
+        pub tissue: Tissue,
+        /// Detailed tissue name.
+        pub tissue_detailed: TissueDetailed,
         /// The TPM counts.
         pub tpms: Vec<f32>,
     }
 
-    /// A record from the GTex dataset.
+    /// A record from the GTEx dataset.
     #[derive(Debug, Clone, Serialize, Deserialize)]
     pub struct Record {
         /// HGNC gene ID.
