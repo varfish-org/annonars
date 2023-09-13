@@ -55,7 +55,7 @@ pub struct Args {
     /// Path to the TSV file with sHet information.
     #[arg(long, required = true)]
     pub path_in_shet: String,
-    /// Path to the JSONL file with the GTex informatino.
+    /// Path to the JSONL file with the GTEx informatino.
     #[arg(long, required = true)]
     pub path_in_gtex: String,
 
@@ -304,13 +304,13 @@ fn load_shet(path: &str) -> Result<HashMap<String, shet::Record>, anyhow::Error>
     Ok(result)
 }
 
-/// Load GTex information
+/// Load GTEx information
 ///
 /// # Result
 ///
-/// A map from HGNC ID to GTex gene record.
+/// A map from HGNC ID to GTEx gene record.
 fn load_gtex(path: &str) -> Result<HashMap<String, gtex::Record>, anyhow::Error> {
-    info!("  loading GTex information from {}", path);
+    info!("  loading GTEx information from {}", path);
     let mut result = HashMap::new();
 
     let reader: Box<dyn Read> = if path.ends_with(".gz") {
@@ -880,8 +880,16 @@ fn convert_record(record: data::Record) -> pbs::Record {
         let records = records
             .into_iter()
             .map(|record| {
-                let gtex::PerTissueRecord { tissue, tpms } = record;
-                pbs::GtexTissueRecord { tissue, tpms }
+                let gtex::PerTissueRecord {
+                    tissue,
+                    tissue_detailed,
+                    tpms,
+                } = record;
+                pbs::GtexTissueRecord {
+                    tissue: tissue as i32,
+                    tissue_detailed: tissue_detailed as i32,
+                    tpms,
+                }
             })
             .collect::<Vec<_>>();
         pbs::GtexRecord {
