@@ -2302,9 +2302,9 @@ dependencies = [
 
 [[package]]
 name = "rocksdb-utils-lookup"
-version = "0.2.0"
+version = "0.3.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "d2689a1a506aeb888b493f7e2d8259dd659f7c3589d1694e0c8d328541c722ff"
+checksum = "b83002edb508bf7fc5b234bde1489ccaea5bffbaeaf0aae00270257c858b5f9f"
 dependencies = [
  "rocksdb",
  "thiserror",
