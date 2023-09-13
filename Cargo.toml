@@ -43,7 +43,7 @@ noodles-vcf = "0.38"
 prost = "0.12"
 rayon = "1.7"
 rocksdb = { version = "0.21", features = ["multi-threaded-cf"] }
-rocksdb-utils-lookup = "0.2"
+rocksdb-utils-lookup = "0.3"
 serde = { version = "1.0", features = ["derive"] }
 serde_json = { version = "1.0", features=["preserve_order"] }
 serde_with = "3.3"
