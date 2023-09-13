@@ -1,5 +1,18 @@
 # Changelog
 
+## [0.19.0](https://github.com/bihealth/annonars/compare/v0.18.0...v0.19.0) (2023-09-13)
+
+
+### Features
+
+* bump rocksdb-utils-lookup for hierarchical index/filter ([#211](https://github.com/bihealth/annonars/issues/211)) ([c3decd5](https://github.com/bihealth/annonars/commit/c3decd56ee5dcd4bd4eb1679049bb9685b12d1ae))
+* make GTEx support more space efficient via quantiles/enums ([#214](https://github.com/bihealth/annonars/issues/214)) ([e583343](https://github.com/bihealth/annonars/commit/e5833435d1b62bf2f726dd9690e63094c2048d9e))
+
+
+### Bug Fixes
+
+* pick up clinvar-genes database in Dockerfile entrypoint ([#212](https://github.com/bihealth/annonars/issues/212)) ([c945f26](https://github.com/bihealth/annonars/commit/c945f267339cfe862dd3bcc55ff364377d82f7b9))
+
 ## [0.18.0](https://github.com/bihealth/annonars/compare/v0.17.0...v0.18.0) (2023-09-12)
 
 
