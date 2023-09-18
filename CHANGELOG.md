@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.20.0](https://github.com/bihealth/annonars/compare/v0.19.0...v0.20.0) (2023-09-18)
+
+
+### Features
+
+* bumping dependencies (in particular noodles-vcf) ([#215](https://github.com/bihealth/annonars/issues/215)) ([f455b5e](https://github.com/bihealth/annonars/commit/f455b5eeddee63fcc9355e168b7ff4b824db631c))
+
 ## [0.19.0](https://github.com/bihealth/annonars/compare/v0.18.0...v0.19.0) (2023-09-13)
 
 
