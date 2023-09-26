@@ -39,7 +39,7 @@ noodles-bgzf = "0.24"
 noodles-core = "0.12"
 noodles-csi = "0.24"
 noodles-tabix = "0.29"
-noodles-vcf = "0.39"
+noodles-vcf = "0.40"
 prost = "0.12"
 rayon = "1.8"
 rocksdb = { version = "0.21", features = ["multi-threaded-cf"] }
