@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.21.0](https://github.com/bihealth/annonars/compare/v0.20.0...v0.21.0) (2023-10-02)
+
+
+### Features
+
+* release 0.21.0 with breaking dependency updates ([676886e](https://github.com/bihealth/annonars/commit/676886e710e1837c69d512f1ec70354ce1b05d07))
+
 ## [0.20.0](https://github.com/bihealth/annonars/compare/v0.19.0...v0.20.0) (2023-09-18)
 
 
