@@ -22,7 +22,7 @@ actix-web = "4.4.0"
 anyhow = "1.0"
 bgzip = "0.3"
 boolvec = "0.2"
-byteorder = "1.4"
+byteorder = "1.5"
 chrono = { version = "0.4", features = ["serde"] }
 clap = { version = "4.4", features = ["derive", "env"] }
 clap-verbosity-flag = "2.0"
