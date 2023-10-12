@@ -141,7 +141,6 @@ impl Context {
                         let val = n
                             .as_f64()
                             .ok_or_else(|| error::Error::UnsupportedValue((*val).clone()))?;
-                        let val = val;
                         let mut buf = [0; 8];
                         BigEndian::write_f64(&mut buf, val);
                         buf.into_iter().for_each(|b| res.push(b));
