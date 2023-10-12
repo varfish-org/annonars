@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.21.1](https://github.com/bihealth/annonars/compare/v0.21.0...v0.21.1) (2023-10-12)
+
+
+### Bug Fixes
+
+* use indexmap v2 in serde_with ([#237](https://github.com/bihealth/annonars/issues/237)) ([8c57c35](https://github.com/bihealth/annonars/commit/8c57c35b026d277808cc1659d529f0ff62840b01))
+
 ## [0.21.0](https://github.com/bihealth/annonars/compare/v0.20.0...v0.21.0) (2023-10-02)
 
 
