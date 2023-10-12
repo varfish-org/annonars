@@ -13,10 +13,4 @@ resource "github_repository" "annonars" {
 
   squash_merge_commit_message = "BLANK"
   squash_merge_commit_title   = "PR_TITLE"
-
-  template {
-    owner                = "bihealth"
-    repository           = "tpl-rs"
-    include_all_branches = true
-  }
 }
