@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.22.0](https://github.com/bihealth/annonars/compare/v0.21.1...v0.22.0) (2023-10-13)
+
+
+### Features
+
+* expose open_rocksdb() functions ([#240](https://github.com/bihealth/annonars/issues/240)) ([9f9fd2d](https://github.com/bihealth/annonars/commit/9f9fd2d3fb148c7c78f2e413d24ad172e3d6a7c8))
+
 ## [0.21.1](https://github.com/bihealth/annonars/compare/v0.21.0...v0.21.1) (2023-10-12)
 
 
