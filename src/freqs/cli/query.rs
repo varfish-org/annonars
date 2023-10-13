@@ -34,22 +34,26 @@ pub struct Meta {
     pub genome_release: String,
 }
 
-/// Open RocksDB database.
-fn open_rocksdb(
-    args: &Args,
+/// Open RocksDb given path and column family name for data and metadata.
+pub fn open_rocksdb<P: AsRef<std::path::Path>>(
+    path_rocksdb: P,
+    cf_auto: &str,
+    cf_gono: &str,
+    cf_mtdna: &str,
+    cf_meta: &str,
 ) -> Result<(Arc<rocksdb::DBWithThreadMode<rocksdb::MultiThreaded>>, Meta), anyhow::Error> {
     tracing::info!("Opening RocksDB database ...");
     let before_open = std::time::Instant::now();
-    let cf_names = &["meta", "autosomal", "gonosomal", "mitochondrial"];
+    let cf_names = &[cf_meta, cf_auto, cf_gono, cf_mtdna];
     let db = Arc::new(rocksdb::DB::open_cf_for_read_only(
         &rocksdb::Options::default(),
-        &args.path_rocksdb,
+        &path_rocksdb,
         cf_names,
         true,
     )?);
     tracing::info!("  reading meta information");
     let meta = {
-        let cf_meta = db.cf_handle("meta").unwrap();
+        let cf_meta = db.cf_handle(cf_meta).unwrap();
         let meta_genome_release = String::from_utf8(
             db.get_cf(&cf_meta, "genome-release")?
                 .ok_or_else(|| anyhow::anyhow!("missing value meta:genome-release"))?,
@@ -66,6 +70,19 @@ fn open_rocksdb(
     );
 
     Ok((db, meta))
+}
+
+/// Open RocksDB database from command line arguments.
+pub fn open_rocksdb_from_args(
+    args: &Args,
+) -> Result<(Arc<rocksdb::DBWithThreadMode<rocksdb::MultiThreaded>>, Meta), anyhow::Error> {
+    open_rocksdb(
+        &args.path_rocksdb,
+        "autosomal",
+        "gonosomal",
+        "mitochondrial",
+        "meta",
+    )
 }
 
 fn query_for_variant(
@@ -124,7 +141,7 @@ pub fn run(common: &common::cli::Args, args: &Args) -> Result<(), anyhow::Error>
         }
     };
 
-    let (db, _meta) = open_rocksdb(args)?;
+    let (db, _meta) = open_rocksdb_from_args(args)?;
 
     tracing::info!("Running query...");
     let before_query = std::time::Instant::now();

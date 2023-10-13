@@ -28,16 +28,18 @@ pub struct Args {
     pub hgnc_id: String,
 }
 
-/// Open RocksDB database.
-fn open_rocksdb(
-    args: &Args,
+/// Open RocksDb given path and column family name for data and metadata.
+pub fn open_rocksdb<P: AsRef<std::path::Path>>(
+    path_rocksdb: P,
+    cf_data: &str,
+    cf_meta: &str,
 ) -> Result<Arc<rocksdb::DBWithThreadMode<rocksdb::MultiThreaded>>, anyhow::Error> {
     tracing::info!("Opening RocksDB database ...");
     let before_open = std::time::Instant::now();
-    let cf_names = &["meta", &args.cf_name];
+    let cf_names = &[cf_meta, cf_data];
     let db = Arc::new(rocksdb::DB::open_cf_for_read_only(
         &rocksdb::Options::default(),
-        &args.path_rocksdb,
+        &path_rocksdb,
         cf_names,
         true,
     )?);
@@ -48,6 +50,13 @@ fn open_rocksdb(
     );
 
     Ok(db)
+}
+
+/// Open RocksDB database from command line arguments.
+pub fn open_rocksdb_from_args(
+    args: &Args,
+) -> Result<Arc<rocksdb::DBWithThreadMode<rocksdb::MultiThreaded>>, anyhow::Error> {
+    open_rocksdb(&args.path_rocksdb, &args.cf_name, "meta")
 }
 
 /// Print values to `out_writer`.
@@ -72,7 +81,7 @@ pub fn run(common: &common::cli::Args, args: &Args) -> Result<(), anyhow::Error>
     tracing::info!("args = {:#?}", &args);
 
     // Open the RocksDB database.
-    let db = open_rocksdb(args)?;
+    let db = open_rocksdb_from_args(args)?;
     let cf_data = db.cf_handle(&args.cf_name).unwrap();
 
     // Obtain writer to output.
