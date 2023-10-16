@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.23.0](https://github.com/bihealth/annonars/compare/v0.22.0...v0.23.0) (2023-10-16)
+
+
+### Features
+
+* making more query_for_variant functions public ([#243](https://github.com/bihealth/annonars/issues/243)) ([151a7b6](https://github.com/bihealth/annonars/commit/151a7b64d45ca5ba4529a2b568c5bdd1bd9872f2))
+
 ## [0.22.0](https://github.com/bihealth/annonars/compare/v0.21.1...v0.22.0) (2023-10-13)
 
 
