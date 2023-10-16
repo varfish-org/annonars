@@ -144,8 +144,8 @@ fn print_values(
     Ok(())
 }
 
-/// Perform query for variant.
-fn query_for_variant(
+/// Query for a single variant in the RocksDB database.
+pub fn query_for_variant(
     variant: &spdi::Var,
     meta: &Meta,
     db: &Arc<rocksdb::DBWithThreadMode<rocksdb::MultiThreaded>>,

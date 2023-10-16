@@ -85,7 +85,8 @@ pub fn open_rocksdb_from_args(
     )
 }
 
-fn query_for_variant(
+/// Query for a single variant in the RocksDB database.
+pub fn query_for_variant(
     variant: &spdi::Var,
     db: &rocksdb::DBWithThreadMode<rocksdb::MultiThreaded>,
     out_writer: &mut dyn std::io::Write,
