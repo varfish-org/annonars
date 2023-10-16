@@ -112,7 +112,8 @@ fn print_record(
     Ok(())
 }
 
-fn query_for_variant(
+/// Query for a single variant in the RocksDB database.
+pub fn query_for_variant(
     variant: &common::spdi::Var,
     meta: &Meta,
     db: &rocksdb::DBWithThreadMode<rocksdb::MultiThreaded>,
