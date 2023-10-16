@@ -24,8 +24,8 @@ bgzip = "0.3"
 boolvec = "0.2"
 byteorder = "1.4"
 chrono = { version = "0.4", features = ["serde"] }
-clap = { version = "4.4", features = ["derive", "env"] }
 clap-verbosity-flag = "2.0"
+clap = { version = "4.4", features = ["derive", "env"] }
 csv = "1.2"
 enum-map = { version = "2.6.3", features = ["serde"] }
 env_logger = "0.10"
@@ -35,17 +35,17 @@ indexmap = { version = "2.0", features = ["serde"] }
 indicatif = { version = "0.17", features = ["rayon"] }
 log = "0.4"
 noodles-bed = "0.10"
-noodles-bgzf = "0.24"
+noodles-bgzf = "0.25"
 noodles-core = "0.12"
-noodles-csi = "0.24"
-noodles-tabix = "0.29"
-noodles-vcf = "0.40"
+noodles-csi = "0.25"
+noodles-tabix = "0.30"
+noodles-vcf = "0.41"
 prost = "0.12"
 rayon = "1.8"
-rocksdb = { version = "0.21", features = ["multi-threaded-cf"] }
 rocksdb-utils-lookup = "0.3"
-serde = { version = "1.0", features = ["derive"] }
+rocksdb = { version = "0.21", features = ["multi-threaded-cf"] }
 serde_json = { version = "1.0", features=["preserve_order"] }
+serde = { version = "1.0", features = ["derive"] }
 serde_with = { version = "3.3", features=["indexmap_2"] }
 strum = { version = "0.25", features = ["strum_macros", "derive"] }
 thiserror = "1.0"
