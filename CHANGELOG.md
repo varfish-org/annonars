@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.23.1](https://github.com/bihealth/annonars/compare/v0.23.0...v0.23.1) (2023-10-16)
+
+
+### Bug Fixes
+
+* bumping noodles dependencies ([#245](https://github.com/bihealth/annonars/issues/245)) ([9fe23c8](https://github.com/bihealth/annonars/commit/9fe23c874d45c413085d9eb3559531b822b8daf7))
+
 ## [0.23.0](https://github.com/bihealth/annonars/compare/v0.22.0...v0.23.0) (2023-10-16)
 
 
