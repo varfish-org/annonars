@@ -85,46 +85,58 @@ pub fn open_rocksdb_from_args(
     )
 }
 
+/// Enumeration of possible result records.
+pub enum Record {
+    /// Record for autosomal variant.
+    Autosomal(freqs::serialized::auto::Record),
+    /// Record for gonosomal variant.
+    Gonosomal(freqs::serialized::xy::Record),
+    /// Record for mitochondrial variant.
+    Mitochondrial(freqs::serialized::mt::Record),
+}
+
 /// Query for a single variant in the RocksDB database.
 pub fn query_for_variant(
     variant: &spdi::Var,
     db: &rocksdb::DBWithThreadMode<rocksdb::MultiThreaded>,
-    out_writer: &mut dyn std::io::Write,
     _out_format: common::cli::OutputFormat,
-) -> Result<(), anyhow::Error> {
+) -> Result<Option<Record>, anyhow::Error> {
     let seq = variant.sequence.to_lowercase();
     let var: keys::Var = variant.clone().into();
     let key: Vec<u8> = var.into();
     if seq.contains('m') {
         let cf_mtdna: Arc<rocksdb::BoundColumnFamily> = db.cf_handle("mitochondrial").unwrap();
-        let raw_value = db.get_cf(&cf_mtdna, &key)?;
+        let raw_value = db
+            .get_cf(&cf_mtdna, &key)
+            .map_err(|e| anyhow::anyhow!("error reading from RocksDB: {}", e))?;
         if let Some(raw_value) = raw_value {
-            let value = freqs::serialized::mt::Record::from_buf(&raw_value);
-            let json_value = serde_json::to_value(value)?;
-            let json = serde_json::to_string(&json_value)?;
-            writeln!(out_writer, "{}", &json)?;
+            return Ok(Some(Record::Mitochondrial(
+                freqs::serialized::mt::Record::from_buf(&raw_value),
+            )));
         }
     } else if seq.contains('x') || seq.contains('y') {
         let cf_xy: Arc<rocksdb::BoundColumnFamily> = db.cf_handle("gonosomal").unwrap();
-        let raw_value = db.get_cf(&cf_xy, &key)?;
+        let raw_value = db
+            .get_cf(&cf_xy, &key)
+            .map_err(|e| anyhow::anyhow!("error reading from RocksDB: {}", e))?;
         if let Some(raw_value) = raw_value {
-            let value = freqs::serialized::xy::Record::from_buf(&raw_value);
-            let json_value = serde_json::to_value(value)?;
-            let json = serde_json::to_string(&json_value)?;
-            writeln!(out_writer, "{}", &json)?;
+            return Ok(Some(Record::Gonosomal(
+                freqs::serialized::xy::Record::from_buf(&raw_value),
+            )));
         }
     } else {
         let cf_auto: Arc<rocksdb::BoundColumnFamily> = db.cf_handle("autosomal").unwrap();
-        let raw_value = db.get_cf(&cf_auto, &key)?;
+        let raw_value = db
+            .get_cf(&cf_auto, &key)
+            .map_err(|e| anyhow::anyhow!("error reading from RocksDB: {}", e))?;
         if let Some(raw_value) = raw_value {
-            let value = freqs::serialized::auto::Record::from_buf(&raw_value);
-            let json_value = serde_json::to_value(value)?;
-            let json = serde_json::to_string(&json_value)?;
-            writeln!(out_writer, "{}", &json)?;
+            return Ok(Some(Record::Autosomal(
+                freqs::serialized::auto::Record::from_buf(&raw_value),
+            )));
         }
     }
 
-    Ok(())
+    Ok(None)
 }
 
 /// Implementation of `tsv query` sub command.
@@ -146,7 +158,27 @@ pub fn run(common: &common::cli::Args, args: &Args) -> Result<(), anyhow::Error>
 
     tracing::info!("Running query...");
     let before_query = std::time::Instant::now();
-    query_for_variant(&args.variant, &db, &mut out_writer, args.out_format)?;
+    if let Some(variant) = query_for_variant(&args.variant, &db, args.out_format)? {
+        match variant {
+            Record::Autosomal(record) => {
+                let json_value = serde_json::to_value(record)?;
+                let json = serde_json::to_string(&json_value)?;
+                writeln!(out_writer, "{}", &json)?;
+            }
+            Record::Gonosomal(record) => {
+                let json_value = serde_json::to_value(record)?;
+                let json = serde_json::to_string(&json_value)?;
+                writeln!(out_writer, "{}", &json)?;
+            }
+            Record::Mitochondrial(record) => {
+                let json_value = serde_json::to_value(record)?;
+                let json = serde_json::to_string(&json_value)?;
+                writeln!(out_writer, "{}", &json)?;
+            }
+        }
+    } else {
+        tracing::info!("no record found for variant {:?}", &args.variant);
+    }
     tracing::info!("... done querying in {:?}", before_query.elapsed());
 
     tracing::info!("All done. Have a nice day!");
