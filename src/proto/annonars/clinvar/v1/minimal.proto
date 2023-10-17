@@ -37,6 +37,9 @@ enum ReviewStatus {
 }
 
 // Record for storing minimal information on ClinVar for Mehari.
+// TODO: this must be on the VCV level and select the highest pathogenicity, and contain entries for all RCVs
+// cf. https://www.ncbi.nlm.nih.gov/clinvar/variation/251996/#id_second
+// vs. https://www.ncbi.nlm.nih.gov/clinvar/RCV002411086/
 message Record {
     // Genome release.
     string release = 1;
