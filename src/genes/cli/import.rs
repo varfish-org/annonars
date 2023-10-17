@@ -935,7 +935,7 @@ fn write_rocksdb(
     let options = rocksdb_utils_lookup::tune_options(rocksdb::Options::default(), None);
     let db = rocksdb::DB::open_cf_with_opts(
         &options,
-        &args.path_out_rocksdb,
+        common::readlink_f(&args.path_out_rocksdb)?,
         ["meta", "genes"]
             .iter()
             .map(|name| (name.to_string(), options.clone()))
