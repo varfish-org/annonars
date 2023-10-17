@@ -74,6 +74,29 @@ fn print_record(
     Ok(())
 }
 
+/// Query for one gene annotation record.
+pub fn query_for_gene(
+    hgnc_id: &str,
+    db: &rocksdb::DBWithThreadMode<rocksdb::MultiThreaded>,
+    cf_data: &Arc<rocksdb::BoundColumnFamily>,
+) -> Result<Option<clinvar_genes::pbs::ClinvarPerGeneRecord>, anyhow::Error> {
+    let raw_value = db
+        .get_cf(cf_data, hgnc_id.as_bytes())
+        .map_err(|e| anyhow::anyhow!("error while querying for HGNC ID {}: {}", hgnc_id, e))?;
+    raw_value
+        .map(|raw_value| {
+            clinvar_genes::pbs::ClinvarPerGeneRecord::decode(&mut std::io::Cursor::new(&raw_value))
+                .map_err(|e| {
+                    anyhow::anyhow!(
+                        "error while decoding clinvar per gene record for HGNC ID {}: {}",
+                        hgnc_id,
+                        e
+                    )
+                })
+        })
+        .transpose()
+}
+
 /// Implementation of `gene query` sub command.
 pub fn run(common: &common::cli::Args, args: &Args) -> Result<(), anyhow::Error> {
     tracing::info!("Starting 'gene query' command");
@@ -94,15 +117,8 @@ pub fn run(common: &common::cli::Args, args: &Args) -> Result<(), anyhow::Error>
     };
 
     tracing::info!("Running query...");
-    let raw_value = db.get_cf(&cf_data, args.hgnc_id.as_bytes())?;
-    if let Some(raw_value) = raw_value {
-        print_record(
-            &mut out_writer,
-            args.out_format,
-            &clinvar_genes::pbs::ClinvarPerGeneRecord::decode(&mut std::io::Cursor::new(
-                &raw_value,
-            ))?,
-        )?;
+    if let Some(record) = query_for_gene(&args.hgnc_id, &db, &cf_data)? {
+        print_record(&mut out_writer, args.out_format, &record)?;
     } else {
         tracing::info!("No data found for HGNC ID {}", args.hgnc_id);
     }
