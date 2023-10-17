@@ -132,43 +132,50 @@ fn load_variants_jsonl(
         for line in reader.lines() {
             let line = line?;
             let input_record =
-                serde_json::from_str::<clinvar_minimal::cli::reading::Record>(&line)?;
+                serde_json::from_str::<clinvar_minimal::cli::reading::Record>(&line);
+            match input_record {
+                Err(e) => {
+                    tracing::warn!("skipping line because of error: {}", e);
+                    continue;
+                },
+                Ok(input_record) => {
+                    let clinvar_minimal::cli::reading::Record {
+                        rcv,
+                        hgnc_ids,
+                        clinical_significance,
+                        review_status,
+                        sequence_location,
+                    } = input_record;
+                    let clinvar_minimal::cli::reading::SequenceLocation {
+                        assembly,
+                        chr,
+                        start,
+                        reference_allele_vcf,
+                        alternate_allele_vcf,
+                        ..
+                    } = sequence_location;
 
-            let clinvar_minimal::cli::reading::Record {
-                rcv,
-                hgnc_ids,
-                clinical_significance,
-                review_status,
-                sequence_location,
-            } = input_record;
-            let clinvar_minimal::cli::reading::SequenceLocation {
-                assembly,
-                chr,
-                start,
-                reference_allele_vcf,
-                alternate_allele_vcf,
-                ..
-            } = sequence_location;
-
-            if let (Some(reference_allele_vcf), Some(alternate_allele_vcf)) =
-                (reference_allele_vcf, alternate_allele_vcf)
-            {
-                for hgnc_id in hgnc_ids {
-                    let per_gene = tmp.entry(hgnc_id).or_default();
-                    let per_release = per_gene.entry(assembly.clone()).or_default();
-                    let clinsig: crate::clinvar_minimal::pbs::ClinicalSignificance =
-                        clinical_significance.clone().into();
-                    let review_status: crate::clinvar_minimal::pbs::ReviewStatus =
-                        review_status.clone().into();
-                    per_release.push(SequenceVariant {
-                        chrom: chr.clone(),
-                        pos: start,
-                        reference: reference_allele_vcf.clone(),
-                        alternative: alternate_allele_vcf.clone(),
-                        rcv: rcv.clone(),
-                        clinsig: clinsig as i32,
-                        review_status: review_status as i32,
-                    })
+                    if let (Some(reference_allele_vcf), Some(alternate_allele_vcf)) =
+                        (reference_allele_vcf, alternate_allele_vcf)
+                    {
+                        for hgnc_id in hgnc_ids {
+                            let per_gene = tmp.entry(hgnc_id).or_default();
+                            let per_release = per_gene.entry(assembly.clone()).or_default();
+                            let clinsig: crate::clinvar_minimal::pbs::ClinicalSignificance =
+                                clinical_significance.clone().into();
+                            let review_status: crate::clinvar_minimal::pbs::ReviewStatus =
+                                review_status.clone().into();
+                            per_release.push(SequenceVariant {
+                                chrom: chr.clone(),
+                                pos: start,
+                                reference: reference_allele_vcf.clone(),
+                                alternative: alternate_allele_vcf.clone(),
+                                rcv: rcv.clone(),
+                                clinsig: clinsig as i32,
+                                review_status: review_status as i32,
+                            })
+                        }
+                    }
                 }
             }
         }
