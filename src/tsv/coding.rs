@@ -7,12 +7,12 @@ use crate::{common, error};
 use super::schema;
 
 /// Encapsulate the coding and decoding of character-separated lines.
-#[derive(Debug)]
+#[derive(Debug, Clone)]
 pub struct Context {
     /// The configuration that was used for schema inference.
-    config: schema::infer::Config,
+    pub config: schema::infer::Config,
     /// The schema to use for the coding and decoding.
-    schema: schema::FileSchema,
+    pub schema: schema::FileSchema,
 }
 
 impl Context {

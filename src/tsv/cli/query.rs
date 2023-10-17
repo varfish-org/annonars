@@ -149,8 +149,8 @@ pub fn query_for_variant(
     variant: &spdi::Var,
     meta: &Meta,
     db: &Arc<rocksdb::DBWithThreadMode<rocksdb::MultiThreaded>>,
-    cf_data: Arc<rocksdb::BoundColumnFamily>,
-    ctx: coding::Context,
+    cf_data: &Arc<rocksdb::BoundColumnFamily>,
+    ctx: &coding::Context,
 ) -> Result<Vec<serde_json::Value>, anyhow::Error> {
     // Split off the genome release (checked) and convert to key as used in database.
     let query = spdi::Var {
@@ -161,7 +161,7 @@ pub fn query_for_variant(
     let var: keys::Var = query.into();
     let key: Vec<u8> = var.into();
     let raw_value = db
-        .get_cf(&cf_data, key)?
+        .get_cf(cf_data, key)?
         .ok_or_else(|| anyhow::anyhow!("could not find variant in database"))?;
     let line = std::str::from_utf8(raw_value.as_slice())?;
     let values = ctx.line_to_values(line)?;
@@ -195,7 +195,7 @@ pub fn run(common: &common::cli::Args, args: &Args) -> Result<(), anyhow::Error>
             &mut out_writer,
             args.out_format,
             &meta,
-            query_for_variant(variant, &meta, &db, cf_data, ctx)?,
+            query_for_variant(variant, &meta, &db, &cf_data, &ctx)?,
         )?;
     } else {
         let (start, stop) = if let Some(position) = args.query.position.as_ref() {
