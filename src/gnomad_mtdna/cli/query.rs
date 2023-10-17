@@ -50,7 +50,7 @@ pub fn open_rocksdb<P: AsRef<std::path::Path>>(
     let cf_names: &[&str; 2] = &[cf_meta, cf_data];
     let db = Arc::new(rocksdb::DB::open_cf_for_read_only(
         &rocksdb::Options::default(),
-        &path_rocksdb,
+        common::readlink_f(&path_rocksdb)?,
         cf_names,
         true,
     )?);
