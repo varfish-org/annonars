@@ -120,9 +120,8 @@ pub fn run(common: &common::cli::Args, args: &Args) -> Result<(), anyhow::Error>
     if let Some(record) = query_for_gene(&args.hgnc_id, &db, &cf_data)? {
         print_record(&mut out_writer, args.out_format, &record)?;
     } else {
-        tracing::info!("No data found for HGNC ID {}", args.hgnc_id);
+        tracing::info!("no record found for HGNC ID {:?}", args.hgnc_id);
     }
-
     tracing::info!("All done. Have a nice day!");
     Ok(())
 }

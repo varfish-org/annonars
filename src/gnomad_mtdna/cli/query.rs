@@ -102,7 +102,7 @@ pub fn query_for_variant(
     meta: &Meta,
     db: &rocksdb::DBWithThreadMode<rocksdb::MultiThreaded>,
     cf_data: &Arc<rocksdb::BoundColumnFamily>,
-) -> Result<gnomad_pbs::mtdna::Record, anyhow::Error> {
+) -> Result<Option<gnomad_pbs::mtdna::Record>, anyhow::Error> {
     // Split off the genome release (checked) and convert to key as used in database.
     let query = spdi::Var {
         sequence: extract_chrom::from_var(variant, Some(&meta.genome_release))?,
@@ -113,11 +113,15 @@ pub fn query_for_variant(
     let var: keys::Var = query.into();
     let key: Vec<u8> = var.into();
     let raw_value = db
-        .get_cf(cf_data, key)?
-        .ok_or_else(|| anyhow::anyhow!("could not find variant in database"))?;
-    // Decode via prost.
-    gnomad_pbs::mtdna::Record::decode(&mut std::io::Cursor::new(&raw_value))
-        .map_err(|e| anyhow::anyhow!("failed to decode record: {}", e))
+        .get_cf(cf_data, key)
+        .map_err(|e| anyhow::anyhow!("error reading from RocksDB: {}", e))?;
+    raw_value
+        .map(|raw_value| {
+            // Decode via prost.
+            gnomad_pbs::mtdna::Record::decode(&mut std::io::Cursor::new(&raw_value))
+                .map_err(|e| anyhow::anyhow!("failed to decode record: {}", e))
+        })
+        .transpose()
 }
 
 /// Implementation of `tsv query` sub command.
@@ -141,11 +145,11 @@ pub fn run(common: &common::cli::Args, args: &Args) -> Result<(), anyhow::Error>
     tracing::info!("Running query...");
     let before_query = std::time::Instant::now();
     if let Some(variant) = args.query.variant.as_ref() {
-        print_record(
-            &mut out_writer,
-            args.out_format,
-            &query_for_variant(variant, &meta, &db, &cf_data)?,
-        )?;
+        if let Some(record) = query_for_variant(variant, &meta, &db, &cf_data)? {
+            print_record(&mut out_writer, args.out_format, &record)?;
+        } else {
+            tracing::info!("no record found for variant {:?}", &variant);
+        }
     } else {
         let (start, stop) = if let Some(position) = args.query.position.as_ref() {
             let position = spdi::Pos {
