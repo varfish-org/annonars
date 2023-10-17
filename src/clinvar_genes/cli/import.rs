@@ -131,13 +131,12 @@ fn load_variants_jsonl(
 
         for line in reader.lines() {
             let line = line?;
-            let input_record =
-                serde_json::from_str::<clinvar_minimal::cli::reading::Record>(&line);
+            let input_record = serde_json::from_str::<clinvar_minimal::cli::reading::Record>(&line);
             match input_record {
                 Err(e) => {
                     tracing::warn!("skipping line because of error: {}", e);
                     continue;
-                },
+                }
                 Ok(input_record) => {
                     let clinvar_minimal::cli::reading::Record {
                         rcv,
