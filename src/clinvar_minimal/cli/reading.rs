@@ -4,10 +4,8 @@ use std::{fmt::Display, str::FromStr};
 
 use serde::{Deserialize, Serialize};
 
-use crate::clinvar_minimal::pbs;
-
 /// Enumeration for ClinVar clinical significance for (de)serialization.
-#[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord)]
 pub enum ClinicalSignificance {
     /// Pathogenic.
     Pathogenic,
@@ -67,16 +65,44 @@ impl<'de> Deserialize<'de> for ClinicalSignificance {
     }
 }
 
-impl From<ClinicalSignificance> for pbs::ClinicalSignificance {
+impl From<ClinicalSignificance> for crate::clinvar_minimal::pbs::ClinicalSignificance {
     fn from(value: ClinicalSignificance) -> Self {
         match value {
-            ClinicalSignificance::Pathogenic => pbs::ClinicalSignificance::Pathogenic,
-            ClinicalSignificance::LikelyPathogenic => pbs::ClinicalSignificance::LikelyPathogenic,
-            ClinicalSignificance::UncertainSignificance => {
-                pbs::ClinicalSignificance::UncertainSignificance
+            ClinicalSignificance::Pathogenic => {
+                crate::clinvar_minimal::pbs::ClinicalSignificance::Pathogenic
             }
-            ClinicalSignificance::LikelyBenign => pbs::ClinicalSignificance::LikelyBenign,
-            ClinicalSignificance::Benign => pbs::ClinicalSignificance::Benign,
+            ClinicalSignificance::LikelyPathogenic => {
+                crate::clinvar_minimal::pbs::ClinicalSignificance::LikelyPathogenic
+            }
+            ClinicalSignificance::UncertainSignificance => {
+                crate::clinvar_minimal::pbs::ClinicalSignificance::UncertainSignificance
+            }
+            ClinicalSignificance::LikelyBenign => {
+                crate::clinvar_minimal::pbs::ClinicalSignificance::LikelyBenign
+            }
+            ClinicalSignificance::Benign => {
+                crate::clinvar_minimal::pbs::ClinicalSignificance::Benign
+            }
+        }
+    }
+}
+
+impl From<ClinicalSignificance> for crate::clinvar_genes::pbs::ClinicalSignificance {
+    fn from(value: ClinicalSignificance) -> Self {
+        match value {
+            ClinicalSignificance::Pathogenic => {
+                crate::clinvar_genes::pbs::ClinicalSignificance::Pathogenic
+            }
+            ClinicalSignificance::LikelyPathogenic => {
+                crate::clinvar_genes::pbs::ClinicalSignificance::LikelyPathogenic
+            }
+            ClinicalSignificance::UncertainSignificance => {
+                crate::clinvar_genes::pbs::ClinicalSignificance::UncertainSignificance
+            }
+            ClinicalSignificance::LikelyBenign => {
+                crate::clinvar_genes::pbs::ClinicalSignificance::LikelyBenign
+            }
+            ClinicalSignificance::Benign => crate::clinvar_genes::pbs::ClinicalSignificance::Benign,
         }
     }
 }
@@ -95,22 +121,22 @@ impl From<i32> for ClinicalSignificance {
 }
 
 /// Enumeration for ClinVar review status for (de)serialization.
-#[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord)]
 pub enum ReviewStatus {
-    /// "no assertion provided"
-    NoAssertionProvided,
-    /// "no assertion criteria provided"
-    NoAssertionCriteriaProvided,
-    /// "criteria provided, conflicting interpretations"
-    CriteriaProvidedConflictingInterpretations,
-    /// "criteria provided, single submitter"
-    CriteriaProvidedSingleSubmitter,
-    /// "criteria provided, multiple submitters, no conflicts"
-    CriteriaProvidedMultipleSubmittersNoConflicts,
-    /// "reviewed by expert panel"
-    ReviewedByExpertPanel,
     /// "practice guideline"
     PracticeGuideline,
+    /// "reviewed by expert panel"
+    ReviewedByExpertPanel,
+    /// "criteria provided, multiple submitters, no conflicts"
+    CriteriaProvidedMultipleSubmittersNoConflicts,
+    /// "criteria provided, single submitter"
+    CriteriaProvidedSingleSubmitter,
+    /// "criteria provided, conflicting interpretations"
+    CriteriaProvidedConflictingInterpretations,
+    /// "no assertion criteria provided"
+    NoAssertionCriteriaProvided,
+    /// "no assertion provided"
+    NoAssertionProvided,
 }
 
 impl Display for ReviewStatus {
@@ -177,38 +203,59 @@ impl<'de> Deserialize<'de> for ReviewStatus {
     }
 }
 
-impl From<ReviewStatus> for pbs::ReviewStatus {
+impl From<ReviewStatus> for crate::clinvar_minimal::pbs::ReviewStatus {
     fn from(value: ReviewStatus) -> Self {
         match value {
-            ReviewStatus::NoAssertionProvided => pbs::ReviewStatus::NoAssertionProvided,
+            ReviewStatus::NoAssertionProvided => crate::clinvar_minimal::pbs::ReviewStatus::NoAssertionProvided,
             ReviewStatus::NoAssertionCriteriaProvided => {
-                pbs::ReviewStatus::NoAssertionCriteriaProvided
+                crate::clinvar_minimal::pbs::ReviewStatus::NoAssertionCriteriaProvided
             }
             ReviewStatus::CriteriaProvidedConflictingInterpretations => {
-                pbs::ReviewStatus::CriteriaProvidedConflictingInterpretations
+                crate::clinvar_minimal::pbs::ReviewStatus::CriteriaProvidedConflictingInterpretations
             }
             ReviewStatus::CriteriaProvidedSingleSubmitter => {
-                pbs::ReviewStatus::CriteriaProvidedSingleSubmitter
+                crate::clinvar_minimal::pbs::ReviewStatus::CriteriaProvidedSingleSubmitter
             }
             ReviewStatus::CriteriaProvidedMultipleSubmittersNoConflicts => {
-                pbs::ReviewStatus::CriteriaProvidedMultipleSubmittersNoConflicts
+                crate::clinvar_minimal::pbs::ReviewStatus::CriteriaProvidedMultipleSubmittersNoConflicts
             }
-            ReviewStatus::ReviewedByExpertPanel => pbs::ReviewStatus::ReviewedByExpertPanel,
-            ReviewStatus::PracticeGuideline => pbs::ReviewStatus::PracticeGuideline,
+            ReviewStatus::ReviewedByExpertPanel => crate::clinvar_minimal::pbs::ReviewStatus::ReviewedByExpertPanel,
+            ReviewStatus::PracticeGuideline => crate::clinvar_minimal::pbs::ReviewStatus::PracticeGuideline,
         }
     }
 }
 
+impl From<ReviewStatus> for crate::clinvar_genes::pbs::ReviewStatus {
+    fn from(value: ReviewStatus) -> Self {
+        match value {
+            ReviewStatus::NoAssertionProvided => crate::clinvar_genes::pbs::ReviewStatus::NoAssertionProvided,
+            ReviewStatus::NoAssertionCriteriaProvided => {
+                crate::clinvar_genes::pbs::ReviewStatus::NoAssertionCriteriaProvided
+            }
+            ReviewStatus::CriteriaProvidedConflictingInterpretations => {
+                crate::clinvar_genes::pbs::ReviewStatus::CriteriaProvidedConflictingInterpretations
+            }
+            ReviewStatus::CriteriaProvidedSingleSubmitter => {
+                crate::clinvar_genes::pbs::ReviewStatus::CriteriaProvidedSingleSubmitter
+            }
+            ReviewStatus::CriteriaProvidedMultipleSubmittersNoConflicts => {
+                crate::clinvar_genes::pbs::ReviewStatus::CriteriaProvidedMultipleSubmittersNoConflicts
+            }
+            ReviewStatus::ReviewedByExpertPanel => crate::clinvar_genes::pbs::ReviewStatus::ReviewedByExpertPanel,
+            ReviewStatus::PracticeGuideline => crate::clinvar_genes::pbs::ReviewStatus::PracticeGuideline,
+        }
+    }
+}
 impl From<i32> for ReviewStatus {
     fn from(value: i32) -> Self {
         match value {
-            0 => ReviewStatus::NoAssertionProvided,
-            1 => ReviewStatus::NoAssertionCriteriaProvided,
-            2 => ReviewStatus::CriteriaProvidedConflictingInterpretations,
+            0 => ReviewStatus::PracticeGuideline,
+            1 => ReviewStatus::ReviewedByExpertPanel,
+            2 => ReviewStatus::CriteriaProvidedMultipleSubmittersNoConflicts,
             3 => ReviewStatus::CriteriaProvidedSingleSubmitter,
-            4 => ReviewStatus::CriteriaProvidedMultipleSubmittersNoConflicts,
-            5 => ReviewStatus::ReviewedByExpertPanel,
-            6 => ReviewStatus::PracticeGuideline,
+            4 => ReviewStatus::CriteriaProvidedConflictingInterpretations,
+            5 => ReviewStatus::NoAssertionCriteriaProvided,
+            6 => ReviewStatus::NoAssertionProvided,
             _ => unreachable!(),
         }
     }
@@ -219,6 +266,10 @@ impl From<i32> for ReviewStatus {
 pub struct Record {
     /// RCV accession identifier.
     pub rcv: String,
+    /// VCV accession identifier.
+    pub vcv: String,
+    /// RCV title.
+    pub title: String,
     /// HGNC ids
     pub hgnc_ids: Vec<String>,
     /// ClinVar clinical significance

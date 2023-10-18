@@ -251,7 +251,7 @@ fn open_db(
     let before_open = Instant::now();
     let res = rocksdb::DB::open_cf_for_read_only(
         &rocksdb::Options::default(),
-        path,
+        common::readlink_f(path)?,
         ["meta", cf_name],
         true,
     )

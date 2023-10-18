@@ -9,7 +9,8 @@ use crate::{
     clinvar_genes::{
         self,
         pbs::{
-            GeneFreqRecordCounts, GeneImpactRecordCounts, GeneVariantsForRelease, SequenceVariant,
+            ClinicalSignificance, GeneFreqRecordCounts, GeneImpactRecordCounts,
+            GeneVariantsForRelease, ReferenceAssertion, ReviewStatus, SequenceVariant,
         },
     },
     clinvar_minimal, common,
@@ -111,13 +112,16 @@ fn load_per_frequency_jsonl(
     Ok(result)
 }
 
+type PerVcv = indexmap::IndexMap<String, SequenceVariant>;
+type PerAssembly = indexmap::IndexMap<String, PerVcv>;
+type PerGene = indexmap::IndexMap<String, PerAssembly>;
+
 /// Load per-gene sequence variants.
 fn load_variants_jsonl(
     variant_jsonls: &[String],
 ) -> Result<indexmap::IndexMap<String, Vec<GeneVariantsForRelease>>, anyhow::Error> {
     // Build intermediate data structure using nested maps.
-    let mut tmp: indexmap::IndexMap<String, indexmap::IndexMap<String, Vec<SequenceVariant>>> =
-        indexmap::IndexMap::new();
+    let mut per_gene: PerGene = Default::default();
     for path_jsonl in variant_jsonls {
         let reader: Box<dyn std::io::Read> = if path_jsonl.ends_with(".gz") {
             Box::new(flate2::read::GzDecoder::new(std::fs::File::open(
@@ -139,7 +143,9 @@ fn load_variants_jsonl(
                 }
                 Ok(input_record) => {
                     let clinvar_minimal::cli::reading::Record {
+                        vcv,
                         rcv,
+                        title,
                         hgnc_ids,
                         clinical_significance,
                         review_status,
@@ -158,21 +164,30 @@ fn load_variants_jsonl(
                         (reference_allele_vcf, alternate_allele_vcf)
                     {
                         for hgnc_id in hgnc_ids {
-                            let per_gene = tmp.entry(hgnc_id).or_default();
-                            let per_release = per_gene.entry(assembly.clone()).or_default();
-                            let clinsig: crate::clinvar_minimal::pbs::ClinicalSignificance =
-                                clinical_significance.clone().into();
-                            let review_status: crate::clinvar_minimal::pbs::ReviewStatus =
-                                review_status.clone().into();
-                            per_release.push(SequenceVariant {
-                                chrom: chr.clone(),
-                                pos: start,
-                                reference: reference_allele_vcf.clone(),
-                                alternative: alternate_allele_vcf.clone(),
+                            let per_release = per_gene.entry(hgnc_id).or_default();
+                            let per_vcv = per_release.entry(assembly.clone()).or_default();
+                            let seqvar =
+                                per_vcv
+                                    .entry(vcv.clone())
+                                    .or_insert_with(|| SequenceVariant {
+                                        chrom: chr.clone(),
+                                        pos: start,
+                                        reference: reference_allele_vcf.clone(),
+                                        alternative: alternate_allele_vcf.clone(),
+                                        vcv: vcv.clone(),
+                                        reference_assertions: vec![],
+                                    });
+                            seqvar.reference_assertions.push(ReferenceAssertion {
                                 rcv: rcv.clone(),
-                                clinsig: clinsig as i32,
-                                review_status: review_status as i32,
-                            })
+                                title: title.clone(),
+                                clinical_significance: Into::<ClinicalSignificance>::into(
+                                    clinical_significance,
+                                ) as i32,
+                                review_status: Into::<ReviewStatus>::into(review_status) as i32,
+                            });
+                            seqvar
+                                .reference_assertions
+                                .sort_by_key(|a| (a.clinical_significance, a.review_status));
                         }
                     }
                 }
@@ -182,12 +197,12 @@ fn load_variants_jsonl(
 
     // Convert into final data structure that uses lists of entry records rather than nested maps.
     let mut result = indexmap::IndexMap::new();
-    for (hgnc_id, per_gene) in tmp {
+    for (hgnc_id, per_gene) in per_gene {
         let mut per_gene_out = Vec::new();
         for (genome_release, per_release) in per_gene {
             per_gene_out.push(GeneVariantsForRelease {
                 genome_release,
-                variants: per_release,
+                variants: per_release.values().cloned().collect(),
             });
         }
         result.insert(hgnc_id, per_gene_out);
@@ -272,7 +287,7 @@ pub fn run(common: &common::cli::Args, args: &Args) -> Result<(), anyhow::Error>
     let cf_names = &["meta", &args.cf_name];
     let db = Arc::new(rocksdb::DB::open_cf_with_opts(
         &options,
-        &args.path_out_rocksdb,
+        common::readlink_f(&args.path_out_rocksdb)?,
         cf_names
             .iter()
             .map(|name| (name.to_string(), options.clone()))

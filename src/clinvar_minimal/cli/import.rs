@@ -56,6 +56,8 @@ fn jsonl_import(
 
         let clinvar_minimal::cli::reading::Record {
             rcv,
+            vcv,
+            title,
             clinical_significance,
             review_status,
             sequence_location,
@@ -75,27 +77,49 @@ fn jsonl_import(
         if let (Some(reference_allele_vcf), Some(alternate_allele_vcf)) =
             (reference_allele_vcf, alternate_allele_vcf)
         {
-            let record = clinvar_minimal::pbs::Record {
-                release: assembly,
-                chromosome: chr,
-                start,
-                stop,
-                reference: reference_allele_vcf,
-                alternative: alternate_allele_vcf,
-                rcv,
-                clinical_significance: clinical_significance.into(),
-                review_status: review_status.into(),
-            };
-            let buf = record.encode_to_vec();
-
             let var = keys::Var::from(
-                &record.chromosome,
-                record.start as i32,
-                &record.reference,
-                &record.alternative,
+                &chr,
+                start as i32,
+                &reference_allele_vcf,
+                &alternate_allele_vcf,
             );
             let key: Vec<u8> = var.into();
 
+            let record = if let Some(data) = db
+                .get_cf(&cf_data, key.clone())
+                .map_err(|e| anyhow::anyhow!("problem querying database: {}", e))?
+            {
+                let mut record = clinvar_minimal::pbs::Record::decode(&data[..])?;
+                record
+                    .reference_assertions
+                    .push(clinvar_minimal::pbs::ReferenceAssertion {
+                        rcv,
+                        title,
+                        clinical_significance: clinical_significance.into(),
+                        review_status: review_status.into(),
+                    });
+                record
+                    .reference_assertions
+                    .sort_by_key(|a| (a.clinical_significance, a.review_status));
+                record
+            } else {
+                clinvar_minimal::pbs::Record {
+                    release: assembly,
+                    chromosome: chr,
+                    start,
+                    stop,
+                    reference: reference_allele_vcf,
+                    alternative: alternate_allele_vcf,
+                    vcv,
+                    reference_assertions: vec![clinvar_minimal::pbs::ReferenceAssertion {
+                        rcv,
+                        title,
+                        clinical_significance: clinical_significance.into(),
+                        review_status: review_status.into(),
+                    }],
+                }
+            };
+            let buf = record.encode_to_vec();
             db.put_cf(&cf_data, key, buf)?;
         }
     }
@@ -119,7 +143,7 @@ pub fn run(common: &common::cli::Args, args: &Args) -> Result<(), anyhow::Error>
     let cf_names = &["meta", &args.cf_name];
     let db = Arc::new(rocksdb::DB::open_cf_with_opts(
         &options,
-        &args.path_out_rocksdb,
+        common::readlink_f(&args.path_out_rocksdb)?,
         cf_names
             .iter()
             .map(|name| (name.to_string(), options.clone()))

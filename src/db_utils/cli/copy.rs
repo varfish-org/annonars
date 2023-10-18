@@ -161,7 +161,7 @@ pub fn run(common: &common::cli::Args, args: &Args) -> Result<(), anyhow::Error>
     let cf_names = rocksdb::DB::list_cf(&rocksdb::Options::default(), &args.path_in)?;
     let db_read = rocksdb::DB::open_cf_for_read_only(
         &rocksdb::Options::default(),
-        &args.path_in,
+        common::readlink_f(&args.path_in)?,
         &cf_names,
         false,
     )?;
@@ -186,7 +186,7 @@ pub fn run(common: &common::cli::Args, args: &Args) -> Result<(), anyhow::Error>
     );
     let db_write = rocksdb::DB::open_cf_with_opts(
         &options,
-        &args.path_out,
+        common::readlink_f(&args.path_out)?,
         cf_names
             .iter()
             .map(|name| (name.to_string(), options.clone()))

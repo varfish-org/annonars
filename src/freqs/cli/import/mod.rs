@@ -163,7 +163,7 @@ pub fn run(common: &common::cli::Args, args: &Args) -> Result<(), anyhow::Error>
     let cf_names = ["meta", "autosomal", "gonosomal", "mitochondrial"];
     let db = Arc::new(rocksdb::DB::open_cf_with_opts(
         &options,
-        &args.path_out_rocksdb,
+        common::readlink_f(&args.path_out_rocksdb)?,
         cf_names
             .iter()
             .map(|name| (name.to_string(), options.clone()))

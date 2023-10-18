@@ -28,7 +28,7 @@ pub fn run(common: &common::cli::Args, args: &Args) -> Result<(), anyhow::Error>
     // Open database for reading.
     let db_read = rocksdb::DB::open_cf_for_read_only(
         &rocksdb::Options::default(),
-        &args.path_in,
+        common::readlink_f(&args.path_in)?,
         ["meta"],
         false,
     )?;
