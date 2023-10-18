@@ -1,5 +1,20 @@
 # Changelog
 
+## [0.24.0](https://github.com/bihealth/annonars/compare/v0.23.1...v0.24.0) (2023-10-18)
+
+
+### Features
+
+* allow returning None for query interfaces ([#255](https://github.com/bihealth/annonars/issues/255)) ([#256](https://github.com/bihealth/annonars/issues/256)) ([b4bf349](https://github.com/bihealth/annonars/commit/b4bf3492ed0252d13139787dfb284d9dc76fb431))
+* ensure that RocksDB dbs are opened with absolute path ([#252](https://github.com/bihealth/annonars/issues/252)) ([#257](https://github.com/bihealth/annonars/issues/257)) ([bf74e69](https://github.com/bihealth/annonars/commit/bf74e6956ee21dab1b4a865a4be03fdd50e17792))
+* making more code public in tsv query interface ([#253](https://github.com/bihealth/annonars/issues/253)) ([dd4eecc](https://github.com/bihealth/annonars/commit/dd4eecce3291bfae903e9b3a96d92d41bbd25537))
+* properly represent clinvar VCV/RCV structure in protobufs ([#242](https://github.com/bihealth/annonars/issues/242)) ([#259](https://github.com/bihealth/annonars/issues/259)) ([9095773](https://github.com/bihealth/annonars/commit/90957736c08106d31de4ce92aaf191d068526bc8))
+
+
+### Bug Fixes
+
+* make "clinvar-genes import" more robust ([#247](https://github.com/bihealth/annonars/issues/247)) ([#258](https://github.com/bihealth/annonars/issues/258)) ([efbe123](https://github.com/bihealth/annonars/commit/efbe123bacca8921fcf15ffcf99fb3c16e0a8673))
+
 ## [0.23.1](https://github.com/bihealth/annonars/compare/v0.23.0...v0.23.1) (2023-10-16)
 
 
