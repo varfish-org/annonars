@@ -82,20 +82,32 @@ enum ClinicalSignificance {
 
 /// Enumeration for ClinVar review status.
 enum ReviewStatus {
-    // "no assertion provided"
-    NO_ASSERTION_PROVIDED = 0;
-    // "no assertion criteria provided"
-    NO_ASSERTION_CRITERIA_PROVIDED = 1;
-    // "criteria provided, conflicting interpretations"
-    CRITERIA_PROVIDED_CONFLICTING_INTERPRETATIONS = 2;
+    // "practice guideline"
+    PRACTICE_GUIDELINE = 0;
+    // "reviewed by expert panel"
+    REVIEWED_BY_EXPERT_PANEL = 1;
+    // "criteria provided, multiple submitters, no conflicts"
+    CRITERIA_PROVIDED_MULTIPLE_SUBMITTERS_NO_CONFLICTS = 2;
     // "criteria provided, single submitter"
     CRITERIA_PROVIDED_SINGLE_SUBMITTER = 3;
-    // "criteria provided, multiple submitters, no conflicts"
-    CRITERIA_PROVIDED_MULTIPLE_SUBMITTERS_NO_CONFLICTS = 4;
-    // "reviewed by expert panel"
-    REVIEWED_BY_EXPERT_PANEL = 5;
-    // "practice guideline"
-    PRACTICE_GUIDELINE = 6;
+    // "criteria provided, conflicting interpretations"
+    CRITERIA_PROVIDED_CONFLICTING_INTERPRETATIONS = 4;
+    // "no assertion criteria provided"
+    NO_ASSERTION_CRITERIA_PROVIDED = 5;
+    // "no assertion provided"
+    NO_ASSERTION_PROVIDED = 6;
+}
+
+// Record for storing information about a reference clinvar assertion.
+message ReferenceAssertion {
+    // RCV accession identifier.
+    string rcv = 1;
+    // Title of the reference assertion, includes phenotype / disease.
+    string title = 2;
+    // Clinical significance for variant.
+    ClinicalSignificance clinical_significance = 3;
+    // Review status.
+    ReviewStatus review_status = 4;
 }
 
 // Sequence variant with ClinVar accession and assertion.
@@ -108,12 +120,10 @@ message SequenceVariant {
     string reference = 3;
     // Alternative allele
     string alternative = 4;
-    // RCV identifier
-    string rcv = 5;
-    // Clinical significance
-    ClinicalSignificance clinsig = 6;
-    // Review status
-    ReviewStatus review_status = 7;
+    // VCV identifier
+    string vcv = 5;
+    // Reference assertions
+    repeated ReferenceAssertion reference_assertions = 6;
 }
 
 // Variants for a given genome release / assembly.
