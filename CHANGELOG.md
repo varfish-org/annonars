@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.24.1](https://github.com/bihealth/annonars/compare/v0.24.0...v0.24.1) (2023-10-18)
+
+
+### Bug Fixes
+
+* more robust import of clinvar variants ([#260](https://github.com/bihealth/annonars/issues/260)) ([72c8267](https://github.com/bihealth/annonars/commit/72c8267352f1329c897efff7699ef072cea1bf7b))
+
 ## [0.24.0](https://github.com/bihealth/annonars/compare/v0.23.1...v0.24.0) (2023-10-18)
 
 
