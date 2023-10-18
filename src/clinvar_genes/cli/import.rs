@@ -135,54 +135,61 @@ fn load_variants_jsonl(
 
         for line in reader.lines() {
             let line = line?;
-            let input_record =
-                serde_json::from_str::<clinvar_minimal::cli::reading::Record>(&line)?;
+            let input_record = serde_json::from_str::<clinvar_minimal::cli::reading::Record>(&line);
+            match input_record {
+                Err(e) => {
+                    tracing::warn!("skipping line because of error: {}", e);
+                    continue;
+                }
+                Ok(input_record) => {
+                    let clinvar_minimal::cli::reading::Record {
+                        vcv,
+                        rcv,
+                        title,
+                        hgnc_ids,
+                        clinical_significance,
+                        review_status,
+                        sequence_location,
+                    } = input_record;
+                    let clinvar_minimal::cli::reading::SequenceLocation {
+                        assembly,
+                        chr,
+                        start,
+                        reference_allele_vcf,
+                        alternate_allele_vcf,
+                        ..
+                    } = sequence_location;
 
-            let clinvar_minimal::cli::reading::Record {
-                rcv,
-                vcv,
-                title,
-                hgnc_ids,
-                clinical_significance,
-                review_status,
-                sequence_location,
-            } = input_record;
-            let clinvar_minimal::cli::reading::SequenceLocation {
-                assembly,
-                chr: chrom,
-                start: pos,
-                reference_allele_vcf,
-                alternate_allele_vcf,
-                ..
-            } = sequence_location;
-
-            if let (Some(reference), Some(alternative)) =
-                (reference_allele_vcf, alternate_allele_vcf)
-            {
-                for hgnc_id in hgnc_ids {
-                    let per_release = per_gene.entry(hgnc_id).or_default();
-                    let per_vcv = per_release.entry(assembly.clone()).or_default();
-                    let seqvar = per_vcv
-                        .entry(vcv.clone())
-                        .or_insert_with(|| SequenceVariant {
-                            chrom: chrom.clone(),
-                            pos,
-                            reference: reference.clone(),
-                            alternative: alternative.clone(),
-                            vcv: vcv.clone(),
-                            reference_assertions: vec![],
-                        });
-                    seqvar.reference_assertions.push(ReferenceAssertion {
-                        rcv: rcv.clone(),
-                        title: title.clone(),
-                        clinical_significance: Into::<ClinicalSignificance>::into(
-                            clinical_significance,
-                        ) as i32,
-                        review_status: Into::<ReviewStatus>::into(review_status) as i32,
-                    });
-                    seqvar
-                        .reference_assertions
-                        .sort_by_key(|a| (a.clinical_significance, a.review_status));
+                    if let (Some(reference_allele_vcf), Some(alternate_allele_vcf)) =
+                        (reference_allele_vcf, alternate_allele_vcf)
+                    {
+                        for hgnc_id in hgnc_ids {
+                            let per_release = per_gene.entry(hgnc_id).or_default();
+                            let per_vcv = per_release.entry(assembly.clone()).or_default();
+                            let seqvar =
+                                per_vcv
+                                    .entry(vcv.clone())
+                                    .or_insert_with(|| SequenceVariant {
+                                        chrom: chr.clone(),
+                                        pos: start,
+                                        reference: reference_allele_vcf.clone(),
+                                        alternative: alternate_allele_vcf.clone(),
+                                        vcv: vcv.clone(),
+                                        reference_assertions: vec![],
+                                    });
+                            seqvar.reference_assertions.push(ReferenceAssertion {
+                                rcv: rcv.clone(),
+                                title: title.clone(),
+                                clinical_significance: Into::<ClinicalSignificance>::into(
+                                    clinical_significance,
+                                ) as i32,
+                                review_status: Into::<ReviewStatus>::into(review_status) as i32,
+                            });
+                            seqvar
+                                .reference_assertions
+                                .sort_by_key(|a| (a.clinical_significance, a.review_status));
+                        }
+                    }
                 }
             }
         }
