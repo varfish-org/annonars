@@ -2,8 +2,8 @@
 
 use std::{str::FromStr, sync::Arc};
 
+use biocommons_bioutils::assemblies::Assembly;
 use clap::Parser;
-use hgvs::static_data::Assembly;
 use indicatif::ParallelProgressIterator;
 use noodles_vcf::header::record;
 use prost::Message;

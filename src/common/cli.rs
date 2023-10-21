@@ -40,11 +40,11 @@ pub enum GenomeRelease {
     Grch38,
 }
 
-impl From<GenomeRelease> for hgvs::static_data::Assembly {
+impl From<GenomeRelease> for biocommons_bioutils::assemblies::Assembly {
     fn from(val: GenomeRelease) -> Self {
         match val {
-            GenomeRelease::Grch37 => hgvs::static_data::Assembly::Grch37p10,
-            GenomeRelease::Grch38 => hgvs::static_data::Assembly::Grch38,
+            GenomeRelease::Grch37 => biocommons_bioutils::assemblies::Assembly::Grch37p10,
+            GenomeRelease::Grch38 => biocommons_bioutils::assemblies::Assembly::Grch38,
         }
     }
 }
@@ -104,12 +104,12 @@ pub fn is_canonical(chrom: &str) -> bool {
 
 /// Build windows for a given assembly.
 pub fn build_genome_windows(
-    assembly: hgvs::static_data::Assembly,
+    assembly: biocommons_bioutils::assemblies::Assembly,
     window_size: Option<usize>,
 ) -> Result<Vec<(String, usize, usize)>, anyhow::Error> {
     let mut result = Vec::new();
 
-    for seq in &hgvs::static_data::ASSEMBLY_INFOS[assembly].sequences {
+    for seq in &biocommons_bioutils::assemblies::ASSEMBLY_INFOS[assembly].sequences {
         if is_canonical(&seq.name) {
             let window_size = window_size.unwrap_or(seq.length);
             let mut start = 0;

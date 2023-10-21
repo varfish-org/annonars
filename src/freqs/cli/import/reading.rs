@@ -2,7 +2,7 @@
 
 use std::collections::{BTreeMap, HashMap};
 
-use hgvs::static_data::{Assembly, ASSEMBLY_INFOS};
+use biocommons_bioutils::assemblies::{Assembly, ASSEMBLY_INFOS};
 
 use crate::common::cli::CANONICAL;
 
@@ -230,7 +230,7 @@ pub fn guess_assembly(
 
 #[cfg(test)]
 mod test {
-    use hgvs::static_data::Assembly;
+    use biocommons_bioutils::assemblies::Assembly;
 
     use super::*;
 

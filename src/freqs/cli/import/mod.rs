@@ -69,7 +69,7 @@ pub struct Args {
 /// Return mapping from chromosome to path.
 fn assign_to_chrom(
     paths: &Vec<String>,
-    assembly: hgvs::static_data::Assembly,
+    assembly: biocommons_bioutils::assemblies::Assembly,
 ) -> Result<HashMap<usize, String>, anyhow::Error> {
     let contig_map = ContigMap::new(assembly);
     let mut res = HashMap::new();
@@ -93,7 +93,7 @@ fn assign_to_chrom(
 
 /// Get windows for the up to two given paths.
 pub fn build_windows(
-    genome_release: hgvs::static_data::Assembly,
+    genome_release: biocommons_bioutils::assemblies::Assembly,
     tbi_window_size: usize,
     paths: &[String],
 ) -> Result<Vec<(String, usize, usize)>, anyhow::Error> {
@@ -149,8 +149,8 @@ pub fn run(common: &common::cli::Args, args: &Args) -> Result<(), anyhow::Error>
 
     // Guess genome release from paths.
     let genome_release = match args.genome_release {
-        common::cli::GenomeRelease::Grch37 => hgvs::static_data::Assembly::Grch37p10, // has chrMT!
-        common::cli::GenomeRelease::Grch38 => hgvs::static_data::Assembly::Grch38,
+        common::cli::GenomeRelease::Grch37 => biocommons_bioutils::assemblies::Assembly::Grch37p10, // has chrMT!
+        common::cli::GenomeRelease::Grch38 => biocommons_bioutils::assemblies::Assembly::Grch38,
     };
 
     // Open the RocksDB for writing.
