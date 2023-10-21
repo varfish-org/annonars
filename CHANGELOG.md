@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.24.2](https://github.com/bihealth/annonars/compare/v0.24.1...v0.24.2) (2023-10-21)
+
+
+### Bug Fixes
+
+* moving from hgvs to biocommons_bioutils dependency ([#262](https://github.com/bihealth/annonars/issues/262)) ([48beaa9](https://github.com/bihealth/annonars/commit/48beaa97d194086087bed548d0e80e9235895c95))
+
 ## [0.24.1](https://github.com/bihealth/annonars/compare/v0.24.0...v0.24.1) (2023-10-18)
 
 
