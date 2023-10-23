@@ -24,7 +24,7 @@ bgzip = "0.3"
 boolvec = "0.2"
 byteorder = "1.4"
 chrono = { version = "0.4", features = ["serde"] }
-clap-verbosity-flag = "2.0"
+clap-verbosity-flag = "2.1"
 clap = { version = "4.4", features = ["derive", "env"] }
 csv = "1.2"
 enum-map = { version = "2.6.3", features = ["serde"] }
