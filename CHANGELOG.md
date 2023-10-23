@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.24.3](https://github.com/bihealth/annonars/compare/v0.24.2...v0.24.3) (2023-10-23)
+
+
+### Bug Fixes
+
+* bump noodles dependencies ([#264](https://github.com/bihealth/annonars/issues/264)) ([ccf4bbd](https://github.com/bihealth/annonars/commit/ccf4bbda0d3b080507b365fb08e843785c11b248))
+
 ## [0.24.2](https://github.com/bihealth/annonars/compare/v0.24.1...v0.24.2) (2023-10-21)
 
 
