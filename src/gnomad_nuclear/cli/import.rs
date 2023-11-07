@@ -250,7 +250,8 @@ pub fn run(common: &common::cli::Args, args: &Args) -> Result<(), anyhow::Error>
 
     tracing::info!("Opening gnomAD-nuclear VCF file...");
     let before_loading = std::time::Instant::now();
-    let mut reader_vcf = noodles_vcf::reader::Builder.build_from_path(&args.path_in_vcf[0])?;
+    let mut reader_vcf =
+        noodles_vcf::reader::Builder::default().build_from_path(&args.path_in_vcf[0])?;
     let header = reader_vcf.read_header()?;
 
     let vep_version = if let Some(record::value::Collection::Unstructured(values)) = header
