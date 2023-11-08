@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.24.5](https://github.com/bihealth/annonars/compare/v0.24.4...v0.24.5) (2023-11-08)
+
+
+### Build System
+
+* **deps:** bump the noodles group with 3 updates ([#274](https://github.com/bihealth/annonars/issues/274)) ([8c30958](https://github.com/bihealth/annonars/commit/8c309584173b512a9ae7815d7203a3ede0b96954))
+
 ## [0.24.4](https://github.com/bihealth/annonars/compare/v0.24.3...v0.24.4) (2023-10-23)
 
 
