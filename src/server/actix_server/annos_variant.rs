@@ -93,7 +93,7 @@ async fn handle(
                 data.annos[genome_release][anno_db]
                     .as_ref()
                     .map(|db| {
-                        fetch_var_protobuf::<crate::clinvar_minimal::pbs::Record>(
+                        fetch_var_protobuf::<crate::pbs::annonars::clinvar::v1::minimal::Record>(
                             db,
                             anno_db.cf_name(),
                             query.clone().into_inner().into(),

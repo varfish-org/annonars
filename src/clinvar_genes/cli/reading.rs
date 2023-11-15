@@ -55,38 +55,52 @@ pub mod gene_impact {
         UpstreamGeneVariant,
     }
 
-    impl From<Impact> for crate::clinvar_genes::pbs::Impact {
+    impl From<Impact> for crate::pbs::annonars::clinvar::v1::per_gene::Impact {
         fn from(val: Impact) -> Self {
             match val {
                 Impact::ThreePrimeUtrVariant => {
-                    crate::clinvar_genes::pbs::Impact::ThreePrimeUtrVariant
+                    crate::pbs::annonars::clinvar::v1::per_gene::Impact::ThreePrimeUtrVariant
                 }
                 Impact::FivePrimeUtrVariant => {
-                    crate::clinvar_genes::pbs::Impact::FivePrimeUtrVariant
+                    crate::pbs::annonars::clinvar::v1::per_gene::Impact::FivePrimeUtrVariant
                 }
                 Impact::DownstreamGeneVariant => {
-                    crate::clinvar_genes::pbs::Impact::DownstreamTranscriptVariant
+                    crate::pbs::annonars::clinvar::v1::per_gene::Impact::DownstreamTranscriptVariant
                 }
-                Impact::FrameshiftVariant => crate::clinvar_genes::pbs::Impact::FrameshiftVariant,
-                Impact::InframeIndel => crate::clinvar_genes::pbs::Impact::InframeIndel,
-                Impact::StartLost => crate::clinvar_genes::pbs::Impact::StartLost,
-                Impact::IntronVariant => crate::clinvar_genes::pbs::Impact::IntronVariant,
-                Impact::MissenseVariant => crate::clinvar_genes::pbs::Impact::MissenseVariant,
+                Impact::FrameshiftVariant => {
+                    crate::pbs::annonars::clinvar::v1::per_gene::Impact::FrameshiftVariant
+                }
+                Impact::InframeIndel => {
+                    crate::pbs::annonars::clinvar::v1::per_gene::Impact::InframeIndel
+                }
+                Impact::StartLost => crate::pbs::annonars::clinvar::v1::per_gene::Impact::StartLost,
+                Impact::IntronVariant => {
+                    crate::pbs::annonars::clinvar::v1::per_gene::Impact::IntronVariant
+                }
+                Impact::MissenseVariant => {
+                    crate::pbs::annonars::clinvar::v1::per_gene::Impact::MissenseVariant
+                }
                 Impact::NonCodingTranscriptVariant => {
-                    crate::clinvar_genes::pbs::Impact::NonCodingTranscriptVariant
+                    crate::pbs::annonars::clinvar::v1::per_gene::Impact::NonCodingTranscriptVariant
                 }
-                Impact::StopGained => crate::clinvar_genes::pbs::Impact::StopGained,
+                Impact::StopGained => {
+                    crate::pbs::annonars::clinvar::v1::per_gene::Impact::StopGained
+                }
                 Impact::NoSequenceAlteration => {
-                    crate::clinvar_genes::pbs::Impact::NoSequenceAlteration
+                    crate::pbs::annonars::clinvar::v1::per_gene::Impact::NoSequenceAlteration
                 }
                 Impact::SpliceAcceptorVariant => {
-                    crate::clinvar_genes::pbs::Impact::SpliceAcceptorVariant
+                    crate::pbs::annonars::clinvar::v1::per_gene::Impact::SpliceAcceptorVariant
                 }
-                Impact::SpliceDonorVariant => crate::clinvar_genes::pbs::Impact::SpliceDonorVariant,
-                Impact::StopLost => crate::clinvar_genes::pbs::Impact::StopLost,
-                Impact::SyonymousVariant => crate::clinvar_genes::pbs::Impact::SynonymousVariant,
+                Impact::SpliceDonorVariant => {
+                    crate::pbs::annonars::clinvar::v1::per_gene::Impact::SpliceDonorVariant
+                }
+                Impact::StopLost => crate::pbs::annonars::clinvar::v1::per_gene::Impact::StopLost,
+                Impact::SyonymousVariant => {
+                    crate::pbs::annonars::clinvar::v1::per_gene::Impact::SynonymousVariant
+                }
                 Impact::UpstreamGeneVariant => {
-                    crate::clinvar_genes::pbs::Impact::UpstreamTranscriptVariant
+                    crate::pbs::annonars::clinvar::v1::per_gene::Impact::UpstreamTranscriptVariant
                 }
             }
         }
@@ -138,17 +152,19 @@ pub mod counts_by_freq {
         Pathogenic,
     }
 
-    impl From<CoarseClinicalSignificance> for crate::clinvar_genes::pbs::CoarseClinicalSignificance {
+    impl From<CoarseClinicalSignificance>
+        for crate::pbs::annonars::clinvar::v1::per_gene::CoarseClinicalSignificance
+    {
         fn from(val: CoarseClinicalSignificance) -> Self {
             match val {
                 CoarseClinicalSignificance::Benign => {
-                    crate::clinvar_genes::pbs::CoarseClinicalSignificance::CoarseBenign
+                    crate::pbs::annonars::clinvar::v1::per_gene::CoarseClinicalSignificance::CoarseBenign
                 }
                 CoarseClinicalSignificance::Uncertain => {
-                    crate::clinvar_genes::pbs::CoarseClinicalSignificance::CoarseUncertain
+                    crate::pbs::annonars::clinvar::v1::per_gene::CoarseClinicalSignificance::CoarseUncertain
                 }
                 CoarseClinicalSignificance::Pathogenic => {
-                    crate::clinvar_genes::pbs::CoarseClinicalSignificance::CoarsePathogenic
+                    crate::pbs::annonars::clinvar::v1::per_gene::CoarseClinicalSignificance::CoarsePathogenic
                 }
             }
         }

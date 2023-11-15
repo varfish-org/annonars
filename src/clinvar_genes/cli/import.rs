@@ -5,16 +5,14 @@ use std::{collections::HashSet, io::BufRead, sync::Arc};
 use clap::Parser;
 use prost::Message;
 
-use crate::{
-    clinvar_genes::{
-        self,
-        pbs::{
-            ClinicalSignificance, GeneFreqRecordCounts, GeneImpactRecordCounts,
-            GeneVariantsForRelease, ReferenceAssertion, ReviewStatus, SequenceVariant,
-        },
-    },
-    clinvar_minimal, common,
+use crate::pbs::annonars::clinvar::v1::minimal::{
+    ClinicalSignificance, Record, ReferenceAssertion, ReviewStatus,
 };
+use crate::pbs::annonars::clinvar::v1::per_gene::{
+    ClinvarPerGeneRecord, CoarseClinicalSignificance, GeneFreqRecordCounts, GeneImpactRecordCounts,
+    GeneVariantsForRelease, Impact,
+};
+use crate::{clinvar_genes, clinvar_minimal, common};
 
 /// Command line arguments for `tsv import` sub command.
 #[derive(Parser, Debug, Clone)]
@@ -64,7 +62,7 @@ fn load_per_impact_jsonl(
 
         let mut count_out = Vec::new();
         for (impact, counts) in record.counts {
-            let impact: crate::clinvar_genes::pbs::Impact = impact.into();
+            let impact: Impact = impact.into();
             count_out.push(GeneImpactRecordCounts {
                 impact: impact as i32,
                 counts,
@@ -99,8 +97,7 @@ fn load_per_frequency_jsonl(
 
         let mut count_out = Vec::new();
         for (clinsig, counts) in record.counts {
-            let coarse_clinsig: crate::clinvar_genes::pbs::CoarseClinicalSignificance =
-                clinsig.into();
+            let coarse_clinsig: CoarseClinicalSignificance = clinsig.into();
             count_out.push(GeneFreqRecordCounts {
                 coarse_clinsig: coarse_clinsig as i32,
                 counts,
@@ -112,7 +109,7 @@ fn load_per_frequency_jsonl(
     Ok(result)
 }
 
-type PerVcv = indexmap::IndexMap<String, SequenceVariant>;
+type PerVcv = indexmap::IndexMap<String, Record>;
 type PerAssembly = indexmap::IndexMap<String, PerVcv>;
 type PerGene = indexmap::IndexMap<String, PerAssembly>;
 
@@ -150,33 +147,38 @@ fn load_variants_jsonl(
                         clinical_significance,
                         review_status,
                         sequence_location,
+                        ..
                     } = input_record;
                     let clinvar_minimal::cli::reading::SequenceLocation {
                         assembly,
                         chr,
                         start,
+                        stop,
                         reference_allele_vcf,
                         alternate_allele_vcf,
                         ..
                     } = sequence_location;
 
-                    if let (Some(reference_allele_vcf), Some(alternate_allele_vcf)) =
-                        (reference_allele_vcf, alternate_allele_vcf)
+                    if let (
+                        Some(start),
+                        Some(stop),
+                        Some(reference_allele_vcf),
+                        Some(alternate_allele_vcf),
+                    ) = (start, stop, reference_allele_vcf, alternate_allele_vcf)
                     {
                         for hgnc_id in hgnc_ids {
                             let per_release = per_gene.entry(hgnc_id).or_default();
                             let per_vcv = per_release.entry(assembly.clone()).or_default();
-                            let seqvar =
-                                per_vcv
-                                    .entry(vcv.clone())
-                                    .or_insert_with(|| SequenceVariant {
-                                        chrom: chr.clone(),
-                                        pos: start,
-                                        reference: reference_allele_vcf.clone(),
-                                        alternative: alternate_allele_vcf.clone(),
-                                        vcv: vcv.clone(),
-                                        reference_assertions: vec![],
-                                    });
+                            let seqvar = per_vcv.entry(vcv.clone()).or_insert_with(|| Record {
+                                release: assembly.clone(),
+                                start,
+                                stop,
+                                reference: reference_allele_vcf.clone(),
+                                alternative: alternate_allele_vcf.clone(),
+                                vcv: vcv.clone(),
+                                reference_assertions: vec![],
+                                chromosome: chr.clone(),
+                            });
                             seqvar.reference_assertions.push(ReferenceAssertion {
                                 rcv: rcv.clone(),
                                 title: title.clone(),
@@ -254,7 +256,7 @@ fn jsonl_import(
 
     // Read through all records and insert each into the database.
     for hgnc_id in hgnc_ids.iter() {
-        let record = clinvar_genes::pbs::ClinvarPerGeneRecord {
+        let record = ClinvarPerGeneRecord {
             per_impact_counts: counts_per_impact.get(hgnc_id).cloned().unwrap_or_default(),
             per_freq_counts: counts_per_freq.get(hgnc_id).cloned().unwrap_or_default(),
             variants: vars_per_gene.get(hgnc_id).cloned().unwrap_or_default(),

@@ -1,33 +1,32 @@
-//! Import of minimal ClinVar data.
+//! Import of ClinVar SV data.
 
 use std::{io::BufRead, sync::Arc};
 
 use clap::Parser;
 use prost::Message;
 
-use crate::{
-    clinvar_minimal,
-    common::{self, keys},
-    pbs::annonars::clinvar::v1::minimal::ReferenceAssertion,
-};
+use crate::{clinvar_minimal, common};
 
-/// Command line arguments for `clinvar-minimal import` sub command.
+/// Command line arguments for `clinvar-sv import` sub command.
 #[derive(Parser, Debug, Clone)]
-#[command(about = "import minimal ClinVar data into RocksDB", long_about = None)]
+#[command(about = "import ClinVar SV data into RocksDB", long_about = None)]
 pub struct Args {
     /// Genome build to use in the build.
     #[arg(long, value_enum)]
     pub genome_release: common::cli::GenomeRelease,
     /// Path to input JSONL file(s).
     #[arg(long, required = true)]
-    pub path_in_jsonl: String,
+    pub path_in_jsonl: Vec<String>,
     /// Path to output RocksDB directory.
     #[arg(long)]
     pub path_out_rocksdb: String,
 
     /// Name of the column family to import into.
-    #[arg(long, default_value = "clinvar")]
+    #[arg(long, default_value = "clinvar-sv")]
     pub cf_name: String,
+    /// Mapping from ClinVar RCV to ClinVar VCV.
+    #[arg(long, default_value = "clinvar-sv-by-rcv")]
+    pub cf_name_by_rcv: String,
     /// Optional path to RocksDB WAL directory.
     #[arg(long)]
     pub path_wal_dir: Option<String>,
@@ -37,16 +36,18 @@ pub struct Args {
 fn jsonl_import(
     db: &rocksdb::DBWithThreadMode<rocksdb::MultiThreaded>,
     args: &Args,
+    path_in_jsonl: &str,
 ) -> Result<(), anyhow::Error> {
     let cf_data = db.cf_handle(&args.cf_name).unwrap();
+    let cf_by_rcv = db.cf_handle(&args.cf_name_by_rcv).unwrap();
 
     // Open reader, possibly decompressing gziped files.
-    let reader: Box<dyn std::io::Read> = if args.path_in_jsonl.ends_with(".gz") {
+    let reader: Box<dyn std::io::Read> = if path_in_jsonl.ends_with(".gz") {
         Box::new(flate2::read::GzDecoder::new(std::fs::File::open(
-            &args.path_in_jsonl,
+            &path_in_jsonl,
         )?))
     } else {
-        Box::new(std::fs::File::open(&args.path_in_jsonl)?)
+        Box::new(std::fs::File::open(&path_in_jsonl)?)
     };
 
     let reader = std::io::BufReader::new(reader);
@@ -68,6 +69,7 @@ fn jsonl_import(
             clinical_significance,
             review_status,
             sequence_location,
+            variant_type,
             ..
         } = record;
         let clinical_significance: crate::pbs::annonars::clinvar::v1::minimal::ClinicalSignificance =
@@ -81,63 +83,104 @@ fn jsonl_import(
             stop,
             reference_allele_vcf,
             alternate_allele_vcf,
-            ..
+            inner_start,
+            inner_stop,
+            outer_start,
+            outer_stop,
         } = sequence_location;
-        if let (Some(start), Some(stop), Some(reference_allele_vcf), Some(alternate_allele_vcf)) =
-            (start, stop, reference_allele_vcf, alternate_allele_vcf)
-        {
-            let var = keys::Var::from(
-                &chr,
-                start as i32,
-                &reference_allele_vcf,
-                &alternate_allele_vcf,
-            );
-            let key: Vec<u8> = var.into();
 
-            let data = db
-                .get_cf(&cf_data, key.clone())
-                .map_err(|e| anyhow::anyhow!("problem querying database: {}", e));
-            match data {
-                Err(e) => {
-                    tracing::warn!("skipping line because of error: {}", e);
-                    continue;
-                }
-                Ok(data) => {
-                    let record = if let Some(data) = data {
-                        let mut record =
-                            crate::pbs::annonars::clinvar::v1::minimal::Record::decode(&data[..])?;
-                        record.reference_assertions.push(
+        let (start, stop, inner_start, inner_stop, outer_start, outer_stop) =
+            if let (Some(start), Some(stop)) = (start, stop) {
+                (
+                    start,
+                    stop,
+                    inner_start,
+                    outer_start,
+                    inner_stop,
+                    outer_stop,
+                )
+            } else if let (Some(inner_start_), Some(inner_stop_)) = (inner_start, inner_stop) {
+                (
+                    inner_start_,
+                    inner_stop_,
+                    inner_start,
+                    outer_start,
+                    inner_stop,
+                    outer_stop,
+                )
+            } else if let (Some(outer_start_), Some(outer_stop_)) = (outer_start, outer_stop) {
+                (
+                    outer_start_,
+                    outer_stop_,
+                    inner_start,
+                    outer_start,
+                    inner_stop,
+                    outer_stop,
+                )
+            } else {
+                tracing::warn!("skipping line because no start/stop: {}/{}", &vcv, &rcv,);
+                continue;
+            };
+
+        let key: Vec<u8> = vcv.clone().into();
+
+        let data = db
+            .get_cf(&cf_data, key.clone())
+            .map_err(|e| anyhow::anyhow!("problem querying database: {}", e));
+        match data {
+            Err(e) => {
+                tracing::warn!("skipping line because of error: {}", e);
+                continue;
+            }
+            Ok(data) => {
+                let record = if let Some(data) = data {
+                    let mut record =
+                        crate::pbs::annonars::clinvar::v1::sv::Record::decode(&data[..])?;
+                    record.reference_assertions.push(
+                        crate::pbs::annonars::clinvar::v1::minimal::ReferenceAssertion {
+                            rcv: rcv.clone(),
+                            title,
+                            clinical_significance: clinical_significance.into(),
+                            review_status: review_status.into(),
+                        },
+                    );
+                    record
+                        .reference_assertions
+                        .sort_by_key(|a| (a.clinical_significance, a.review_status));
+                    record
+                } else {
+                    crate::pbs::annonars::clinvar::v1::sv::Record {
+                        release: assembly,
+                        chromosome: chr,
+                        start,
+                        stop,
+                        reference: reference_allele_vcf,
+                        alternative: alternate_allele_vcf,
+                        vcv: vcv.clone(),
+                        reference_assertions: vec![
                             crate::pbs::annonars::clinvar::v1::minimal::ReferenceAssertion {
-                                rcv,
+                                rcv: rcv.clone(),
                                 title,
                                 clinical_significance: clinical_significance.into(),
                                 review_status: review_status.into(),
                             },
-                        );
-                        record
-                            .reference_assertions
-                            .sort_by_key(|a| (a.clinical_significance, a.review_status));
-                        record
-                    } else {
-                        crate::pbs::annonars::clinvar::v1::minimal::Record {
-                            release: assembly,
-                            chromosome: chr,
-                            start,
-                            stop,
-                            reference: reference_allele_vcf,
-                            alternative: alternate_allele_vcf,
-                            vcv,
-                            reference_assertions: vec![ReferenceAssertion {
-                                rcv,
-                                title,
-                                clinical_significance: clinical_significance.into(),
-                                review_status: review_status.into(),
-                            }],
-                        }
-                    };
-                    let buf = record.encode_to_vec();
-                    db.put_cf(&cf_data, key, buf)?;
-                }
+                        ],
+                        inner_start,
+                        inner_stop,
+                        outer_start,
+                        outer_stop,
+                        variant_type: crate::pbs::annonars::clinvar::v1::minimal::VariantType::from(
+                            variant_type,
+                        ) as i32,
+                    }
+                };
+                let buf = record.encode_to_vec();
+                db.put_cf(&cf_data, key, buf)?;
+                db.put_cf(
+                    &cf_by_rcv,
+                    rcv.clone().into_bytes(),
+                    vcv.clone().into_bytes(),
+                )?;
             }
         }
     }
@@ -158,7 +201,7 @@ pub fn run(common: &common::cli::Args, args: &Args) -> Result<(), anyhow::Error>
         rocksdb::Options::default(),
         args.path_wal_dir.as_ref().map(|s| s.as_ref()),
     );
-    let cf_names = &["meta", &args.cf_name];
+    let cf_names = &["meta", &args.cf_name, &args.cf_name_by_rcv];
     let db = Arc::new(rocksdb::DB::open_cf_with_opts(
         &options,
         common::readlink_f(&args.path_out_rocksdb)?,
@@ -183,7 +226,10 @@ pub fn run(common: &common::cli::Args, args: &Args) -> Result<(), anyhow::Error>
 
     tracing::info!("Importing JSONL file ...");
     let before_import = std::time::Instant::now();
-    jsonl_import(&db, args)?;
+    for path in &args.path_in_jsonl {
+        tracing::info!("  - {}", &path);
+        jsonl_import(&db, args, path)?;
+    }
     tracing::info!(
         "... done importing JSONL file in {:?}",
         before_import.elapsed()
@@ -216,9 +262,13 @@ mod test {
         };
         let args = Args {
             genome_release: common::cli::GenomeRelease::Grch37,
-            path_in_jsonl: String::from("tests/clinvar-minimal/clinvar-seqvars-grch37-tgds.jsonl"),
+            path_in_jsonl: vec![
+                String::from("tests/clinvar-sv/clinvar-variants-grch37-seqvars.jsonl"),
+                String::from("tests/clinvar-sv/clinvar-variants-grch37-strucvars.jsonl"),
+            ],
             path_out_rocksdb: format!("{}", tmp_dir.join("out-rocksdb").display()),
-            cf_name: String::from("clinvar"),
+            cf_name: String::from("clinvar-sv"),
+            cf_name_by_rcv: String::from("clinvar-sv-by-rcv"),
             path_wal_dir: None,
         };
 

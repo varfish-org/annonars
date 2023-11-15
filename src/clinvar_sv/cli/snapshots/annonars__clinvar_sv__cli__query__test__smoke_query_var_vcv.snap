@@ -1,0 +1,6 @@
+---
+source: src/clinvar_sv/cli/query.rs
+expression: "&out_data"
+---
+{"release":"GRCh37","chromosome":"X","start":102885179,"stop":102967225,"reference":null,"alternative":null,"inner_start":102885179,"inner_stop":null,"outer_start":102967225,"outer_stop":null,"variant_type":0,"vcv":"VCV000057688","reference_assertions":[{"rcv":"RCV000051426","title":"GRCh38/hg38 Xq22.2(chrX:103630251-103712297)x1 AND See cases","clinical_significance":2,"review_status":3}]}
+

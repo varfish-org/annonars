@@ -4,6 +4,22 @@ syntax = "proto3";
 
 package annonars.clinvar.v1.minimal;
 
+// Enumeration for variant type.
+enum VariantType {
+    // deletion
+    DELETION = 0;
+    // duplication
+    DUPLICATION = 1;
+    // indel
+    INDEL = 2;
+    // insertion
+    INSERTION = 3;
+    // inversion
+    INVERSION = 4;
+    // single nucleotide variant
+    SNV = 5;
+}
+
 // Enumeration for ClinVar pathogenicity.
 enum ClinicalSignificance {
     // Pathogenic.

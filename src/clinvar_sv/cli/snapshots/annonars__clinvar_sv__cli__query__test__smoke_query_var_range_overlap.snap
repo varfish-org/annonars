@@ -1,0 +1,6 @@
+---
+source: src/clinvar_sv/cli/query.rs
+expression: "&out_data"
+---
+{"release":"GRCh37","chromosome":"22","start":34150132,"stop":34182300,"reference":null,"alternative":null,"inner_start":34150132,"inner_stop":null,"outer_start":34182300,"outer_stop":null,"variant_type":0,"vcv":"VCV000057627","reference_assertions":[{"rcv":"RCV000051361","title":"GRCh38/hg38 22q12.3(chr22:33754145-33786313)x1 AND See cases","clinical_significance":0,"review_status":3}]}
+

@@ -1,8 +1,110 @@
-//! Reading `clinvar-data-jsonl` sequence variant files.
+//! Reading `clinvar-data-jsonl` variant files.
+//!
+//! This code is shared for all reading of ClinVar JSONL data.
 
 use std::{fmt::Display, str::FromStr};
 
 use serde::{Deserialize, Serialize};
+
+/// Enumeration for ClinVar variant types.
+#[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord)]
+pub enum VariantType {
+    /// Deletion
+    Deletion,
+    /// Duplication
+    Duplication,
+    /// Indel
+    Indel,
+    /// Insertion
+    Insertion,
+    /// Inversion
+    Inversion,
+    /// Snv
+    Snv,
+}
+
+impl Display for VariantType {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        match self {
+            VariantType::Deletion => write!(f, "deletion"),
+            VariantType::Duplication => write!(f, "duplication"),
+            VariantType::Indel => write!(f, "indel"),
+            VariantType::Insertion => write!(f, "insertion"),
+            VariantType::Inversion => write!(f, "inversion"),
+            VariantType::Snv => write!(f, "single nucleotide variant"),
+        }
+    }
+}
+
+impl FromStr for VariantType {
+    type Err = anyhow::Error;
+
+    fn from_str(s: &str) -> Result<Self, Self::Err> {
+        Ok(match s {
+            "copy number loss" | "deletion" => VariantType::Deletion,
+            "copy number gain" | "duplication" | "tandem duplication" => VariantType::Duplication,
+            "indel" => VariantType::Indel,
+            "insertion" => VariantType::Insertion,
+            "inversion" => VariantType::Inversion,
+            "single nucleotide variant" => VariantType::Snv,
+            _ => anyhow::bail!("Unknown variant type: {}", s),
+        })
+    }
+}
+
+impl Serialize for VariantType {
+    fn serialize<S>(&self, serializer: S) -> Result<S::Ok, S::Error>
+    where
+        S: serde::Serializer,
+    {
+        serializer.serialize_str(&self.to_string())
+    }
+}
+
+impl<'de> Deserialize<'de> for VariantType {
+    fn deserialize<D>(d: D) -> Result<Self, D::Error>
+    where
+        D: serde::Deserializer<'de>,
+    {
+        let s = String::deserialize(d)?;
+        Self::from_str(&s).map_err(serde::de::Error::custom)
+    }
+}
+
+impl From<VariantType> for crate::pbs::annonars::clinvar::v1::minimal::VariantType {
+    fn from(value: VariantType) -> Self {
+        match value {
+            VariantType::Deletion => {
+                crate::pbs::annonars::clinvar::v1::minimal::VariantType::Deletion
+            }
+            VariantType::Duplication => {
+                crate::pbs::annonars::clinvar::v1::minimal::VariantType::Duplication
+            }
+            VariantType::Indel => crate::pbs::annonars::clinvar::v1::minimal::VariantType::Indel,
+            VariantType::Insertion => {
+                crate::pbs::annonars::clinvar::v1::minimal::VariantType::Insertion
+            }
+            VariantType::Inversion => {
+                crate::pbs::annonars::clinvar::v1::minimal::VariantType::Inversion
+            }
+            VariantType::Snv => crate::pbs::annonars::clinvar::v1::minimal::VariantType::Snv,
+        }
+    }
+}
+
+impl From<i32> for VariantType {
+    fn from(value: i32) -> Self {
+        match value {
+            0 => VariantType::Deletion,
+            1 => VariantType::Duplication,
+            2 => VariantType::Indel,
+            3 => VariantType::Insertion,
+            4 => VariantType::Inversion,
+            5 => VariantType::Snv,
+            _ => unreachable!(),
+        }
+    }
+}
 
 /// Enumeration for ClinVar clinical significance for (de)serialization.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord)]
@@ -35,14 +137,14 @@ impl FromStr for ClinicalSignificance {
     type Err = anyhow::Error;
 
     fn from_str(s: &str) -> Result<Self, Self::Err> {
-        match s {
-            "pathogenic" => Ok(ClinicalSignificance::Pathogenic),
-            "likely pathogenic" => Ok(ClinicalSignificance::LikelyPathogenic),
-            "uncertain significance" => Ok(ClinicalSignificance::UncertainSignificance),
-            "likely benign" => Ok(ClinicalSignificance::LikelyBenign),
-            "benign" => Ok(ClinicalSignificance::Benign),
+        Ok(match s {
+            "pathogenic" => ClinicalSignificance::Pathogenic,
+            "likely pathogenic" => ClinicalSignificance::LikelyPathogenic,
+            "uncertain significance" => ClinicalSignificance::UncertainSignificance,
+            "likely benign" => ClinicalSignificance::LikelyBenign,
+            "benign" => ClinicalSignificance::Benign,
             _ => anyhow::bail!("Unknown pathogenicity: {}", s),
-        }
+        })
     }
 }
 
@@ -65,44 +167,26 @@ impl<'de> Deserialize<'de> for ClinicalSignificance {
     }
 }
 
-impl From<ClinicalSignificance> for crate::clinvar_minimal::pbs::ClinicalSignificance {
+impl From<ClinicalSignificance>
+    for crate::pbs::annonars::clinvar::v1::minimal::ClinicalSignificance
+{
     fn from(value: ClinicalSignificance) -> Self {
         match value {
             ClinicalSignificance::Pathogenic => {
-                crate::clinvar_minimal::pbs::ClinicalSignificance::Pathogenic
+                crate::pbs::annonars::clinvar::v1::minimal::ClinicalSignificance::Pathogenic
             }
             ClinicalSignificance::LikelyPathogenic => {
-                crate::clinvar_minimal::pbs::ClinicalSignificance::LikelyPathogenic
+                crate::pbs::annonars::clinvar::v1::minimal::ClinicalSignificance::LikelyPathogenic
             }
             ClinicalSignificance::UncertainSignificance => {
-                crate::clinvar_minimal::pbs::ClinicalSignificance::UncertainSignificance
+                crate::pbs::annonars::clinvar::v1::minimal::ClinicalSignificance::UncertainSignificance
             }
             ClinicalSignificance::LikelyBenign => {
-                crate::clinvar_minimal::pbs::ClinicalSignificance::LikelyBenign
+                crate::pbs::annonars::clinvar::v1::minimal::ClinicalSignificance::LikelyBenign
             }
             ClinicalSignificance::Benign => {
-                crate::clinvar_minimal::pbs::ClinicalSignificance::Benign
+                crate::pbs::annonars::clinvar::v1::minimal::ClinicalSignificance::Benign
             }
-        }
-    }
-}
-
-impl From<ClinicalSignificance> for crate::clinvar_genes::pbs::ClinicalSignificance {
-    fn from(value: ClinicalSignificance) -> Self {
-        match value {
-            ClinicalSignificance::Pathogenic => {
-                crate::clinvar_genes::pbs::ClinicalSignificance::Pathogenic
-            }
-            ClinicalSignificance::LikelyPathogenic => {
-                crate::clinvar_genes::pbs::ClinicalSignificance::LikelyPathogenic
-            }
-            ClinicalSignificance::UncertainSignificance => {
-                crate::clinvar_genes::pbs::ClinicalSignificance::UncertainSignificance
-            }
-            ClinicalSignificance::LikelyBenign => {
-                crate::clinvar_genes::pbs::ClinicalSignificance::LikelyBenign
-            }
-            ClinicalSignificance::Benign => crate::clinvar_genes::pbs::ClinicalSignificance::Benign,
         }
     }
 }
@@ -203,49 +287,28 @@ impl<'de> Deserialize<'de> for ReviewStatus {
     }
 }
 
-impl From<ReviewStatus> for crate::clinvar_minimal::pbs::ReviewStatus {
+impl From<ReviewStatus> for crate::pbs::annonars::clinvar::v1::minimal::ReviewStatus {
     fn from(value: ReviewStatus) -> Self {
         match value {
-            ReviewStatus::NoAssertionProvided => crate::clinvar_minimal::pbs::ReviewStatus::NoAssertionProvided,
+            ReviewStatus::NoAssertionProvided => crate::pbs::annonars::clinvar::v1::minimal::ReviewStatus::NoAssertionProvided,
             ReviewStatus::NoAssertionCriteriaProvided => {
-                crate::clinvar_minimal::pbs::ReviewStatus::NoAssertionCriteriaProvided
+                crate::pbs::annonars::clinvar::v1::minimal::ReviewStatus::NoAssertionCriteriaProvided
             }
             ReviewStatus::CriteriaProvidedConflictingInterpretations => {
-                crate::clinvar_minimal::pbs::ReviewStatus::CriteriaProvidedConflictingInterpretations
+                crate::pbs::annonars::clinvar::v1::minimal::ReviewStatus::CriteriaProvidedConflictingInterpretations
             }
             ReviewStatus::CriteriaProvidedSingleSubmitter => {
-                crate::clinvar_minimal::pbs::ReviewStatus::CriteriaProvidedSingleSubmitter
+                crate::pbs::annonars::clinvar::v1::minimal::ReviewStatus::CriteriaProvidedSingleSubmitter
             }
             ReviewStatus::CriteriaProvidedMultipleSubmittersNoConflicts => {
-                crate::clinvar_minimal::pbs::ReviewStatus::CriteriaProvidedMultipleSubmittersNoConflicts
+                crate::pbs::annonars::clinvar::v1::minimal::ReviewStatus::CriteriaProvidedMultipleSubmittersNoConflicts
             }
-            ReviewStatus::ReviewedByExpertPanel => crate::clinvar_minimal::pbs::ReviewStatus::ReviewedByExpertPanel,
-            ReviewStatus::PracticeGuideline => crate::clinvar_minimal::pbs::ReviewStatus::PracticeGuideline,
+            ReviewStatus::ReviewedByExpertPanel => crate::pbs::annonars::clinvar::v1::minimal::ReviewStatus::ReviewedByExpertPanel,
+            ReviewStatus::PracticeGuideline => crate::pbs::annonars::clinvar::v1::minimal::ReviewStatus::PracticeGuideline,
         }
     }
 }
 
-impl From<ReviewStatus> for crate::clinvar_genes::pbs::ReviewStatus {
-    fn from(value: ReviewStatus) -> Self {
-        match value {
-            ReviewStatus::NoAssertionProvided => crate::clinvar_genes::pbs::ReviewStatus::NoAssertionProvided,
-            ReviewStatus::NoAssertionCriteriaProvided => {
-                crate::clinvar_genes::pbs::ReviewStatus::NoAssertionCriteriaProvided
-            }
-            ReviewStatus::CriteriaProvidedConflictingInterpretations => {
-                crate::clinvar_genes::pbs::ReviewStatus::CriteriaProvidedConflictingInterpretations
-            }
-            ReviewStatus::CriteriaProvidedSingleSubmitter => {
-                crate::clinvar_genes::pbs::ReviewStatus::CriteriaProvidedSingleSubmitter
-            }
-            ReviewStatus::CriteriaProvidedMultipleSubmittersNoConflicts => {
-                crate::clinvar_genes::pbs::ReviewStatus::CriteriaProvidedMultipleSubmittersNoConflicts
-            }
-            ReviewStatus::ReviewedByExpertPanel => crate::clinvar_genes::pbs::ReviewStatus::ReviewedByExpertPanel,
-            ReviewStatus::PracticeGuideline => crate::clinvar_genes::pbs::ReviewStatus::PracticeGuideline,
-        }
-    }
-}
 impl From<i32> for ReviewStatus {
     fn from(value: i32) -> Self {
         match value {
@@ -272,6 +335,8 @@ pub struct Record {
     pub title: String,
     /// HGNC ids
     pub hgnc_ids: Vec<String>,
+    /// The variant type.
+    pub variant_type: VariantType,
     /// ClinVar clinical significance
     pub clinical_significance: ClinicalSignificance,
     /// ClinVar review status
@@ -288,11 +353,20 @@ pub struct SequenceLocation {
     /// Chromosome name.
     pub chr: String,
     /// 1-based start position.
-    pub start: u32,
+    pub start: Option<u32>,
     /// 1-based stop position.
-    pub stop: u32,
+    pub stop: Option<u32>,
     /// Reference allele bases in VCF notation.
     pub reference_allele_vcf: Option<String>,
     /// Alternative allele bases in VCF notation.
     pub alternate_allele_vcf: Option<String>,
+
+    /// 1-based inner start position.
+    pub inner_start: Option<u32>,
+    /// 1-based inner stop position.
+    pub inner_stop: Option<u32>,
+    /// 1-based outer start position.
+    pub outer_start: Option<u32>,
+    /// 1-based outer stop position.
+    pub outer_stop: Option<u32>,
 }
