@@ -11,13 +11,13 @@ use crate::{
 
 /// Command line arguments for `tsv query` sub command.
 #[derive(clap::Parser, Debug, Clone)]
-#[command(about = "query gnomAD-mtDNA data stored in RocksDB", long_about = None)]
+#[command(about = "query clinvar-minimal data stored in RocksDB", long_about = None)]
 pub struct Args {
     /// Path to RocksDB directory with data.
     #[arg(long)]
     pub path_rocksdb: String,
     /// Name of the column family to import into.
-    #[arg(long, default_value = "gnomad_mtdna_data")]
+    #[arg(long, default_value = "clinvar")]
     pub cf_name: String,
     /// Output file (default is stdout == "-").
     #[arg(long, default_value = "-")]

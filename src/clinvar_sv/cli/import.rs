@@ -22,8 +22,11 @@ pub struct Args {
     pub path_out_rocksdb: String,
 
     /// Name of the column family to import into.
-    #[arg(long, default_value = "clinvar")]
+    #[arg(long, default_value = "clinvar-sv")]
     pub cf_name: String,
+    /// Mapping from ClinVar RCV to ClinVar VCV.
+    #[arg(long, default_value = "clinvar-sv-by-rcv")]
+    pub cf_name_by_rcv: String,
     /// Optional path to RocksDB WAL directory.
     #[arg(long)]
     pub path_wal_dir: Option<String>,
@@ -36,6 +39,7 @@ fn jsonl_import(
     path_in_jsonl: &str,
 ) -> Result<(), anyhow::Error> {
     let cf_data = db.cf_handle(&args.cf_name).unwrap();
+    let cf_by_rcv = db.cf_handle(&args.cf_name_by_rcv).unwrap();
 
     // Open reader, possibly decompressing gziped files.
     let reader: Box<dyn std::io::Read> = if path_in_jsonl.ends_with(".gz") {
@@ -134,7 +138,7 @@ fn jsonl_import(
                         crate::pbs::annonars::clinvar::v1::sv::Record::decode(&data[..])?;
                     record.reference_assertions.push(
                         crate::pbs::annonars::clinvar::v1::minimal::ReferenceAssertion {
-                            rcv,
+                            rcv: rcv.clone(),
                             title,
                             clinical_significance: clinical_significance.into(),
                             review_status: review_status.into(),
@@ -152,10 +156,10 @@ fn jsonl_import(
                         stop,
                         reference: reference_allele_vcf,
                         alternative: alternate_allele_vcf,
-                        vcv,
+                        vcv: vcv.clone(),
                         reference_assertions: vec![
                             crate::pbs::annonars::clinvar::v1::minimal::ReferenceAssertion {
-                                rcv,
+                                rcv: rcv.clone(),
                                 title,
                                 clinical_significance: clinical_significance.into(),
                                 review_status: review_status.into(),
@@ -172,6 +176,11 @@ fn jsonl_import(
                 };
                 let buf = record.encode_to_vec();
                 db.put_cf(&cf_data, key, buf)?;
+                db.put_cf(
+                    &cf_by_rcv,
+                    rcv.clone().into_bytes(),
+                    vcv.clone().into_bytes(),
+                )?;
             }
         }
     }
@@ -192,7 +201,7 @@ pub fn run(common: &common::cli::Args, args: &Args) -> Result<(), anyhow::Error>
         rocksdb::Options::default(),
         args.path_wal_dir.as_ref().map(|s| s.as_ref()),
     );
-    let cf_names = &["meta", &args.cf_name];
+    let cf_names = &["meta", &args.cf_name, &args.cf_name_by_rcv];
     let db = Arc::new(rocksdb::DB::open_cf_with_opts(
         &options,
         common::readlink_f(&args.path_out_rocksdb)?,
@@ -254,11 +263,12 @@ mod test {
         let args = Args {
             genome_release: common::cli::GenomeRelease::Grch37,
             path_in_jsonl: vec![
-                String::from("tests/clinvar-svs/clinvar-variants-grch37-seqvars.jsonl"),
-                String::from("tests/clinvar-svs/clinvar-variants-grch37-strucvars.jsonl"),
+                String::from("tests/clinvar-sv/clinvar-variants-grch37-seqvars.jsonl"),
+                String::from("tests/clinvar-sv/clinvar-variants-grch37-strucvars.jsonl"),
             ],
             path_out_rocksdb: format!("{}", tmp_dir.join("out-rocksdb").display()),
             cf_name: String::from("clinvar-sv"),
+            cf_name_by_rcv: String::from("clinvar-sv-by-rcv"),
             path_wal_dir: None,
         };
 

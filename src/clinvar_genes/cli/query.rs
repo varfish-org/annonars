@@ -8,7 +8,7 @@ use crate::{common, pbs::annonars::clinvar::v1::per_gene::ClinvarPerGeneRecord};
 
 /// Command line arguments for `clinvar-gene query` sub command.
 #[derive(clap::Parser, Debug, Clone)]
-#[command(about = "query gene information data from RocksDB", long_about = None)]
+#[command(about = "query clinvar per-gene data from RocksDB", long_about = None)]
 pub struct Args {
     /// Path to RocksDB directory with data.
     #[arg(long)]

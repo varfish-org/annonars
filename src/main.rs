@@ -1,6 +1,6 @@
 use annonars::{
-    clinvar_genes, clinvar_minimal, common, cons, db_utils, dbsnp, freqs, genes, gnomad_mtdna,
-    gnomad_nuclear, helixmtdb, server, tsv,
+    clinvar_genes, clinvar_minimal, clinvar_sv, common, cons, db_utils, dbsnp, freqs, genes,
+    gnomad_mtdna, gnomad_nuclear, helixmtdb, server, tsv,
 };
 use anyhow::Error;
 use clap::{command, Args, Parser, Subcommand};
@@ -36,6 +36,8 @@ enum Commands {
     ClinvarGenes(ClinvarGenes),
     /// "clinvar-minimal" sub commands
     ClinvarMinimal(ClinvarMinimal),
+    /// "clinvar-sv" sub commands
+    ClinvarSv(ClinvarSv),
     /// "freqs" sub commands
     Freqs(Freqs),
     /// "dbsnp" sub commands
@@ -118,6 +120,23 @@ enum ClinvarMinimalCommands {
     Import(clinvar_minimal::cli::import::Args),
     /// "query" sub command
     Query(clinvar_minimal::cli::query::Args),
+}
+
+/// Parsing of "clinvar-sv" subcommand.
+#[derive(Debug, Args, Clone)]
+struct ClinvarSv {
+    /// The sub command to run
+    #[command(subcommand)]
+    command: ClinvarSvCommands,
+}
+
+/// Enum supporting the parsing of "clinvar-sv *" subcommands.
+#[derive(Debug, Subcommand, Clone)]
+enum ClinvarSvCommands {
+    /// "import" sub command
+    Import(clinvar_sv::cli::import::Args),
+    /// "query" sub command
+    Query(clinvar_sv::cli::query::Args),
 }
 
 /// Parsing of "cons" subcommand.
@@ -283,6 +302,10 @@ pub fn main() -> Result<(), anyhow::Error> {
                 ClinvarMinimalCommands::Query(args) => {
                     clinvar_minimal::cli::query::run(&cli.common, args)?
                 }
+            },
+            Commands::ClinvarSv(args) => match &args.command {
+                ClinvarSvCommands::Import(args) => clinvar_sv::cli::import::run(&cli.common, args)?,
+                ClinvarSvCommands::Query(args) => clinvar_sv::cli::query::run(&cli.common, args)?,
             },
             Commands::Cons(args) => match &args.command {
                 ConsCommands::Import(args) => cons::cli::import::run(&cli.common, args)?,
