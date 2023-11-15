@@ -83,8 +83,8 @@ fn jsonl_import(
             alternate_allele_vcf,
             ..
         } = sequence_location;
-        if let (Some(reference_allele_vcf), Some(alternate_allele_vcf)) =
-            (reference_allele_vcf, alternate_allele_vcf)
+        if let (Some(start), Some(stop), Some(reference_allele_vcf), Some(alternate_allele_vcf)) =
+            (start, stop, reference_allele_vcf, alternate_allele_vcf)
         {
             let var = keys::Var::from(
                 &chr,

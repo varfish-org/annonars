@@ -353,9 +353,9 @@ pub struct SequenceLocation {
     /// Chromosome name.
     pub chr: String,
     /// 1-based start position.
-    pub start: u32,
+    pub start: Option<u32>,
     /// 1-based stop position.
-    pub stop: u32,
+    pub stop: Option<u32>,
     /// Reference allele bases in VCF notation.
     pub reference_allele_vcf: Option<String>,
     /// Alternative allele bases in VCF notation.

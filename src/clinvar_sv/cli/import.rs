@@ -5,10 +5,7 @@ use std::{io::BufRead, sync::Arc};
 use clap::Parser;
 use prost::Message;
 
-use crate::{
-    clinvar_minimal,
-    common::{self, keys},
-};
+use crate::{clinvar_minimal, common};
 
 /// Command line arguments for `clinvar-sv import` sub command.
 #[derive(Parser, Debug, Clone)]
@@ -68,8 +65,8 @@ fn jsonl_import(
             clinical_significance,
             review_status,
             sequence_location,
-            hgnc_ids,
             variant_type,
+            ..
         } = record;
         let clinical_significance: crate::pbs::annonars::clinvar::v1::minimal::ClinicalSignificance =
             clinical_significance.into();
@@ -87,63 +84,94 @@ fn jsonl_import(
             outer_start,
             outer_stop,
         } = sequence_location;
-        if let (Some(reference_allele_vcf), Some(alternate_allele_vcf)) =
-            (reference_allele_vcf, alternate_allele_vcf)
-        {
-            let var = keys::Var::from(
-                &chr,
-                start as i32,
-                &reference_allele_vcf,
-                &alternate_allele_vcf,
-            );
-            let key: Vec<u8> = var.into();
 
-            let data = db
-                .get_cf(&cf_data, key.clone())
-                .map_err(|e| anyhow::anyhow!("problem querying database: {}", e));
-            match data {
-                Err(e) => {
-                    tracing::warn!("skipping line because of error: {}", e);
-                    continue;
-                }
-                Ok(data) => {
-                    let record = if let Some(data) = data {
-                        let mut record =
-                            crate::pbs::annonars::clinvar::v1::minimal::Record::decode(&data[..])?;
-                        record.reference_assertions.push(
+        let (start, stop, inner_start, inner_stop, outer_start, outer_stop) =
+            if let (Some(start), Some(stop)) = (start, stop) {
+                (
+                    start,
+                    stop,
+                    inner_start,
+                    outer_start,
+                    inner_stop,
+                    outer_stop,
+                )
+            } else if let (Some(inner_start_), Some(inner_stop_)) = (inner_start, inner_stop) {
+                (
+                    inner_start_,
+                    inner_stop_,
+                    inner_start,
+                    outer_start,
+                    inner_stop,
+                    outer_stop,
+                )
+            } else if let (Some(outer_start_), Some(outer_stop_)) = (outer_start, outer_stop) {
+                (
+                    outer_start_,
+                    outer_stop_,
+                    inner_start,
+                    outer_start,
+                    inner_stop,
+                    outer_stop,
+                )
+            } else {
+                tracing::warn!("skipping line because no start/stop: {}/{}", &vcv, &rcv,);
+                continue;
+            };
+
+        let key: Vec<u8> = vcv.clone().into();
+
+        let data = db
+            .get_cf(&cf_data, key.clone())
+            .map_err(|e| anyhow::anyhow!("problem querying database: {}", e));
+        match data {
+            Err(e) => {
+                tracing::warn!("skipping line because of error: {}", e);
+                continue;
+            }
+            Ok(data) => {
+                let record = if let Some(data) = data {
+                    let mut record =
+                        crate::pbs::annonars::clinvar::v1::sv::Record::decode(&data[..])?;
+                    record.reference_assertions.push(
+                        crate::pbs::annonars::clinvar::v1::minimal::ReferenceAssertion {
+                            rcv,
+                            title,
+                            clinical_significance: clinical_significance.into(),
+                            review_status: review_status.into(),
+                        },
+                    );
+                    record
+                        .reference_assertions
+                        .sort_by_key(|a| (a.clinical_significance, a.review_status));
+                    record
+                } else {
+                    crate::pbs::annonars::clinvar::v1::sv::Record {
+                        release: assembly,
+                        chromosome: chr,
+                        start,
+                        stop,
+                        reference: reference_allele_vcf,
+                        alternative: alternate_allele_vcf,
+                        vcv,
+                        reference_assertions: vec![
                             crate::pbs::annonars::clinvar::v1::minimal::ReferenceAssertion {
                                 rcv,
                                 title,
                                 clinical_significance: clinical_significance.into(),
                                 review_status: review_status.into(),
                             },
-                        );
-                        record
-                            .reference_assertions
-                            .sort_by_key(|a| (a.clinical_significance, a.review_status));
-                        record
-                    } else {
-                        crate::pbs::annonars::clinvar::v1::minimal::Record {
-                            release: assembly,
-                            chromosome: chr,
-                            start,
-                            stop,
-                            reference: reference_allele_vcf,
-                            alternative: alternate_allele_vcf,
-                            vcv,
-                            reference_assertions: vec![
-                                crate::pbs::annonars::clinvar::v1::minimal::ReferenceAssertion {
-                                    rcv,
-                                    title,
-                                    clinical_significance: clinical_significance.into(),
-                                    review_status: review_status.into(),
-                                },
-                            ],
-                        }
-                    };
-                    let buf = record.encode_to_vec();
-                    db.put_cf(&cf_data, key, buf)?;
-                }
+                        ],
+                        inner_start,
+                        inner_stop,
+                        outer_start,
+                        outer_stop,
+                        variant_type: crate::pbs::annonars::clinvar::v1::minimal::VariantType::from(
+                            variant_type,
+                        ) as i32,
+                    }
+                };
+                let buf = record.encode_to_vec();
+                db.put_cf(&cf_data, key, buf)?;
             }
         }
     }
@@ -226,7 +254,7 @@ mod test {
         let args = Args {
             genome_release: common::cli::GenomeRelease::Grch37,
             path_in_jsonl: vec![
-                String::from("tests/clinvar-svs/clinvar-variants-grch37-strucvar.jsonl"),
+                String::from("tests/clinvar-svs/clinvar-variants-grch37-seqvars.jsonl"),
                 String::from("tests/clinvar-svs/clinvar-variants-grch37-strucvars.jsonl"),
             ],
             path_out_rocksdb: format!("{}", tmp_dir.join("out-rocksdb").display()),

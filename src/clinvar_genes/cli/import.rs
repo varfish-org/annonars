@@ -159,8 +159,12 @@ fn load_variants_jsonl(
                         ..
                     } = sequence_location;
 
-                    if let (Some(reference_allele_vcf), Some(alternate_allele_vcf)) =
-                        (reference_allele_vcf, alternate_allele_vcf)
+                    if let (
+                        Some(start),
+                        Some(stop),
+                        Some(reference_allele_vcf),
+                        Some(alternate_allele_vcf),
+                    ) = (start, stop, reference_allele_vcf, alternate_allele_vcf)
                     {
                         for hgnc_id in hgnc_ids {
                             let per_release = per_gene.entry(hgnc_id).or_default();
