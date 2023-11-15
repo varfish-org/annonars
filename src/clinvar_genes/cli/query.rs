@@ -4,7 +4,7 @@ use std::sync::Arc;
 
 use prost::Message;
 
-use crate::{clinvar_genes, common};
+use crate::{common, pbs::annonars::clinvar::v1::per_gene::ClinvarPerGeneRecord};
 
 /// Command line arguments for `clinvar-gene query` sub command.
 #[derive(clap::Parser, Debug, Clone)]
@@ -63,7 +63,7 @@ pub fn open_rocksdb_from_args(
 fn print_record(
     out_writer: &mut Box<dyn std::io::Write>,
     output_format: common::cli::OutputFormat,
-    value: &clinvar_genes::pbs::ClinvarPerGeneRecord,
+    value: &ClinvarPerGeneRecord,
 ) -> Result<(), anyhow::Error> {
     match output_format {
         common::cli::OutputFormat::Jsonl => {
@@ -79,20 +79,19 @@ pub fn query_for_gene(
     hgnc_id: &str,
     db: &rocksdb::DBWithThreadMode<rocksdb::MultiThreaded>,
     cf_data: &Arc<rocksdb::BoundColumnFamily>,
-) -> Result<Option<clinvar_genes::pbs::ClinvarPerGeneRecord>, anyhow::Error> {
+) -> Result<Option<ClinvarPerGeneRecord>, anyhow::Error> {
     let raw_value = db
         .get_cf(cf_data, hgnc_id.as_bytes())
         .map_err(|e| anyhow::anyhow!("error while querying for HGNC ID {}: {}", hgnc_id, e))?;
     raw_value
         .map(|raw_value| {
-            clinvar_genes::pbs::ClinvarPerGeneRecord::decode(&mut std::io::Cursor::new(&raw_value))
-                .map_err(|e| {
-                    anyhow::anyhow!(
-                        "error while decoding clinvar per gene record for HGNC ID {}: {}",
-                        hgnc_id,
-                        e
-                    )
-                })
+            ClinvarPerGeneRecord::decode(&mut std::io::Cursor::new(&raw_value)).map_err(|e| {
+                anyhow::anyhow!(
+                    "error while decoding clinvar per gene record for HGNC ID {}: {}",
+                    hgnc_id,
+                    e
+                )
+            })
         })
         .transpose()
 }

@@ -7,7 +7,7 @@ use actix_web::{
 };
 use prost::Message;
 
-use crate::clinvar_genes::pbs;
+use crate::pbs::annonars::clinvar::v1::per_gene::ClinvarPerGeneRecord;
 
 use super::error::CustomError;
 use serde_with::{formats::CommaSeparator, StringWithSeparator};
@@ -29,7 +29,7 @@ struct Request {
 struct Container {
     // TODO: add data version
     /// The resulting per-gene ClinVar information.
-    pub genes: indexmap::IndexMap<String, pbs::ClinvarPerGeneRecord>,
+    pub genes: indexmap::IndexMap<String, ClinvarPerGeneRecord>,
 }
 
 /// Query for annotations for one variant.
@@ -59,8 +59,10 @@ async fn handle(
                 .get_cf(&cf_genes, hgnc_id)
                 .map_err(|e| CustomError::new(anyhow::anyhow!("problem querying database: {}", e)))?
                 .ok_or_else(|| CustomError::new(anyhow::anyhow!("no such gene: {}", hgnc_id)))?;
-            let record = pbs::ClinvarPerGeneRecord::decode(std::io::Cursor::new(raw_buf))
-                .map_err(|e| CustomError::new(anyhow::anyhow!("problem decoding value: {}", e)))?;
+            let record = crate::pbs::annonars::clinvar::v1::per_gene::ClinvarPerGeneRecord::decode(
+                std::io::Cursor::new(raw_buf),
+            )
+            .map_err(|e| CustomError::new(anyhow::anyhow!("problem decoding value: {}", e)))?;
             genes.insert(hgnc_id.to_string(), record);
         }
     }

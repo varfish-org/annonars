@@ -4,6 +4,8 @@ syntax = "proto3";
 
 package annonars.clinvar.v1.per_gene;
 
+import "annonars/clinvar/v1/minimal.proto";
+
 // Impact on gene in ClinVar.
 enum Impact {
     // 3' UTR variant
@@ -66,72 +68,12 @@ message GeneFreqRecordCounts {
     repeated uint32 counts = 2;
 }
 
-// Enumeration for ClinVar pathogenicity.
-enum ClinicalSignificance {
-    // Pathogenic.
-    PATHOGENIC = 0;
-    // Likely pathogenic.
-    LIKELY_PATHOGENIC = 1;
-    // Uncertain significance.
-    UNCERTAIN_SIGNIFICANCE = 2;
-    // Likely benign.
-    LIKELY_BENIGN = 3;
-    // Benign.
-    BENIGN = 4;
-}
-
-/// Enumeration for ClinVar review status.
-enum ReviewStatus {
-    // "practice guideline"
-    PRACTICE_GUIDELINE = 0;
-    // "reviewed by expert panel"
-    REVIEWED_BY_EXPERT_PANEL = 1;
-    // "criteria provided, multiple submitters, no conflicts"
-    CRITERIA_PROVIDED_MULTIPLE_SUBMITTERS_NO_CONFLICTS = 2;
-    // "criteria provided, single submitter"
-    CRITERIA_PROVIDED_SINGLE_SUBMITTER = 3;
-    // "criteria provided, conflicting interpretations"
-    CRITERIA_PROVIDED_CONFLICTING_INTERPRETATIONS = 4;
-    // "no assertion criteria provided"
-    NO_ASSERTION_CRITERIA_PROVIDED = 5;
-    // "no assertion provided"
-    NO_ASSERTION_PROVIDED = 6;
-}
-
-// Record for storing information about a reference clinvar assertion.
-message ReferenceAssertion {
-    // RCV accession identifier.
-    string rcv = 1;
-    // Title of the reference assertion, includes phenotype / disease.
-    string title = 2;
-    // Clinical significance for variant.
-    ClinicalSignificance clinical_significance = 3;
-    // Review status.
-    ReviewStatus review_status = 4;
-}
-
-// Sequence variant with ClinVar accession and assertion.
-message SequenceVariant {
-    // chromosome name
-    string chrom = 1;
-    // 1-based start position
-    uint32 pos = 2;
-    // Reference allele
-    string reference = 3;
-    // Alternative allele
-    string alternative = 4;
-    // VCV identifier
-    string vcv = 5;
-    // Reference assertions
-    repeated ReferenceAssertion reference_assertions = 6;
-}
-
 // Variants for a given genome release / assembly.
 message GeneVariantsForRelease {
     // Genome release / assembly
     string genome_release = 1;
     // Variants
-    repeated SequenceVariant variants = 2;
+    repeated annonars.clinvar.v1.minimal.Record variants = 2;
 }
 
 // ClinVar detailed information per gene.

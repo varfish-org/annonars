@@ -5,7 +5,6 @@ use std::{io::Write, sync::Arc};
 use prost::Message;
 
 use crate::{
-    clinvar_minimal::pbs,
     common::{self, cli::extract_chrom, keys, spdi},
     cons::cli::args::vars::ArgsQuery,
 };
@@ -85,7 +84,7 @@ pub fn open_rocksdb_from_args(
 fn print_record(
     out_writer: &mut Box<dyn std::io::Write>,
     output_format: common::cli::OutputFormat,
-    value: &pbs::Record,
+    value: &crate::pbs::annonars::clinvar::v1::minimal::Record,
 ) -> Result<(), anyhow::Error> {
     match output_format {
         common::cli::OutputFormat::Jsonl => {
@@ -102,7 +101,7 @@ pub fn query_for_variant(
     meta: &Meta,
     db: &rocksdb::DBWithThreadMode<rocksdb::MultiThreaded>,
     cf_data: &Arc<rocksdb::BoundColumnFamily>,
-) -> Result<Option<pbs::Record>, anyhow::Error> {
+) -> Result<Option<crate::pbs::annonars::clinvar::v1::minimal::Record>, anyhow::Error> {
     // Split off the genome release (checked) and convert to key as used in database.
     let query = spdi::Var {
         sequence: extract_chrom::from_var(variant, Some(&meta.genome_release))?,
@@ -118,8 +117,10 @@ pub fn query_for_variant(
     raw_value
         .map(|raw_value| {
             // Decode via prost.
-            pbs::Record::decode(&mut std::io::Cursor::new(&raw_value))
-                .map_err(|e| anyhow::anyhow!("failed to decode record: {}", e))
+            crate::pbs::annonars::clinvar::v1::minimal::Record::decode(&mut std::io::Cursor::new(
+                &raw_value,
+            ))
+            .map_err(|e| anyhow::anyhow!("failed to decode record: {}", e))
         })
         .transpose()
 }
@@ -203,8 +204,10 @@ pub fn run(common: &common::cli::Args, args: &Args) -> Result<(), anyhow::Error>
                     }
                 }
 
-                let record = pbs::Record::decode(&mut std::io::Cursor::new(&raw_value))
-                    .map_err(|e| anyhow::anyhow!("failed to decode record: {}", e))?;
+                let record = crate::pbs::annonars::clinvar::v1::minimal::Record::decode(
+                    &mut std::io::Cursor::new(&raw_value),
+                )
+                .map_err(|e| anyhow::anyhow!("failed to decode record: {}", e))?;
                 print_record(&mut out_writer, args.out_format, &record)?;
                 iter.next();
             } else {

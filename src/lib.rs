@@ -5,6 +5,7 @@
 
 pub mod clinvar_genes;
 pub mod clinvar_minimal;
+pub mod clinvar_sv;
 pub mod common;
 pub mod cons;
 pub mod db_utils;
@@ -16,6 +17,7 @@ pub mod gnomad_mtdna;
 pub mod gnomad_nuclear;
 pub mod gnomad_pbs;
 pub mod helixmtdb;
+pub mod pbs;
 pub mod server;
 pub mod tsv;
 

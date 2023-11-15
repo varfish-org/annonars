@@ -1,4 +1,4 @@
-//! Import of minimal ClinVar data.
+//! Import of ClinVar SV data.
 
 use std::{io::BufRead, sync::Arc};
 
@@ -8,19 +8,18 @@ use prost::Message;
 use crate::{
     clinvar_minimal,
     common::{self, keys},
-    pbs::annonars::clinvar::v1::minimal::ReferenceAssertion,
 };
 
-/// Command line arguments for `clinvar-minimal import` sub command.
+/// Command line arguments for `clinvar-sv import` sub command.
 #[derive(Parser, Debug, Clone)]
-#[command(about = "import minimal ClinVar data into RocksDB", long_about = None)]
+#[command(about = "import ClinVar SV data into RocksDB", long_about = None)]
 pub struct Args {
     /// Genome build to use in the build.
     #[arg(long, value_enum)]
     pub genome_release: common::cli::GenomeRelease,
     /// Path to input JSONL file(s).
     #[arg(long, required = true)]
-    pub path_in_jsonl: String,
+    pub path_in_jsonl: Vec<String>,
     /// Path to output RocksDB directory.
     #[arg(long)]
     pub path_out_rocksdb: String,
@@ -37,16 +36,17 @@ pub struct Args {
 fn jsonl_import(
     db: &rocksdb::DBWithThreadMode<rocksdb::MultiThreaded>,
     args: &Args,
+    path_in_jsonl: &str,
 ) -> Result<(), anyhow::Error> {
     let cf_data = db.cf_handle(&args.cf_name).unwrap();
 
     // Open reader, possibly decompressing gziped files.
-    let reader: Box<dyn std::io::Read> = if args.path_in_jsonl.ends_with(".gz") {
+    let reader: Box<dyn std::io::Read> = if path_in_jsonl.ends_with(".gz") {
         Box::new(flate2::read::GzDecoder::new(std::fs::File::open(
-            &args.path_in_jsonl,
+            &path_in_jsonl,
         )?))
     } else {
-        Box::new(std::fs::File::open(&args.path_in_jsonl)?)
+        Box::new(std::fs::File::open(&path_in_jsonl)?)
     };
 
     let reader = std::io::BufReader::new(reader);
@@ -68,7 +68,8 @@ fn jsonl_import(
             clinical_significance,
             review_status,
             sequence_location,
-            ..
+            hgnc_ids,
+            variant_type,
         } = record;
         let clinical_significance: crate::pbs::annonars::clinvar::v1::minimal::ClinicalSignificance =
             clinical_significance.into();
@@ -81,7 +82,10 @@ fn jsonl_import(
             stop,
             reference_allele_vcf,
             alternate_allele_vcf,
-            ..
+            inner_start,
+            inner_stop,
+            outer_start,
+            outer_stop,
         } = sequence_location;
         if let (Some(reference_allele_vcf), Some(alternate_allele_vcf)) =
             (reference_allele_vcf, alternate_allele_vcf)
@@ -127,12 +131,14 @@ fn jsonl_import(
                             reference: reference_allele_vcf,
                             alternative: alternate_allele_vcf,
                             vcv,
-                            reference_assertions: vec![ReferenceAssertion {
-                                rcv,
-                                title,
-                                clinical_significance: clinical_significance.into(),
-                                review_status: review_status.into(),
-                            }],
+                            reference_assertions: vec![
+                                crate::pbs::annonars::clinvar::v1::minimal::ReferenceAssertion {
+                                    rcv,
+                                    title,
+                                    clinical_significance: clinical_significance.into(),
+                                    review_status: review_status.into(),
+                                },
+                            ],
                         }
                     };
                     let buf = record.encode_to_vec();
@@ -183,7 +189,10 @@ pub fn run(common: &common::cli::Args, args: &Args) -> Result<(), anyhow::Error>
 
     tracing::info!("Importing JSONL file ...");
     let before_import = std::time::Instant::now();
-    jsonl_import(&db, args)?;
+    for path in &args.path_in_jsonl {
+        tracing::info!("  - {}", &path);
+        jsonl_import(&db, args, path)?;
+    }
     tracing::info!(
         "... done importing JSONL file in {:?}",
         before_import.elapsed()
@@ -216,9 +225,12 @@ mod test {
         };
         let args = Args {
             genome_release: common::cli::GenomeRelease::Grch37,
-            path_in_jsonl: String::from("tests/clinvar-minimal/clinvar-seqvars-grch37-tgds.jsonl"),
+            path_in_jsonl: vec![
+                String::from("tests/clinvar-svs/clinvar-variants-grch37-strucvar.jsonl"),
+                String::from("tests/clinvar-svs/clinvar-variants-grch37-strucvars.jsonl"),
+            ],
             path_out_rocksdb: format!("{}", tmp_dir.join("out-rocksdb").display()),
-            cf_name: String::from("clinvar"),
+            cf_name: String::from("clinvar-sv"),
             path_wal_dir: None,
         };
 
