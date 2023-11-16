@@ -30,10 +30,10 @@ pub struct Args {
     #[arg(long)]
     pub path_rocksdb: String,
     /// Name of the column family to import into.
-    #[arg(long, default_value = "clinvar-sv")]
+    #[arg(long, default_value = "clinvar_sv")]
     pub cf_name: String,
     /// Mapping from ClinVar RCV to ClinVar VCV.
-    #[arg(long, default_value = "clinvar-sv-by-rcv")]
+    #[arg(long, default_value = "clinvar_sv_by_rcv")]
     pub cf_name_by_rcv: String,
     /// Output file (default is stdout == "-").
     #[arg(long, default_value = "-")]
@@ -369,8 +369,8 @@ mod test {
         };
         let args = Args {
             path_rocksdb: String::from("tests/clinvar-sv/clinvar-sv-grch37.tsv.db"),
-            cf_name: String::from("clinvar-sv"),
-            cf_name_by_rcv: String::from("clinvar-sv-by-rcv"),
+            cf_name: String::from("clinvar_sv"),
+            cf_name_by_rcv: String::from("clinvar_sv_by_rcv"),
             out_file: temp.join("out").to_string_lossy().to_string(),
             out_format: common::cli::OutputFormat::Jsonl,
             query,

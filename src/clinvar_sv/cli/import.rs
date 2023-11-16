@@ -22,10 +22,10 @@ pub struct Args {
     pub path_out_rocksdb: String,
 
     /// Name of the column family to import into.
-    #[arg(long, default_value = "clinvar-sv")]
+    #[arg(long, default_value = "clinvar_sv")]
     pub cf_name: String,
     /// Mapping from ClinVar RCV to ClinVar VCV.
-    #[arg(long, default_value = "clinvar-sv-by-rcv")]
+    #[arg(long, default_value = "clinvar_sv_by_rcv")]
     pub cf_name_by_rcv: String,
     /// Optional path to RocksDB WAL directory.
     #[arg(long)]
@@ -267,8 +267,8 @@ mod test {
                 String::from("tests/clinvar-sv/clinvar-variants-grch37-strucvars.jsonl"),
             ],
             path_out_rocksdb: format!("{}", tmp_dir.join("out-rocksdb").display()),
-            cf_name: String::from("clinvar-sv"),
-            cf_name_by_rcv: String::from("clinvar-sv-by-rcv"),
+            cf_name: String::from("clinvar_sv"),
+            cf_name_by_rcv: String::from("clinvar_sv_by_rcv"),
             path_wal_dir: None,
         };
 

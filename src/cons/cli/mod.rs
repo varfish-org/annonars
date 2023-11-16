@@ -22,6 +22,9 @@ pub mod args {
             /// Specify range to query for.
             #[arg(long, group = "query")]
             pub range: Option<spdi::Range>,
+            /// Specify accession to query for.
+            #[arg(long, group = "query")]
+            pub accession: Option<String>,
             /// Query for all variants.
             #[arg(long, group = "query")]
             pub all: bool,

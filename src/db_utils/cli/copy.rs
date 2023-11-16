@@ -197,8 +197,8 @@ pub fn run(common: &common::cli::Args, args: &Args) -> Result<(), anyhow::Error>
     tracing::info!("Copying data");
     for cf_name in &cf_names {
         tracing::info!("  copying data from column family {}", cf_name);
-        if cf_name == "meta" {
-            tracing::info!("  ignoring query for column family meta");
+        if cf_name == "meta" || cf_name.contains("_by_") {
+            tracing::info!("  ignoring query for column family {}", &cf_name);
 
             copy_cf(&db_read, &db_write, cf_name, None, None)?;
         } else if !args.query.path_beds.is_empty() {
