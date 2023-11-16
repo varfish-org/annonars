@@ -11,7 +11,7 @@ use crate::common::{self, cli::extract_chrom, spdi};
 #[derive(clap::Args, Debug, Clone, Default)]
 #[group(required = true, multiple = false)]
 pub struct ArgsQuery {
-    /// Specify range to query for.
+    /// Specify accession to query for.
     #[arg(long, group = "query")]
     pub accession: Option<String>,
     /// Query for all variants.
@@ -22,9 +22,9 @@ pub struct ArgsQuery {
     pub range: Option<spdi::Range>,
 }
 
-/// Command line arguments for `tsv query` sub command.
+/// Command line arguments for `clinvar-sv query` sub command.
 #[derive(clap::Parser, Debug, Clone)]
-#[command(about = "query gnomAD-mtDNA data stored in RocksDB", long_about = None)]
+#[command(about = "query ClinVar SV data stored in RocksDB", long_about = None)]
 pub struct Args {
     /// Path to RocksDB directory with data.
     #[arg(long)]

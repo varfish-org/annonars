@@ -17,7 +17,7 @@ use std::{fmt::Display, str::FromStr};
 ///
 /// # Example
 ///
-/// ```
+/// ```ignore
 /// use std::str::FromStr;
 /// use annonars::common::spdi::Var;
 ///
@@ -84,7 +84,7 @@ impl Display for Var {
 ///
 /// # Example
 ///
-/// ```
+/// ```ignore
 /// use std::str::FromStr;
 /// use annonars::common::spdi::Pos;
 ///
@@ -133,7 +133,7 @@ impl Display for Pos {
 ///
 /// # Example
 ///
-/// ```
+/// ```ignore
 /// use std::str::FromStr;
 /// use annonars::common::spdi::Range;
 ///

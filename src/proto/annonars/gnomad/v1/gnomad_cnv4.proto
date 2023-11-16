@@ -1,0 +1,95 @@
+// Protocol buffers for representing gnomAD-CNV v4 data.
+
+syntax = "proto3";
+
+package annonars.gnomad.v1.gnomad_cnv4;
+
+import "annonars/gnomad/v1/exac_cnv.proto";
+
+
+// Carrier counts
+message CarrierCounts {
+    // Number of releaseable samples with a variant at this site.
+    int32 sc = 1;
+    // Proportion of releaseable samples (site frequency) with a variant at
+    // this site.
+    float sf = 2;
+    // Total number of releaseable samples considered at this site.
+    int32 sn = 3;
+}
+
+// Store the carrier counts for the given sub cohort and sub cohort factored by sex.
+message CarrierCountsBySex {
+    // Overall allele counts in the sub cohort.
+    CarrierCounts overall = 1;
+    // Allele counts in female/XX karyotype individuals of sub cohort.
+    optional CarrierCounts xx = 2;
+    // Allele counts in male/XY karyotype individuals of sub cohort.
+    optional CarrierCounts xy = 3;
+}
+
+// ExAC population.
+enum Population {
+    // African
+    AFR = 0;
+    // Ad Mixed American
+    AMR = 1;
+    // Ashkenazi Jewish
+    ASJ = 2;
+    // East Asian
+    EAS = 3;
+    // Finnish
+    FIN = 4;
+    // Middle Eastern
+    MID = 5;
+    // Non-Finnish European
+    NFE = 6;
+    // South Asian
+    SAS = 7;
+}
+
+// Store the carrier counts for a population.
+message PopulationAlleleCounts {
+    // The population.
+    Population population = 1;
+    // The overall allele counts and the one by sex.
+    CarrierCountsBySex counts = 2;
+}
+
+// One record in the gnomAD-CNV v4 dataset.
+message Record {
+    // Chromosome name.
+    string chrom = 1;
+    // 1-based start position.
+    int32 start = 2;
+    // 1-based stop position.
+    int32 stop = 3;
+
+    // 1-based inner start position.
+    int32 inner_start = 4;
+    // 1-based inner stop position.
+    int32 inner_stop = 5;
+    // 1-based outer start position.
+    int32 outer_start = 6;
+    // 1-based inner stop position.
+    int32 outer_stop = 7;
+
+    // Length of the SV.
+    int32 sv_len = 8;
+    // The type of the variant.
+    annonars.gnomad.v1.exac_cnv.CnvType sv_type = 9;
+
+    // Median number of callable exons spanned by variant passing QS
+    // threshold.
+    int32 n_exn_var = 10;
+    // Median number of callable intervals spanned by variant passing
+    // QS threshold.
+    int32 n_int_var = 11;
+    // Symbols of genes predicted to be impacted by variant
+    repeated string genes = 12;
+
+    // Global carrier counts.
+    CarrierCountsBySex counts = 13;
+    // Carrier counts in the different population.
+    repeated PopulationAlleleCounts by_population = 14;
+}

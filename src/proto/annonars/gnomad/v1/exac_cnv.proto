@@ -1,0 +1,48 @@
+// Protocol buffers for representing ExAC CNV data.
+
+syntax = "proto3";
+
+package annonars.gnomad.v1.exac_cnv;
+
+// Enumeration for the CNV type.
+enum CnvType {
+    // Deletion.
+    DEL = 0;
+    // Duplication.
+    DUP = 1;
+}
+
+// ExAC population.
+enum Population {
+    // African
+    AFR = 0;
+    // Ad Mixed American
+    AMR = 1;
+    // East Asian
+    EAS = 2;
+    // Finnish
+    FIN = 3;
+    // Non-Finnish European
+    NFE = 4;
+    // South Asian
+    SAS = 5;
+    // Other,
+    OTHER = 6;
+}
+
+// Protocol buffer for the ExAC CNV data.
+//
+// The more specialized fields from the INFO column are stored in separate, optional fields such
+// that we don't end up with a humongous message.
+message Record {
+    // Chromosome name.
+    string chrom = 1;
+    // 1-based start position.
+    int32 start = 2;
+    // 1-based stop position.
+    int32 stop = 3;
+    /// The type of the variant.
+    CnvType sv_type = 4;
+    /// The population.
+    Population population = 5;
+}

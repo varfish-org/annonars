@@ -778,7 +778,11 @@ expression: records
           an: 5008
           nhomalt: 0
           af: 0.000199681
-        xy: ~
+        xy:
+          ac: 0
+          an: 5864
+          nhomalt: 0
+          af: 0
       raw:
         ac: 1
         an: 10884
@@ -1152,7 +1156,11 @@ expression: records
           an: 9590
           nhomalt: 0
           af: 0.000104275
-        xy: ~
+        xy:
+          ac: 0
+          an: 11668
+          nhomalt: 0
+          af: 0
       raw:
         ac: 1
         an: 21272
@@ -1395,7 +1403,11 @@ expression: records
           an: 12586
           nhomalt: 0
           af: 0.0000794534
-        xy: ~
+        xy:
+          ac: 0
+          an: 14000
+          nhomalt: 0
+          af: 0
       raw:
         ac: 1
         an: 26608
@@ -2210,7 +2222,11 @@ expression: records
           an: 5006
           nhomalt: 0
           af: 0.00499401
-        xy: ~
+        xy:
+          ac: 15
+          an: 5864
+          nhomalt: 0
+          af: 0.00255798
       raw:
         ac: 40
         an: 10884
@@ -2584,7 +2600,11 @@ expression: records
           an: 9582
           nhomalt: 0
           af: 0.00323523
-        xy: ~
+        xy:
+          ac: 18
+          an: 11670
+          nhomalt: 0
+          af: 0.00154242
       raw:
         ac: 49
         an: 21272
@@ -2827,7 +2847,11 @@ expression: records
           an: 12578
           nhomalt: 0
           af: 0.00524726
-        xy: ~
+        xy:
+          ac: 88
+          an: 13998
+          nhomalt: 0
+          af: 0.00628661
       raw:
         ac: 154
         an: 26608
@@ -3682,7 +3706,11 @@ expression: records
           an: 5010
           nhomalt: 0
           af: 0
-        xy: ~
+        xy:
+          ac: 0
+          an: 2617
+          nhomalt: 0
+          af: 0
       raw:
         ac: 0
         an: 7950
@@ -4056,7 +4084,11 @@ expression: records
           an: 9590
           nhomalt: 0
           af: 0
-        xy: ~
+        xy:
+          ac: 0
+          an: 5359
+          nhomalt: 0
+          af: 0
       raw:
         ac: 0
         an: 15435
@@ -4299,7 +4331,11 @@ expression: records
           an: 12590
           nhomalt: 0
           af: 0.0000794281
-        xy: ~
+        xy:
+          ac: 0
+          an: 6258
+          nhomalt: 0
+          af: 0
       raw:
         ac: 1
         an: 19603

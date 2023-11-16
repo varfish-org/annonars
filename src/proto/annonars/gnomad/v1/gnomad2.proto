@@ -40,7 +40,7 @@ message AlleleCountsBySex {
     optional AlleleCounts xy = 3;
 }
 
-// Store the allele counts for the given sub cohort in the given population.
+// Store the allele counts for the given population.
 message PopulationAlleleCounts {
     // Name of the population.
     string population = 1;
@@ -209,7 +209,7 @@ message VariantInfo {
     bool has_star = 5;
 }
 
-// Protocol buffer for the gnomAD-mtDNA VCF record.
+// Protocol buffer for the gnomAD v2 VCF record.
 //
 // The more specialized fields from the INFO column are stored in separate, optional fields such
 // that we don't end up with a humongous message.

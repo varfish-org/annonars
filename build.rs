@@ -7,9 +7,13 @@ fn main() {
     println!("cargo:rerun-if-changed=src/proto/annonars/cons/v1/base.proto");
     println!("cargo:rerun-if-changed=src/proto/annonars/dbsnp/v1/base.proto");
     println!("cargo:rerun-if-changed=src/proto/annonars/gene/v1/base.proto");
-    println!("cargo:rerun-if-changed=src/proto/annonars/gnomad/v1/mtdna.proto");
+    println!("cargo:rerun-if-changed=src/proto/annonars/gnomad/v1/exac_cnv.proto");
     println!("cargo:rerun-if-changed=src/proto/annonars/gnomad/v1/gnomad2.proto");
     println!("cargo:rerun-if-changed=src/proto/annonars/gnomad/v1/gnomad3.proto");
+    println!("cargo:rerun-if-changed=src/proto/annonars/gnomad/v1/gnomad_cnv4.proto");
+    println!("cargo:rerun-if-changed=src/proto/annonars/gnomad/v1/gnomad_sv2.proto");
+    println!("cargo:rerun-if-changed=src/proto/annonars/gnomad/v1/gnomad_sv4.proto");
+    println!("cargo:rerun-if-changed=src/proto/annonars/gnomad/v1/mtdna.proto");
     println!("cargo:rerun-if-changed=src/proto/annonars/gnomad/v1/vep_common.proto");
     println!("cargo:rerun-if-changed=src/proto/annonars/gnomad/v1/vep_gnomad2.proto");
     println!("cargo:rerun-if-changed=src/proto/annonars/gnomad/v1/vep_gnomad3.proto");
@@ -43,9 +47,13 @@ fn main() {
                 "annonars/cons/v1/base.proto",
                 "annonars/dbsnp/v1/base.proto",
                 "annonars/gene/v1/base.proto",
-                "annonars/gnomad/v1/mtdna.proto",
+                "annonars/gnomad/v1/exac_cnv.proto",
                 "annonars/gnomad/v1/gnomad2.proto",
                 "annonars/gnomad/v1/gnomad3.proto",
+                "annonars/gnomad/v1/gnomad_cnv4.proto",
+                "annonars/gnomad/v1/gnomad_sv2.proto",
+                "annonars/gnomad/v1/gnomad_sv4.proto",
+                "annonars/gnomad/v1/mtdna.proto",
                 "annonars/gnomad/v1/vep_common.proto",
                 "annonars/gnomad/v1/vep_gnomad2.proto",
                 "annonars/gnomad/v1/vep_gnomad3.proto",

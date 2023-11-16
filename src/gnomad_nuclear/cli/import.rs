@@ -14,12 +14,13 @@ use crate::{
 };
 
 /// Select the type of gnomAD data to import.
-#[derive(strum::Display, clap::ValueEnum, Debug, Clone, Copy, PartialEq, Eq, Hash)]
+#[derive(strum::Display, clap::ValueEnum, Debug, Clone, Copy, Default, PartialEq, Eq, Hash)]
 pub enum GnomadKind {
-    /// gnomAD exomes
+    /// gnomAD exomes / CNV (or: ExAC CNVs)
     #[strum(serialize = "exomes")]
+    #[default]
     Exomes,
-    /// gnomAD genomes
+    /// gnomAD genomes / SVs
     #[strum(serialize = "genomes")]
     Genomes,
 }
@@ -27,10 +28,33 @@ pub enum GnomadKind {
 /// Select the genomAD version (v2/v3; important for the field names).
 #[derive(strum::Display, clap::ValueEnum, Debug, Clone, Copy, PartialEq, Eq, Hash)]
 pub enum GnomadVersion {
+    /// Version 1.x (ExAC)
+    One,
     /// Version 2.x
     Two,
     /// Version 3.x
     Three,
+    /// Version 4.x
+    Four,
+}
+
+impl FromStr for GnomadVersion {
+    type Err = anyhow::Error;
+
+    /// Parse out the gnomAD version from the leading number.
+    fn from_str(s: &str) -> Result<Self, Self::Err> {
+        Ok(if s.starts_with("1.") {
+            GnomadVersion::One
+        } else if s.starts_with("2.") {
+            GnomadVersion::Two
+        } else if s.starts_with("3.") {
+            GnomadVersion::Three
+        } else if s.starts_with("4.") {
+            GnomadVersion::Four
+        } else {
+            anyhow::bail!("invalid GnomadVersion: {}", s)
+        })
+    }
 }
 
 /// Command line arguments for `gnomad_nuclear import` sub command.
@@ -199,6 +223,7 @@ fn process_window(
                         )?
                         .encode_to_vec()
                     }
+                    _ => anyhow::bail!("gnomAD version must be either 2 or 3"),
                 };
                 db.put_cf(&cf_gnomad, &key_buf, &record_buf)?;
             }
@@ -210,13 +235,10 @@ fn process_window(
 
 /// Implementation of `gnomad_nuclear import` sub command.
 pub fn run(common: &common::cli::Args, args: &Args) -> Result<(), anyhow::Error> {
-    let gnomad_version = if args.gnomad_version.starts_with("2.") {
-        GnomadVersion::Two
-    } else if args.gnomad_version.starts_with("3.") {
-        GnomadVersion::Three
-    } else {
-        anyhow::bail!("gnomAD version must be either 2 or 3")
-    };
+    let gnomad_version: GnomadVersion = args.gnomad_version.parse()?;
+    if !matches!(gnomad_version, GnomadVersion::Two | GnomadVersion::Three) {
+        anyhow::bail!("gnomAD version must be either 2 or 3");
+    }
 
     // Put defaults for fields to serialize into args.
     let args = match gnomad_version {
@@ -242,6 +264,7 @@ pub fn run(common: &common::cli::Args, args: &Args) -> Result<(), anyhow::Error>
                 .transpose()?,
             ..args.clone()
         },
+        _ => anyhow::bail!("gnomAD version must be either 2 or 3"),
     };
 
     tracing::info!("Starting 'gnomad-nuclear import' command");
