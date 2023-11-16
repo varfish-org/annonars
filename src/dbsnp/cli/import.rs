@@ -3,6 +3,7 @@
 use std::{str::FromStr, sync::Arc};
 
 use biocommons_bioutils::assemblies::Assembly;
+use byteorder::ByteOrder as _;
 use clap::Parser;
 use indicatif::ParallelProgressIterator;
 use noodles_vcf::header::record;
@@ -32,6 +33,9 @@ pub struct Args {
     /// Name of the column family to import into.
     #[arg(long, default_value = "dbsnp_data")]
     pub cf_name: String,
+    /// Name of the column family for RSID lookup.
+    #[arg(long, default_value = "dbsnp_by_rsid")]
+    pub cf_name_by_rsid: String,
     /// Optional path to RocksDB WAL directory.
     #[arg(long)]
     pub path_wal_dir: Option<String>,
@@ -98,6 +102,7 @@ fn process_window(
     args: &Args,
 ) -> Result<(), anyhow::Error> {
     let cf_dbsnp = db.cf_handle(&args.cf_name).unwrap();
+    let cf_dbsnp_by_rsid = db.cf_handle(&args.cf_name_by_rsid).unwrap();
     let mut reader =
         noodles_vcf::indexed_reader::Builder::default().build_from_path(&args.path_in_vcf)?;
     let header = reader.read_header()?;
@@ -133,6 +138,9 @@ fn process_window(
                 let record = dbsnp::pbs::Record::from_vcf_allele(&vcf_record, allele_no)?;
                 let record_buf = record.encode_to_vec();
                 db.put_cf(&cf_dbsnp, &key_buf, &record_buf)?;
+                let mut buf = [0; 4];
+                byteorder::LittleEndian::write_i32(&mut buf[0..4], record.rs_id);
+                db.put_cf(&cf_dbsnp_by_rsid, buf, &key_buf)?;
             }
         }
     }
@@ -197,7 +205,7 @@ pub fn run(common: &common::cli::Args, args: &Args) -> Result<(), anyhow::Error>
         rocksdb::Options::default(),
         args.path_wal_dir.as_ref().map(|s| s.as_ref()),
     );
-    let cf_names = &["meta", &args.cf_name];
+    let cf_names = &["meta", &args.cf_name, &args.cf_name_by_rsid];
     let db = Arc::new(rocksdb::DB::open_cf_with_opts(
         &options,
         common::readlink_f(&args.path_out_rocksdb)?,
@@ -259,6 +267,7 @@ mod test {
             path_in_vcf: String::from("tests/dbsnp/example/dbsnp.brca1.vcf.bgz"),
             path_out_rocksdb: format!("{}", tmp_dir.join("out-rocksdb").display()),
             cf_name: String::from("dbsnp_data"),
+            cf_name_by_rsid: String::from("dbsnp_by_rsid"),
             path_wal_dir: None,
             tbi_window_size: 1_000_000,
         };

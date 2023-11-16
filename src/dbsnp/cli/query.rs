@@ -2,6 +2,7 @@
 
 use std::{io::Write, sync::Arc};
 
+use byteorder::ByteOrder as _;
 use prost::Message;
 
 use crate::{
@@ -20,6 +21,9 @@ pub struct Args {
     /// Name of the column family to import into.
     #[arg(long, default_value = "dbsnp_data")]
     pub cf_name: String,
+    /// Name of the column family for RSID lookup.
+    #[arg(long, default_value = "dbsnp_by_rsid")]
+    pub cf_name_by_rsid: String,
     /// Output file (default is stdout == "-").
     #[arg(long, default_value = "-")]
     pub out_file: String,
@@ -48,10 +52,11 @@ pub fn open_rocksdb<P: AsRef<std::path::Path>>(
     path_rocksdb: P,
     cf_data: &str,
     cf_meta: &str,
+    cf_by_rs_id: &str,
 ) -> Result<(Arc<rocksdb::DBWithThreadMode<rocksdb::MultiThreaded>>, Meta), anyhow::Error> {
     tracing::info!("Opening RocksDB database ...");
     let before_open = std::time::Instant::now();
-    let cf_names = &[cf_meta, cf_data];
+    let cf_names = &[cf_meta, cf_data, cf_by_rs_id];
     let db = Arc::new(rocksdb::DB::open_cf_for_read_only(
         &rocksdb::Options::default(),
         common::readlink_f(&path_rocksdb)?,
@@ -95,7 +100,12 @@ pub fn open_rocksdb<P: AsRef<std::path::Path>>(
 pub fn open_rocksdb_from_args(
     args: &Args,
 ) -> Result<(Arc<rocksdb::DBWithThreadMode<rocksdb::MultiThreaded>>, Meta), anyhow::Error> {
-    open_rocksdb(&args.path_rocksdb, &args.cf_name, "meta")
+    open_rocksdb(
+        &args.path_rocksdb,
+        &args.cf_name,
+        "meta",
+        &args.cf_name_by_rsid,
+    )
 }
 
 fn print_record(
@@ -140,6 +150,44 @@ pub fn query_for_variant(
         .transpose()
 }
 
+/// Query for a single variant by accession.
+pub fn query_for_accession(
+    accession: &str,
+    db: &rocksdb::DBWithThreadMode<rocksdb::MultiThreaded>,
+    cf_data: &Arc<rocksdb::BoundColumnFamily>,
+    cf_data_by_rsid: &Arc<rocksdb::BoundColumnFamily>,
+) -> Result<Option<dbsnp::pbs::Record>, anyhow::Error> {
+    // Convert accession into i32 number.
+    let accession = accession.to_lowercase();
+    let accession = accession
+        .strip_prefix("rs")
+        .ok_or_else(|| anyhow::anyhow!("accession {} does not start with 'rs'", accession))?;
+    let ac_i32: i32 = accession.parse()?;
+    let ac_key: Vec<u8> = {
+        let mut buf = [0; 4];
+        byteorder::LittleEndian::write_i32(&mut buf[0..4], ac_i32);
+        buf.to_vec()
+    };
+
+    // First, lookup accession.
+    let var_key = db
+        .get_cf(cf_data_by_rsid, ac_key)
+        .map_err(|e| anyhow::anyhow!("error while querying for accession {}: {}", ac_i32, e))?
+        .ok_or_else(|| anyhow::anyhow!("no record found for accession {}", ac_i32))?;
+
+    // Execute query for key.
+    let raw_value = db
+        .get_cf(cf_data, var_key.clone())
+        .map_err(|e| anyhow::anyhow!("error while querying for variant {:?}: {}", &var_key, e))?;
+    raw_value
+        .map(|raw_value| {
+            // Decode via prost.
+            dbsnp::pbs::Record::decode(&mut std::io::Cursor::new(&raw_value))
+                .map_err(|e| anyhow::anyhow!("failed to decode record: {}", e))
+        })
+        .transpose()
+}
+
 /// Implementation of `tsv query` sub command.
 pub fn run(common: &common::cli::Args, args: &Args) -> Result<(), anyhow::Error> {
     tracing::info!("Starting 'dbsnp query' command");
@@ -148,6 +196,7 @@ pub fn run(common: &common::cli::Args, args: &Args) -> Result<(), anyhow::Error>
 
     let (db, meta) = open_rocksdb_from_args(args)?;
     let cf_data = db.cf_handle(&args.cf_name).unwrap();
+    let cf_by_rsid = db.cf_handle(&args.cf_name_by_rsid).unwrap();
 
     // Obtain writer to output.
     let mut out_writer = match args.out_file.as_ref() {
@@ -160,7 +209,13 @@ pub fn run(common: &common::cli::Args, args: &Args) -> Result<(), anyhow::Error>
 
     tracing::info!("Running query...");
     let before_query = std::time::Instant::now();
-    if let Some(variant) = args.query.variant.as_ref() {
+    if let Some(accession) = args.query.accession.as_ref() {
+        if let Some(record) = query_for_accession(accession, &db, &cf_data, &cf_by_rsid)? {
+            print_record(&mut out_writer, args.out_format, &record)?;
+        } else {
+            tracing::info!("no record found for accession {}", accession);
+        }
+    } else if let Some(variant) = args.query.variant.as_ref() {
         if let Some(record) = query_for_variant(variant, &meta, &db, &cf_data)? {
             print_record(&mut out_writer, args.out_format, &record)?;
         } else {
@@ -250,6 +305,7 @@ mod test {
         let args = Args {
             path_rocksdb: String::from("tests/dbsnp/example/dbsnp.brca1.vcf.bgz.db"),
             cf_name: String::from("dbsnp_data"),
+            cf_name_by_rsid: String::from("dbsnp_by_rsid"),
             out_file: temp.join("out").to_string_lossy().to_string(),
             out_format: common::cli::OutputFormat::Jsonl,
             query,
@@ -366,6 +422,20 @@ mod test {
     fn smoke_query_range_find_none_larger() -> Result<(), anyhow::Error> {
         let (common, args, _temp) = args(ArgsQuery {
             range: Some(spdi::Range::from_str("GRCh37:1:41267793:41268000")?),
+            ..Default::default()
+        });
+        run(&common, &args)?;
+        let out_data = std::fs::read_to_string(&args.out_file)?;
+        insta::assert_snapshot!(&out_data);
+
+        Ok(())
+    }
+
+    #[tracing_test::traced_test]
+    #[test]
+    fn smoke_query_range_by_accession() -> Result<(), anyhow::Error> {
+        let (common, args, _temp) = args(ArgsQuery {
+            accession: Some("rs431825385".to_string()),
             ..Default::default()
         });
         run(&common, &args)?;

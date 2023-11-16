@@ -30,10 +30,10 @@ pub struct Args {
     #[arg(long)]
     pub path_rocksdb: String,
     /// Name of the column family to import into.
-    #[arg(long, default_value = "clinvar-sv")]
+    #[arg(long, default_value = "clinvar_sv")]
     pub cf_name: String,
     /// Mapping from ClinVar RCV to ClinVar VCV.
-    #[arg(long, default_value = "clinvar-sv-by-rcv")]
+    #[arg(long, default_value = "clinvar_sv_by_rcv")]
     pub cf_name_by_rcv: String,
     /// Output file (default is stdout == "-").
     #[arg(long, default_value = "-")]
@@ -220,7 +220,7 @@ impl IntervalTrees {
             trees: Self::build_trees(db.clone(), cf_data.clone())?,
             db: db.clone(),
             cf_data_name: cf_data_name.to_string(),
-            meta: meta,
+            meta,
         })
     }
 
@@ -276,7 +276,7 @@ impl IntervalTrees {
         &self,
         range: &spdi::Range,
     ) -> Result<Vec<crate::pbs::annonars::clinvar::v1::sv::Record>, anyhow::Error> {
-        let contig = extract_chrom::from_range(&range, Some(&self.meta.genome_release))?;
+        let contig = extract_chrom::from_range(range, Some(&self.meta.genome_release))?;
         let cf_data = self.db.cf_handle(&self.cf_data_name).ok_or_else(|| {
             anyhow::anyhow!("no column family with name {:?} found", &self.cf_data_name)
         })?;
@@ -336,10 +336,10 @@ pub fn run(common: &common::cli::Args, args: &Args) -> Result<(), anyhow::Error>
         tracing::info!("... done building interval trees");
         tracing::info!("Running query...");
         let records = trees
-            .query(&range)
+            .query(range)
             .map_err(|e| anyhow::anyhow!("failed to query interval trees: {}", e))?;
         for record in &records {
-            print_record(&mut out_writer, args.out_format, &record)?;
+            print_record(&mut out_writer, args.out_format, record)?;
         }
         tracing::info!("... done running query");
     } else if args.query.all {
@@ -369,8 +369,8 @@ mod test {
         };
         let args = Args {
             path_rocksdb: String::from("tests/clinvar-sv/clinvar-sv-grch37.tsv.db"),
-            cf_name: String::from("clinvar-sv"),
-            cf_name_by_rcv: String::from("clinvar-sv-by-rcv"),
+            cf_name: String::from("clinvar_sv"),
+            cf_name_by_rcv: String::from("clinvar_sv_by_rcv"),
             out_file: temp.join("out").to_string_lossy().to_string(),
             out_format: common::cli::OutputFormat::Jsonl,
             query,

@@ -10,7 +10,7 @@ if [[ tests/dbsnp/example/dbsnp.brca1.vcf \
     tabix -f tests/dbsnp/example/dbsnp.brca1.vcf.bgz
 fi
 
-rm -rf tests/dbsnp/example/dbsnp.brca1.vcf.gz.db
+rm -rf tests/dbsnp/example/dbsnp.brca1.vcf.bgz.db
 cargo run --all-features -- \
     dbsnp import \
     --genome-release grch37 \

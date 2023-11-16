@@ -25,10 +25,10 @@ pub struct Args {
     #[arg(long, default_value_t = 50)]
     pub min_var_size: u32,
     /// Name of the column family to import into.
-    #[arg(long, default_value = "clinvar-sv")]
+    #[arg(long, default_value = "clinvar_sv")]
     pub cf_name: String,
     /// Mapping from ClinVar RCV to ClinVar VCV.
-    #[arg(long, default_value = "clinvar-sv-by-rcv")]
+    #[arg(long, default_value = "clinvar_sv_by_rcv")]
     pub cf_name_by_rcv: String,
     /// Optional path to RocksDB WAL directory.
     #[arg(long)]
@@ -47,10 +47,10 @@ fn jsonl_import(
     // Open reader, possibly decompressing gziped files.
     let reader: Box<dyn std::io::Read> = if path_in_jsonl.ends_with(".gz") {
         Box::new(flate2::read::GzDecoder::new(std::fs::File::open(
-            &path_in_jsonl,
+            path_in_jsonl,
         )?))
     } else {
-        Box::new(std::fs::File::open(&path_in_jsonl)?)
+        Box::new(std::fs::File::open(path_in_jsonl)?)
     };
 
     let reader = std::io::BufReader::new(reader);
@@ -287,9 +287,9 @@ mod test {
                 String::from("tests/clinvar-sv/clinvar-variants-grch37-strucvars.jsonl"),
             ],
             path_out_rocksdb: format!("{}", tmp_dir.join("out-rocksdb").display()),
+            cf_name: String::from("clinvar_sv"),
+            cf_name_by_rcv: String::from("clinvar_sv_by_rcv"),
             min_var_size: 50,
-            cf_name: String::from("clinvar-sv"),
-            cf_name_by_rcv: String::from("clinvar-sv-by-rcv"),
             path_wal_dir: None,
         };
 
