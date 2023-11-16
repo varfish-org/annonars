@@ -28,6 +28,9 @@ pub struct Args {
     /// Name of the column family to import into.
     #[arg(long, default_value = "clinvar")]
     pub cf_name: String,
+    /// Name of the column family for accession lookup.
+    #[arg(long, default_value = "clinvar_by_accession")]
+    pub cf_name_by_accession: String,
     /// Optional path to RocksDB WAL directory.
     #[arg(long)]
     pub path_wal_dir: Option<String>,
@@ -39,6 +42,7 @@ fn jsonl_import(
     args: &Args,
 ) -> Result<(), anyhow::Error> {
     let cf_data = db.cf_handle(&args.cf_name).unwrap();
+    let cf_by_accession = db.cf_handle(&args.cf_name_by_accession).unwrap();
 
     // Open reader, possibly decompressing gziped files.
     let reader: Box<dyn std::io::Read> = if args.path_in_jsonl.ends_with(".gz") {
@@ -103,6 +107,9 @@ fn jsonl_import(
                     continue;
                 }
                 Ok(data) => {
+                    db.put_cf(&cf_by_accession, rcv.as_bytes(), &key)?;
+                    db.put_cf(&cf_by_accession, vcv.as_bytes(), &key)?;
+
                     let record = if let Some(data) = data {
                         let mut record =
                             crate::pbs::annonars::clinvar::v1::minimal::Record::decode(&data[..])?;
@@ -136,7 +143,7 @@ fn jsonl_import(
                         }
                     };
                     let buf = record.encode_to_vec();
-                    db.put_cf(&cf_data, key, buf)?;
+                    db.put_cf(&cf_data, &key, &buf)?;
                 }
             }
         }
@@ -158,7 +165,7 @@ pub fn run(common: &common::cli::Args, args: &Args) -> Result<(), anyhow::Error>
         rocksdb::Options::default(),
         args.path_wal_dir.as_ref().map(|s| s.as_ref()),
     );
-    let cf_names = &["meta", &args.cf_name];
+    let cf_names = &["meta", &args.cf_name, &args.cf_name_by_accession];
     let db = Arc::new(rocksdb::DB::open_cf_with_opts(
         &options,
         common::readlink_f(&args.path_out_rocksdb)?,
@@ -219,6 +226,7 @@ mod test {
             path_in_jsonl: String::from("tests/clinvar-minimal/clinvar-seqvars-grch37-tgds.jsonl"),
             path_out_rocksdb: format!("{}", tmp_dir.join("out-rocksdb").display()),
             cf_name: String::from("clinvar"),
+            cf_name_by_accession: String::from("clinvar_by_accession"),
             path_wal_dir: None,
         };
 
