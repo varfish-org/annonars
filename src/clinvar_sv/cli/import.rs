@@ -47,10 +47,10 @@ fn jsonl_import(
     // Open reader, possibly decompressing gziped files.
     let reader: Box<dyn std::io::Read> = if path_in_jsonl.ends_with(".gz") {
         Box::new(flate2::read::GzDecoder::new(std::fs::File::open(
-            &path_in_jsonl,
+            path_in_jsonl,
         )?))
     } else {
-        Box::new(std::fs::File::open(&path_in_jsonl)?)
+        Box::new(std::fs::File::open(path_in_jsonl)?)
     };
 
     let reader = std::io::BufReader::new(reader);

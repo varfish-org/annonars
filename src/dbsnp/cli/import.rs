@@ -140,7 +140,7 @@ fn process_window(
                 db.put_cf(&cf_dbsnp, &key_buf, &record_buf)?;
                 let mut buf = [0; 4];
                 byteorder::LittleEndian::write_i32(&mut buf[0..4], record.rs_id);
-                db.put_cf(&cf_dbsnp_by_rsid, &buf, &key_buf)?;
+                db.put_cf(&cf_dbsnp_by_rsid, buf, &key_buf)?;
             }
         }
     }
