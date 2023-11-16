@@ -21,6 +21,9 @@ pub struct Args {
     #[arg(long)]
     pub path_out_rocksdb: String,
 
+    /// Minimal VCF REF/ALT length to consider as SV.
+    #[arg(long, default_value_t = 50)]
+    pub min_var_size: u32,
     /// Name of the column family to import into.
     #[arg(long, default_value = "clinvar-sv")]
     pub cf_name: String,
@@ -88,6 +91,23 @@ fn jsonl_import(
             outer_start,
             outer_stop,
         } = sequence_location;
+
+        if let (Some(reference_allele_vcf), Some(alternate_allee_vcf)) =
+            (reference_allele_vcf.as_ref(), alternate_allele_vcf.as_ref())
+        {
+            if reference_allele_vcf.len() < args.min_var_size as usize
+                && alternate_allee_vcf.len() < args.min_var_size as usize
+            {
+                tracing::debug!(
+                    "skipping line because of short REF/ALT: {}/{}: {}>{}",
+                    &vcv,
+                    &rcv,
+                    reference_allele_vcf,
+                    alternate_allee_vcf,
+                );
+                continue;
+            }
+        }
 
         let (start, stop, inner_start, inner_stop, outer_start, outer_stop) =
             if let (Some(start), Some(stop)) = (start, stop) {
@@ -267,6 +287,7 @@ mod test {
                 String::from("tests/clinvar-sv/clinvar-variants-grch37-strucvars.jsonl"),
             ],
             path_out_rocksdb: format!("{}", tmp_dir.join("out-rocksdb").display()),
+            min_var_size: 50,
             cf_name: String::from("clinvar-sv"),
             cf_name_by_rcv: String::from("clinvar-sv-by-rcv"),
             path_wal_dir: None,
