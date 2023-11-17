@@ -79,6 +79,12 @@ impl Record {
         let outer_start = get_i32(record, "POSMIN").expect("no POSMIN?");
         let inner_stop = get_i32(record, "ENDMIN").expect("no ENDMIN?");
         let outer_stop = get_i32(record, "ENDMAX").expect("no ENDMAX?");
+        let id = record
+            .ids()
+            .iter()
+            .next()
+            .map(|s| s.to_string())
+            .ok_or_else(|| anyhow::anyhow!("no ID found in VCF record"))?;
         let sv_len = get_i32(record, "SVLEN").expect("no SVLEN?");
         let sv_type = get_string(record, "SVTYPE")?
             .parse::<CnvType>()
@@ -114,6 +120,7 @@ impl Record {
             inner_stop,
             outer_start,
             outer_stop,
+            id,
             sv_len,
             sv_type,
             n_exn_var,

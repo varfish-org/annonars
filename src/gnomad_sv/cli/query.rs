@@ -14,6 +14,9 @@ pub struct ArgsQuery {
     /// Query for all variants.
     #[arg(long, group = "query")]
     pub all: bool,
+    /// Query for variant with a specicic accession.
+    #[arg(long, group = "query")]
+    pub accession: Option<String>,
     /// Specify range to query for.
     #[arg(long, group = "query")]
     pub range: Option<spdi::Range>,
@@ -108,6 +111,7 @@ pub fn open_rocksdb_from_args(
 }
 
 /// Enumeration for the different record types that we have.
+#[derive(Debug)]
 pub enum Record {
     /// ExAC SV record.
     ExacCnv(crate::gnomad_pbs::exac_cnv::Record),
@@ -117,6 +121,50 @@ pub enum Record {
     GnomadCnv4(crate::gnomad_pbs::gnomad_cnv4::Record),
     /// gnomAD-SV v4 record.
     GnomadSv4(crate::gnomad_pbs::gnomad_sv4::Record),
+}
+
+/// The necessary data for the tree construction.
+#[derive(Debug)]
+pub struct TreeData {
+    /// The chromosome.
+    pub chromosome: String,
+    /// The start position.
+    pub start: u32,
+    /// The stop position.
+    pub stop: u32,
+}
+
+impl Record {
+    fn tree_data(&self) -> TreeData {
+        match self {
+            Record::ExacCnv(record) => TreeData {
+                chromosome: record.chrom.clone(),
+                start: record.start as u32,
+                stop: record.stop as u32,
+            },
+            Record::GnomadSv2(record) => TreeData {
+                chromosome: record.chrom.clone(),
+                start: record.pos as u32,
+                stop: record
+                    .end
+                    .map(|end| end as u32)
+                    .unwrap_or(record.pos as u32 + 1),
+            },
+            Record::GnomadCnv4(record) => TreeData {
+                chromosome: record.chrom.clone(),
+                start: record.start as u32,
+                stop: record.stop as u32,
+            },
+            Record::GnomadSv4(record) => TreeData {
+                chromosome: record.chrom.clone(),
+                start: record.pos as u32,
+                stop: record
+                    .end
+                    .map(|end| end as u32)
+                    .unwrap_or(record.pos as u32 + 1),
+            },
+        }
+    }
 }
 
 /// Write a single record to `out_writer`.
@@ -203,7 +251,7 @@ fn print_all(
 /// Helper data structure that provides per-chromosome interval trees for querying.
 pub struct IntervalTrees {
     /// Per-chromosome interval trees.
-    trees: rustc_hash::FxHashMap<String, ArrayBackedIntervalTree<u64, String>>,
+    trees: rustc_hash::FxHashMap<String, ArrayBackedIntervalTree<u64, Vec<u8>>>,
     /// Backing RocksDB.
     db: Arc<rocksdb::DBWithThreadMode<rocksdb::MultiThreaded>>,
     /// Name of column family with data.
@@ -239,7 +287,7 @@ impl IntervalTrees {
             anyhow::anyhow!("no column family with name {:?} found", cf_data_name)
         })?;
         Ok(Self {
-            trees: Self::build_trees(db.clone(), cf_data.clone())?,
+            trees: Self::build_trees(db.clone(), cf_data.clone(), &meta)?,
             db: db.clone(),
             cf_data_name: cf_data_name.to_string(),
             meta,
@@ -250,9 +298,10 @@ impl IntervalTrees {
     fn build_trees(
         db: Arc<rocksdb::DBWithThreadMode<rocksdb::MultiThreaded>>,
         cf_data: Arc<rocksdb::BoundColumnFamily>,
-    ) -> Result<rustc_hash::FxHashMap<String, ArrayBackedIntervalTree<u64, String>>, anyhow::Error>
+        meta: &Meta,
+    ) -> Result<rustc_hash::FxHashMap<String, ArrayBackedIntervalTree<u64, Vec<u8>>>, anyhow::Error>
     {
-        let mut result: rustc_hash::FxHashMap<String, ArrayBackedIntervalTree<u64, String>> =
+        let mut result: rustc_hash::FxHashMap<String, ArrayBackedIntervalTree<u64, Vec<u8>>> =
             rustc_hash::FxHashMap::default();
 
         // Obtain iterator and seek to start.
@@ -260,27 +309,25 @@ impl IntervalTrees {
         iter.seek(b"");
         while iter.valid() {
             if let Some(raw_value) = iter.value() {
-                let record = crate::pbs::annonars::clinvar::v1::sv::Record::decode(
-                    &mut std::io::Cursor::new(&raw_value),
-                )
-                .map_err(|e| anyhow::anyhow!("failed to decode record: {}", e))?;
-                tracing::trace!("iterator at {:?} => {:?}", &iter.key(), &record);
+                let record = decode_record(&raw_value, &meta)
+                    .map_err(|e| anyhow::anyhow!("failed to decode record: {}", e))?;
+                let key = iter.key().unwrap().to_vec();
+                tracing::trace!("iterator at {:?} => {:?}", &key, &record);
 
-                let crate::pbs::annonars::clinvar::v1::sv::Record {
+                let TreeData {
                     chromosome,
                     start,
                     stop,
-                    vcv,
-                    ..
-                } = record;
+                } = record.tree_data();
 
                 let interval = (start as u64 - 1)..(stop as u64);
-                tracing::trace!("contig = {} / {:?} / {}", &chromosome, &interval, &vcv);
+                let chrom = chromosome.strip_prefix("chr").unwrap_or(&chromosome);
+                tracing::trace!("contig = {} / {:?} / {:?}", &chrom, &interval, &key);
                 result
-                    .entry(chromosome.clone())
+                    .entry(chrom.to_string())
                     .or_default()
-                    .insert(interval, vcv);
-                assert!(result.contains_key(&chromosome));
+                    .insert(interval, key);
+                assert!(result.contains_key(chrom));
 
                 iter.next();
             } else {
@@ -295,6 +342,7 @@ impl IntervalTrees {
 
     /// Query for a range.
     pub fn query(&self, range: &spdi::Range) -> Result<Vec<Record>, anyhow::Error> {
+        tracing::trace!("query for {:?}", &range);
         let contig = extract_chrom::from_range(range, Some(&self.meta.genome_release))?;
         let cf_data = self.db.cf_handle(&self.cf_data_name).ok_or_else(|| {
             anyhow::anyhow!("no column family with name {:?} found", &self.cf_data_name)
@@ -303,7 +351,8 @@ impl IntervalTrees {
         let mut result = Vec::new();
         if let Some(tree) = self.trees.get(&contig) {
             for entry in tree.find(&interval) {
-                if let Some(raw_value) = self.db.get_cf(&cf_data, entry.data().as_bytes())? {
+                tracing::info!("found entry: {:?}", &entry);
+                if let Some(raw_value) = self.db.get_cf(&cf_data, entry.data())? {
                     result.push(decode_record(&raw_value, &self.meta)?);
                 }
             }
@@ -349,6 +398,18 @@ pub fn run(common: &common::cli::Args, args: &Args) -> Result<(), anyhow::Error>
             print_record(&mut out_writer, args.out_format, record)?;
         }
         tracing::info!("... done running query");
+    } else if let Some(accession) = args.query.accession.as_ref() {
+        tracing::info!("for accession {}", accession);
+        let buf = db
+            .get_cf(&cf_data, accession.as_bytes())
+            .map_err(|e| anyhow::anyhow!("failed to query RocksDB: {}", e))?;
+        if let Some(buf) = buf {
+            let record = decode_record(&buf, &meta)?;
+            print_record(&mut out_writer, args.out_format, &record)?;
+        } else {
+            tracing::warn!("no record found for accession {}", accession);
+        }
+        tracing::info!("... done running query");
     } else if args.query.all {
         tracing::info!("for all");
         print_all(&mut out_writer, args.out_format, &db, &cf_data, &meta)?;
@@ -363,6 +424,7 @@ pub fn run(common: &common::cli::Args, args: &Args) -> Result<(), anyhow::Error>
 
 #[cfg(test)]
 mod test {
+    use std::str::FromStr as _;
     use temp_testdir::TempDir;
 
     use crate::common;
@@ -383,6 +445,7 @@ mod test {
         (common, args, temp)
     }
 
+    #[tracing_test::traced_test]
     #[rstest::rstest]
     #[case("tests/gnomad-sv/exac-cnv/rocksdb", "exac-cnv")]
     #[case("tests/gnomad-sv/gnomad-sv2/rocksdb", "gnomad-sv2")]
@@ -400,6 +463,113 @@ mod test {
             path_rocksdb: path_rocksdb.to_string(),
             query: super::ArgsQuery {
                 all: true,
+                ..Default::default()
+            },
+            ..args
+        };
+        super::run(&common, &args)?;
+        let out_data = std::fs::read_to_string(&args.out_file)?;
+        insta::assert_snapshot!(&out_data);
+
+        Ok(())
+    }
+
+    #[tracing_test::traced_test]
+    #[rstest::rstest]
+    #[case(
+        "tests/gnomad-sv/gnomad-sv2/rocksdb",
+        "gnomAD-SV_v2.1_BND_1_1",
+        "gnomad-sv2"
+    )]
+    #[case(
+        "tests/gnomad-sv/gnomad-cnv4/rocksdb",
+        "variant_is_80_2__DEL",
+        "gnomad-cnv4"
+    )]
+    #[case(
+        "tests/gnomad-sv/gnomad-sv4/rocksdb",
+        "gnomAD-SV_v3_DUP_chr1_01c2781c",
+        "gnomad-sv4"
+    )]
+    fn smoke_query_var_accession(
+        #[case] path_rocksdb: &str,
+        #[case] accession: &str,
+        #[case] label: &str,
+        args_args_temp: (common::cli::Args, super::Args, TempDir),
+    ) -> Result<(), anyhow::Error> {
+        crate::common::set_snapshot_suffix!("{}", &label);
+
+        let (common, args, _temp) = args_args_temp;
+        let args = super::Args {
+            path_rocksdb: path_rocksdb.to_string(),
+            query: super::ArgsQuery {
+                accession: Some(accession.to_string()),
+                ..Default::default()
+            },
+            ..args
+        };
+        super::run(&common, &args)?;
+        let out_data = std::fs::read_to_string(&args.out_file)?;
+        insta::assert_snapshot!(&out_data);
+
+        Ok(())
+    }
+
+    #[tracing_test::traced_test]
+    #[rstest::rstest]
+    #[case(
+        "tests/gnomad-sv/exac-cnv/rocksdb",
+        "10:51620321:51748701",
+        "exac-cnv-some"
+    )]
+    #[case(
+        "tests/gnomad-sv/exac-cnv/rocksdb",
+        "1:51620321:51748701",
+        "exac-cnv-none"
+    )]
+    #[case(
+        "tests/gnomad-sv/gnomad-sv2/rocksdb",
+        "1:94000:94010",
+        "gnomad-sv2-some"
+    )]
+    #[case(
+        "tests/gnomad-sv/gnomad-sv2/rocksdb",
+        "10:94000:94010",
+        "gnomad-sv2-none"
+    )]
+    #[case(
+        "tests/gnomad-sv/gnomad-cnv4/rocksdb",
+        "chr1:925634:925635",
+        "gnomad-cnv4-some"
+    )]
+    #[case(
+        "tests/gnomad-sv/gnomad-cnv4/rocksdb",
+        "chr10:925634:925635",
+        "gnomad-cnv4-none"
+    )]
+    #[case(
+        "tests/gnomad-sv/gnomad-sv4/rocksdb",
+        "chr1:120937:120938",
+        "gnomad-sv4-some"
+    )]
+    #[case(
+        "tests/gnomad-sv/gnomad-sv4/rocksdb",
+        "chr10:120937:120938",
+        "gnomad-sv4-none"
+    )]
+    fn smoke_query_range(
+        #[case] path_rocksdb: &str,
+        #[case] range: &str,
+        #[case] label: &str,
+        args_args_temp: (common::cli::Args, super::Args, TempDir),
+    ) -> Result<(), anyhow::Error> {
+        crate::common::set_snapshot_suffix!("{}", &label);
+
+        let (common, args, _temp) = args_args_temp;
+        let args = super::Args {
+            path_rocksdb: path_rocksdb.to_string(),
+            query: super::ArgsQuery {
+                range: Some(crate::common::spdi::Range::from_str(range)?),
                 ..Default::default()
             },
             ..args

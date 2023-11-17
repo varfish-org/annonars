@@ -74,22 +74,25 @@ message Record {
     // 1-based inner stop position.
     int32 outer_stop = 7;
 
+    // Unique identifier for the variant.
+    string id = 8;
+
     // Length of the SV.
-    int32 sv_len = 8;
+    int32 sv_len = 9;
     // The type of the variant.
-    annonars.gnomad.v1.exac_cnv.CnvType sv_type = 9;
+    annonars.gnomad.v1.exac_cnv.CnvType sv_type = 10;
 
     // Median number of callable exons spanned by variant passing QS
     // threshold.
-    int32 n_exn_var = 10;
+    int32 n_exn_var = 11;
     // Median number of callable intervals spanned by variant passing
     // QS threshold.
-    int32 n_int_var = 11;
+    int32 n_int_var = 12;
     // Symbols of genes predicted to be impacted by variant
-    repeated string genes = 12;
+    repeated string genes = 13;
 
     // Global carrier counts.
-    CarrierCountsBySex counts = 13;
+    CarrierCountsBySex counts = 14;
     // Carrier counts in the different population.
-    repeated PopulationAlleleCounts by_population = 14;
+    repeated PopulationAlleleCounts by_population = 15;
 }
