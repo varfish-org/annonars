@@ -1,6 +1,6 @@
 use annonars::{
-    clinvar_genes, clinvar_minimal, clinvar_sv, common, cons, db_utils, dbsnp, freqs, genes,
-    gnomad_mtdna, gnomad_nuclear, gnomad_sv, helixmtdb, server, tsv,
+    clinvar_genes, clinvar_minimal, clinvar_sv, common, cons, db_utils, dbsnp, freqs, functional,
+    genes, gnomad_mtdna, gnomad_nuclear, gnomad_sv, helixmtdb, server, tsv,
 };
 use anyhow::Error;
 use clap::{command, Args, Parser, Subcommand};
@@ -40,6 +40,8 @@ enum Commands {
     ClinvarSv(ClinvarSv),
     /// "freqs" sub commands
     Freqs(Freqs),
+    /// "functional" sub commands
+    Functional(Functional),
     /// "dbsnp" sub commands
     Dbsnp(Dbsnp),
     /// "helixmtdb" sub commands
@@ -192,6 +194,23 @@ enum FreqsCommands {
     Query(freqs::cli::query::Args),
 }
 
+/// Parsing of "functional" subcommands.
+#[derive(Debug, Args, Clone)]
+struct Functional {
+    /// The sub command to run
+    #[command(subcommand)]
+    command: FunctionalCommands,
+}
+
+/// Enum supporting the parsing of "functional *" subcommands.
+#[derive(Debug, Subcommand, Clone)]
+enum FunctionalCommands {
+    /// "import" sub command
+    Import(functional::cli::import::Args),
+    /// "query" sub command
+    Query(functional::cli::query::Args),
+}
+
 /// Parsing of "helixmtdb" subcommands.
 #[derive(Debug, Args, Clone)]
 struct Helixmtdb {
@@ -337,6 +356,12 @@ pub fn main() -> Result<(), anyhow::Error> {
             Commands::Freqs(args) => match &args.command {
                 FreqsCommands::Import(args) => freqs::cli::import::run(&cli.common, args)?,
                 FreqsCommands::Query(args) => freqs::cli::query::run(&cli.common, args)?,
+            },
+            Commands::Functional(args) => match &args.command {
+                FunctionalCommands::Import(args) => {
+                    functional::cli::import::run(&cli.common, args)?
+                }
+                FunctionalCommands::Query(args) => functional::cli::query::run(&cli.common, args)?,
             },
             Commands::Helixmtdb(args) => match &args.command {
                 HelixmtdbCommands::Import(args) => helixmtdb::cli::import::run(&cli.common, args)?,

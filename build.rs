@@ -6,6 +6,7 @@ fn main() {
     println!("cargo:rerun-if-changed=src/proto/annonars/clinvar/v1/sv.proto");
     println!("cargo:rerun-if-changed=src/proto/annonars/cons/v1/base.proto");
     println!("cargo:rerun-if-changed=src/proto/annonars/dbsnp/v1/base.proto");
+    println!("cargo:rerun-if-changed=src/proto/annonars/functional/v1/refseq.proto");
     println!("cargo:rerun-if-changed=src/proto/annonars/gene/v1/base.proto");
     println!("cargo:rerun-if-changed=src/proto/annonars/gnomad/v1/exac_cnv.proto");
     println!("cargo:rerun-if-changed=src/proto/annonars/gnomad/v1/gnomad2.proto");
@@ -48,6 +49,7 @@ fn main() {
                 "annonars/dbsnp/v1/base.proto",
                 "annonars/gene/v1/base.proto",
                 "annonars/gnomad/v1/exac_cnv.proto",
+                "annonars/functional/v1/refseq.proto",
                 "annonars/gnomad/v1/gnomad2.proto",
                 "annonars/gnomad/v1/gnomad3.proto",
                 "annonars/gnomad/v1/gnomad_cnv4.proto",

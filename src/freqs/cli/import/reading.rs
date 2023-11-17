@@ -2,9 +2,17 @@
 
 use std::collections::{BTreeMap, HashMap};
 
-use biocommons_bioutils::assemblies::{Assembly, ASSEMBLY_INFOS};
+use biocommons_bioutils::assemblies::{Assembly, Sequence, ASSEMBLY_INFOS};
 
 use crate::common::cli::CANONICAL;
+
+/// Error type related to `ContigMap`.
+#[derive(thiserror::Error, Debug)]
+pub enum ContigMapError {
+    /// The sequence name/alias/accession is not known.
+    #[error("the sequence name/alias/accession `{0}` is not known")]
+    UnknownSequence(String),
+}
 
 /// Provide mapping from contig names to numeric contig IDs.
 pub struct ContigMap {
@@ -23,6 +31,8 @@ impl ContigMap {
         let info = &ASSEMBLY_INFOS[assembly];
         for (idx, seq) in info.sequences.iter().enumerate() {
             name_map.insert(seq.name.clone(), idx);
+            name_map.insert(seq.refseq_ac.clone(), idx);
+            name_map.insert(seq.genbank_ac.clone(), idx);
             for alias in seq.aliases.iter() {
                 name_map.insert(alias.clone(), idx);
             }
@@ -32,14 +42,27 @@ impl ContigMap {
     }
 
     /// Map chromosome to index.
-    pub fn chrom_to_idx(&self, chrom: &noodles_vcf::record::Chromosome) -> usize {
+    pub fn chrom_to_idx(
+        &self,
+        chrom: &noodles_vcf::record::Chromosome,
+    ) -> Result<usize, ContigMapError> {
         match chrom {
             noodles_vcf::record::Chromosome::Name(s)
-            | noodles_vcf::record::Chromosome::Symbol(s) => *self
-                .name_map
-                .get(s)
-                .unwrap_or_else(|| panic!("Invalid contig {s}")),
+            | noodles_vcf::record::Chromosome::Symbol(s) => self.chrom_name_to_idx(s),
         }
+    }
+
+    /// Map chromosome name to index.
+    pub fn chrom_name_to_idx(&self, chrom: &str) -> Result<usize, ContigMapError> {
+        self.name_map
+            .get(chrom)
+            .map(|chrom| *chrom)
+            .ok_or_else(|| ContigMapError::UnknownSequence(chrom.to_string()))
+    }
+
+    /// Map chromosome name to `sequence``.
+    pub fn chrom_name_to_seq(&self, chrom: &str) -> Result<&Sequence, ContigMapError> {
+        Ok(&ASSEMBLY_INFOS[self.assembly].sequences[self.chrom_name_to_idx(chrom)?])
     }
 }
 
