@@ -9,10 +9,13 @@ pub struct Args {
 }
 
 /// Output format to write.
-#[derive(Copy, Clone, PartialEq, Eq, PartialOrd, Ord, Debug, clap::ValueEnum, strum::Display)]
+#[derive(
+    Copy, Clone, PartialEq, Eq, PartialOrd, Ord, Debug, Default, clap::ValueEnum, strum::Display,
+)]
 #[strum(serialize_all = "lowercase")]
 pub enum OutputFormat {
     /// JSONL format.
+    #[default]
     Jsonl,
 }
 
@@ -20,6 +23,7 @@ pub enum OutputFormat {
 #[derive(
     Copy,
     Clone,
+    Default,
     PartialEq,
     Eq,
     PartialOrd,
@@ -34,6 +38,7 @@ pub enum OutputFormat {
 pub enum GenomeRelease {
     /// GRCh37 genome release.
     #[strum(serialize = "grch37")]
+    #[default]
     Grch37,
     /// GRCh38 genome release.
     #[strum(serialize = "grch38")]

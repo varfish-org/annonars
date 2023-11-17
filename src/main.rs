@@ -1,6 +1,6 @@
 use annonars::{
     clinvar_genes, clinvar_minimal, clinvar_sv, common, cons, db_utils, dbsnp, freqs, genes,
-    gnomad_mtdna, gnomad_nuclear, helixmtdb, server, tsv,
+    gnomad_mtdna, gnomad_nuclear, gnomad_sv, helixmtdb, server, tsv,
 };
 use anyhow::Error;
 use clap::{command, Args, Parser, Subcommand};
@@ -48,6 +48,8 @@ enum Commands {
     GnomadMtdna(GnomadMtdna),
     /// "gnomad-nuclear" sub commands
     GnomadNuclear(GnomadNuclear),
+    /// "gnomad-sv" sub commands
+    GnomadSv(GnomadSv),
     /// "db-utils" sub commands
     DbUtils(DbUtils),
     /// "run-server" command.
@@ -232,13 +234,30 @@ struct GnomadNuclear {
     command: GnomadNuclearCommands,
 }
 
-/// Enum supporting the parsing of "helixmtdb *" subcommands.
+/// Enum supporting the parsing of "gnomad-nuclear *" subcommands.
 #[derive(Debug, Subcommand, Clone)]
 enum GnomadNuclearCommands {
     /// "import" sub command
     Import(gnomad_nuclear::cli::import::Args),
     /// "query" sub command
     Query(gnomad_nuclear::cli::query::Args),
+}
+
+/// Parsing of "gnomad-sv" subcommands.
+#[derive(Debug, Args, Clone)]
+struct GnomadSv {
+    /// The sub command to run
+    #[command(subcommand)]
+    command: GnomadSvCommands,
+}
+
+/// Enum supporting the parsing of "gnomad-sv *" subcommands.
+#[derive(Debug, Subcommand, Clone)]
+enum GnomadSvCommands {
+    /// "import" sub command
+    Import(gnomad_sv::cli::import::Args),
+    /// "query" sub command
+    Query(gnomad_sv::cli::query::Args),
 }
 
 /// Parsing of "db-utils" subcommands.
@@ -338,6 +357,10 @@ pub fn main() -> Result<(), anyhow::Error> {
                 GnomadNuclearCommands::Query(args) => {
                     gnomad_nuclear::cli::query::run(&cli.common, args)?
                 }
+            },
+            Commands::GnomadSv(args) => match &args.command {
+                GnomadSvCommands::Import(args) => gnomad_sv::cli::import::run(&cli.common, args)?,
+                GnomadSvCommands::Query(args) => gnomad_sv::cli::query::run(&cli.common, args)?,
             },
             Commands::DbUtils(args) => match &args.command {
                 DbUtilsCommands::Copy(args) => db_utils::cli::copy::run(&cli.common, args)?,

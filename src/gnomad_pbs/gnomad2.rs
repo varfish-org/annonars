@@ -349,7 +349,7 @@ impl Record {
                     by_sex: Some(AlleleCountsBySex {
                         overall: Self::extract_allele_counts(record, &prefix, "")?,
                         xx: Self::extract_allele_counts(record, &prefix, "_female")?,
-                        xy: Self::extract_allele_counts(record, &prefix, "male")?,
+                        xy: Self::extract_allele_counts(record, &prefix, "_male")?,
                     }),
                     raw: Self::extract_allele_counts(record, &prefix, "_raw")?,
                     popmax: common::noodles::get_string(record, &format!("{}_popmax", cohort)).ok(),
