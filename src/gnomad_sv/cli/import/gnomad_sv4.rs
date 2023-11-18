@@ -365,6 +365,6 @@ pub fn import(
     paths_in_vcf
         .par_iter()
         .progress_with(common::cli::progress_bar(paths_in_vcf.len()))
-        .map(|path_in_tsv| import_file(&db, cf_data_name, path_in_tsv))
+        .map(|path_in_tsv| import_file(db, cf_data_name, path_in_tsv))
         .collect::<Result<(), _>>()
 }

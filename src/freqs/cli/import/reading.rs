@@ -56,7 +56,7 @@ impl ContigMap {
     pub fn chrom_name_to_idx(&self, chrom: &str) -> Result<usize, ContigMapError> {
         self.name_map
             .get(chrom)
-            .map(|chrom| *chrom)
+            .copied()
             .ok_or_else(|| ContigMapError::UnknownSequence(chrom.to_string()))
     }
 

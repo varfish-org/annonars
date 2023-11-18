@@ -309,7 +309,7 @@ impl IntervalTrees {
         iter.seek(b"");
         while iter.valid() {
             if let Some(raw_value) = iter.value() {
-                let record = decode_record(&raw_value, &meta)
+                let record = decode_record(raw_value, meta)
                     .map_err(|e| anyhow::anyhow!("failed to decode record: {}", e))?;
                 let key = iter.key().unwrap().to_vec();
                 tracing::trace!("iterator at {:?} => {:?}", &key, &record);
