@@ -22,9 +22,9 @@ pub struct ArgsQuery {
     pub range: Option<spdi::Range>,
 }
 
-/// Command line arguments for `clinvar-sv query` sub command.
-#[derive(clap::Parser, Debug, Clone)]
-#[command(about = "query ClinVar SV data stored in RocksDB", long_about = None)]
+/// Command line arguments for `functional query` sub command.
+#[derive(clap::Parser, Debug, Clone, Default)]
+#[command(about = "query functional element data stored in RocksDB", long_about = None)]
 pub struct Args {
     /// Path to RocksDB directory with data.
     #[arg(long)]
@@ -32,9 +32,6 @@ pub struct Args {
     /// Name of the column family to import into.
     #[arg(long, default_value = "functional")]
     pub cf_name: String,
-    /// Mapping from Accession to ID.
-    #[arg(long, default_value = "functional_by_acc")]
-    pub cf_name_by_acc: String,
     /// Output file (default is stdout == "-").
     #[arg(long, default_value = "-")]
     pub out_file: String,
@@ -59,11 +56,10 @@ pub fn open_rocksdb<P: AsRef<std::path::Path>>(
     path_rocksdb: P,
     cf_data: &str,
     cf_meta: &str,
-    cf_by_rcv: &str,
 ) -> Result<(Arc<rocksdb::DBWithThreadMode<rocksdb::MultiThreaded>>, Meta), anyhow::Error> {
     tracing::info!("Opening RocksDB database ...");
     let before_open = std::time::Instant::now();
-    let cf_names = &[cf_meta, cf_data, cf_by_rcv];
+    let cf_names = &[cf_meta, cf_data];
     let db = Arc::new(rocksdb::DB::open_cf_for_read_only(
         &rocksdb::Options::default(),
         common::readlink_f(&path_rocksdb)?,
@@ -95,18 +91,13 @@ pub fn open_rocksdb<P: AsRef<std::path::Path>>(
 pub fn open_rocksdb_from_args(
     args: &Args,
 ) -> Result<(Arc<rocksdb::DBWithThreadMode<rocksdb::MultiThreaded>>, Meta), anyhow::Error> {
-    open_rocksdb(
-        &args.path_rocksdb,
-        &args.cf_name,
-        "meta",
-        &args.cf_name_by_acc,
-    )
+    open_rocksdb(&args.path_rocksdb, &args.cf_name, "meta")
 }
 
 fn print_record(
     out_writer: &mut Box<dyn std::io::Write>,
     output_format: common::cli::OutputFormat,
-    value: &crate::pbs::annonars::clinvar::v1::sv::Record,
+    value: &crate::pbs::annonars::functional::v1::refseq::Record,
 ) -> Result<(), anyhow::Error> {
     match output_format {
         common::cli::OutputFormat::Jsonl => {
@@ -122,27 +113,14 @@ pub fn query_for_accession(
     accession: &str,
     db: &rocksdb::DBWithThreadMode<rocksdb::MultiThreaded>,
     cf_data: &Arc<rocksdb::BoundColumnFamily>,
-    cf_by_rcv: &Arc<rocksdb::BoundColumnFamily>,
-) -> Result<Option<crate::pbs::annonars::clinvar::v1::sv::Record>, anyhow::Error> {
-    // Execute query.
-    tracing::debug!("accession = {:?}", &accession);
-    let vcv = if accession.starts_with("VCV") {
-        accession.as_bytes().into()
-    } else if accession.starts_with("RCV") {
-        db.get_cf(cf_by_rcv, accession.as_bytes())?
-            .ok_or_else(|| anyhow::anyhow!("no VCV found for RCV {}", accession))?
-    } else {
-        anyhow::bail!("Not a valid VCV/RCV accession: {:?}", &accession);
-    };
-    tracing::debug!("vcv = {:?}", &vcv);
-
-    let raw_value = db
-        .get_cf(cf_data, vcv.clone())
-        .map_err(|e| anyhow::anyhow!("error while querying for vcv {:?}: {}", vcv, e))?;
+) -> Result<Option<crate::pbs::annonars::functional::v1::refseq::Record>, anyhow::Error> {
+    let raw_value = db.get_cf(cf_data, accession.as_bytes()).map_err(|e| {
+        anyhow::anyhow!("error while querying for accession {:?}: {}", accession, e)
+    })?;
     raw_value
         .map(|raw_value| {
             // Decode via prost.
-            crate::pbs::annonars::clinvar::v1::sv::Record::decode(&mut std::io::Cursor::new(
+            crate::pbs::annonars::functional::v1::refseq::Record::decode(&mut std::io::Cursor::new(
                 &raw_value,
             ))
             .map_err(|e| anyhow::anyhow!("failed to decode record: {}", e))
@@ -163,7 +141,7 @@ fn print_all(
     iter.seek(b"");
     while iter.valid() {
         if let Some(raw_value) = iter.value() {
-            let record = crate::pbs::annonars::clinvar::v1::sv::Record::decode(
+            let record = crate::pbs::annonars::functional::v1::refseq::Record::decode(
                 &mut std::io::Cursor::new(&raw_value),
             )
             .map_err(|e| anyhow::anyhow!("failed to decode record: {}", e))?;
@@ -238,26 +216,26 @@ impl IntervalTrees {
         iter.seek(b"");
         while iter.valid() {
             if let Some(raw_value) = iter.value() {
-                let record = crate::pbs::annonars::clinvar::v1::sv::Record::decode(
+                let record = crate::pbs::annonars::functional::v1::refseq::Record::decode(
                     &mut std::io::Cursor::new(&raw_value),
                 )
                 .map_err(|e| anyhow::anyhow!("failed to decode record: {}", e))?;
                 tracing::trace!("iterator at {:?} => {:?}", &iter.key(), &record);
 
-                let crate::pbs::annonars::clinvar::v1::sv::Record {
+                let crate::pbs::annonars::functional::v1::refseq::Record {
                     chromosome,
                     start,
                     stop,
-                    vcv,
+                    id,
                     ..
                 } = record;
 
                 let interval = (start as u64 - 1)..(stop as u64);
-                tracing::trace!("contig = {} / {:?} / {}", &chromosome, &interval, &vcv);
+                tracing::trace!("contig = {} / {:?} / {}", &chromosome, &interval, &id);
                 result
                     .entry(chromosome.clone())
                     .or_default()
-                    .insert(interval, vcv);
+                    .insert(interval, id);
                 assert!(result.contains_key(&chromosome));
 
                 iter.next();
@@ -275,7 +253,7 @@ impl IntervalTrees {
     pub fn query(
         &self,
         range: &spdi::Range,
-    ) -> Result<Vec<crate::pbs::annonars::clinvar::v1::sv::Record>, anyhow::Error> {
+    ) -> Result<Vec<crate::pbs::annonars::functional::v1::refseq::Record>, anyhow::Error> {
         let contig = extract_chrom::from_range(range, Some(&self.meta.genome_release))?;
         let cf_data = self.db.cf_handle(&self.cf_data_name).ok_or_else(|| {
             anyhow::anyhow!("no column family with name {:?} found", &self.cf_data_name)
@@ -285,7 +263,7 @@ impl IntervalTrees {
         if let Some(tree) = self.trees.get(&contig) {
             for entry in tree.find(&interval) {
                 if let Some(raw_value) = self.db.get_cf(&cf_data, entry.data().as_bytes())? {
-                    let record = crate::pbs::annonars::clinvar::v1::sv::Record::decode(
+                    let record = crate::pbs::annonars::functional::v1::refseq::Record::decode(
                         &mut std::io::Cursor::new(&raw_value),
                     )
                     .map_err(|e| anyhow::anyhow!("failed to decode record: {}", e))?;
@@ -302,13 +280,12 @@ impl IntervalTrees {
 
 /// Implementation of `tsv query` sub command.
 pub fn run(common: &common::cli::Args, args: &Args) -> Result<(), anyhow::Error> {
-    tracing::info!("Starting 'clinvar-sv query' command");
+    tracing::info!("Starting 'functional query' command");
     tracing::info!("common = {:#?}", &common);
     tracing::info!("args = {:#?}", &args);
 
     let (db, meta) = open_rocksdb_from_args(args)?;
     let cf_data = db.cf_handle(&args.cf_name).unwrap();
-    let cf_by_rcv = db.cf_handle(&args.cf_name_by_acc).unwrap();
 
     // Obtain writer to output.
     let mut out_writer = match args.out_file.as_ref() {
@@ -323,7 +300,7 @@ pub fn run(common: &common::cli::Args, args: &Args) -> Result<(), anyhow::Error>
     let before_query = std::time::Instant::now();
     if let Some(accession) = args.query.accession.as_ref() {
         tracing::info!("for accession {}", &accession);
-        if let Some(record) = query_for_accession(accession, &db, &cf_data, &cf_by_rcv)? {
+        if let Some(record) = query_for_accession(accession, &db, &cf_data)? {
             print_record(&mut out_writer, args.out_format, &record)?;
         } else {
             tracing::info!("no record found for accession {:?}", &accession);
@@ -354,106 +331,127 @@ pub fn run(common: &common::cli::Args, args: &Args) -> Result<(), anyhow::Error>
     Ok(())
 }
 
-// #[cfg(test)]
-// mod test {
-//     use std::str::FromStr as _;
+#[cfg(test)]
+mod test {
+    use std::str::FromStr as _;
 
-//     use super::*;
+    use super::*;
 
-//     use temp_testdir::TempDir;
+    use temp_testdir::TempDir;
 
-//     fn args(query: ArgsQuery) -> (common::cli::Args, Args, TempDir) {
-//         let temp = TempDir::default();
-//         let common = common::cli::Args {
-//             verbose: clap_verbosity_flag::Verbosity::new(1, 0),
-//         };
-//         let args = Args {
-//             path_rocksdb: String::from("tests/clinvar-sv/clinvar-sv-grch37.tsv.db"),
-//             cf_name: String::from("clinvar_sv"),
-//             cf_name_by_rcv: String::from("clinvar_sv_by_rcv"),
-//             out_file: temp.join("out").to_string_lossy().to_string(),
-//             out_format: common::cli::OutputFormat::Jsonl,
-//             query,
-//         };
+    /// Fixture with arguments.
+    #[rstest::fixture]
+    fn args() -> (common::cli::Args, Args, TempDir) {
+        let temp = TempDir::default();
+        let common = common::cli::Args {
+            verbose: clap_verbosity_flag::Verbosity::new(1, 0),
+        };
+        let args = Args {
+            // path_rocksdb: String::from("tests/functional/GCF_000001405.25_GRCh37.p13_genomic.db"),
+            cf_name: String::from("functional"),
+            out_file: temp.join("out").to_string_lossy().to_string(),
+            out_format: common::cli::OutputFormat::Jsonl,
+            ..Default::default()
+        };
 
-//         (common, args, temp)
-//     }
+        (common, args, temp)
+    }
 
-//     #[test]
-//     fn smoke_query_var_vcv() -> Result<(), anyhow::Error> {
-//         let (common, args, _temp) = args(ArgsQuery {
-//             accession: Some("VCV000057688".into()),
-//             ..Default::default()
-//         });
-//         run(&common, &args)?;
-//         let out_data = std::fs::read_to_string(&args.out_file)?;
-//         insta::assert_snapshot!(&out_data);
+    /// Fixture with arguments for GRCh37.
+    #[rstest::fixture]
+    fn args_37(args: (common::cli::Args, Args, TempDir)) -> (common::cli::Args, Args, TempDir) {
+        let (common, args, temp) = args;
+        let args = Args {
+            path_rocksdb: String::from("tests/functional/GCF_000001405.25_GRCh37.p13_genomic.db"),
+            ..args
+        };
+        (common, args, temp)
+    }
 
-//         Ok(())
-//     }
+    /// Fixture with arguments for GRCh38.
+    #[rstest::fixture]
+    fn args_38(args: (common::cli::Args, Args, TempDir)) -> (common::cli::Args, Args, TempDir) {
+        let (common, args, temp) = args;
+        let args = Args {
+            path_rocksdb: String::from("tests/functional/GCF_000001405.40_GRCh38.p14_genomic.db"),
+            ..args
+        };
+        (common, args, temp)
+    }
 
-//     #[test]
-//     fn smoke_query_var_rcv() -> Result<(), anyhow::Error> {
-//         let (common, args, _temp) = args(ArgsQuery {
-//             accession: Some("RCV000051426".into()),
-//             ..Default::default()
-//         });
-//         run(&common, &args)?;
-//         let out_data = std::fs::read_to_string(&args.out_file)?;
-//         insta::assert_snapshot!(&out_data);
+    #[rstest::rstest]
+    fn smoke_query_by_accession_37(
+        args_37: (common::cli::Args, Args, TempDir),
+    ) -> Result<(), anyhow::Error> {
+        let (common, args, _temp) = args_37;
+        let args = Args {
+            query: ArgsQuery {
+                accession: Some("id-GeneID:106783496-2".into()),
+                ..Default::default()
+            },
+            ..args
+        };
+        run(&common, &args)?;
+        let out_data = std::fs::read_to_string(&args.out_file)?;
+        insta::assert_snapshot!(&out_data);
 
-//         Ok(())
-//     }
+        Ok(())
+    }
 
-//     #[test]
-//     fn smoke_query_var_all() -> Result<(), anyhow::Error> {
-//         let (common, args, _temp) = args(ArgsQuery {
-//             all: true,
-//             ..Default::default()
-//         });
-//         run(&common, &args)?;
-//         let out_data = std::fs::read_to_string(&args.out_file)?;
-//         insta::assert_snapshot!(&out_data);
+    #[rstest::rstest]
+    fn smoke_query_by_accession_38(
+        args_38: (common::cli::Args, Args, TempDir),
+    ) -> Result<(), anyhow::Error> {
+        let (common, args, _temp) = args_38;
+        let args = Args {
+            query: ArgsQuery {
+                accession: Some("id-GeneID:121967041-2".into()),
+                ..Default::default()
+            },
+            ..args
+        };
+        run(&common, &args)?;
+        let out_data = std::fs::read_to_string(&args.out_file)?;
+        insta::assert_snapshot!(&out_data);
 
-//         Ok(())
-//     }
+        Ok(())
+    }
 
-//     #[test]
-//     fn smoke_query_var_range_exact() -> Result<(), anyhow::Error> {
-//         let (common, args, _temp) = args(ArgsQuery {
-//             range: Some(spdi::Range::from_str("GRCh37:22:34150132:34182300")?),
-//             ..Default::default()
-//         });
-//         run(&common, &args)?;
-//         let out_data = std::fs::read_to_string(&args.out_file)?;
-//         insta::assert_snapshot!(&out_data);
+    #[rstest::rstest]
+    fn smoke_query_var_all_37(
+        args_37: (common::cli::Args, Args, TempDir),
+    ) -> Result<(), anyhow::Error> {
+        let (common, args, _temp) = args_37;
+        let args = Args {
+            query: ArgsQuery {
+                all: true,
+                ..Default::default()
+            },
+            ..args
+        };
+        run(&common, &args)?;
+        let out_data = std::fs::read_to_string(&args.out_file)?;
+        insta::assert_snapshot!(&out_data);
 
-//         Ok(())
-//     }
+        Ok(())
+    }
 
-//     #[test]
-//     fn smoke_query_var_range_overlap() -> Result<(), anyhow::Error> {
-//         let (common, args, _temp) = args(ArgsQuery {
-//             range: Some(spdi::Range::from_str("GRCh37:22:34150132:34150200")?),
-//             ..Default::default()
-//         });
-//         run(&common, &args)?;
-//         let out_data = std::fs::read_to_string(&args.out_file)?;
-//         insta::assert_snapshot!(&out_data);
+    #[rstest::rstest]
+    fn smoke_query_var_range_37(
+        args_37: (common::cli::Args, Args, TempDir),
+    ) -> Result<(), anyhow::Error> {
+        let (common, args, _temp) = args_37;
+        let args = Args {
+            query: ArgsQuery {
+                range: Some(spdi::Range::from_str("GRCh37:1:3157509:3157803")?),
+                ..Default::default()
+            },
+            ..args
+        };
+        run(&common, &args)?;
+        let out_data = std::fs::read_to_string(&args.out_file)?;
+        insta::assert_snapshot!(&out_data);
 
-//         Ok(())
-//     }
-
-//     #[test]
-//     fn smoke_query_var_range_no_overlap() -> Result<(), anyhow::Error> {
-//         let (common, args, _temp) = args(ArgsQuery {
-//             range: Some(spdi::Range::from_str("GRCh37:22:34182000:34182300")?),
-//             ..Default::default()
-//         });
-//         run(&common, &args)?;
-//         let out_data = std::fs::read_to_string(&args.out_file)?;
-//         insta::assert_snapshot!(&out_data);
-
-//         Ok(())
-//     }
-// }
+        Ok(())
+    }
+}

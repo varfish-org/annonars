@@ -1,8 +1,7 @@
 //! Import of functional elements.
 
-use std::{io::BufRead, str::FromStr, sync::Arc};
+use std::{str::FromStr, sync::Arc};
 
-use biocommons_bioutils::assemblies::{Assembly, ASSEMBLY_INFOS};
 use clap::Parser;
 use noodles_gff as gff;
 use prost::Message;
@@ -80,9 +79,6 @@ pub struct Args {
     /// Name of the column family to import into.
     #[arg(long, default_value = "functional")]
     pub cf_name: String,
-    /// Name of the CF to store the accession to ID mapping.
-    #[arg(long, default_value = "functional_by_accession")]
-    pub cf_name_by_acc: String,
     /// Optional path to RocksDB WAL directory.
     #[arg(long)]
     pub path_wal_dir: Option<String>,
@@ -95,7 +91,6 @@ fn gff_import(
     path_in_gff: &str,
 ) -> Result<(), anyhow::Error> {
     let cf_data = db.cf_handle(&args.cf_name).unwrap();
-    let cf_by_acc = db.cf_handle(&args.cf_name_by_acc).unwrap();
 
     // Open reader, possibly decompressing gziped files.
     let reader: Box<dyn std::io::Read> = if path_in_gff.ends_with(".gz") {
@@ -184,7 +179,8 @@ fn gff_import(
             function: extract(&record, "function").ok(),
         };
 
-        eprintln!("record = {:?}", &record);
+        let buf = record.encode_to_vec();
+        db.put_cf(&cf_data, record.id.as_bytes(), buf)?;
     }
 
     Ok(())
@@ -203,7 +199,7 @@ pub fn run(common: &common::cli::Args, args: &Args) -> Result<(), anyhow::Error>
         rocksdb::Options::default(),
         args.path_wal_dir.as_ref().map(|s| s.as_ref()),
     );
-    let cf_names = &["meta", &args.cf_name, &args.cf_name_by_acc];
+    let cf_names = &["meta", &args.cf_name];
     let db = Arc::new(rocksdb::DB::open_cf_with_opts(
         &options,
         common::readlink_f(&args.path_out_rocksdb)?,
@@ -269,7 +265,6 @@ mod test {
             )],
             path_out_rocksdb: format!("{}", tmp_dir.join("out-rocksdb").display()),
             cf_name: String::from("functional"),
-            cf_name_by_acc: String::from("functional_by_acc"),
             path_wal_dir: None,
         };
 
@@ -289,7 +284,6 @@ mod test {
             )],
             path_out_rocksdb: format!("{}", tmp_dir.join("out-rocksdb").display()),
             cf_name: String::from("functional"),
-            cf_name_by_acc: String::from("functional_by_acc"),
             path_wal_dir: None,
         };
 
