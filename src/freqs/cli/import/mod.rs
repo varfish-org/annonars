@@ -83,7 +83,13 @@ fn assign_to_chrom(
             .next()
             .transpose()?
             .ok_or(anyhow::anyhow!("No records in VCF file {}", path))?;
-        let k = contig_map.chrom_to_idx(record.chromosome());
+        let k = contig_map.chrom_to_idx(record.chromosome()).map_err(|e| {
+            anyhow::anyhow!(
+                "Error mapping chromosome {} to index: {}",
+                record.chromosome(),
+                e
+            )
+        })?;
         let v = path.clone();
         res.insert(k, v);
     }
