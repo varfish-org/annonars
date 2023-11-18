@@ -250,7 +250,7 @@ dependencies = [
 
 [[package]]
 name = "annonars"
-version = "0.24.5"
+version = "0.25.0"
 dependencies = [
  "actix-web",
  "anyhow",
