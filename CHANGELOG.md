@@ -1,5 +1,18 @@
 # Changelog
 
+## [0.25.0](https://github.com/bihealth/annonars/compare/v0.24.5...v0.25.0) (2023-11-18)
+
+
+### Features
+
+* add support for RefSeq functional data ([#299](https://github.com/bihealth/annonars/issues/299)) ([#300](https://github.com/bihealth/annonars/issues/300)) ([5aa6f63](https://github.com/bihealth/annonars/commit/5aa6f636ea2e3ed1a1bc33c07601a6e5a5014d7d))
+* adding 50bp filter for REF/ALT on clinvar-sv import ([#293](https://github.com/bihealth/annonars/issues/293)) ([#294](https://github.com/bihealth/annonars/issues/294)) ([831830a](https://github.com/bihealth/annonars/commit/831830aa1ba46e0323afbd0f96fcae58d954d2a2))
+* adding by-accession colum family for clinvar-minimal ([#289](https://github.com/bihealth/annonars/issues/289)) ([#296](https://github.com/bihealth/annonars/issues/296)) ([807abaf](https://github.com/bihealth/annonars/commit/807abaf3d3334ecd040af746e980dcfe81382808))
+* adding support for accession query in dbSNP ([#288](https://github.com/bihealth/annonars/issues/288)) ([#295](https://github.com/bihealth/annonars/issues/295)) ([c1ebece](https://github.com/bihealth/annonars/commit/c1ebece39f8cb636d485b8c5460054361de853c6))
+* adding support for clinvar-sv data ([#227](https://github.com/bihealth/annonars/issues/227)) ([#290](https://github.com/bihealth/annonars/issues/290)) ([1837899](https://github.com/bihealth/annonars/commit/18378993f6bc63354239a7a0794eb3d73b086940))
+* adding support for gnomAD-SV ([#291](https://github.com/bihealth/annonars/issues/291)) ([#297](https://github.com/bihealth/annonars/issues/297)) ([8195101](https://github.com/bihealth/annonars/commit/81951018461795b042c9aa625ce3e5c7e3fa269a))
+* range and accession queries for gnomad-sv ([#298](https://github.com/bihealth/annonars/issues/298)) ([db2cb67](https://github.com/bihealth/annonars/commit/db2cb67c8aee3e667fa565c31240baa8588352dd))
+
 ## [0.24.5](https://github.com/bihealth/annonars/compare/v0.24.4...v0.24.5) (2023-11-08)
 
 
