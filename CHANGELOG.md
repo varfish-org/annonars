@@ -1,5 +1,14 @@
 # Changelog
 
+## [0.26.0](https://github.com/bihealth/annonars/compare/v0.25.0...v0.26.0) (2023-11-20)
+
+
+### Features
+
+* adding number of ExAC CNV cases as constant ([#305](https://github.com/bihealth/annonars/issues/305)) ([7689744](https://github.com/bihealth/annonars/commit/7689744a917755995e52a6d08c6ddf6e39afeb39))
+* adding PartialEq/Clone for gnomad_sv::cli::query::Record ([#306](https://github.com/bihealth/annonars/issues/306)) ([fe5f978](https://github.com/bihealth/annonars/commit/fe5f978348aa21658ca5bae098da3eb975a12875))
+* serializing record enums with snake_case ([#302](https://github.com/bihealth/annonars/issues/302)) ([#303](https://github.com/bihealth/annonars/issues/303)) ([7f76293](https://github.com/bihealth/annonars/commit/7f76293a2c0989d701fe2374e9f42e96484f3f66))
+
 ## [0.25.0](https://github.com/bihealth/annonars/compare/v0.24.5...v0.25.0) (2023-11-18)
 
 
