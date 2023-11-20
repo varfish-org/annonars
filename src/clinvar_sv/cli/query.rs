@@ -7,6 +7,9 @@ use prost::Message;
 
 use crate::common::{self, cli::extract_chrom, spdi};
 
+/// Number of cases in ExAC CNV (PMID:27899611).
+pub const EXAC_CNV_CASES: u32 = 60_706;
+
 /// Argument group for specifying accession or range.
 #[derive(clap::Args, Debug, Clone, Default)]
 #[group(required = true, multiple = false)]
