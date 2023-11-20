@@ -111,7 +111,8 @@ pub fn open_rocksdb_from_args(
 }
 
 /// Enumeration for the different record types that we have.
-#[derive(Debug)]
+#[derive(Debug, serde::Serialize, serde::Deserialize)]
+#[serde(rename_all = "snake_case")]
 pub enum Record {
     /// ExAC SV record.
     ExacCnv(crate::gnomad_pbs::exac_cnv::Record),
