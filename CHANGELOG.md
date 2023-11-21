@@ -1,5 +1,17 @@
 # Changelog
 
+## [0.27.0](https://github.com/bihealth/annonars/compare/v0.26.1...v0.27.0) (2023-11-21)
+
+
+### Features
+
+* add multi-cohort support for gnomAD CNV v4 ([#322](https://github.com/bihealth/annonars/issues/322)) ([1d0cd26](https://github.com/bihealth/annonars/commit/1d0cd260b9226598c024448bf281687f17eb0f9e))
+* clingen gene dosage pathogenicity for 37 and 38 ([#320](https://github.com/bihealth/annonars/issues/320)) ([cca54b4](https://github.com/bihealth/annonars/commit/cca54b4777d89d9e4f4102ea67901d14b3f63f12))
+* implement clingen gene dosage pathogenicity information ([#316](https://github.com/bihealth/annonars/issues/316)) ([#317](https://github.com/bihealth/annonars/issues/317)) ([b1aff38](https://github.com/bihealth/annonars/commit/b1aff383071b3a124f03e6581eb4728a26917a4e))
+* implement support for DOMINO annotation of genes ([#224](https://github.com/bihealth/annonars/issues/224)) ([#318](https://github.com/bihealth/annonars/issues/318)) ([fe855a6](https://github.com/bihealth/annonars/commit/fe855a66a1c1c752ed2d29ad9b8e107650c869a5))
+* implementing ClinGen region dosage annotation ([#282](https://github.com/bihealth/annonars/issues/282)) ([#319](https://github.com/bihealth/annonars/issues/319)) ([57e1408](https://github.com/bihealth/annonars/commit/57e14087e0ecf30ca2a2d94a0afc663510b4ead4))
+* provide proto3 JSON serialization for prost structs ([#301](https://github.com/bihealth/annonars/issues/301)) ([#314](https://github.com/bihealth/annonars/issues/314)) ([e3e7fa1](https://github.com/bihealth/annonars/commit/e3e7fa15c5604511b2f1b9ef058547a57fd6b3db))
+
 ## [0.26.1](https://github.com/bihealth/annonars/compare/v0.26.0...v0.26.1) (2023-11-21)
 
 
