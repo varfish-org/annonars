@@ -31,17 +31,17 @@ pub mod reading {
         pub alignment: String,
     }
 
-    impl Into<crate::pbs::cons::Record> for Record {
-        fn into(self) -> crate::pbs::cons::Record {
+    impl From<Record> for crate::pbs::cons::Record {
+        fn from(val: Record) -> Self {
             crate::pbs::cons::Record {
-                chrom: self.chromosome,
-                start: self.start,
-                stop: self.start,
-                hgnc_id: self.hgnc_id,
-                enst_id: self.enst_id,
-                exon_num: self.exon_num,
-                exon_count: self.exon_count,
-                alignment: self.alignment,
+                chrom: val.chromosome,
+                start: val.start,
+                stop: val.start,
+                hgnc_id: val.hgnc_id,
+                enst_id: val.enst_id,
+                exon_num: val.exon_num,
+                exon_count: val.exon_count,
+                alignment: val.alignment,
             }
         }
     }

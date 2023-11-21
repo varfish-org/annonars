@@ -28,48 +28,38 @@ message AcmgSecondaryFindingRecord {
     string variants_to_report = 11;
 }
 
-// Per-disease annotation of ClinGen curation.
-message ClingenCurationDiseaseRecord {
-    // ClinGen disease label.
-    optional string disease_label = 1;
-    // MONDO disease ID.
-    optional string mondo_id = 2;
-    // URL in clinicalgenome.org knowledge base for disease.
-    optional string disease_url = 3;
-    // Annotated mode of inheritance.
-    repeated string mode_of_inheritance = 4;
-    // Dosage haploinsufficiency assertion.
-    optional string dosage_haploinsufficiency_assertion = 5;
-    // Dosage triplosensitivity assertion.
-    optional string dosage_triplosensitivity_assertion = 6;
-    // URL of dosage report in clinicalgenome.org knowledge base.
-    optional string dosage_report = 7;
-    // Working group with dosage report (always "Dosage Working Group") or empty.
-    optional string dosage_group = 8;
-    // Validity assertion classifications.
-    repeated string gene_disease_validity_assertion_classifications = 9;
-    // Validity assertion report URLs.
-    repeated string gene_disease_validity_assertion_reports = 10;
-    // Validity assertion Gene Curation Expert Panels.
-    repeated string gene_disease_validity_gceps = 11;
-    // Actionability assertion classifications.
-    repeated string actionability_assertion_classifications = 12;
-    // Actionability assertion report URLs.
-    repeated string actionability_assertion_reports = 13;
-    // Actionability assertion Gene Curation Expert Panels.
-    repeated string actionability_groups = 14;
+/// Enumeration for Haploinsufficiency / Triplosensitivity scores.
+enum ClingenDosageScore {
+    // Sufficient evidence for dosage pathogenicity
+    CLINGEN_DOSAGE_SCORE_SUFFICIENT_EVIDENCE_AVAILABLE = 0;
+    // Some evidence for dosage pathogenicity
+    CLINGEN_DOSAGE_SCORE_SOME_EVIDENCE_AVAILABLE = 1;
+    // Little evidence for dosage pathogenicity
+    CLINGEN_DOSAGE_SCORE_LITTLE_EVIDENCE = 2;
+    // No evidence available
+    CLINGEN_DOSAGE_SCORE_NO_EVIDENCE_AVAILABLE = 3;
+    // Gene associated with autosomal recessive phenotype
+    CLINGEN_DOSAGE_SCORE_RECESSIVE = 4;
+    // Dosage sensitivity unlikely
+    CLINGEN_DOSAGE_SCORE_UNLIKELY = 5;
 }
 
-// Code for data from the ClinGen curation.
-message ClingenCurationRecord {
-    // HGNC gene symbol.
+/// `ClinGen` gene dosage sensitivity record.
+message ClingenDosageRecord {
+    // Gene symbol.
     string gene_symbol = 1;
-    // HGNC gene ID.
-    string hgnc_id = 2;
-    // URL in clinicalgenome.org knowledge base for gene.
-    string gene_url = 3;
-    // The ClinGen per-gene curation records.
-    repeated ClingenCurationDiseaseRecord disease_records = 4;
+    // NCBI gene ID.
+    string ncbi_gene_id = 2;
+    // Genomic location.
+    string genomic_location = 3;
+    // Haploinsufficiency score.
+    ClingenDosageScore haploinsufficiency_score = 4;
+    // Triplosensitivity score.
+    ClingenDosageScore triplosensitivity_score = 5;
+    // Haploinsufficiency Disease ID.
+    optional string haploinsufficiency_disease_id = 6;
+    // Haploinsufficiency Disease ID.
+    optional string triplosensitivity_disease_id = 7;
 }
 
 // Code for data from the dbNSFP database.
@@ -798,8 +788,8 @@ message GtexRecord {
 message Record {
     // Information from the ACMG secondary finding list.
     AcmgSecondaryFindingRecord acmg_sf = 1;
-    // Information from ClinGen curation.
-    ClingenCurationRecord clingen = 2;
+    // Information from ClinGen dosage curation.
+    ClingenDosageRecord clingen = 12;
     // Information from dbNSFP.
     DbnsfpRecord dbnsfp = 3;
     // Information from the gnomAD constraints database.
