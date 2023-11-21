@@ -59,7 +59,11 @@ pub fn open_rocksdb<P: AsRef<std::path::Path>>(
     cf_data: &str,
     cf_meta: &str,
 ) -> Result<(Arc<rocksdb::DBWithThreadMode<rocksdb::MultiThreaded>>, Meta), anyhow::Error> {
-    tracing::info!("Opening RocksDB database at {} (cf={})...", path_rocksdb.as_ref().display(), &cf_data);
+    tracing::info!(
+        "Opening RocksDB database at {} (cf={})...",
+        path_rocksdb.as_ref().display(),
+        &cf_data
+    );
     let before_open = std::time::Instant::now();
     let cf_names = &[cf_meta, cf_data];
     let db = Arc::new(rocksdb::DB::open_cf_for_read_only(
@@ -279,13 +283,13 @@ impl IntervalTrees {
         let cf_data = self.db.cf_handle(&self.cf_data_name).ok_or_else(|| {
             anyhow::anyhow!("no column family with name {:?} found", &self.cf_data_name)
         })?;
-        let interval = (range.start as u64 )..(range.end as u64);
+        let interval = (range.start as u64)..(range.end as u64);
         let mut result = Vec::new();
         if let Some(tree) = self.trees.get(&contig) {
             for entry in tree.find(&interval) {
                 tracing::info!("found entry: {:?}", &entry);
                 if let Some(raw_value) = self.db.get_cf(&cf_data, entry.data())? {
-                    result.push(decode_record(&entry.data(), &raw_value)?);
+                    result.push(decode_record(entry.data(), &raw_value)?);
                 }
             }
         } else {
@@ -405,7 +409,11 @@ mod test {
 
     #[tracing_test::traced_test]
     #[rstest::rstest]
-    #[case("tests/regions/clingen/rocksdb", "clingen:ISCA-46733", "clingen-ISCA-46733")]
+    #[case(
+        "tests/regions/clingen/rocksdb",
+        "clingen:ISCA-46733",
+        "clingen-ISCA-46733"
+    )]
     fn smoke_query_var_accession(
         #[case] path_rocksdb: &str,
         #[case] accession: &str,

@@ -50,16 +50,18 @@ message ClingenDosageRecord {
     string gene_symbol = 1;
     // NCBI gene ID.
     string ncbi_gene_id = 2;
-    // Genomic location.
-    string genomic_location = 3;
+    // Genomic location GRCh37.
+    string genomic_location_37 = 3;
+    // Genomic location GRCh38.
+    string genomic_location_38 = 4;
     // Haploinsufficiency score.
-    ClingenDosageScore haploinsufficiency_score = 4;
+    ClingenDosageScore haploinsufficiency_score = 5;
     // Triplosensitivity score.
-    ClingenDosageScore triplosensitivity_score = 5;
+    ClingenDosageScore triplosensitivity_score = 6;
     // Haploinsufficiency Disease ID.
-    optional string haploinsufficiency_disease_id = 6;
+    optional string haploinsufficiency_disease_id = 7;
     // Haploinsufficiency Disease ID.
-    optional string triplosensitivity_disease_id = 7;
+    optional string triplosensitivity_disease_id = 8;
 }
 
 // Information from DOMINO.
