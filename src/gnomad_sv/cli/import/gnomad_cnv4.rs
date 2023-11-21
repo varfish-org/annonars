@@ -6,7 +6,8 @@ use crate::{
     common::noodles::{get_f32, get_i32, get_string, get_vec_str},
     pbs::gnomad::exac_cnv::CnvType,
     pbs::gnomad::gnomad_cnv4::{
-        CarrierCounts, CarrierCountsBySex, Population, PopulationAlleleCounts, Record,
+        CarrierCounts, CarrierCountsBySex, CohortCarrierCounts, Population,
+        PopulationCarrierCounts, Record,
     },
 };
 
@@ -63,6 +64,7 @@ impl Record {
     /// # Arguments
     ///
     /// * `record` - VCF record to create new record from.
+    /// * `cohort_name` - Name of the cohort.
     ///
     /// # Returns
     ///
@@ -71,7 +73,10 @@ impl Record {
     /// # Errors
     ///
     /// * Any error encountered during the creation.
-    pub fn from_vcf_record(record: &noodles_vcf::Record) -> Result<Self, anyhow::Error> {
+    pub fn from_vcf_record(
+        record: &noodles_vcf::Record,
+        cohort_name: &str,
+    ) -> Result<Self, anyhow::Error> {
         let chrom = record.chromosome().to_string();
         let start: usize = record.position().into();
         let stop = get_i32(record, "END").expect("no END?");
@@ -92,7 +97,7 @@ impl Record {
         let n_exn_var = get_i32(record, "N_EXN_VAR,").unwrap_or_default();
         let n_int_var = get_i32(record, "N_INT_VAR").unwrap_or_default();
         let genes = get_vec_str(record, "GENES").unwrap_or_default();
-        let counts = Some(Self::carrier_counts_by_sex_from_vcf_record(record, None)?);
+        let by_sex = Some(Self::carrier_counts_by_sex_from_vcf_record(record, None)?);
         let mut by_population = Vec::new();
         for population in [
             Population::Afr,
@@ -104,7 +109,7 @@ impl Record {
             Population::Nfe,
             Population::Sas,
         ] {
-            by_population.push(PopulationAlleleCounts {
+            by_population.push(PopulationCarrierCounts {
                 population: population as i32,
                 counts: Some(Self::carrier_counts_by_sex_from_vcf_record(
                     record,
@@ -112,6 +117,15 @@ impl Record {
                 )?),
             })
         }
+        let carrier_counts = vec![CohortCarrierCounts {
+            cohort: if cohort_name.is_empty() {
+                None
+            } else {
+                Some(cohort_name.to_string())
+            },
+            by_sex,
+            by_population,
+        }];
         Ok(Self {
             chrom,
             start: start as i32,
@@ -126,8 +140,7 @@ impl Record {
             n_exn_var,
             n_int_var,
             genes,
-            counts,
-            by_population,
+            carrier_counts,
         })
     }
 
@@ -158,6 +171,24 @@ impl Record {
 
         Ok(CarrierCounts { sc, sf, sn })
     }
+
+    /// Merge with another record.
+    ///
+    /// We assume that the record IDs are the same and just concatenate the allele counts.
+    ///
+    /// # Arguments
+    ///
+    /// * `other` - Other record to merge with.
+    ///
+    /// # Returns
+    ///
+    /// * `self` - Merged record.
+    pub fn merge_with(mut self, other: Self) -> Self {
+        let mut other = other;
+        self.carrier_counts.append(&mut other.carrier_counts);
+        self.carrier_counts.sort_by(|a, b| a.cohort.cmp(&b.cohort));
+        self
+    }
 }
 
 /// Perform import of gnomAD-CNV v4 data.
@@ -176,6 +207,15 @@ pub fn import(
     cf_data: &Arc<rocksdb::BoundColumnFamily>,
     path_in_vcf: &str,
 ) -> Result<(), anyhow::Error> {
+    let cohort_name = if path_in_vcf.contains("non_neuro_controls") {
+        "non_neuro_controls"
+    } else if path_in_vcf.contains("non_neuro") {
+        "non_neuro"
+    } else {
+        "all"
+    };
+    tracing::info!("importing gnomAD-CNV v4 {} cohort", cohort_name);
+
     let mut reader = noodles_vcf::reader::Builder::default().build_from_path(path_in_vcf)?;
     let header = reader.read_header()?;
 
@@ -183,9 +223,22 @@ pub fn import(
         let vcf_record = result?;
         let key = format!("{}", vcf_record.ids()).into_bytes();
 
-        // Build record for VCF record and write it to database.
-        let record = Record::from_vcf_record(&vcf_record)
+        // Build record for VCF record.
+        let record = Record::from_vcf_record(&vcf_record, cohort_name)
             .map_err(|e| anyhow::anyhow!("problem building record from VCF: {}", e))?;
+
+        // Attempt to read existing record from the database.
+        let data = db
+            .get_cf(cf_data, key.clone())
+            .map_err(|e| anyhow::anyhow!("problem querying database: {}", e))?;
+        let record = if let Some(data) = data {
+            let db_record = Record::decode(&data[..])?;
+            db_record.merge_with(record)
+        } else {
+            record
+        };
+
+        // Write back new or merged records.
         db.put_cf(cf_data, key, record.encode_to_vec())?;
     }
 

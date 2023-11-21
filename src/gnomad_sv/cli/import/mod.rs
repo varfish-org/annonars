@@ -104,10 +104,10 @@ pub fn run(common: &common::cli::Args, args: &Args) -> Result<(), anyhow::Error>
         }
         (GnomadVersion::Four, GnomadKind::Exomes, common::cli::GenomeRelease::Grch38) => {
             tracing::info!("- selected gnomAD CNV v4 import for GRCh38");
-            if args.path_in_vcf.len() != 1 {
-                anyhow::bail!("gnomAD CNV v4 import requires exactly one input file");
+            for path_in_vcf in &args.path_in_vcf {
+                tracing::info!("  - file {}", &path_in_vcf);
+                gnomad_cnv4::import(&db, &cf_data, path_in_vcf)?;
             }
-            gnomad_cnv4::import(&db, &cf_data, &args.path_in_vcf[0])?;
         }
         (GnomadVersion::Four, GnomadKind::Genomes, common::cli::GenomeRelease::Grch38) => {
             tracing::info!("- selected gnomAD SV v4 import for GRCh38");
