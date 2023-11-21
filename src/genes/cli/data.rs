@@ -10,8 +10,10 @@ use serde::{Deserialize, Serialize};
 pub struct Record {
     /// Information from the ACMG secondary finding list.
     pub acmg_sf: Option<acmg_sf::Record>,
-    /// Information from the ClinGen gene curation.
-    pub clingen: Option<clingen_gene::Gene>,
+    /// Information from the ClinGen gene curation (GRCh37).
+    pub clingen_37: Option<clingen_gene::Gene>,
+    /// Information from the ClinGen gene curation (GRCh38).
+    pub clingen_38: Option<clingen_gene::Gene>,
     /// Information from dbNSFP genes.
     pub dbnsfp: Option<dbnsfp_gene::Record>,
     /// Information from the gnomAD constraints database.

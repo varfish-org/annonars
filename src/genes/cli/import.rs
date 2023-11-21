@@ -28,9 +28,12 @@ pub struct Args {
     /// Path to the TSV file with ACMG secondary findings list.
     #[arg(long, required = true)]
     pub path_in_acmg: String,
-    /// Path to the CSV file with ClinGen curations.
+    /// Path to the CSV file with ClinGen curations for GRCh37.
     #[arg(long, required = true)]
-    pub path_in_clingen: String,
+    pub path_in_clingen_37: String,
+    /// Path to the CSV file with ClinGen curations for GRCh37.
+    #[arg(long, required = true)]
+    pub path_in_clingen_38: String,
     /// Path to the TSV file with gnomAD gene constraints.
     #[arg(long, required = true)]
     pub path_in_gnomad_constraints: String,
@@ -374,7 +377,8 @@ fn load_domino(path: &str) -> Result<HashMap<String, domino::Record>, anyhow::Er
 fn convert_record(record: data::Record) -> pbs::genes::base::Record {
     let data::Record {
         acmg_sf,
-        clingen,
+        clingen_37,
+        clingen_38,
         dbnsfp,
         gnomad_constraints,
         hgnc,
@@ -417,21 +421,26 @@ fn convert_record(record: data::Record) -> pbs::genes::base::Record {
         }
     });
 
-    let clingen = clingen.map(|clingen| {
+    let clingen = clingen_37.map(|clingen_37| {
         let clingen_gene::Gene {
             gene_symbol,
             ncbi_gene_id,
-            genomic_location,
+            genomic_location: genomic_location_37,
             haploinsufficiency_score,
             triplosensitivity_score,
             haploinsufficiency_disease_id,
             triplosensitivity_disease_id,
-        } = clingen;
+        } = clingen_37;
+        let clingen_gene::Gene {
+            genomic_location: genomic_location_38,
+            ..
+        } = clingen_38.unwrap();
 
         pbs::genes::base::ClingenDosageRecord {
             gene_symbol,
             ncbi_gene_id,
-            genomic_location,
+            genomic_location_37,
+            genomic_location_38,
             haploinsufficiency_score: Into::<pbs::genes::base::ClingenDosageScore>::into(
                 clingen_gene::Score::try_from(haploinsufficiency_score)
                     .expect("invalid haploinsufficiency score"),
@@ -949,7 +958,8 @@ fn convert_record(record: data::Record) -> pbs::genes::base::Record {
 #[allow(clippy::too_many_arguments)]
 fn write_rocksdb(
     acmg_by_hgnc_id: HashMap<String, acmg_sf::Record>,
-    clingen_by_symbol: HashMap<String, clingen_gene::Gene>,
+    clingen_by_symbol_37: HashMap<String, clingen_gene::Gene>,
+    clingen_by_symbol_38: HashMap<String, clingen_gene::Gene>,
     dbnsfp_by_symbol: HashMap<String, dbnsfp_gene::Record>,
     constraints_by_ensembl_id: HashMap<String, gnomad_constraints::Record>,
     hgnc: HashMap<String, hgnc::Record>,
@@ -988,7 +998,8 @@ fn write_rocksdb(
         let hgnc_id = hgnc_record.hgnc_id.clone();
         let record = convert_record(data::Record {
             acmg_sf: acmg_by_hgnc_id.get(&hgnc_id).cloned(),
-            clingen: clingen_by_symbol.get(&hgnc_record.symbol).cloned(),
+            clingen_37: clingen_by_symbol_37.get(&hgnc_record.symbol).cloned(),
+            clingen_38: clingen_by_symbol_38.get(&hgnc_record.symbol).cloned(),
             dbnsfp: dbnsfp_by_symbol.get(&hgnc_record.symbol).cloned(),
             gnomad_constraints: hgnc_record
                 .ensembl_gene_id
@@ -1028,7 +1039,8 @@ pub fn run(common_args: &common::cli::Args, args: &Args) -> Result<(), anyhow::E
     let before_loading = Instant::now();
     info!("Loading genes data files...");
     let acmg_by_hgnc_id = load_acmg(&args.path_in_acmg)?;
-    let clingen_by_symbol = load_clingen(&args.path_in_clingen)?;
+    let clingen_by_symbol_37 = load_clingen(&args.path_in_clingen_37)?;
+    let clingen_by_symbol_38 = load_clingen(&args.path_in_clingen_38)?;
     let constraints_by_ensembl_id = load_gnomad_constraints(&args.path_in_gnomad_constraints)?;
     let dbnsfp_by_symbol = load_dbnsfp(&args.path_in_dbnsfp)?;
     let hgnc = load_hgnc(&args.path_in_hgnc)?;
@@ -1048,7 +1060,8 @@ pub fn run(common_args: &common::cli::Args, args: &Args) -> Result<(), anyhow::E
     info!("Writing genes database...");
     write_rocksdb(
         acmg_by_hgnc_id,
-        clingen_by_symbol,
+        clingen_by_symbol_37,
+        clingen_by_symbol_38,
         dbnsfp_by_symbol,
         constraints_by_ensembl_id,
         hgnc,
@@ -1085,8 +1098,11 @@ pub mod test {
         };
         let args = Args {
             path_in_acmg: String::from("tests/genes/acmg/acmg.tsv"),
-            path_in_clingen: String::from(
+            path_in_clingen_37: String::from(
                 "tests/genes/clingen/ClinGen_gene_curation_list_GRCh37.tsv",
+            ),
+            path_in_clingen_38: String::from(
+                "tests/genes/clingen/ClinGen_gene_curation_list_GRCh38.tsv",
             ),
             path_in_gnomad_constraints: String::from(
                 "tests/genes/gnomad_constraints/gnomad_constraints.tsv",
