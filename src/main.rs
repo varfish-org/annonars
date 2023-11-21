@@ -70,9 +70,9 @@ struct Gene {
 #[derive(Debug, Subcommand, Clone)]
 enum GeneCommands {
     /// "import" sub command
-    Import(genes::cli::import::Args),
+    Import(Box<genes::cli::import::Args>),
     /// "query" sub command
-    Query(genes::cli::query::Args),
+    Query(Box<genes::cli::query::Args>),
 }
 
 /// Parsing of "tsv" subcommand
