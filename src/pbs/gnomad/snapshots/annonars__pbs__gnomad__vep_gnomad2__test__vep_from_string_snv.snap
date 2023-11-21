@@ -1,0 +1,47 @@
+---
+source: src/pbs/gnomad/vep_gnomad2.rs
+expression: vep
+---
+allele: G
+consequence: missense_variant
+impact: MODERATE
+symbol: PCSK9
+gene: ENSG00000169174
+featureType: Transcript
+feature: ENST00000302118
+featureBiotype: protein_coding
+exon: 1/12
+hgvsc: "ENST00000302118.5:c.89C>G"
+hgvsp: "ENSP00000303208.5:p.Ala30Gly"
+cdnaPosition: "379"
+cdsPosition: "89"
+proteinPosition: "30"
+aminoAcids: A/G
+codons: gCg/gGg
+dbsnpId: "1"
+strand: "1"
+variantClass: SNV
+minimised: "1"
+symbolSource: HGNC
+hgncId: "20001"
+canonical: true
+ccds: CCDS603.1
+ensp: ENSP00000303208
+swissprot: Q8NBP7
+uniparc: UPI00001615E1
+genePheno: "1"
+sift:
+  prediction: deleterious_low_confidence
+  score: 0.03
+polyphen:
+  prediction: possibly_damaging
+  score: 0.583
+domains:
+  - id: SignalP-noTM
+    source: Cleavage_site_(Signalp)
+  - id: PTHR10795
+    source: hmmpanther
+  - id: PTHR10795
+    source: hmmpanther
+lofInfo: "DE_NOVO_DONOR_PROB:0.146539915246404&MUTANT_DONOR_MES:8.16693067332728&DE_NOVO_DONOR_POS:-119&INTRON_END:55509515&DE_NOVO_DONOR_MES_POS:-122&INTRON_START:55505718&EXON_END:55505717&EXON_START:55505221&DE_NOVO_DONOR_MES:-1.61109392005567"
+

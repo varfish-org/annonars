@@ -1,0 +1,40 @@
+---
+source: src/pbs/gnomad/vep_gnomad2.rs
+expression: vep
+---
+allele: A
+consequence: frameshift_variant
+impact: HIGH
+symbol: PCSK9
+gene: ENSG00000169174
+featureType: Transcript
+feature: ENST00000452118
+featureBiotype: protein_coding
+exon: 4/6
+hgvsc: "ENST00000452118.2:c.547_548insA"
+hgvsp: "ENSP00000401598.2:p.Gly183GlufsTer23"
+cdnaPosition: 627-628
+cdsPosition: 547-548
+proteinPosition: "183"
+aminoAcids: G/EX
+codons: ggc/gAgc
+existingVariation: rs527413419
+dbsnpId: "1"
+strand: "1"
+variantClass: insertion
+minimised: "1"
+symbolSource: HGNC
+hgncId: "20001"
+ensp: ENSP00000401598
+trembl: B4DEZ9
+uniparc: UPI00017A6F55
+genePheno: "1"
+gmaf: 0.0032
+amrMaf: 0.0113
+easMaf: 0.0014
+eurMaf: 0
+sasMaf: 0
+aaMaf: 0
+lof: HC
+lofInfo: "GERP_DIST:364.1444&BP_DIST:304&PERCENTILE:0.885113268608414&DIST_FROM_LAST_EXON:210&50_BP_RULE:PASS&PHYLOCSF_TOO_SHORT"
+

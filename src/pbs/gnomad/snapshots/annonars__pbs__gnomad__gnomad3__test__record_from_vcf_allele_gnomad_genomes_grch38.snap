@@ -1,0 +1,4794 @@
+---
+source: src/pbs/gnomad/gnomad3.rs
+expression: records
+---
+- chrom: chr1
+  pos: 15971
+  refAllele: G
+  altAllele: C
+  vep:
+    - allele: C
+      consequence: downstream_gene_variant
+      impact: MODIFIER
+      symbol: DDX11L1
+      gene: ENSG00000223972
+      featureType: Transcript
+      feature: ENST00000450305
+      featureBiotype: transcribed_unprocessed_pseudogene
+      dbsnpId: "1"
+      distance: "2301"
+      strand: "1"
+      variantClass: SNV
+      symbolSource: HGNC
+      hgncId: "HGNC:37102"
+    - allele: C
+      consequence: downstream_gene_variant
+      impact: MODIFIER
+      symbol: DDX11L1
+      gene: ENSG00000223972
+      featureType: Transcript
+      feature: ENST00000456328
+      featureBiotype: processed_transcript
+      dbsnpId: "1"
+      distance: "1562"
+      strand: "1"
+      variantClass: SNV
+      symbolSource: HGNC
+      hgncId: "HGNC:37102"
+      canonical: true
+      tsl: 1
+    - allele: C
+      consequence: intron_variant&non_coding_transcript_variant
+      impact: MODIFIER
+      symbol: WASH7P
+      gene: ENSG00000227232
+      featureType: Transcript
+      feature: ENST00000488147
+      featureBiotype: unprocessed_pseudogene
+      intron: 8/10
+      hgvsc: "ENST00000488147.1:n.1068-24C>G"
+      dbsnpId: "1"
+      strand: "-1"
+      variantClass: SNV
+      symbolSource: HGNC
+      hgncId: "HGNC:38034"
+      canonical: true
+    - allele: C
+      consequence: downstream_gene_variant
+      impact: MODIFIER
+      symbol: MIR6859-1
+      gene: ENSG00000278267
+      featureType: Transcript
+      feature: ENST00000619216
+      featureBiotype: miRNA
+      dbsnpId: "1"
+      distance: "1398"
+      strand: "-1"
+      variantClass: SNV
+      symbolSource: HGNC
+      hgncId: "HGNC:50039"
+      canonical: true
+    - allele: C
+      consequence: intron_variant&non_coding_transcript_variant
+      impact: MODIFIER
+      symbol: WASH7P
+      gene: "653635"
+      featureType: Transcript
+      feature: NR_024540.1
+      featureBiotype: transcribed_pseudogene
+      intron: 8/10
+      hgvsc: "NR_024540.1:n.1081-24C>G"
+      dbsnpId: "1"
+      strand: "-1"
+      variantClass: SNV
+      symbolSource: EntrezGene
+      hgncId: "HGNC:38034"
+      canonical: true
+    - allele: C
+      consequence: downstream_gene_variant
+      impact: MODIFIER
+      symbol: DDX11L1
+      gene: "100287102"
+      featureType: Transcript
+      feature: NR_046018.2
+      featureBiotype: transcribed_pseudogene
+      dbsnpId: "1"
+      distance: "1562"
+      strand: "1"
+      variantClass: SNV
+      symbolSource: EntrezGene
+      hgncId: "HGNC:37102"
+      canonical: true
+    - allele: C
+      consequence: downstream_gene_variant
+      impact: MODIFIER
+      symbol: MIR6859-1
+      gene: "102466751"
+      featureType: Transcript
+      feature: NR_106918.1
+      featureBiotype: miRNA
+      dbsnpId: "1"
+      distance: "1398"
+      strand: "-1"
+      variantClass: SNV
+      symbolSource: EntrezGene
+      hgncId: "HGNC:50039"
+      canonical: true
+    - allele: C
+      consequence: regulatory_region_variant
+      impact: MODIFIER
+      featureType: RegulatoryFeature
+      feature: ENSR00000344266
+      featureBiotype: CTCF_binding_site
+      dbsnpId: "1"
+      variantClass: SNV
+  alleleCounts:
+    - byPopulation:
+        - population: afr
+          counts:
+            overall:
+              an: 37056
+            xx:
+              an: 19882
+            xy:
+              an: 17174
+          faf95: 0
+          faf99: 0
+        - population: ami
+          counts:
+            overall:
+              an: 624
+            xx:
+              an: 312
+            xy:
+              an: 312
+        - population: amr
+          counts:
+            overall:
+              ac: 1
+              an: 9554
+              af: 0.000104668
+            xx:
+              an: 4306
+            xy:
+              ac: 1
+              an: 5248
+              af: 0.000190549
+          faf95: 0
+          faf99: 0
+        - population: asj
+          counts:
+            overall:
+              an: 2268
+            xx:
+              an: 1238
+            xy:
+              an: 1030
+        - population: eas
+          counts:
+            overall:
+              an: 4626
+            xx:
+              an: 2054
+            xy:
+              an: 2572
+          faf95: 0
+          faf99: 0
+        - population: fin
+          counts:
+            overall:
+              an: 5348
+            xx:
+              an: 1470
+            xy:
+              an: 3878
+        - population: mid
+          counts:
+            overall:
+              an: 238
+            xx:
+              an: 134
+            xy:
+              an: 104
+        - population: nfe
+          counts:
+            overall:
+              an: 45876
+            xx:
+              an: 26958
+            xy:
+              an: 18918
+          faf95: 0
+          faf99: 0
+        - population: oth
+          counts:
+            overall:
+              an: 1392
+            xx:
+              an: 706
+            xy:
+              an: 686
+        - population: sas
+          counts:
+            overall:
+              an: 3074
+            xx:
+              an: 760
+            xy:
+              an: 2314
+          faf95: 0
+          faf99: 0
+      bySex:
+        overall:
+          ac: 1
+          an: 110056
+          af: 0.00000908628
+        xx:
+          an: 57820
+        xy:
+          ac: 1
+          an: 52236
+          af: 0.0000191439
+      raw:
+        ac: 1
+        an: 134496
+        af: 0.00000743517
+      popmax: amr
+      afPopmax: 0.000104668
+      acPopmax: 1
+      anPopmax: 9554
+      nhomaltPopmax: 0
+    - cohort: controls_and_biobanks
+      byPopulation:
+        - population: afr
+          counts:
+            overall:
+              an: 8100
+            xx:
+              an: 4202
+            xy:
+              an: 3898
+          faf95: 0
+          faf99: 0
+        - population: ami
+          counts:
+            overall:
+              an: 30
+            xx:
+              an: 12
+            xy:
+              an: 18
+        - population: amr
+          counts:
+            overall:
+              an: 3254
+            xx:
+              an: 1720
+            xy:
+              an: 1534
+          faf95: 0
+          faf99: 0
+        - population: asj
+          counts:
+            overall:
+              an: 84
+            xx:
+              an: 54
+            xy:
+              an: 30
+        - population: eas
+          counts:
+            overall:
+              an: 2224
+            xx:
+              an: 946
+            xy:
+              an: 1278
+          faf95: 0
+          faf99: 0
+        - population: fin
+          counts:
+            overall:
+              an: 2642
+            xx:
+              an: 324
+            xy:
+              an: 2318
+        - population: mid
+          counts:
+            overall:
+              an: 188
+            xx:
+              an: 108
+            xy:
+              an: 80
+        - population: nfe
+          counts:
+            overall:
+              an: 4658
+            xx:
+              an: 2270
+            xy:
+              an: 2388
+          faf95: 0
+          faf99: 0
+        - population: oth
+          counts:
+            overall:
+              an: 548
+            xx:
+              an: 284
+            xy:
+              an: 264
+        - population: sas
+          counts:
+            overall:
+              an: 2124
+            xx:
+              an: 602
+            xy:
+              an: 1522
+          faf95: 0
+          faf99: 0
+      bySex:
+        overall:
+          an: 23852
+        xx:
+          an: 10522
+        xy:
+          an: 13330
+      raw:
+        an: 28694
+    - cohort: non_cancer
+      byPopulation:
+        - population: afr
+          counts:
+            overall:
+              an: 36760
+            xx:
+              an: 19740
+            xy:
+              an: 17020
+          faf95: 0
+          faf99: 0
+        - population: ami
+          counts:
+            overall:
+              an: 624
+            xx:
+              an: 312
+            xy:
+              an: 312
+        - population: amr
+          counts:
+            overall:
+              ac: 1
+              an: 9438
+              af: 0.000105955
+            xx:
+              an: 4276
+            xy:
+              ac: 1
+              an: 5162
+              af: 0.000193723
+          faf95: 0
+          faf99: 0
+        - population: asj
+          counts:
+            overall:
+              an: 2158
+            xx:
+              an: 1154
+            xy:
+              an: 1004
+        - population: eas
+          counts:
+            overall:
+              an: 4416
+            xx:
+              an: 1964
+            xy:
+              an: 2452
+          faf95: 0
+          faf99: 0
+        - population: fin
+          counts:
+            overall:
+              an: 5348
+            xx:
+              an: 1470
+            xy:
+              an: 3878
+        - population: mid
+          counts:
+            overall:
+              an: 228
+            xx:
+              an: 130
+            xy:
+              an: 98
+        - population: nfe
+          counts:
+            overall:
+              an: 43706
+            xx:
+              an: 26112
+            xy:
+              an: 17594
+          faf95: 0
+          faf99: 0
+        - population: oth
+          counts:
+            overall:
+              an: 1344
+            xx:
+              an: 686
+            xy:
+              an: 658
+        - population: sas
+          counts:
+            overall:
+              an: 3046
+            xx:
+              an: 744
+            xy:
+              an: 2302
+          faf95: 0
+          faf99: 0
+      bySex:
+        overall:
+          ac: 1
+          an: 107068
+          af: 0.00000933986
+        xx:
+          an: 56588
+        xy:
+          ac: 1
+          an: 50480
+          af: 0.0000198098
+      raw:
+        ac: 1
+        an: 130996
+        af: 0.00000763382
+    - cohort: non_neuro
+      byPopulation:
+        - population: afr
+          counts:
+            overall:
+              an: 29184
+            xx:
+              an: 16880
+            xy:
+              an: 12304
+          faf95: 0
+          faf99: 0
+        - population: ami
+          counts:
+            overall:
+              an: 594
+            xx:
+              an: 286
+            xy:
+              an: 308
+        - population: amr
+          counts:
+            overall:
+              ac: 1
+              an: 9312
+              af: 0.000107388
+            xx:
+              an: 4208
+            xy:
+              ac: 1
+              an: 5104
+              af: 0.000195925
+          faf95: 0
+          faf99: 0
+        - population: asj
+          counts:
+            overall:
+              an: 2220
+            xx:
+              an: 1218
+            xy:
+              an: 1002
+        - population: eas
+          counts:
+            overall:
+              an: 4626
+            xx:
+              an: 2054
+            xy:
+              an: 2572
+          faf95: 0
+          faf99: 0
+        - population: fin
+          counts:
+            overall:
+              an: 3366
+            xx:
+              an: 416
+            xy:
+              an: 2950
+        - population: mid
+          counts:
+            overall:
+              an: 236
+            xx:
+              an: 134
+            xy:
+              an: 102
+        - population: nfe
+          counts:
+            overall:
+              an: 43372
+            xx:
+              an: 25940
+            xy:
+              an: 17432
+          faf95: 0
+          faf99: 0
+        - population: oth
+          counts:
+            overall:
+              an: 1328
+            xx:
+              an: 678
+            xy:
+              an: 650
+        - population: sas
+          counts:
+            overall:
+              an: 3074
+            xx:
+              an: 760
+            xy:
+              an: 2314
+          faf95: 0
+          faf99: 0
+      bySex:
+        overall:
+          ac: 1
+          an: 97312
+          af: 0.0000102762
+        xx:
+          an: 52574
+        xy:
+          ac: 1
+          an: 44738
+          af: 0.0000223524
+      raw:
+        ac: 1
+        an: 118850
+        af: 0.00000841397
+    - cohort: non_topmed
+      byPopulation:
+        - population: afr
+          counts:
+            overall:
+              an: 21914
+            xx:
+              an: 10532
+            xy:
+              an: 11382
+          faf95: 0
+          faf99: 0
+        - population: ami
+          counts:
+            overall:
+              an: 60
+            xx:
+              an: 38
+            xy:
+              an: 22
+        - population: amr
+          counts:
+            overall:
+              an: 8056
+            xx:
+              an: 3394
+            xy:
+              an: 4662
+          faf95: 0
+          faf99: 0
+        - population: asj
+          counts:
+            overall:
+              an: 650
+            xx:
+              an: 176
+            xy:
+              an: 474
+        - population: eas
+          counts:
+            overall:
+              an: 3298
+            xx:
+              an: 1252
+            xy:
+              an: 2046
+          faf95: 0
+          faf99: 0
+        - population: fin
+          counts:
+            overall:
+              an: 5278
+            xx:
+              an: 1426
+            xy:
+              an: 3852
+        - population: mid
+          counts:
+            overall:
+              an: 206
+            xx:
+              an: 116
+            xy:
+              an: 90
+        - population: nfe
+          counts:
+            overall:
+              an: 13400
+            xx:
+              an: 5830
+            xy:
+              an: 7570
+          faf95: 0
+          faf99: 0
+        - population: oth
+          counts:
+            overall:
+              an: 978
+            xx:
+              an: 460
+            xy:
+              an: 518
+        - population: sas
+          counts:
+            overall:
+              an: 3060
+            xx:
+              an: 758
+            xy:
+              an: 2302
+          faf95: 0
+          faf99: 0
+      bySex:
+        overall:
+          an: 56900
+        xx:
+          an: 23982
+        xy:
+          an: 32918
+      raw:
+        an: 70334
+    - cohort: non_v2
+      byPopulation:
+        - population: afr
+          counts:
+            overall:
+              an: 25570
+            xx:
+              an: 14150
+            xy:
+              an: 11420
+          faf95: 0
+          faf99: 0
+        - population: ami
+          counts:
+            overall:
+              an: 624
+            xx:
+              an: 312
+            xy:
+              an: 312
+        - population: amr
+          counts:
+            overall:
+              ac: 1
+              an: 8568
+              af: 0.000116713
+            xx:
+              an: 3810
+            xy:
+              ac: 1
+              an: 4758
+              af: 0.000210172
+          faf95: 0
+          faf99: 0
+        - population: asj
+          counts:
+            overall:
+              an: 2028
+            xx:
+              an: 1130
+            xy:
+              an: 898
+        - population: eas
+          counts:
+            overall:
+              an: 2500
+            xx:
+              an: 1186
+            xy:
+              an: 1314
+          faf95: 0
+          faf99: 0
+        - population: fin
+          counts:
+            overall:
+              an: 3404
+            xx:
+              an: 606
+            xy:
+              an: 2798
+        - population: mid
+          counts:
+            overall:
+              an: 230
+            xx:
+              an: 132
+            xy:
+              an: 98
+        - population: nfe
+          counts:
+            overall:
+              an: 35656
+            xx:
+              an: 22250
+            xy:
+              an: 13406
+          faf95: 0
+          faf99: 0
+        - population: oth
+          counts:
+            overall:
+              an: 1248
+            xx:
+              an: 640
+            xy:
+              an: 608
+        - population: sas
+          counts:
+            overall:
+              an: 2348
+            xx:
+              an: 466
+            xy:
+              an: 1882
+          faf95: 0
+          faf99: 0
+      bySex:
+        overall:
+          ac: 1
+          an: 82176
+          af: 0.000012169
+        xx:
+          an: 44682
+        xy:
+          ac: 1
+          an: 37494
+          af: 0.0000266709
+      raw:
+        ac: 1
+        an: 100494
+        af: 0.00000995084
+  effectInfo:
+    caddPhred: 5.837
+  variantInfo:
+    variantType: multi-snv
+    alleleType: snv
+    nAltAlleles: 2
+    varDp: 2
+  qualityInfo:
+    asFs: 18.3769
+    inbreedingCoeff: -0.00000751019
+    asMq: 45.4443
+    mqRankSum: 2.079
+    asMqRankSum: 2.079
+    asQd: 8.72
+    readPosRankSum: 0.124
+    asReadPosRankSum: 0.124
+    asSor: 0.160635
+    negativeTrainSite: true
+    asVqslod: -3.027
+    asCulprit: AS_FS
+    asPabMax: 0.647606
+    asQualApprox: 1308
+    asSbTable: "76"
+  ageInfo:
+    ageHistHomNSmaller: 0
+    ageHistHomNLarger: 0
+    ageHistHetNSmaller: 0
+    ageHistHetNLarger: 0
+  depthInfo:
+    dpHistAllNLarger: 559
+    dpHistAltNLarger: 0
+- chrom: chr1
+  pos: 15973
+  refAllele: G
+  altAllele: A
+  vep:
+    - allele: A
+      consequence: downstream_gene_variant
+      impact: MODIFIER
+      symbol: DDX11L1
+      gene: ENSG00000223972
+      featureType: Transcript
+      feature: ENST00000450305
+      featureBiotype: transcribed_unprocessed_pseudogene
+      dbsnpId: "1"
+      distance: "2303"
+      strand: "1"
+      variantClass: SNV
+      symbolSource: HGNC
+      hgncId: "HGNC:37102"
+    - allele: A
+      consequence: downstream_gene_variant
+      impact: MODIFIER
+      symbol: DDX11L1
+      gene: ENSG00000223972
+      featureType: Transcript
+      feature: ENST00000456328
+      featureBiotype: processed_transcript
+      dbsnpId: "1"
+      distance: "1564"
+      strand: "1"
+      variantClass: SNV
+      symbolSource: HGNC
+      hgncId: "HGNC:37102"
+      canonical: true
+      tsl: 1
+    - allele: A
+      consequence: intron_variant&non_coding_transcript_variant
+      impact: MODIFIER
+      symbol: WASH7P
+      gene: ENSG00000227232
+      featureType: Transcript
+      feature: ENST00000488147
+      featureBiotype: unprocessed_pseudogene
+      intron: 8/10
+      hgvsc: "ENST00000488147.1:n.1068-26C>T"
+      dbsnpId: "1"
+      strand: "-1"
+      variantClass: SNV
+      symbolSource: HGNC
+      hgncId: "HGNC:38034"
+      canonical: true
+    - allele: A
+      consequence: downstream_gene_variant
+      impact: MODIFIER
+      symbol: MIR6859-1
+      gene: ENSG00000278267
+      featureType: Transcript
+      feature: ENST00000619216
+      featureBiotype: miRNA
+      dbsnpId: "1"
+      distance: "1396"
+      strand: "-1"
+      variantClass: SNV
+      symbolSource: HGNC
+      hgncId: "HGNC:50039"
+      canonical: true
+    - allele: A
+      consequence: intron_variant&non_coding_transcript_variant
+      impact: MODIFIER
+      symbol: WASH7P
+      gene: "653635"
+      featureType: Transcript
+      feature: NR_024540.1
+      featureBiotype: transcribed_pseudogene
+      intron: 8/10
+      hgvsc: "NR_024540.1:n.1081-26C>T"
+      dbsnpId: "1"
+      strand: "-1"
+      variantClass: SNV
+      symbolSource: EntrezGene
+      hgncId: "HGNC:38034"
+      canonical: true
+    - allele: A
+      consequence: downstream_gene_variant
+      impact: MODIFIER
+      symbol: DDX11L1
+      gene: "100287102"
+      featureType: Transcript
+      feature: NR_046018.2
+      featureBiotype: transcribed_pseudogene
+      dbsnpId: "1"
+      distance: "1564"
+      strand: "1"
+      variantClass: SNV
+      symbolSource: EntrezGene
+      hgncId: "HGNC:37102"
+      canonical: true
+    - allele: A
+      consequence: downstream_gene_variant
+      impact: MODIFIER
+      symbol: MIR6859-1
+      gene: "102466751"
+      featureType: Transcript
+      feature: NR_106918.1
+      featureBiotype: miRNA
+      dbsnpId: "1"
+      distance: "1396"
+      strand: "-1"
+      variantClass: SNV
+      symbolSource: EntrezGene
+      hgncId: "HGNC:50039"
+      canonical: true
+    - allele: A
+      consequence: regulatory_region_variant
+      impact: MODIFIER
+      featureType: RegulatoryFeature
+      feature: ENSR00000344266
+      featureBiotype: CTCF_binding_site
+      dbsnpId: "1"
+      variantClass: SNV
+  alleleCounts:
+    - byPopulation:
+        - population: afr
+          counts:
+            overall:
+              ac: 2
+              an: 37068
+              af: 0.0000539549
+            xx:
+              ac: 2
+              an: 19888
+              af: 0.000100563
+            xy:
+              an: 17180
+          faf95: 0.00000894
+          faf99: 0.00000334
+        - population: ami
+          counts:
+            overall:
+              an: 628
+            xx:
+              an: 314
+            xy:
+              an: 314
+        - population: amr
+          counts:
+            overall:
+              an: 9626
+            xx:
+              an: 4332
+            xy:
+              an: 5294
+          faf95: 0
+          faf99: 0
+        - population: asj
+          counts:
+            overall:
+              an: 2276
+            xx:
+              an: 1242
+            xy:
+              an: 1034
+        - population: eas
+          counts:
+            overall:
+              an: 4652
+            xx:
+              an: 2060
+            xy:
+              an: 2592
+          faf95: 0
+          faf99: 0
+        - population: fin
+          counts:
+            overall:
+              an: 5366
+            xx:
+              an: 1466
+            xy:
+              an: 3900
+        - population: mid
+          counts:
+            overall:
+              an: 240
+            xx:
+              an: 136
+            xy:
+              an: 104
+        - population: nfe
+          counts:
+            overall:
+              an: 46074
+            xx:
+              an: 27052
+            xy:
+              an: 19022
+          faf95: 0
+          faf99: 0
+        - population: oth
+          counts:
+            overall:
+              an: 1390
+            xx:
+              an: 706
+            xy:
+              an: 684
+        - population: sas
+          counts:
+            overall:
+              an: 3084
+            xx:
+              an: 754
+            xy:
+              an: 2330
+          faf95: 0
+          faf99: 0
+      bySex:
+        overall:
+          ac: 2
+          an: 110404
+          af: 0.0000181153
+        xx:
+          ac: 2
+          an: 57950
+          af: 0.0000345125
+        xy:
+          an: 52454
+      raw:
+        ac: 4
+        an: 134654
+        af: 0.0000297058
+      popmax: afr
+      afPopmax: 0.0000539549
+      acPopmax: 2
+      anPopmax: 37068
+      nhomaltPopmax: 0
+    - cohort: controls_and_biobanks
+      byPopulation:
+        - population: afr
+          counts:
+            overall:
+              an: 8100
+            xx:
+              an: 4200
+            xy:
+              an: 3900
+          faf95: 0.00000894
+          faf99: 0.00000334
+        - population: ami
+          counts:
+            overall:
+              an: 30
+            xx:
+              an: 12
+            xy:
+              an: 18
+        - population: amr
+          counts:
+            overall:
+              an: 3266
+            xx:
+              an: 1728
+            xy:
+              an: 1538
+          faf95: 0
+          faf99: 0
+        - population: asj
+          counts:
+            overall:
+              an: 84
+            xx:
+              an: 54
+            xy:
+              an: 30
+        - population: eas
+          counts:
+            overall:
+              an: 2234
+            xx:
+              an: 950
+            xy:
+              an: 1284
+          faf95: 0
+          faf99: 0
+        - population: fin
+          counts:
+            overall:
+              an: 2656
+            xx:
+              an: 326
+            xy:
+              an: 2330
+        - population: mid
+          counts:
+            overall:
+              an: 190
+            xx:
+              an: 110
+            xy:
+              an: 80
+        - population: nfe
+          counts:
+            overall:
+              an: 4692
+            xx:
+              an: 2280
+            xy:
+              an: 2412
+          faf95: 0
+          faf99: 0
+        - population: oth
+          counts:
+            overall:
+              an: 546
+            xx:
+              an: 282
+            xy:
+              an: 264
+        - population: sas
+          counts:
+            overall:
+              an: 2134
+            xx:
+              an: 604
+            xy:
+              an: 1530
+          faf95: 0
+          faf99: 0
+      bySex:
+        overall:
+          an: 23932
+        xx:
+          an: 10546
+        xy:
+          an: 13386
+      raw:
+        ac: 1
+        an: 28778
+        af: 0.0000347488
+    - cohort: non_cancer
+      byPopulation:
+        - population: afr
+          counts:
+            overall:
+              ac: 2
+              an: 36772
+              af: 0.0000543892
+            xx:
+              ac: 2
+              an: 19746
+              af: 0.000101286
+            xy:
+              an: 17026
+          faf95: 0.00000894
+          faf99: 0.00000334
+        - population: ami
+          counts:
+            overall:
+              an: 628
+            xx:
+              an: 314
+            xy:
+              an: 314
+        - population: amr
+          counts:
+            overall:
+              an: 9504
+            xx:
+              an: 4300
+            xy:
+              an: 5204
+          faf95: 0
+          faf99: 0
+        - population: asj
+          counts:
+            overall:
+              an: 2166
+            xx:
+              an: 1158
+            xy:
+              an: 1008
+        - population: eas
+          counts:
+            overall:
+              an: 4438
+            xx:
+              an: 1970
+            xy:
+              an: 2468
+          faf95: 0
+          faf99: 0
+        - population: fin
+          counts:
+            overall:
+              an: 5366
+            xx:
+              an: 1466
+            xy:
+              an: 3900
+        - population: mid
+          counts:
+            overall:
+              an: 230
+            xx:
+              an: 132
+            xy:
+              an: 98
+        - population: nfe
+          counts:
+            overall:
+              an: 43888
+            xx:
+              an: 26206
+            xy:
+              an: 17682
+          faf95: 0
+          faf99: 0
+        - population: oth
+          counts:
+            overall:
+              an: 1342
+            xx:
+              an: 686
+            xy:
+              an: 656
+        - population: sas
+          counts:
+            overall:
+              an: 3056
+            xx:
+              an: 738
+            xy:
+              an: 2318
+          faf95: 0
+          faf99: 0
+      bySex:
+        overall:
+          ac: 2
+          an: 107390
+          af: 0.0000186237
+        xx:
+          ac: 2
+          an: 56716
+          af: 0.0000352634
+        xy:
+          an: 50674
+      raw:
+        ac: 4
+        an: 131136
+        af: 0.0000305027
+    - cohort: non_neuro
+      byPopulation:
+        - population: afr
+          counts:
+            overall:
+              ac: 2
+              an: 29190
+              af: 0.0000685166
+            xx:
+              ac: 2
+              an: 16886
+              af: 0.000118441
+            xy:
+              an: 12304
+          faf95: 0.00000894
+          faf99: 0.00000334
+        - population: ami
+          counts:
+            overall:
+              an: 598
+            xx:
+              an: 288
+            xy:
+              an: 310
+        - population: amr
+          counts:
+            overall:
+              an: 9378
+            xx:
+              an: 4230
+            xy:
+              an: 5148
+          faf95: 0
+          faf99: 0
+        - population: asj
+          counts:
+            overall:
+              an: 2226
+            xx:
+              an: 1220
+            xy:
+              an: 1006
+        - population: eas
+          counts:
+            overall:
+              an: 4652
+            xx:
+              an: 2060
+            xy:
+              an: 2592
+          faf95: 0
+          faf99: 0
+        - population: fin
+          counts:
+            overall:
+              an: 3388
+            xx:
+              an: 420
+            xy:
+              an: 2968
+        - population: mid
+          counts:
+            overall:
+              an: 238
+            xx:
+              an: 136
+            xy:
+              an: 102
+        - population: nfe
+          counts:
+            overall:
+              an: 43560
+            xx:
+              an: 26032
+            xy:
+              an: 17528
+          faf95: 0
+          faf99: 0
+        - population: oth
+          counts:
+            overall:
+              an: 1324
+            xx:
+              an: 676
+            xy:
+              an: 648
+        - population: sas
+          counts:
+            overall:
+              an: 3084
+            xx:
+              an: 754
+            xy:
+              an: 2330
+          faf95: 0
+          faf99: 0
+      bySex:
+        overall:
+          ac: 2
+          an: 97638
+          af: 0.0000204838
+        xx:
+          ac: 2
+          an: 52702
+          af: 0.0000379492
+        xy:
+          an: 44936
+      raw:
+        ac: 4
+        an: 118984
+        af: 0.000033618
+    - cohort: non_topmed
+      byPopulation:
+        - population: afr
+          counts:
+            overall:
+              an: 21934
+            xx:
+              an: 10540
+            xy:
+              an: 11394
+          faf95: 0.00000894
+          faf99: 0.00000334
+        - population: ami
+          counts:
+            overall:
+              an: 60
+            xx:
+              an: 38
+            xy:
+              an: 22
+        - population: amr
+          counts:
+            overall:
+              an: 8120
+            xx:
+              an: 3416
+            xy:
+              an: 4704
+          faf95: 0
+          faf99: 0
+        - population: asj
+          counts:
+            overall:
+              an: 654
+            xx:
+              an: 178
+            xy:
+              an: 476
+        - population: eas
+          counts:
+            overall:
+              an: 3318
+            xx:
+              an: 1254
+            xy:
+              an: 2064
+          faf95: 0
+          faf99: 0
+        - population: fin
+          counts:
+            overall:
+              an: 5296
+            xx:
+              an: 1422
+            xy:
+              an: 3874
+        - population: mid
+          counts:
+            overall:
+              an: 208
+            xx:
+              an: 118
+            xy:
+              an: 90
+        - population: nfe
+          counts:
+            overall:
+              an: 13464
+            xx:
+              an: 5850
+            xy:
+              an: 7614
+          faf95: 0
+          faf99: 0
+        - population: oth
+          counts:
+            overall:
+              an: 980
+            xx:
+              an: 464
+            xy:
+              an: 516
+        - population: sas
+          counts:
+            overall:
+              an: 3070
+            xx:
+              an: 752
+            xy:
+              an: 2318
+          faf95: 0
+          faf99: 0
+      bySex:
+        overall:
+          an: 57104
+        xx:
+          an: 24032
+        xy:
+          an: 33072
+      raw:
+        ac: 1
+        an: 70476
+        af: 0.0000141892
+    - cohort: non_v2
+      byPopulation:
+        - population: afr
+          counts:
+            overall:
+              ac: 1
+              an: 25588
+              af: 0.0000390808
+            xx:
+              ac: 1
+              an: 14164
+              af: 0.0000706015
+            xy:
+              an: 11424
+          faf95: 0.00000894
+          faf99: 0.00000334
+        - population: ami
+          counts:
+            overall:
+              an: 628
+            xx:
+              an: 314
+            xy:
+              an: 314
+        - population: amr
+          counts:
+            overall:
+              an: 8634
+            xx:
+              an: 3834
+            xy:
+              an: 4800
+          faf95: 0
+          faf99: 0
+        - population: asj
+          counts:
+            overall:
+              an: 2034
+            xx:
+              an: 1134
+            xy:
+              an: 900
+        - population: eas
+          counts:
+            overall:
+              an: 2520
+            xx:
+              an: 1188
+            xy:
+              an: 1332
+          faf95: 0
+          faf99: 0
+        - population: fin
+          counts:
+            overall:
+              an: 3426
+            xx:
+              an: 604
+            xy:
+              an: 2822
+        - population: mid
+          counts:
+            overall:
+              an: 232
+            xx:
+              an: 134
+            xy:
+              an: 98
+        - population: nfe
+          counts:
+            overall:
+              an: 35796
+            xx:
+              an: 22314
+            xy:
+              an: 13482
+          faf95: 0
+          faf99: 0
+        - population: oth
+          counts:
+            overall:
+              an: 1244
+            xx:
+              an: 638
+            xy:
+              an: 606
+        - population: sas
+          counts:
+            overall:
+              an: 2356
+            xx:
+              an: 460
+            xy:
+              an: 1896
+          faf95: 0
+          faf99: 0
+      bySex:
+        overall:
+          ac: 1
+          an: 82458
+          af: 0.0000121274
+        xx:
+          ac: 1
+          an: 44784
+          af: 0.0000223294
+        xy:
+          an: 37674
+      raw:
+        ac: 2
+        an: 100600
+        af: 0.0000198807
+  effectInfo:
+    caddPhred: 5.483
+  variantInfo:
+    variantType: multi-snv
+    alleleType: snv
+    nAltAlleles: 3
+    varDp: 3
+  qualityInfo:
+    asFs: 5.44066
+    inbreedingCoeff: -0.0000296831
+    asMq: 45.042
+    mqRankSum: -0.355
+    asMqRankSum: -0.717
+    asQd: 4.3829
+    readPosRankSum: -0.536
+    asReadPosRankSum: -0.536
+    asSor: 1.10954
+    negativeTrainSite: true
+    asVqslod: -2.257
+    asCulprit: AS_QD
+    asPabMax: 1
+    asQualApprox: 1179
+    asSbTable: "158"
+  ageInfo:
+    ageHistHomNSmaller: 0
+    ageHistHomNLarger: 0
+    ageHistHetNSmaller: 0
+    ageHistHetNLarger: 0
+  depthInfo:
+    dpHistAllNLarger: 559
+    dpHistAltNLarger: 0
+- chrom: chr1
+  pos: 15973
+  refAllele: G
+  altAllele: C
+  vep:
+    - allele: C
+      consequence: downstream_gene_variant
+      impact: MODIFIER
+      symbol: DDX11L1
+      gene: ENSG00000223972
+      featureType: Transcript
+      feature: ENST00000450305
+      featureBiotype: transcribed_unprocessed_pseudogene
+      dbsnpId: "1"
+      distance: "2303"
+      strand: "1"
+      variantClass: SNV
+      symbolSource: HGNC
+      hgncId: "HGNC:37102"
+    - allele: C
+      consequence: downstream_gene_variant
+      impact: MODIFIER
+      symbol: DDX11L1
+      gene: ENSG00000223972
+      featureType: Transcript
+      feature: ENST00000456328
+      featureBiotype: processed_transcript
+      dbsnpId: "1"
+      distance: "1564"
+      strand: "1"
+      variantClass: SNV
+      symbolSource: HGNC
+      hgncId: "HGNC:37102"
+      canonical: true
+      tsl: 1
+    - allele: C
+      consequence: intron_variant&non_coding_transcript_variant
+      impact: MODIFIER
+      symbol: WASH7P
+      gene: ENSG00000227232
+      featureType: Transcript
+      feature: ENST00000488147
+      featureBiotype: unprocessed_pseudogene
+      intron: 8/10
+      hgvsc: "ENST00000488147.1:n.1068-26C>G"
+      dbsnpId: "1"
+      strand: "-1"
+      variantClass: SNV
+      symbolSource: HGNC
+      hgncId: "HGNC:38034"
+      canonical: true
+    - allele: C
+      consequence: downstream_gene_variant
+      impact: MODIFIER
+      symbol: MIR6859-1
+      gene: ENSG00000278267
+      featureType: Transcript
+      feature: ENST00000619216
+      featureBiotype: miRNA
+      dbsnpId: "1"
+      distance: "1396"
+      strand: "-1"
+      variantClass: SNV
+      symbolSource: HGNC
+      hgncId: "HGNC:50039"
+      canonical: true
+    - allele: C
+      consequence: intron_variant&non_coding_transcript_variant
+      impact: MODIFIER
+      symbol: WASH7P
+      gene: "653635"
+      featureType: Transcript
+      feature: NR_024540.1
+      featureBiotype: transcribed_pseudogene
+      intron: 8/10
+      hgvsc: "NR_024540.1:n.1081-26C>G"
+      dbsnpId: "1"
+      strand: "-1"
+      variantClass: SNV
+      symbolSource: EntrezGene
+      hgncId: "HGNC:38034"
+      canonical: true
+    - allele: C
+      consequence: downstream_gene_variant
+      impact: MODIFIER
+      symbol: DDX11L1
+      gene: "100287102"
+      featureType: Transcript
+      feature: NR_046018.2
+      featureBiotype: transcribed_pseudogene
+      dbsnpId: "1"
+      distance: "1564"
+      strand: "1"
+      variantClass: SNV
+      symbolSource: EntrezGene
+      hgncId: "HGNC:37102"
+      canonical: true
+    - allele: C
+      consequence: downstream_gene_variant
+      impact: MODIFIER
+      symbol: MIR6859-1
+      gene: "102466751"
+      featureType: Transcript
+      feature: NR_106918.1
+      featureBiotype: miRNA
+      dbsnpId: "1"
+      distance: "1396"
+      strand: "-1"
+      variantClass: SNV
+      symbolSource: EntrezGene
+      hgncId: "HGNC:50039"
+      canonical: true
+    - allele: C
+      consequence: regulatory_region_variant
+      impact: MODIFIER
+      featureType: RegulatoryFeature
+      feature: ENSR00000344266
+      featureBiotype: CTCF_binding_site
+      dbsnpId: "1"
+      variantClass: SNV
+  alleleCounts:
+    - byPopulation:
+        - population: afr
+          counts:
+            overall:
+              an: 37070
+            xx:
+              an: 19888
+            xy:
+              an: 17182
+          faf95: 0
+          faf99: 0
+        - population: ami
+          counts:
+            overall:
+              an: 628
+            xx:
+              an: 314
+            xy:
+              an: 314
+        - population: amr
+          counts:
+            overall:
+              ac: 2
+              an: 9626
+              af: 0.000207771
+            xx:
+              an: 4332
+            xy:
+              ac: 2
+              an: 5294
+              af: 0.000377786
+          faf95: 0.00003622
+          faf99: 0.00001477
+        - population: asj
+          counts:
+            overall:
+              an: 2276
+            xx:
+              an: 1242
+            xy:
+              an: 1034
+        - population: eas
+          counts:
+            overall:
+              an: 4652
+            xx:
+              an: 2060
+            xy:
+              an: 2592
+          faf95: 0
+          faf99: 0
+        - population: fin
+          counts:
+            overall:
+              an: 5366
+            xx:
+              an: 1466
+            xy:
+              an: 3900
+        - population: mid
+          counts:
+            overall:
+              an: 240
+            xx:
+              an: 136
+            xy:
+              an: 104
+        - population: nfe
+          counts:
+            overall:
+              an: 46074
+            xx:
+              an: 27052
+            xy:
+              an: 19022
+          faf95: 0
+          faf99: 0
+        - population: oth
+          counts:
+            overall:
+              an: 1390
+            xx:
+              an: 706
+            xy:
+              an: 684
+        - population: sas
+          counts:
+            overall:
+              an: 3084
+            xx:
+              an: 754
+            xy:
+              an: 2330
+          faf95: 0
+          faf99: 0
+      bySex:
+        overall:
+          ac: 2
+          an: 110406
+          af: 0.000018115
+        xx:
+          an: 57950
+        xy:
+          ac: 2
+          an: 52456
+          af: 0.0000381272
+      raw:
+        ac: 6
+        an: 134654
+        nhomalt: 1
+        af: 0.0000445586
+      popmax: amr
+      afPopmax: 0.000207771
+      acPopmax: 2
+      anPopmax: 9626
+      nhomaltPopmax: 0
+    - cohort: controls_and_biobanks
+      byPopulation:
+        - population: afr
+          counts:
+            overall:
+              an: 8100
+            xx:
+              an: 4200
+            xy:
+              an: 3900
+          faf95: 0
+          faf99: 0
+        - population: ami
+          counts:
+            overall:
+              an: 30
+            xx:
+              an: 12
+            xy:
+              an: 18
+        - population: amr
+          counts:
+            overall:
+              an: 3266
+            xx:
+              an: 1728
+            xy:
+              an: 1538
+          faf95: 0.00003622
+          faf99: 0.00001477
+        - population: asj
+          counts:
+            overall:
+              an: 84
+            xx:
+              an: 54
+            xy:
+              an: 30
+        - population: eas
+          counts:
+            overall:
+              an: 2234
+            xx:
+              an: 950
+            xy:
+              an: 1284
+          faf95: 0
+          faf99: 0
+        - population: fin
+          counts:
+            overall:
+              an: 2656
+            xx:
+              an: 326
+            xy:
+              an: 2330
+        - population: mid
+          counts:
+            overall:
+              an: 190
+            xx:
+              an: 110
+            xy:
+              an: 80
+        - population: nfe
+          counts:
+            overall:
+              an: 4692
+            xx:
+              an: 2280
+            xy:
+              an: 2412
+          faf95: 0
+          faf99: 0
+        - population: oth
+          counts:
+            overall:
+              an: 546
+            xx:
+              an: 282
+            xy:
+              an: 264
+        - population: sas
+          counts:
+            overall:
+              an: 2134
+            xx:
+              an: 604
+            xy:
+              an: 1530
+          faf95: 0
+          faf99: 0
+      bySex:
+        overall:
+          an: 23932
+        xx:
+          an: 10546
+        xy:
+          an: 13386
+      raw:
+        an: 28778
+    - cohort: non_cancer
+      byPopulation:
+        - population: afr
+          counts:
+            overall:
+              an: 36774
+            xx:
+              an: 19746
+            xy:
+              an: 17028
+          faf95: 0
+          faf99: 0
+        - population: ami
+          counts:
+            overall:
+              an: 628
+            xx:
+              an: 314
+            xy:
+              an: 314
+        - population: amr
+          counts:
+            overall:
+              ac: 2
+              an: 9504
+              af: 0.000210438
+            xx:
+              an: 4300
+            xy:
+              ac: 2
+              an: 5204
+              af: 0.00038432
+          faf95: 0.00003622
+          faf99: 0.00001477
+        - population: asj
+          counts:
+            overall:
+              an: 2166
+            xx:
+              an: 1158
+            xy:
+              an: 1008
+        - population: eas
+          counts:
+            overall:
+              an: 4438
+            xx:
+              an: 1970
+            xy:
+              an: 2468
+          faf95: 0
+          faf99: 0
+        - population: fin
+          counts:
+            overall:
+              an: 5366
+            xx:
+              an: 1466
+            xy:
+              an: 3900
+        - population: mid
+          counts:
+            overall:
+              an: 230
+            xx:
+              an: 132
+            xy:
+              an: 98
+        - population: nfe
+          counts:
+            overall:
+              an: 43888
+            xx:
+              an: 26206
+            xy:
+              an: 17682
+          faf95: 0
+          faf99: 0
+        - population: oth
+          counts:
+            overall:
+              an: 1342
+            xx:
+              an: 686
+            xy:
+              an: 656
+        - population: sas
+          counts:
+            overall:
+              an: 3056
+            xx:
+              an: 738
+            xy:
+              an: 2318
+          faf95: 0
+          faf99: 0
+      bySex:
+        overall:
+          ac: 2
+          an: 107392
+          af: 0.0000186234
+        xx:
+          an: 56716
+        xy:
+          ac: 2
+          an: 50676
+          af: 0.0000394664
+      raw:
+        ac: 6
+        an: 131136
+        nhomalt: 1
+        af: 0.000045754
+    - cohort: non_neuro
+      byPopulation:
+        - population: afr
+          counts:
+            overall:
+              an: 29192
+            xx:
+              an: 16886
+            xy:
+              an: 12306
+          faf95: 0
+          faf99: 0
+        - population: ami
+          counts:
+            overall:
+              an: 598
+            xx:
+              an: 288
+            xy:
+              an: 310
+        - population: amr
+          counts:
+            overall:
+              ac: 2
+              an: 9378
+              af: 0.000213265
+            xx:
+              an: 4230
+            xy:
+              ac: 2
+              an: 5148
+              af: 0.0003885
+          faf95: 0.00003622
+          faf99: 0.00001477
+        - population: asj
+          counts:
+            overall:
+              an: 2226
+            xx:
+              an: 1220
+            xy:
+              an: 1006
+        - population: eas
+          counts:
+            overall:
+              an: 4652
+            xx:
+              an: 2060
+            xy:
+              an: 2592
+          faf95: 0
+          faf99: 0
+        - population: fin
+          counts:
+            overall:
+              an: 3388
+            xx:
+              an: 420
+            xy:
+              an: 2968
+        - population: mid
+          counts:
+            overall:
+              an: 238
+            xx:
+              an: 136
+            xy:
+              an: 102
+        - population: nfe
+          counts:
+            overall:
+              an: 43560
+            xx:
+              an: 26032
+            xy:
+              an: 17528
+          faf95: 0
+          faf99: 0
+        - population: oth
+          counts:
+            overall:
+              an: 1324
+            xx:
+              an: 676
+            xy:
+              an: 648
+        - population: sas
+          counts:
+            overall:
+              an: 3084
+            xx:
+              an: 754
+            xy:
+              an: 2330
+          faf95: 0
+          faf99: 0
+      bySex:
+        overall:
+          ac: 2
+          an: 97640
+          af: 0.0000204834
+        xx:
+          an: 52702
+        xy:
+          ac: 2
+          an: 44938
+          af: 0.0000445058
+      raw:
+        ac: 6
+        an: 118984
+        nhomalt: 1
+        af: 0.0000504269
+    - cohort: non_topmed
+      byPopulation:
+        - population: afr
+          counts:
+            overall:
+              an: 21934
+            xx:
+              an: 10540
+            xy:
+              an: 11394
+          faf95: 0
+          faf99: 0
+        - population: ami
+          counts:
+            overall:
+              an: 60
+            xx:
+              an: 38
+            xy:
+              an: 22
+        - population: amr
+          counts:
+            overall:
+              ac: 2
+              an: 8120
+              af: 0.000246305
+            xx:
+              an: 3416
+            xy:
+              ac: 2
+              an: 4704
+              af: 0.00042517
+          faf95: 0.00003622
+          faf99: 0.00001477
+        - population: asj
+          counts:
+            overall:
+              an: 654
+            xx:
+              an: 178
+            xy:
+              an: 476
+        - population: eas
+          counts:
+            overall:
+              an: 3318
+            xx:
+              an: 1254
+            xy:
+              an: 2064
+          faf95: 0
+          faf99: 0
+        - population: fin
+          counts:
+            overall:
+              an: 5296
+            xx:
+              an: 1422
+            xy:
+              an: 3874
+        - population: mid
+          counts:
+            overall:
+              an: 208
+            xx:
+              an: 118
+            xy:
+              an: 90
+        - population: nfe
+          counts:
+            overall:
+              an: 13464
+            xx:
+              an: 5850
+            xy:
+              an: 7614
+          faf95: 0
+          faf99: 0
+        - population: oth
+          counts:
+            overall:
+              an: 980
+            xx:
+              an: 464
+            xy:
+              an: 516
+        - population: sas
+          counts:
+            overall:
+              an: 3070
+            xx:
+              an: 752
+            xy:
+              an: 2318
+          faf95: 0
+          faf99: 0
+      bySex:
+        overall:
+          ac: 2
+          an: 57104
+          af: 0.0000350238
+        xx:
+          an: 24032
+        xy:
+          ac: 2
+          an: 33072
+          af: 0.0000604741
+      raw:
+        ac: 5
+        an: 70476
+        nhomalt: 1
+        af: 0.0000709461
+    - cohort: non_v2
+      byPopulation:
+        - population: afr
+          counts:
+            overall:
+              an: 25590
+            xx:
+              an: 14164
+            xy:
+              an: 11426
+          faf95: 0
+          faf99: 0
+        - population: ami
+          counts:
+            overall:
+              an: 628
+            xx:
+              an: 314
+            xy:
+              an: 314
+        - population: amr
+          counts:
+            overall:
+              ac: 2
+              an: 8634
+              af: 0.000231642
+            xx:
+              an: 3834
+            xy:
+              ac: 2
+              an: 4800
+              af: 0.000416667
+          faf95: 0.00003622
+          faf99: 0.00001477
+        - population: asj
+          counts:
+            overall:
+              an: 2034
+            xx:
+              an: 1134
+            xy:
+              an: 900
+        - population: eas
+          counts:
+            overall:
+              an: 2520
+            xx:
+              an: 1188
+            xy:
+              an: 1332
+          faf95: 0
+          faf99: 0
+        - population: fin
+          counts:
+            overall:
+              an: 3426
+            xx:
+              an: 604
+            xy:
+              an: 2822
+        - population: mid
+          counts:
+            overall:
+              an: 232
+            xx:
+              an: 134
+            xy:
+              an: 98
+        - population: nfe
+          counts:
+            overall:
+              an: 35796
+            xx:
+              an: 22314
+            xy:
+              an: 13482
+          faf95: 0
+          faf99: 0
+        - population: oth
+          counts:
+            overall:
+              an: 1244
+            xx:
+              an: 638
+            xy:
+              an: 606
+        - population: sas
+          counts:
+            overall:
+              an: 2356
+            xx:
+              an: 460
+            xy:
+              an: 1896
+          faf95: 0
+          faf99: 0
+      bySex:
+        overall:
+          ac: 2
+          an: 82460
+          af: 0.0000242542
+        xx:
+          an: 44784
+        xy:
+          ac: 2
+          an: 37676
+          af: 0.0000530842
+      raw:
+        ac: 4
+        an: 100600
+        af: 0.0000397614
+  effectInfo:
+    caddPhred: 5.063
+  variantInfo:
+    variantType: multi-snv
+    alleleType: snv
+    nAltAlleles: 3
+    varDp: 3
+  qualityInfo:
+    asFs: 3.55669
+    inbreedingCoeff: 0.333304
+    asMq: 37.123
+    mqRankSum: -0.355
+    asMqRankSum: -0.151
+    asQd: 15.5085
+    readPosRankSum: -0.536
+    asReadPosRankSum: -0.259
+    asSor: 1.02889
+    negativeTrainSite: true
+    asVqslod: -2.5191
+    asCulprit: AS_MQ
+    asPabMax: 1
+    asQualApprox: 915
+    asSbTable: "158"
+  ageInfo:
+    ageHistHomNSmaller: 0
+    ageHistHomNLarger: 0
+    ageHistHetNSmaller: 0
+    ageHistHetNLarger: 0
+  depthInfo:
+    dpHistAllNLarger: 559
+    dpHistAltNLarger: 0
+- chrom: chr1
+  pos: 15974
+  refAllele: C
+  altAllele: G
+  vep:
+    - allele: G
+      consequence: downstream_gene_variant
+      impact: MODIFIER
+      symbol: DDX11L1
+      gene: ENSG00000223972
+      featureType: Transcript
+      feature: ENST00000450305
+      featureBiotype: transcribed_unprocessed_pseudogene
+      dbsnpId: "1"
+      distance: "2304"
+      strand: "1"
+      variantClass: SNV
+      symbolSource: HGNC
+      hgncId: "HGNC:37102"
+    - allele: G
+      consequence: downstream_gene_variant
+      impact: MODIFIER
+      symbol: DDX11L1
+      gene: ENSG00000223972
+      featureType: Transcript
+      feature: ENST00000456328
+      featureBiotype: processed_transcript
+      dbsnpId: "1"
+      distance: "1565"
+      strand: "1"
+      variantClass: SNV
+      symbolSource: HGNC
+      hgncId: "HGNC:37102"
+      canonical: true
+      tsl: 1
+    - allele: G
+      consequence: intron_variant&non_coding_transcript_variant
+      impact: MODIFIER
+      symbol: WASH7P
+      gene: ENSG00000227232
+      featureType: Transcript
+      feature: ENST00000488147
+      featureBiotype: unprocessed_pseudogene
+      intron: 8/10
+      hgvsc: "ENST00000488147.1:n.1068-27G>C"
+      dbsnpId: "1"
+      strand: "-1"
+      variantClass: SNV
+      symbolSource: HGNC
+      hgncId: "HGNC:38034"
+      canonical: true
+    - allele: G
+      consequence: downstream_gene_variant
+      impact: MODIFIER
+      symbol: MIR6859-1
+      gene: ENSG00000278267
+      featureType: Transcript
+      feature: ENST00000619216
+      featureBiotype: miRNA
+      dbsnpId: "1"
+      distance: "1395"
+      strand: "-1"
+      variantClass: SNV
+      symbolSource: HGNC
+      hgncId: "HGNC:50039"
+      canonical: true
+    - allele: G
+      consequence: intron_variant&non_coding_transcript_variant
+      impact: MODIFIER
+      symbol: WASH7P
+      gene: "653635"
+      featureType: Transcript
+      feature: NR_024540.1
+      featureBiotype: transcribed_pseudogene
+      intron: 8/10
+      hgvsc: "NR_024540.1:n.1081-27G>C"
+      dbsnpId: "1"
+      strand: "-1"
+      variantClass: SNV
+      symbolSource: EntrezGene
+      hgncId: "HGNC:38034"
+      canonical: true
+    - allele: G
+      consequence: downstream_gene_variant
+      impact: MODIFIER
+      symbol: DDX11L1
+      gene: "100287102"
+      featureType: Transcript
+      feature: NR_046018.2
+      featureBiotype: transcribed_pseudogene
+      dbsnpId: "1"
+      distance: "1565"
+      strand: "1"
+      variantClass: SNV
+      symbolSource: EntrezGene
+      hgncId: "HGNC:37102"
+      canonical: true
+    - allele: G
+      consequence: downstream_gene_variant
+      impact: MODIFIER
+      symbol: MIR6859-1
+      gene: "102466751"
+      featureType: Transcript
+      feature: NR_106918.1
+      featureBiotype: miRNA
+      dbsnpId: "1"
+      distance: "1395"
+      strand: "-1"
+      variantClass: SNV
+      symbolSource: EntrezGene
+      hgncId: "HGNC:50039"
+      canonical: true
+    - allele: G
+      consequence: regulatory_region_variant
+      impact: MODIFIER
+      featureType: RegulatoryFeature
+      feature: ENSR00000344266
+      featureBiotype: CTCF_binding_site
+      dbsnpId: "1"
+      variantClass: SNV
+  alleleCounts:
+    - byPopulation:
+        - population: afr
+          counts:
+            overall:
+              an: 37020
+            xx:
+              an: 19854
+            xy:
+              an: 17166
+          faf95: 0
+          faf99: 0
+        - population: ami
+          counts:
+            overall:
+              an: 628
+            xx:
+              an: 312
+            xy:
+              an: 316
+        - population: amr
+          counts:
+            overall:
+              ac: 1
+              an: 9600
+              af: 0.000104167
+            xx:
+              ac: 1
+              an: 4304
+              af: 0.000232342
+            xy:
+              an: 5296
+          faf95: 0
+          faf99: 0
+        - population: asj
+          counts:
+            overall:
+              an: 2252
+            xx:
+              an: 1230
+            xy:
+              an: 1022
+        - population: eas
+          counts:
+            overall:
+              an: 4642
+            xx:
+              an: 2056
+            xy:
+              an: 2586
+          faf95: 0
+          faf99: 0
+        - population: fin
+          counts:
+            overall:
+              an: 5348
+            xx:
+              an: 1482
+            xy:
+              an: 3866
+        - population: mid
+          counts:
+            overall:
+              an: 238
+            xx:
+              an: 134
+            xy:
+              an: 104
+        - population: nfe
+          counts:
+            overall:
+              ac: 1
+              an: 46052
+              af: 0.0000217146
+            xx:
+              ac: 1
+              an: 27020
+              af: 0.0000370096
+            xy:
+              an: 19032
+          faf95: 0
+          faf99: 0
+        - population: oth
+          counts:
+            overall:
+              an: 1394
+            xx:
+              an: 710
+            xy:
+              an: 684
+        - population: sas
+          counts:
+            overall:
+              an: 3074
+            xx:
+              an: 762
+            xy:
+              an: 2312
+          faf95: 0
+          faf99: 0
+      bySex:
+        overall:
+          ac: 2
+          an: 110248
+          af: 0.0000181409
+        xx:
+          ac: 2
+          an: 57864
+          af: 0.0000345638
+        xy:
+          an: 52384
+      raw:
+        ac: 4
+        an: 134398
+        nhomalt: 1
+        af: 0.0000297623
+      popmax: amr
+      afPopmax: 0.000104167
+      acPopmax: 1
+      anPopmax: 9600
+      nhomaltPopmax: 0
+    - cohort: controls_and_biobanks
+      byPopulation:
+        - population: afr
+          counts:
+            overall:
+              an: 8096
+            xx:
+              an: 4198
+            xy:
+              an: 3898
+          faf95: 0
+          faf99: 0
+        - population: ami
+          counts:
+            overall:
+              an: 30
+            xx:
+              an: 12
+            xy:
+              an: 18
+        - population: amr
+          counts:
+            overall:
+              an: 3256
+            xx:
+              an: 1716
+            xy:
+              an: 1540
+          faf95: 0
+          faf99: 0
+        - population: asj
+          counts:
+            overall:
+              an: 80
+            xx:
+              an: 52
+            xy:
+              an: 28
+        - population: eas
+          counts:
+            overall:
+              an: 2232
+            xx:
+              an: 950
+            xy:
+              an: 1282
+          faf95: 0
+          faf99: 0
+        - population: fin
+          counts:
+            overall:
+              an: 2622
+            xx:
+              an: 328
+            xy:
+              an: 2294
+        - population: mid
+          counts:
+            overall:
+              an: 188
+            xx:
+              an: 108
+            xy:
+              an: 80
+        - population: nfe
+          counts:
+            overall:
+              an: 4698
+            xx:
+              an: 2282
+            xy:
+              an: 2416
+          faf95: 0
+          faf99: 0
+        - population: oth
+          counts:
+            overall:
+              an: 552
+            xx:
+              an: 290
+            xy:
+              an: 262
+        - population: sas
+          counts:
+            overall:
+              an: 2124
+            xx:
+              an: 608
+            xy:
+              an: 1516
+          faf95: 0
+          faf99: 0
+      bySex:
+        overall:
+          an: 23878
+        xx:
+          an: 10544
+        xy:
+          an: 13334
+      raw:
+        an: 28664
+    - cohort: non_cancer
+      byPopulation:
+        - population: afr
+          counts:
+            overall:
+              an: 36724
+            xx:
+              an: 19712
+            xy:
+              an: 17012
+          faf95: 0
+          faf99: 0
+        - population: ami
+          counts:
+            overall:
+              an: 628
+            xx:
+              an: 312
+            xy:
+              an: 316
+        - population: amr
+          counts:
+            overall:
+              ac: 1
+              an: 9480
+              af: 0.000105485
+            xx:
+              ac: 1
+              an: 4274
+              af: 0.000233973
+            xy:
+              an: 5206
+          faf95: 0
+          faf99: 0
+        - population: asj
+          counts:
+            overall:
+              an: 2142
+            xx:
+              an: 1144
+            xy:
+              an: 998
+        - population: eas
+          counts:
+            overall:
+              an: 4426
+            xx:
+              an: 1964
+            xy:
+              an: 2462
+          faf95: 0
+          faf99: 0
+        - population: fin
+          counts:
+            overall:
+              an: 5348
+            xx:
+              an: 1482
+            xy:
+              an: 3866
+        - population: mid
+          counts:
+            overall:
+              an: 228
+            xx:
+              an: 130
+            xy:
+              an: 98
+        - population: nfe
+          counts:
+            overall:
+              ac: 1
+              an: 43856
+              af: 0.0000228019
+            xx:
+              ac: 1
+              an: 26168
+              af: 0.0000382146
+            xy:
+              an: 17688
+          faf95: 0
+          faf99: 0
+        - population: oth
+          counts:
+            overall:
+              an: 1346
+            xx:
+              an: 690
+            xy:
+              an: 656
+        - population: sas
+          counts:
+            overall:
+              an: 3046
+            xx:
+              an: 746
+            xy:
+              an: 2300
+          faf95: 0
+          faf99: 0
+      bySex:
+        overall:
+          ac: 2
+          an: 107224
+          af: 0.0000186525
+        xx:
+          ac: 2
+          an: 56622
+          af: 0.000035322
+        xy:
+          an: 50602
+      raw:
+        ac: 4
+        an: 130884
+        nhomalt: 1
+        af: 0.0000305614
+    - cohort: non_neuro
+      byPopulation:
+        - population: afr
+          counts:
+            overall:
+              an: 29162
+            xx:
+              an: 16860
+            xy:
+              an: 12302
+          faf95: 0
+          faf99: 0
+        - population: ami
+          counts:
+            overall:
+              an: 598
+            xx:
+              an: 286
+            xy:
+              an: 312
+        - population: amr
+          counts:
+            overall:
+              ac: 1
+              an: 9352
+              af: 0.000106929
+            xx:
+              ac: 1
+              an: 4204
+              af: 0.000237869
+            xy:
+              an: 5148
+          faf95: 0
+          faf99: 0
+        - population: asj
+          counts:
+            overall:
+              an: 2206
+            xx:
+              an: 1210
+            xy:
+              an: 996
+        - population: eas
+          counts:
+            overall:
+              an: 4642
+            xx:
+              an: 2056
+            xy:
+              an: 2586
+          faf95: 0
+          faf99: 0
+        - population: fin
+          counts:
+            overall:
+              an: 3356
+            xx:
+              an: 424
+            xy:
+              an: 2932
+        - population: mid
+          counts:
+            overall:
+              an: 236
+            xx:
+              an: 134
+            xy:
+              an: 102
+        - population: nfe
+          counts:
+            overall:
+              ac: 1
+              an: 43536
+              af: 0.0000229695
+            xx:
+              ac: 1
+              an: 26012
+              af: 0.0000384438
+            xy:
+              an: 17524
+          faf95: 0
+          faf99: 0
+        - population: oth
+          counts:
+            overall:
+              an: 1328
+            xx:
+              an: 680
+            xy:
+              an: 648
+        - population: sas
+          counts:
+            overall:
+              an: 3074
+            xx:
+              an: 762
+            xy:
+              an: 2312
+          faf95: 0
+          faf99: 0
+      bySex:
+        overall:
+          ac: 2
+          an: 97490
+          af: 0.0000205149
+        xx:
+          ac: 2
+          an: 52628
+          af: 0.0000380026
+        xy:
+          an: 44862
+      raw:
+        ac: 4
+        an: 118746
+        nhomalt: 1
+        af: 0.0000336853
+    - cohort: non_topmed
+      byPopulation:
+        - population: afr
+          counts:
+            overall:
+              an: 21902
+            xx:
+              an: 10526
+            xy:
+              an: 11376
+          faf95: 0
+          faf99: 0
+        - population: ami
+          counts:
+            overall:
+              an: 60
+            xx:
+              an: 38
+            xy:
+              an: 22
+        - population: amr
+          counts:
+            overall:
+              ac: 1
+              an: 8108
+              af: 0.000123335
+            xx:
+              ac: 1
+              an: 3396
+              af: 0.000294464
+            xy:
+              an: 4712
+          faf95: 0
+          faf99: 0
+        - population: asj
+          counts:
+            overall:
+              an: 646
+            xx:
+              an: 178
+            xy:
+              an: 468
+        - population: eas
+          counts:
+            overall:
+              an: 3312
+            xx:
+              an: 1252
+            xy:
+              an: 2060
+          faf95: 0
+          faf99: 0
+        - population: fin
+          counts:
+            overall:
+              an: 5278
+            xx:
+              an: 1438
+            xy:
+              an: 3840
+        - population: mid
+          counts:
+            overall:
+              an: 206
+            xx:
+              an: 116
+            xy:
+              an: 90
+        - population: nfe
+          counts:
+            overall:
+              an: 13478
+            xx:
+              an: 5842
+            xy:
+              an: 7636
+          faf95: 0
+          faf99: 0
+        - population: oth
+          counts:
+            overall:
+              an: 982
+            xx:
+              an: 466
+            xy:
+              an: 516
+        - population: sas
+          counts:
+            overall:
+              an: 3060
+            xx:
+              an: 760
+            xy:
+              an: 2300
+          faf95: 0
+          faf99: 0
+      bySex:
+        overall:
+          ac: 1
+          an: 57032
+          af: 0.000017534
+        xx:
+          ac: 1
+          an: 24012
+          af: 0.0000416458
+        xy:
+          an: 33020
+      raw:
+        ac: 3
+        an: 70272
+        nhomalt: 1
+        af: 0.0000426913
+    - cohort: non_v2
+      byPopulation:
+        - population: afr
+          counts:
+            overall:
+              an: 25546
+            xx:
+              an: 14138
+            xy:
+              an: 11408
+          faf95: 0
+          faf99: 0
+        - population: ami
+          counts:
+            overall:
+              an: 628
+            xx:
+              an: 312
+            xy:
+              an: 316
+        - population: amr
+          counts:
+            overall:
+              ac: 1
+              an: 8614
+              af: 0.00011609
+            xx:
+              ac: 1
+              an: 3816
+              af: 0.000262055
+            xy:
+              an: 4798
+          faf95: 0
+          faf99: 0
+        - population: asj
+          counts:
+            overall:
+              an: 2012
+            xx:
+              an: 1122
+            xy:
+              an: 890
+        - population: eas
+          counts:
+            overall:
+              an: 2514
+            xx:
+              an: 1186
+            xy:
+              an: 1328
+          faf95: 0
+          faf99: 0
+        - population: fin
+          counts:
+            overall:
+              an: 3406
+            xx:
+              an: 616
+            xy:
+              an: 2790
+        - population: mid
+          counts:
+            overall:
+              an: 230
+            xx:
+              an: 132
+            xy:
+              an: 98
+        - population: nfe
+          counts:
+            overall:
+              ac: 1
+              an: 35780
+              af: 0.0000279486
+            xx:
+              ac: 1
+              an: 22286
+              af: 0.0000448712
+            xy:
+              an: 13494
+          faf95: 0
+          faf99: 0
+        - population: oth
+          counts:
+            overall:
+              an: 1248
+            xx:
+              an: 640
+            xy:
+              an: 608
+        - population: sas
+          counts:
+            overall:
+              an: 2348
+            xx:
+              an: 466
+            xy:
+              an: 1882
+          faf95: 0
+          faf99: 0
+      bySex:
+        overall:
+          ac: 2
+          an: 82326
+          af: 0.0000242937
+        xx:
+          ac: 2
+          an: 44714
+          af: 0.0000447287
+        xy:
+          an: 37612
+      raw:
+        ac: 4
+        an: 100384
+        nhomalt: 1
+        af: 0.000039847
+  effectInfo:
+    caddPhred: 1.385
+  variantInfo:
+    variantType: multi-snv
+    alleleType: snv
+    nAltAlleles: 2
+    varDp: 2
+  qualityInfo:
+    asFs: 19.3275
+    inbreedingCoeff: 0.499985
+    asMq: 47.4448
+    mqRankSum: 2.55
+    asMqRankSum: 3.286
+    asQd: 13.0658
+    readPosRankSum: -0.645
+    asReadPosRankSum: -0.645
+    asSor: 0.238122
+    negativeTrainSite: true
+    asVqslod: -3.7033
+    asCulprit: AS_MQRankSum
+    asPabMax: 0.850554
+    asQualApprox: 1986
+    asSbTable: "66"
+  ageInfo:
+    ageHistHomNSmaller: 0
+    ageHistHomNLarger: 0
+    ageHistHetNSmaller: 0
+    ageHistHetNLarger: 0
+  depthInfo:
+    dpHistAllNLarger: 561
+    dpHistAltNLarger: 0
+- chrom: chr1
+  pos: 15975
+  refAllele: A
+  altAllele: G
+  vep:
+    - allele: G
+      consequence: downstream_gene_variant
+      impact: MODIFIER
+      symbol: DDX11L1
+      gene: ENSG00000223972
+      featureType: Transcript
+      feature: ENST00000450305
+      featureBiotype: transcribed_unprocessed_pseudogene
+      dbsnpId: "1"
+      distance: "2305"
+      strand: "1"
+      variantClass: SNV
+      symbolSource: HGNC
+      hgncId: "HGNC:37102"
+    - allele: G
+      consequence: downstream_gene_variant
+      impact: MODIFIER
+      symbol: DDX11L1
+      gene: ENSG00000223972
+      featureType: Transcript
+      feature: ENST00000456328
+      featureBiotype: processed_transcript
+      dbsnpId: "1"
+      distance: "1566"
+      strand: "1"
+      variantClass: SNV
+      symbolSource: HGNC
+      hgncId: "HGNC:37102"
+      canonical: true
+      tsl: 1
+    - allele: G
+      consequence: intron_variant&non_coding_transcript_variant
+      impact: MODIFIER
+      symbol: WASH7P
+      gene: ENSG00000227232
+      featureType: Transcript
+      feature: ENST00000488147
+      featureBiotype: unprocessed_pseudogene
+      intron: 8/10
+      hgvsc: "ENST00000488147.1:n.1068-28T>C"
+      dbsnpId: "1"
+      strand: "-1"
+      variantClass: SNV
+      symbolSource: HGNC
+      hgncId: "HGNC:38034"
+      canonical: true
+    - allele: G
+      consequence: downstream_gene_variant
+      impact: MODIFIER
+      symbol: MIR6859-1
+      gene: ENSG00000278267
+      featureType: Transcript
+      feature: ENST00000619216
+      featureBiotype: miRNA
+      dbsnpId: "1"
+      distance: "1394"
+      strand: "-1"
+      variantClass: SNV
+      symbolSource: HGNC
+      hgncId: "HGNC:50039"
+      canonical: true
+    - allele: G
+      consequence: intron_variant&non_coding_transcript_variant
+      impact: MODIFIER
+      symbol: WASH7P
+      gene: "653635"
+      featureType: Transcript
+      feature: NR_024540.1
+      featureBiotype: transcribed_pseudogene
+      intron: 8/10
+      hgvsc: "NR_024540.1:n.1081-28T>C"
+      dbsnpId: "1"
+      strand: "-1"
+      variantClass: SNV
+      symbolSource: EntrezGene
+      hgncId: "HGNC:38034"
+      canonical: true
+    - allele: G
+      consequence: downstream_gene_variant
+      impact: MODIFIER
+      symbol: DDX11L1
+      gene: "100287102"
+      featureType: Transcript
+      feature: NR_046018.2
+      featureBiotype: transcribed_pseudogene
+      dbsnpId: "1"
+      distance: "1566"
+      strand: "1"
+      variantClass: SNV
+      symbolSource: EntrezGene
+      hgncId: "HGNC:37102"
+      canonical: true
+    - allele: G
+      consequence: downstream_gene_variant
+      impact: MODIFIER
+      symbol: MIR6859-1
+      gene: "102466751"
+      featureType: Transcript
+      feature: NR_106918.1
+      featureBiotype: miRNA
+      dbsnpId: "1"
+      distance: "1394"
+      strand: "-1"
+      variantClass: SNV
+      symbolSource: EntrezGene
+      hgncId: "HGNC:50039"
+      canonical: true
+    - allele: G
+      consequence: regulatory_region_variant
+      impact: MODIFIER
+      featureType: RegulatoryFeature
+      feature: ENSR00000344266
+      featureBiotype: CTCF_binding_site
+      dbsnpId: "1"
+      variantClass: SNV
+  alleleCounts:
+    - byPopulation:
+        - population: afr
+          counts:
+            overall:
+              an: 37052
+            xx:
+              an: 19886
+            xy:
+              an: 17166
+          faf95: 0
+          faf99: 0
+        - population: ami
+          counts:
+            overall:
+              an: 630
+            xx:
+              an: 314
+            xy:
+              an: 316
+        - population: amr
+          counts:
+            overall:
+              an: 9628
+            xx:
+              an: 4324
+            xy:
+              an: 5304
+          faf95: 0
+          faf99: 0
+        - population: asj
+          counts:
+            overall:
+              an: 2274
+            xx:
+              an: 1240
+            xy:
+              an: 1034
+        - population: eas
+          counts:
+            overall:
+              an: 4632
+            xx:
+              an: 2052
+            xy:
+              an: 2580
+          faf95: 0
+          faf99: 0
+        - population: fin
+          counts:
+            overall:
+              an: 5370
+            xx:
+              an: 1478
+            xy:
+              an: 3892
+        - population: mid
+          counts:
+            overall:
+              an: 232
+            xx:
+              an: 134
+            xy:
+              an: 98
+        - population: nfe
+          counts:
+            overall:
+              an: 46096
+            xx:
+              an: 27066
+            xy:
+              an: 19030
+          faf95: 0
+          faf99: 0
+        - population: oth
+          counts:
+            overall:
+              an: 1398
+            xx:
+              an: 708
+            xy:
+              an: 690
+        - population: sas
+          counts:
+            overall:
+              an: 3106
+            xx:
+              an: 766
+            xy:
+              an: 2340
+          faf95: 0
+          faf99: 0
+      bySex:
+        overall:
+          an: 110418
+        xx:
+          an: 57968
+        xy:
+          an: 52450
+      raw:
+        ac: 2
+        an: 134428
+        af: 0.0000148779
+    - cohort: controls_and_biobanks
+      byPopulation:
+        - population: afr
+          counts:
+            overall:
+              an: 8082
+            xx:
+              an: 4190
+            xy:
+              an: 3892
+          faf95: 0
+          faf99: 0
+        - population: ami
+          counts:
+            overall:
+              an: 30
+            xx:
+              an: 12
+            xy:
+              an: 18
+        - population: amr
+          counts:
+            overall:
+              an: 3264
+            xx:
+              an: 1732
+            xy:
+              an: 1532
+          faf95: 0
+          faf99: 0
+        - population: asj
+          counts:
+            overall:
+              an: 84
+            xx:
+              an: 54
+            xy:
+              an: 30
+        - population: eas
+          counts:
+            overall:
+              an: 2218
+            xx:
+              an: 944
+            xy:
+              an: 1274
+          faf95: 0
+          faf99: 0
+        - population: fin
+          counts:
+            overall:
+              an: 2652
+            xx:
+              an: 332
+            xy:
+              an: 2320
+        - population: mid
+          counts:
+            overall:
+              an: 186
+            xx:
+              an: 108
+            xy:
+              an: 78
+        - population: nfe
+          counts:
+            overall:
+              an: 4692
+            xx:
+              an: 2278
+            xy:
+              an: 2414
+          faf95: 0
+          faf99: 0
+        - population: oth
+          counts:
+            overall:
+              an: 554
+            xx:
+              an: 286
+            xy:
+              an: 268
+        - population: sas
+          counts:
+            overall:
+              an: 2134
+            xx:
+              an: 608
+            xy:
+              an: 1526
+          faf95: 0
+          faf99: 0
+      bySex:
+        overall:
+          an: 23896
+        xx:
+          an: 10544
+        xy:
+          an: 13352
+      raw:
+        ac: 1
+        an: 28646
+        af: 0.0000349089
+    - cohort: non_cancer
+      byPopulation:
+        - population: afr
+          counts:
+            overall:
+              an: 36756
+            xx:
+              an: 19744
+            xy:
+              an: 17012
+          faf95: 0
+          faf99: 0
+        - population: ami
+          counts:
+            overall:
+              an: 630
+            xx:
+              an: 314
+            xy:
+              an: 316
+        - population: amr
+          counts:
+            overall:
+              an: 9512
+            xx:
+              an: 4294
+            xy:
+              an: 5218
+          faf95: 0
+          faf99: 0
+        - population: asj
+          counts:
+            overall:
+              an: 2162
+            xx:
+              an: 1154
+            xy:
+              an: 1008
+        - population: eas
+          counts:
+            overall:
+              an: 4422
+            xx:
+              an: 1966
+            xy:
+              an: 2456
+          faf95: 0
+          faf99: 0
+        - population: fin
+          counts:
+            overall:
+              an: 5370
+            xx:
+              an: 1478
+            xy:
+              an: 3892
+        - population: mid
+          counts:
+            overall:
+              an: 224
+            xx:
+              an: 130
+            xy:
+              an: 94
+        - population: nfe
+          counts:
+            overall:
+              an: 43918
+            xx:
+              an: 26222
+            xy:
+              an: 17696
+          faf95: 0
+          faf99: 0
+        - population: oth
+          counts:
+            overall:
+              an: 1352
+            xx:
+              an: 690
+            xy:
+              an: 662
+        - population: sas
+          counts:
+            overall:
+              an: 3078
+            xx:
+              an: 750
+            xy:
+              an: 2328
+          faf95: 0
+          faf99: 0
+      bySex:
+        overall:
+          an: 107424
+        xx:
+          an: 56742
+        xy:
+          an: 50682
+      raw:
+        ac: 2
+        an: 130948
+        af: 0.0000152732
+    - cohort: non_neuro
+      byPopulation:
+        - population: afr
+          counts:
+            overall:
+              an: 29182
+            xx:
+              an: 16882
+            xy:
+              an: 12300
+          faf95: 0
+          faf99: 0
+        - population: ami
+          counts:
+            overall:
+              an: 600
+            xx:
+              an: 288
+            xy:
+              an: 312
+        - population: amr
+          counts:
+            overall:
+              an: 9380
+            xx:
+              an: 4222
+            xy:
+              an: 5158
+          faf95: 0
+          faf99: 0
+        - population: asj
+          counts:
+            overall:
+              an: 2224
+            xx:
+              an: 1218
+            xy:
+              an: 1006
+        - population: eas
+          counts:
+            overall:
+              an: 4632
+            xx:
+              an: 2052
+            xy:
+              an: 2580
+          faf95: 0
+          faf99: 0
+        - population: fin
+          counts:
+            overall:
+              an: 3388
+            xx:
+              an: 426
+            xy:
+              an: 2962
+        - population: mid
+          counts:
+            overall:
+              an: 230
+            xx:
+              an: 134
+            xy:
+              an: 96
+        - population: nfe
+          counts:
+            overall:
+              an: 43582
+            xx:
+              an: 26048
+            xy:
+              an: 17534
+          faf95: 0
+          faf99: 0
+        - population: oth
+          counts:
+            overall:
+              an: 1332
+            xx:
+              an: 678
+            xy:
+              an: 654
+        - population: sas
+          counts:
+            overall:
+              an: 3106
+            xx:
+              an: 766
+            xy:
+              an: 2340
+          faf95: 0
+          faf99: 0
+      bySex:
+        overall:
+          an: 97656
+        xx:
+          an: 52714
+        xy:
+          an: 44942
+      raw:
+        ac: 2
+        an: 118802
+        af: 0.0000168347
+    - cohort: non_topmed
+      byPopulation:
+        - population: afr
+          counts:
+            overall:
+              an: 21918
+            xx:
+              an: 10540
+            xy:
+              an: 11378
+          faf95: 0
+          faf99: 0
+        - population: ami
+          counts:
+            overall:
+              an: 60
+            xx:
+              an: 38
+            xy:
+              an: 22
+        - population: amr
+          counts:
+            overall:
+              an: 8132
+            xx:
+              an: 3412
+            xy:
+              an: 4720
+          faf95: 0
+          faf99: 0
+        - population: asj
+          counts:
+            overall:
+              an: 652
+            xx:
+              an: 178
+            xy:
+              an: 474
+        - population: eas
+          counts:
+            overall:
+              an: 3298
+            xx:
+              an: 1244
+            xy:
+              an: 2054
+          faf95: 0
+          faf99: 0
+        - population: fin
+          counts:
+            overall:
+              an: 5302
+            xx:
+              an: 1436
+            xy:
+              an: 3866
+        - population: mid
+          counts:
+            overall:
+              an: 202
+            xx:
+              an: 116
+            xy:
+              an: 86
+        - population: nfe
+          counts:
+            overall:
+              an: 13458
+            xx:
+              an: 5846
+            xy:
+              an: 7612
+          faf95: 0
+          faf99: 0
+        - population: oth
+          counts:
+            overall:
+              an: 984
+            xx:
+              an: 462
+            xy:
+              an: 522
+        - population: sas
+          counts:
+            overall:
+              an: 3092
+            xx:
+              an: 764
+            xy:
+              an: 2328
+          faf95: 0
+          faf99: 0
+      bySex:
+        overall:
+          an: 57098
+        xx:
+          an: 24036
+        xy:
+          an: 33062
+      raw:
+        ac: 2
+        an: 70230
+        af: 0.0000284779
+    - cohort: non_v2
+      byPopulation:
+        - population: afr
+          counts:
+            overall:
+              an: 25586
+            xx:
+              an: 14168
+            xy:
+              an: 11418
+          faf95: 0
+          faf99: 0
+        - population: ami
+          counts:
+            overall:
+              an: 630
+            xx:
+              an: 314
+            xy:
+              an: 316
+        - population: amr
+          counts:
+            overall:
+              an: 8634
+            xx:
+              an: 3822
+            xy:
+              an: 4812
+          faf95: 0
+          faf99: 0
+        - population: asj
+          counts:
+            overall:
+              an: 2036
+            xx:
+              an: 1132
+            xy:
+              an: 904
+        - population: eas
+          counts:
+            overall:
+              an: 2518
+            xx:
+              an: 1188
+            xy:
+              an: 1330
+          faf95: 0
+          faf99: 0
+        - population: fin
+          counts:
+            overall:
+              an: 3416
+            xx:
+              an: 606
+            xy:
+              an: 2810
+        - population: mid
+          counts:
+            overall:
+              an: 224
+            xx:
+              an: 132
+            xy:
+              an: 92
+        - population: nfe
+          counts:
+            overall:
+              an: 35826
+            xx:
+              an: 22326
+            xy:
+              an: 13500
+          faf95: 0
+          faf99: 0
+        - population: oth
+          counts:
+            overall:
+              an: 1252
+            xx:
+              an: 640
+            xy:
+              an: 612
+        - population: sas
+          counts:
+            overall:
+              an: 2380
+            xx:
+              an: 470
+            xy:
+              an: 1910
+          faf95: 0
+          faf99: 0
+      bySex:
+        overall:
+          an: 82502
+        xx:
+          an: 44798
+        xy:
+          an: 37704
+      raw:
+        ac: 2
+        an: 100460
+        af: 0.0000199084
+  effectInfo:
+    caddPhred: 8.532
+  variantInfo:
+    variantType: snv
+    alleleType: snv
+    nAltAlleles: 1
+    varDp: 1
+  qualityInfo:
+    asFs: 1.29277
+    inbreedingCoeff: -0.0000149012
+    asMq: 44.7114
+    mqRankSum: 1.611
+    asMqRankSum: 1.611
+    asQd: 5.3617
+    readPosRankSum: -1.396
+    asReadPosRankSum: -1.396
+    asSor: 0.963111
+    negativeTrainSite: true
+    asVqslod: -2.989
+    asCulprit: AS_QD
+    asPabMax: 0.404873
+    asQualApprox: 252
+    asSbTable: "21"
+  ageInfo:
+    ageHistHomNSmaller: 0
+    ageHistHomNLarger: 0
+    ageHistHetNSmaller: 0
+    ageHistHetNLarger: 0
+  depthInfo:
+    dpHistAllNLarger: 561
+    dpHistAltNLarger: 0
+- chrom: chr1
+  pos: 15977
+  refAllele: G
+  altAllele: A
+  vep:
+    - allele: A
+      consequence: downstream_gene_variant
+      impact: MODIFIER
+      symbol: DDX11L1
+      gene: ENSG00000223972
+      featureType: Transcript
+      feature: ENST00000450305
+      featureBiotype: transcribed_unprocessed_pseudogene
+      dbsnpId: "1"
+      distance: "2307"
+      strand: "1"
+      variantClass: SNV
+      symbolSource: HGNC
+      hgncId: "HGNC:37102"
+    - allele: A
+      consequence: downstream_gene_variant
+      impact: MODIFIER
+      symbol: DDX11L1
+      gene: ENSG00000223972
+      featureType: Transcript
+      feature: ENST00000456328
+      featureBiotype: processed_transcript
+      dbsnpId: "1"
+      distance: "1568"
+      strand: "1"
+      variantClass: SNV
+      symbolSource: HGNC
+      hgncId: "HGNC:37102"
+      canonical: true
+      tsl: 1
+    - allele: A
+      consequence: intron_variant&non_coding_transcript_variant
+      impact: MODIFIER
+      symbol: WASH7P
+      gene: ENSG00000227232
+      featureType: Transcript
+      feature: ENST00000488147
+      featureBiotype: unprocessed_pseudogene
+      intron: 8/10
+      hgvsc: "ENST00000488147.1:n.1068-30C>T"
+      dbsnpId: "1"
+      strand: "-1"
+      variantClass: SNV
+      symbolSource: HGNC
+      hgncId: "HGNC:38034"
+      canonical: true
+    - allele: A
+      consequence: downstream_gene_variant
+      impact: MODIFIER
+      symbol: MIR6859-1
+      gene: ENSG00000278267
+      featureType: Transcript
+      feature: ENST00000619216
+      featureBiotype: miRNA
+      dbsnpId: "1"
+      distance: "1392"
+      strand: "-1"
+      variantClass: SNV
+      symbolSource: HGNC
+      hgncId: "HGNC:50039"
+      canonical: true
+    - allele: A
+      consequence: intron_variant&non_coding_transcript_variant
+      impact: MODIFIER
+      symbol: WASH7P
+      gene: "653635"
+      featureType: Transcript
+      feature: NR_024540.1
+      featureBiotype: transcribed_pseudogene
+      intron: 8/10
+      hgvsc: "NR_024540.1:n.1081-30C>T"
+      dbsnpId: "1"
+      strand: "-1"
+      variantClass: SNV
+      symbolSource: EntrezGene
+      hgncId: "HGNC:38034"
+      canonical: true
+    - allele: A
+      consequence: downstream_gene_variant
+      impact: MODIFIER
+      symbol: DDX11L1
+      gene: "100287102"
+      featureType: Transcript
+      feature: NR_046018.2
+      featureBiotype: transcribed_pseudogene
+      dbsnpId: "1"
+      distance: "1568"
+      strand: "1"
+      variantClass: SNV
+      symbolSource: EntrezGene
+      hgncId: "HGNC:37102"
+      canonical: true
+    - allele: A
+      consequence: downstream_gene_variant
+      impact: MODIFIER
+      symbol: MIR6859-1
+      gene: "102466751"
+      featureType: Transcript
+      feature: NR_106918.1
+      featureBiotype: miRNA
+      dbsnpId: "1"
+      distance: "1392"
+      strand: "-1"
+      variantClass: SNV
+      symbolSource: EntrezGene
+      hgncId: "HGNC:50039"
+      canonical: true
+    - allele: A
+      consequence: regulatory_region_variant
+      impact: MODIFIER
+      featureType: RegulatoryFeature
+      feature: ENSR00000344266
+      featureBiotype: CTCF_binding_site
+      dbsnpId: "1"
+      variantClass: SNV
+  alleleCounts:
+    - byPopulation:
+        - population: afr
+          counts:
+            overall:
+              an: 37134
+            xx:
+              an: 19924
+            xy:
+              an: 17210
+          faf95: 0
+          faf99: 0
+        - population: ami
+          counts:
+            overall:
+              an: 634
+            xx:
+              an: 316
+            xy:
+              an: 318
+        - population: amr
+          counts:
+            overall:
+              an: 9746
+            xx:
+              an: 4366
+            xy:
+              an: 5380
+          faf95: 0
+          faf99: 0
+        - population: asj
+          counts:
+            overall:
+              an: 2302
+            xx:
+              an: 1258
+            xy:
+              an: 1044
+        - population: eas
+          counts:
+            overall:
+              an: 4670
+            xx:
+              an: 2072
+            xy:
+              an: 2598
+          faf95: 0
+          faf99: 0
+        - population: fin
+          counts:
+            overall:
+              an: 5472
+            xx:
+              an: 1494
+            xy:
+              an: 3978
+        - population: mid
+          counts:
+            overall:
+              an: 240
+            xx:
+              an: 136
+            xy:
+              an: 104
+        - population: nfe
+          counts:
+            overall:
+              an: 46698
+            xx:
+              an: 27388
+            xy:
+              an: 19310
+          faf95: 0
+          faf99: 0
+        - population: oth
+          counts:
+            overall:
+              an: 1404
+            xx:
+              an: 710
+            xy:
+              an: 694
+        - population: sas
+          counts:
+            overall:
+              an: 3138
+            xx:
+              an: 766
+            xy:
+              an: 2372
+          faf95: 0
+          faf99: 0
+      bySex:
+        overall:
+          an: 111438
+        xx:
+          an: 58430
+        xy:
+          an: 53008
+      raw:
+        ac: 1
+        an: 134888
+        af: 0.00000741356
+    - cohort: controls_and_biobanks
+      byPopulation:
+        - population: afr
+          counts:
+            overall:
+              an: 8112
+            xx:
+              an: 4210
+            xy:
+              an: 3902
+          faf95: 0
+          faf99: 0
+        - population: ami
+          counts:
+            overall:
+              an: 30
+            xx:
+              an: 12
+            xy:
+              an: 18
+        - population: amr
+          counts:
+            overall:
+              an: 3296
+            xx:
+              an: 1750
+            xy:
+              an: 1546
+          faf95: 0
+          faf99: 0
+        - population: asj
+          counts:
+            overall:
+              an: 88
+            xx:
+              an: 56
+            xy:
+              an: 32
+        - population: eas
+          counts:
+            overall:
+              an: 2238
+            xx:
+              an: 954
+            xy:
+              an: 1284
+          faf95: 0
+          faf99: 0
+        - population: fin
+          counts:
+            overall:
+              an: 2706
+            xx:
+              an: 326
+            xy:
+              an: 2380
+        - population: mid
+          counts:
+            overall:
+              an: 190
+            xx:
+              an: 110
+            xy:
+              an: 80
+        - population: nfe
+          counts:
+            overall:
+              an: 4744
+            xx:
+              an: 2312
+            xy:
+              an: 2432
+          faf95: 0
+          faf99: 0
+        - population: oth
+          counts:
+            overall:
+              an: 558
+            xx:
+              an: 288
+            xy:
+              an: 270
+        - population: sas
+          counts:
+            overall:
+              an: 2158
+            xx:
+              an: 610
+            xy:
+              an: 1548
+          faf95: 0
+          faf99: 0
+      bySex:
+        overall:
+          an: 24120
+        xx:
+          an: 10628
+        xy:
+          an: 13492
+      raw:
+        an: 28832
+    - cohort: non_cancer
+      byPopulation:
+        - population: afr
+          counts:
+            overall:
+              an: 36838
+            xx:
+              an: 19782
+            xy:
+              an: 17056
+          faf95: 0
+          faf99: 0
+        - population: ami
+          counts:
+            overall:
+              an: 634
+            xx:
+              an: 316
+            xy:
+              an: 318
+        - population: amr
+          counts:
+            overall:
+              an: 9628
+            xx:
+              an: 4336
+            xy:
+              an: 5292
+          faf95: 0
+          faf99: 0
+        - population: asj
+          counts:
+            overall:
+              an: 2188
+            xx:
+              an: 1170
+            xy:
+              an: 1018
+        - population: eas
+          counts:
+            overall:
+              an: 4456
+            xx:
+              an: 1982
+            xy:
+              an: 2474
+          faf95: 0
+          faf99: 0
+        - population: fin
+          counts:
+            overall:
+              an: 5472
+            xx:
+              an: 1494
+            xy:
+              an: 3978
+        - population: mid
+          counts:
+            overall:
+              an: 230
+            xx:
+              an: 132
+            xy:
+              an: 98
+        - population: nfe
+          counts:
+            overall:
+              an: 44500
+            xx:
+              an: 26552
+            xy:
+              an: 17948
+          faf95: 0
+          faf99: 0
+        - population: oth
+          counts:
+            overall:
+              an: 1356
+            xx:
+              an: 692
+            xy:
+              an: 664
+        - population: sas
+          counts:
+            overall:
+              an: 3110
+            xx:
+              an: 750
+            xy:
+              an: 2360
+          faf95: 0
+          faf99: 0
+      bySex:
+        overall:
+          an: 108412
+        xx:
+          an: 57206
+        xy:
+          an: 51206
+      raw:
+        ac: 1
+        an: 131384
+        af: 0.00000761128
+    - cohort: non_neuro
+      byPopulation:
+        - population: afr
+          counts:
+            overall:
+              an: 29240
+            xx:
+              an: 16914
+            xy:
+              an: 12326
+          faf95: 0
+          faf99: 0
+        - population: ami
+          counts:
+            overall:
+              an: 604
+            xx:
+              an: 290
+            xy:
+              an: 314
+        - population: amr
+          counts:
+            overall:
+              an: 9492
+            xx:
+              an: 4262
+            xy:
+              an: 5230
+          faf95: 0
+          faf99: 0
+        - population: asj
+          counts:
+            overall:
+              an: 2252
+            xx:
+              an: 1236
+            xy:
+              an: 1016
+        - population: eas
+          counts:
+            overall:
+              an: 4670
+            xx:
+              an: 2072
+            xy:
+              an: 2598
+          faf95: 0
+          faf99: 0
+        - population: fin
+          counts:
+            overall:
+              an: 3450
+            xx:
+              an: 420
+            xy:
+              an: 3030
+        - population: mid
+          counts:
+            overall:
+              an: 238
+            xx:
+              an: 136
+            xy:
+              an: 102
+        - population: nfe
+          counts:
+            overall:
+              an: 44134
+            xx:
+              an: 26354
+            xy:
+              an: 17780
+          faf95: 0
+          faf99: 0
+        - population: oth
+          counts:
+            overall:
+              an: 1340
+            xx:
+              an: 682
+            xy:
+              an: 658
+        - population: sas
+          counts:
+            overall:
+              an: 3138
+            xx:
+              an: 766
+            xy:
+              an: 2372
+          faf95: 0
+          faf99: 0
+      bySex:
+        overall:
+          an: 98558
+        xx:
+          an: 53132
+        xy:
+          an: 45426
+      raw:
+        an: 119214
+    - cohort: non_topmed
+      byPopulation:
+        - population: afr
+          counts:
+            overall:
+              an: 21974
+            xx:
+              an: 10564
+            xy:
+              an: 11410
+          faf95: 0
+          faf99: 0
+        - population: ami
+          counts:
+            overall:
+              an: 60
+            xx:
+              an: 38
+            xy:
+              an: 22
+        - population: amr
+          counts:
+            overall:
+              an: 8228
+            xx:
+              an: 3444
+            xy:
+              an: 4784
+          faf95: 0
+          faf99: 0
+        - population: asj
+          counts:
+            overall:
+              an: 658
+            xx:
+              an: 184
+            xy:
+              an: 474
+        - population: eas
+          counts:
+            overall:
+              an: 3330
+            xx:
+              an: 1258
+            xy:
+              an: 2072
+          faf95: 0
+          faf99: 0
+        - population: fin
+          counts:
+            overall:
+              an: 5402
+            xx:
+              an: 1450
+            xy:
+              an: 3952
+        - population: mid
+          counts:
+            overall:
+              an: 208
+            xx:
+              an: 118
+            xy:
+              an: 90
+        - population: nfe
+          counts:
+            overall:
+              an: 13668
+            xx:
+              an: 5924
+            xy:
+              an: 7744
+          faf95: 0
+          faf99: 0
+        - population: oth
+          counts:
+            overall:
+              an: 992
+            xx:
+              an: 466
+            xy:
+              an: 526
+        - population: sas
+          counts:
+            overall:
+              an: 3124
+            xx:
+              an: 764
+            xy:
+              an: 2360
+          faf95: 0
+          faf99: 0
+      bySex:
+        overall:
+          an: 57644
+        xx:
+          an: 24210
+        xy:
+          an: 33434
+      raw:
+        ac: 1
+        an: 70540
+        af: 0.0000141764
+    - cohort: non_v2
+      byPopulation:
+        - population: afr
+          counts:
+            overall:
+              an: 25636
+            xx:
+              an: 14188
+            xy:
+              an: 11448
+          faf95: 0
+          faf99: 0
+        - population: ami
+          counts:
+            overall:
+              an: 634
+            xx:
+              an: 316
+            xy:
+              an: 318
+        - population: amr
+          counts:
+            overall:
+              an: 8738
+            xx:
+              an: 3858
+            xy:
+              an: 4880
+          faf95: 0
+          faf99: 0
+        - population: asj
+          counts:
+            overall:
+              an: 2056
+            xx:
+              an: 1146
+            xy:
+              an: 910
+        - population: eas
+          counts:
+            overall:
+              an: 2532
+            xx:
+              an: 1198
+            xy:
+              an: 1334
+          faf95: 0
+          faf99: 0
+        - population: fin
+          counts:
+            overall:
+              an: 3498
+            xx:
+              an: 616
+            xy:
+              an: 2882
+        - population: mid
+          counts:
+            overall:
+              an: 232
+            xx:
+              an: 134
+            xy:
+              an: 98
+        - population: nfe
+          counts:
+            overall:
+              an: 36264
+            xx:
+              an: 22592
+            xy:
+              an: 13672
+          faf95: 0
+          faf99: 0
+        - population: oth
+          counts:
+            overall:
+              an: 1256
+            xx:
+              an: 640
+            xy:
+              an: 616
+        - population: sas
+          counts:
+            overall:
+              an: 2404
+            xx:
+              an: 468
+            xy:
+              an: 1936
+          faf95: 0
+          faf99: 0
+      bySex:
+        overall:
+          an: 83250
+        xx:
+          an: 45156
+        xy:
+          an: 38094
+      raw:
+        an: 100826
+  effectInfo:
+    caddPhred: 4.644
+  variantInfo:
+    variantType: multi-snv
+    alleleType: snv
+    nAltAlleles: 2
+    varDp: 2
+  qualityInfo:
+    asFs: 1.34551
+    inbreedingCoeff: -0.00000739098
+    asMq: 46.237
+    mqRankSum: -0.067
+    asMqRankSum: 3.027
+    asQd: 3.17544
+    readPosRankSum: -1.001
+    asReadPosRankSum: -1.001
+    asSor: 0.367725
+    negativeTrainSite: true
+    asVqslod: -2.5822
+    asCulprit: AS_QD
+    asPabMax: 0.6875
+    asQualApprox: 181
+    asSbTable: "34"
+  ageInfo:
+    ageHistHomNSmaller: 0
+    ageHistHomNLarger: 0
+    ageHistHetNSmaller: 0
+    ageHistHetNLarger: 0
+  depthInfo:
+    dpHistAllNLarger: 561
+    dpHistAltNLarger: 0
+

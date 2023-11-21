@@ -1,0 +1,149 @@
+// Protocol buffer definitions for gnomAD v2 VEP records.
+
+syntax = "proto3";
+
+package annonars.gnomad.vep_gnomad2;
+
+import "annonars/gnomad/vep_common.proto";
+
+// Protocol buffer for the gnomAD-mtDNA VEP predictions.
+message Vep {
+    // Allele of record.
+    string allele = 1;
+    // Consequence, e.g., `"missense_variant"`.
+    string consequence = 2;
+    // Impact, e.g., `"MODERATE"`.
+    string impact = 3;
+    // Gene symbol, e.g., `"PCSK9"`.
+    string symbol = 4;
+    // Gene ID, `e.g., "ENSG00000169174"`.
+    string gene = 5;
+    // Feature type, e.g., `"Transcript"`.
+    string feature_type = 6;
+    // Feature ID, e.g., `"ENST00000302118"`.
+    string feature = 7;
+    // Feature biotype, e.g., `"protein_coding"`.
+    string feature_biotype = 8;
+    // Ranked exon number, e.g., `"1/4"`.
+    optional string exon = 9;
+    // Ranked intron number, e.g., `"1/4"`.
+    optional string intron = 10;
+    // cDNA position, e.g., `"ENST00000302118.5:c.89C>G"`.
+    optional string hgvsc = 11;
+    // Protein position, e.g., `"ENSP00000302118.5:p.Thr30Arg"`.
+    optional string hgvsp = 12;
+    // cDNA position, e.g., `"89/1863"`.
+    optional string cdna_position = 13;
+    // CDS position, e.g., `"89/1863"`.
+    optional string cds_position = 14;
+    // Protein position, e.g., `"30/620"`.
+    optional string protein_position = 15;
+    // Amino acids, e.g., `"T/R"`.
+    optional string amino_acids = 16;
+    // Codons, e.g., `"gCg/gGg"`.
+    optional string codons = 17;
+    // Existing variation info.
+    optional string existing_variation = 18;
+    // dbSNP ID, e.g., `"rs28942080"`.
+    optional string dbsnp_id = 19;
+    // Distance output of VEP.
+    optional string distance = 20;
+    // Strand, e.g., `"1"`.
+    optional string strand = 21;
+    // Flags, e.g., `"cds_end_NF"`.
+    optional string flags = 22;
+    // Variant class, e.g., `"SNV"`.
+    optional string variant_class = 23;
+    // Minimised output of VEP.
+    optional string minimised = 24;
+    // Symbol source, e.g., `"HGNC"`.
+    optional string symbol_source = 25;
+    // HGNC ID, e.g., `"HGNC:8706"`.
+    optional string hgnc_id = 26;
+    // Whether this is the canonical transcript.
+    bool canonical = 27;
+    // Transcript support level, e.g., `"1"`.
+    optional int32 tsl = 28;
+    // APPRIS annotation, e.g. `"P1"`.
+    optional string appris = 29;
+    // CCDS ID, e.g., `"CCDS30547.1"`.
+    optional string ccds = 30;
+    // Ensembl protein ID, e.g., `"ENSP00000302118"`.
+    optional string ensp = 31;
+    // SwissProt ID, e.g., `"P04114"`.
+    optional string swissprot = 32;
+    // TREMBL ID, e.g., `"Q5T4W7"`.
+    optional string trembl = 33;
+    // UniParc ID, e.g., `"UPI000002D4B2"`.
+    optional string uniparc = 34;
+    // Gene phenotype from VEP.
+    optional string gene_pheno = 35;
+    // SIFT prediction, e.g., `"tolerated(0.06)"`.
+    optional annonars.gnomad.vep_common.Prediction sift = 36;
+    // PolyPhen prediction, e.g., `"benign(0.001)"`.
+    optional annonars.gnomad.vep_common.Prediction polyphen = 37;
+    // Protein domains, e.g., `[["2p4e", "ENSP_mappings"], ["2qtw", "ENSP_mappings"]]`.
+    repeated annonars.gnomad.vep_common.Domain domains = 38;
+    // HGVS offset.
+    optional string hgvs_offset = 39;
+
+    // Overall minor allele frequency.
+    optional float gmaf = 40;
+    // Minor allele frequency in AFR population.
+    optional float afr_maf = 41;
+    // Minor allele frequency in AMR population.
+    optional float amr_maf = 42;
+    // Minor allele frequency in EAS population.
+    optional float eas_maf = 43;
+    // Minor allele frequency in EUR population.
+    optional float eur_maf = 44;
+    // Minor allele frequency in SAS population.
+    optional float sas_maf = 45;
+    // Minor allele frequency in AA population.
+    optional float aa_maf = 46;
+    // Minor allele frequency in EA population.
+    optional float ea_maf = 47;
+    // Minor allele frequency in ExAC.
+    optional float exac_maf = 48;
+    // Minor allele frequency EXAC ADJ population.
+    optional float exac_adj_maf = 49;
+    // Minor allele frequency in ExAC AFR population.
+    optional float exac_afr_maf = 50;
+    // Minor allele frequency in ExAC AMR population.
+    optional float exac_amr_maf = 51;
+    // Minor allele frequency in ExAC EAS population.
+    optional float exac_eas_maf = 52;
+    // Minor allele frequency in ExAC FIN population.
+    optional float exac_fin_maf = 53;
+    // Minor allele frequency in ExAC NFE population.
+    optional float exac_nfe_maf = 54;
+    // Minor allele frequency in ExAC OTH population.
+    optional float exac_oth_maf = 55;
+    // Minor allele frequency in ExAC SAS population.
+    optional float exac_sas_maf = 56;
+
+    // Clinical significance.
+    optional string clin_sig = 57;
+    // Whether the variant is somatic.
+    optional string somatic = 58;
+    // Phenotype.
+    optional string pheno = 59;
+    // Pubmed ID.
+    optional string pubmed = 60;
+    // Motif name.
+    optional string motif_name = 61;
+    // Motif pos.
+    optional string motif_pos = 62;
+    // "high inf pos" from VEP.
+    optional string high_inf_pos = 63;
+    // Motif score change.
+    optional string motif_score_change = 64;
+    // Loss of function prediction.
+    optional string lof = 65;
+    // Loss of function filter.
+    optional string lof_filter = 66;
+    // Loss of function flags.
+    optional string lof_flags = 67;
+    // Loss of function info.
+    optional string lof_info = 68;
+}

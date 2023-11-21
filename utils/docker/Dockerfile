@@ -14,7 +14,7 @@
 # Pinning Rust version for now because of this issue:
 #
 # - https://github.com/rust-lang/rust/issues/95926
-FROM rust:1-buster AS builder
+FROM rust:1-bookworm AS builder
 
 # Build dependencies first.
 #
@@ -44,6 +44,7 @@ RUN cargo build --release
 # Now copy in the rest of the sources.
 COPY build.rs /usr/src/annonars/
 COPY src /usr/src/annonars/src/
+COPY protos /usr/src/annonars/protos/
 COPY utils/alpine-linker-script.sh /usr/src/annonars/utils/
 RUN chmod a+rx /usr/src/annonars/utils/alpine-linker-script.sh
 COPY .cargo /usr/src/annonars/.cargo/
@@ -56,7 +57,7 @@ RUN cargo build --release
 # Runtime
 # ---------------------------------------------------------------------------
 
-FROM debian:buster-slim AS runtime
+FROM debian:bookworm-slim AS runtime
 
 # Copy application binary from builder image
 COPY --from=builder \

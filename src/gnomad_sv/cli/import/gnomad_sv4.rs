@@ -10,8 +10,8 @@ use crate::{
         self,
         noodles::{get_f32, get_i32, get_string},
     },
-    gnomad_pbs::gnomad_sv2::CpxType,
-    gnomad_pbs::gnomad_sv4::{
+    pbs::gnomad::gnomad_sv2::CpxType,
+    pbs::gnomad::gnomad_sv4::{
         AlleleCounts, AlleleCountsBySex, CohortAlleleCounts, Filter, Population,
         PopulationAlleleCounts, Record, SvType,
     },

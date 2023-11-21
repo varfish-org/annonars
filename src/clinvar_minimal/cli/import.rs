@@ -8,7 +8,7 @@ use prost::Message;
 use crate::{
     clinvar_minimal,
     common::{self, keys},
-    pbs::annonars::clinvar::v1::minimal::ReferenceAssertion,
+    pbs::clinvar::minimal::ReferenceAssertion,
 };
 
 /// Command line arguments for `clinvar-minimal import` sub command.
@@ -74,10 +74,9 @@ fn jsonl_import(
             sequence_location,
             ..
         } = record;
-        let clinical_significance: crate::pbs::annonars::clinvar::v1::minimal::ClinicalSignificance =
+        let clinical_significance: crate::pbs::clinvar::minimal::ClinicalSignificance =
             clinical_significance.into();
-        let review_status: crate::pbs::annonars::clinvar::v1::minimal::ReviewStatus =
-            review_status.into();
+        let review_status: crate::pbs::clinvar::minimal::ReviewStatus = review_status.into();
         let clinvar_minimal::cli::reading::SequenceLocation {
             assembly,
             chr,
@@ -111,10 +110,9 @@ fn jsonl_import(
                     db.put_cf(&cf_by_accession, vcv.as_bytes(), &key)?;
 
                     let record = if let Some(data) = data {
-                        let mut record =
-                            crate::pbs::annonars::clinvar::v1::minimal::Record::decode(&data[..])?;
+                        let mut record = crate::pbs::clinvar::minimal::Record::decode(&data[..])?;
                         record.reference_assertions.push(
-                            crate::pbs::annonars::clinvar::v1::minimal::ReferenceAssertion {
+                            crate::pbs::clinvar::minimal::ReferenceAssertion {
                                 rcv,
                                 title,
                                 clinical_significance: clinical_significance.into(),
@@ -126,7 +124,7 @@ fn jsonl_import(
                             .sort_by_key(|a| (a.clinical_significance, a.review_status));
                         record
                     } else {
-                        crate::pbs::annonars::clinvar::v1::minimal::Record {
+                        crate::pbs::clinvar::minimal::Record {
                             release: assembly,
                             chromosome: chr,
                             start,

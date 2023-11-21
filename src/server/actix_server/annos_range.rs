@@ -97,7 +97,7 @@ async fn handle(
                 data.annos[genome_release][anno_db]
                     .as_ref()
                     .map(|db| {
-                        fetch_pos_protobuf::<crate::pbs::annonars::clinvar::v1::minimal::Record>(
+                        fetch_pos_protobuf::<crate::pbs::clinvar::minimal::Record>(
                             db,
                             anno_db.cf_name(),
                             query.start_pos(),
@@ -153,7 +153,7 @@ async fn handle(
                 data.annos[genome_release][anno_db]
                     .as_ref()
                     .map(|db| {
-                        fetch_pos_protobuf::<crate::gnomad_pbs::mtdna::Record>(
+                        fetch_pos_protobuf::<crate::pbs::gnomad::mtdna::Record>(
                             db,
                             anno_db.cf_name(),
                             query.start_pos(),
@@ -167,7 +167,7 @@ async fn handle(
                 data.annos[genome_release][anno_db]
                     .as_ref()
                     .map(|db| {
-                        fetch_pos_protobuf::<crate::gnomad_pbs::gnomad2::Record>(
+                        fetch_pos_protobuf::<crate::pbs::gnomad::gnomad2::Record>(
                             db,
                             anno_db.cf_name(),
                             query.start_pos(),
@@ -188,14 +188,14 @@ async fn handle(
                             .as_ref()
                             .expect("gnomAD must have db version");
                         if db_version.starts_with("2.") {
-                            fetch_pos_protobuf::<crate::gnomad_pbs::gnomad2::Record>(
+                            fetch_pos_protobuf::<crate::pbs::gnomad::gnomad2::Record>(
                                 db,
                                 anno_db.cf_name(),
                                 query.start_pos(),
                                 query.stop_pos(),
                             )
                         } else if db_version.starts_with("3.") {
-                            fetch_pos_protobuf::<crate::gnomad_pbs::gnomad3::Record>(
+                            fetch_pos_protobuf::<crate::pbs::gnomad::gnomad3::Record>(
                                 db,
                                 anno_db.cf_name(),
                                 query.start_pos(),
@@ -215,7 +215,7 @@ async fn handle(
                 data.annos[genome_release][anno_db]
                     .as_ref()
                     .map(|db| {
-                        fetch_pos_protobuf::<crate::cons::pbs::RecordList>(
+                        fetch_pos_protobuf::<crate::pbs::cons::RecordList>(
                             db,
                             anno_db.cf_name(),
                             query.start_pos(),

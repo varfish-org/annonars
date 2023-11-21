@@ -1,0 +1,26 @@
+syntax = "proto3";
+
+package annonars.helixmtdb.base;
+
+// Protocol buffer for the HelixMtDb VCF record.
+message Record {
+    // Chromosome name.
+    string chrom = 1;
+    // 1-based start position.
+    int32 pos = 2;
+    // Reference allele.
+    string ref_allele = 3;
+    /// Alternate allele.
+    string alt_allele = 4;
+
+    // Total number of individuals.
+    int32 num_total = 5;
+    // Number of homoplasmic carriers.
+    int32 num_het = 6;
+    // Number of heteroplasmic carriers.
+    int32 num_hom = 7;
+    // Feature type.
+    string feature_type = 8;
+    // Gene name.
+    string gene_name = 9;
+}

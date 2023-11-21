@@ -5,10 +5,47 @@ use std::sync::Arc;
 use clap::Parser;
 use prost::Message;
 
-use crate::{
-    common::{self, keys},
-    cons,
-};
+use crate::common::{self, keys};
+
+/// Helper data structures for reading CSV files.
+pub mod reading {
+
+    /// Protocol buffer for the UCSC conservation record.
+    #[derive(Debug, Clone, PartialEq, serde::Deserialize, serde::Serialize)]
+    pub struct Record {
+        /// Chromosome name.
+        pub chromosome: String,
+        /// 1-based, inclusive start position.
+        pub start: i32,
+        /// 1-based, inclusive stop position.
+        pub stop: i32,
+        /// HGNC identifier.
+        pub hgnc_id: String,
+        /// ENST identifier.
+        pub enst_id: String,
+        /// Exon number (1-based).
+        pub exon_num: i32,
+        /// Exon count.
+        pub exon_count: i32,
+        /// Alignment.
+        pub alignment: String,
+    }
+
+    impl Into<crate::pbs::cons::Record> for Record {
+        fn into(self) -> crate::pbs::cons::Record {
+            crate::pbs::cons::Record {
+                chrom: self.chromosome,
+                start: self.start,
+                stop: self.start,
+                hgnc_id: self.hgnc_id,
+                enst_id: self.enst_id,
+                exon_num: self.exon_num,
+                exon_count: self.exon_count,
+                alignment: self.alignment,
+            }
+        }
+    }
+}
 
 /// Command line arguments for `tsv import` sub command.
 #[derive(Parser, Debug, Clone)]
@@ -32,10 +69,10 @@ pub struct Args {
     pub path_wal_dir: Option<String>,
 }
 
-/// Utility to make a `Vec<cons::pbs::Record>` unique.
+/// Utility to make a `Vec<crate::pbs::cons::Record>` unique.
 ///
 /// Will sort the records first.
-fn dedup_records(records: &mut Vec<cons::pbs::Record>) {
+fn dedup_records(records: &mut Vec<crate::pbs::cons::Record>) {
     records.sort_by(|a, b| {
         (a.chrom.as_str(), a.start, a.enst_id.as_str()).cmp(&(
             b.chrom.as_str(),
@@ -76,10 +113,11 @@ fn tsv_import(
 
     // Read through all records.  Collect all at the same position into a `RecordList` and
     // insert these into the database.
-    let mut record_list = cons::pbs::RecordList::default();
+    let mut record_list = crate::pbs::cons::RecordList::default();
     let mut last_pos = keys::Pos::default();
     for result in csv_reader.deserialize() {
-        let record: cons::pbs::Record = result?;
+        let record: reading::Record = result?;
+        let record: crate::pbs::cons::Record = record.into();
         let pos = keys::Pos::from(&record.chrom, record.start);
 
         if pos != last_pos {
@@ -92,7 +130,7 @@ fn tsv_import(
                 db.put_cf(&cf_data, &key, &buf)?;
             }
 
-            record_list = cons::pbs::RecordList::default();
+            record_list = crate::pbs::cons::RecordList::default();
             last_pos = pos;
         }
 

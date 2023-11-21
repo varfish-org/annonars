@@ -7,7 +7,7 @@ use actix_web::{
 };
 use prost::Message;
 
-use crate::pbs::annonars::clinvar::v1::per_gene::ClinvarPerGeneRecord;
+use crate::pbs::clinvar::per_gene::ClinvarPerGeneRecord;
 
 use super::error::CustomError;
 use serde_with::{formats::CommaSeparator, StringWithSeparator};
@@ -59,7 +59,7 @@ async fn handle(
                 .get_cf(&cf_genes, hgnc_id)
                 .map_err(|e| CustomError::new(anyhow::anyhow!("problem querying database: {}", e)))?
                 .ok_or_else(|| CustomError::new(anyhow::anyhow!("no such gene: {}", hgnc_id)))?;
-            let record = crate::pbs::annonars::clinvar::v1::per_gene::ClinvarPerGeneRecord::decode(
+            let record = crate::pbs::clinvar::per_gene::ClinvarPerGeneRecord::decode(
                 std::io::Cursor::new(raw_buf),
             )
             .map_err(|e| CustomError::new(anyhow::anyhow!("problem decoding value: {}", e)))?;

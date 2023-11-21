@@ -115,13 +115,13 @@ pub fn open_rocksdb_from_args(
 #[serde(rename_all = "snake_case")]
 pub enum Record {
     /// ExAC SV record.
-    ExacCnv(crate::gnomad_pbs::exac_cnv::Record),
+    ExacCnv(crate::pbs::gnomad::exac_cnv::Record),
     /// gnomAD-SV v2 record.
-    GnomadSv2(crate::gnomad_pbs::gnomad_sv2::Record),
+    GnomadSv2(crate::pbs::gnomad::gnomad_sv2::Record),
     /// gnomAD-CNV v4 record.
-    GnomadCnv4(crate::gnomad_pbs::gnomad_cnv4::Record),
+    GnomadCnv4(crate::pbs::gnomad::gnomad_cnv4::Record),
     /// gnomAD-SV v4 record.
-    GnomadSv4(crate::gnomad_pbs::gnomad_sv4::Record),
+    GnomadSv4(crate::pbs::gnomad::gnomad_sv4::Record),
 }
 
 /// The necessary data for the tree construction.
@@ -201,16 +201,16 @@ fn decode_record(data: &[u8], meta: &Meta) -> Result<Record, anyhow::Error> {
             meta.gnomad_version.as_str(),
         ) {
             ("grch37", "exomes", "1.0") => Record::ExacCnv(
-                crate::gnomad_pbs::exac_cnv::Record::decode(&mut std::io::Cursor::new(&data))?,
+                crate::pbs::gnomad::exac_cnv::Record::decode(&mut std::io::Cursor::new(&data))?,
             ),
             ("grch37", "genomes", "2.1") => Record::GnomadSv2(
-                crate::gnomad_pbs::gnomad_sv2::Record::decode(&mut std::io::Cursor::new(&data))?,
+                crate::pbs::gnomad::gnomad_sv2::Record::decode(&mut std::io::Cursor::new(&data))?,
             ),
             ("grch38", "exomes", "4.0") => Record::GnomadCnv4(
-                crate::gnomad_pbs::gnomad_cnv4::Record::decode(&mut std::io::Cursor::new(&data))?,
+                crate::pbs::gnomad::gnomad_cnv4::Record::decode(&mut std::io::Cursor::new(&data))?,
             ),
             ("grch38", "genomes", "4.0") => Record::GnomadSv4(
-                crate::gnomad_pbs::gnomad_sv4::Record::decode(&mut std::io::Cursor::new(&data))?,
+                crate::pbs::gnomad::gnomad_sv4::Record::decode(&mut std::io::Cursor::new(&data))?,
             ),
             _ => {
                 anyhow::bail!(

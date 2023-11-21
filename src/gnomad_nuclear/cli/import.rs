@@ -10,7 +10,7 @@ use rayon::prelude::{IntoParallelRefIterator, ParallelIterator};
 
 use crate::{
     common::{self},
-    gnomad_pbs::{self, gnomad2, gnomad3},
+    pbs::gnomad::{gnomad2, gnomad3},
 };
 
 /// Select the type of gnomAD data to import.
@@ -203,7 +203,7 @@ fn process_window(
                                 .as_ref()
                                 .expect("has been set earlier"),
                         )?;
-                        gnomad_pbs::gnomad2::Record::from_vcf_allele(
+                        crate::pbs::gnomad::gnomad2::Record::from_vcf_allele(
                             &vcf_record,
                             allele_no,
                             &details_options,
@@ -216,7 +216,7 @@ fn process_window(
                                 .as_ref()
                                 .expect("has been set earlier"),
                         )?;
-                        gnomad_pbs::gnomad3::Record::from_vcf_allele(
+                        crate::pbs::gnomad::gnomad3::Record::from_vcf_allele(
                             &vcf_record,
                             allele_no,
                             &details_options,

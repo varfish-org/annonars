@@ -7,7 +7,7 @@ use std::{str::FromStr, sync::Arc};
 
 use crate::{
     common::noodles::{get_f32, get_i32, get_string},
-    gnomad_pbs::gnomad_sv2::{
+    pbs::gnomad::gnomad_sv2::{
         AlleleCounts, AlleleCountsBySex, CohortAlleleCounts, CpxType, Filter, Population,
         PopulationAlleleCounts, Record, SvType,
     },

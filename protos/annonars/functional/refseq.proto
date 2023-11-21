@@ -1,0 +1,97 @@
+// Protocolbuffers definition for RefSeq functional elements.
+
+syntax = "proto3";
+
+package annonars.functional.refseq;
+
+// Enumeration for `gbkey` field.
+enum Category {
+    // Miscaellaneous feature.
+    MISC_FEATURE = 0;
+    // Miscaellaneous recombination feature.
+    MISC_RECOMB = 1;
+    // Miscaellaneous structure.
+    MISC_STRUCTURE = 2;
+    // Mobile element.
+    MOBILE_ELEMENT = 3;
+    // Protein binding annotation.
+    PROTEIN_BIND = 4;
+    // Region.
+    REGION = 5;
+    // Regulatory element.
+    REGULATORY = 6;
+    // Repeat region
+    REPEAT_REGION = 7;
+    // Replication origin.
+    REP_ORIGIN = 8;
+}
+
+// Enumeration for `regulatory_class` field.
+enum RegulatoryClass {
+    // CCAAT signal.
+    CAAT_SIGNAL = 0;
+    // DNase I hypersensitive site.
+    DNASE_I_HYPERSENSITIVE_SITE = 1;
+    // Enhancer.
+    ENHANCER = 2;
+    // Enhancer blocking element.
+    ENHANCER_BLOCKING_ELEMENT = 3;
+    // Epigenetically modified region.
+    EPIGENETICALLY_MODIFIED_REGION = 4;
+    // GC signal.
+    GC_SIGNAL = 5;
+    // Imprinting control region.
+    IMPRINTING_CONTROL_REGION = 6;
+    // Insulator.
+    INSULATOR = 7;
+    // Locus control region.
+    LOCUS_CONTROL_REGION = 8;
+    // Matrix attachment region.
+    MATRIX_ATTACHMENT_REGION = 9;
+    // Micrococcal nuclease hypersensitive site.
+    MICROCOCCAL_NUCLEASE_HYPERSENSITIVE_SITE = 10;
+    // Promoter.
+    PROMOTER = 11;
+    // Replication regulatory region.
+    REPLICATION_REGULATORY_REGION = 12;
+    // Response element.
+    RESPONSE_ELEMENT = 13;
+    // Silencer.
+    SILENCER = 14;
+    // TATA box.
+    TATA_BOX = 15;
+    // Transcriptional cis regulatory region.
+    TRANSCRIPTIONAL_CIS_REGULATORY_REGION = 16;
+}
+
+// Message for storing a RefSeq regulatory element.
+message Record {
+    // Chromosome
+    string chromosome = 1;
+    // Start position (1-based)
+    int32 start = 2;
+    // Stop position (1-based)
+    int32 stop = 3;
+
+    // ID
+    string id = 4;
+    // Dbxref
+    string dbxref = 5;
+
+    // Category of record.
+    Category category = 6;
+    // Regulatory class of record.
+    optional RegulatoryClass regulatory_class = 7;
+    // note
+    optional string note = 8;
+    // experiment
+    optional string experiment = 9;
+    // function
+    optional string function = 10;
+}
+
+// Message for storing multiple Gbxref IDs.
+message DbxrefList {
+    // Dbxref IDs.
+    repeated string dbxref = 1;
+}

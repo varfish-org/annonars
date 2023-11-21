@@ -71,23 +71,15 @@ impl<'de> Deserialize<'de> for VariantType {
     }
 }
 
-impl From<VariantType> for crate::pbs::annonars::clinvar::v1::minimal::VariantType {
+impl From<VariantType> for crate::pbs::clinvar::minimal::VariantType {
     fn from(value: VariantType) -> Self {
         match value {
-            VariantType::Deletion => {
-                crate::pbs::annonars::clinvar::v1::minimal::VariantType::Deletion
-            }
-            VariantType::Duplication => {
-                crate::pbs::annonars::clinvar::v1::minimal::VariantType::Duplication
-            }
-            VariantType::Indel => crate::pbs::annonars::clinvar::v1::minimal::VariantType::Indel,
-            VariantType::Insertion => {
-                crate::pbs::annonars::clinvar::v1::minimal::VariantType::Insertion
-            }
-            VariantType::Inversion => {
-                crate::pbs::annonars::clinvar::v1::minimal::VariantType::Inversion
-            }
-            VariantType::Snv => crate::pbs::annonars::clinvar::v1::minimal::VariantType::Snv,
+            VariantType::Deletion => crate::pbs::clinvar::minimal::VariantType::Deletion,
+            VariantType::Duplication => crate::pbs::clinvar::minimal::VariantType::Duplication,
+            VariantType::Indel => crate::pbs::clinvar::minimal::VariantType::Indel,
+            VariantType::Insertion => crate::pbs::clinvar::minimal::VariantType::Insertion,
+            VariantType::Inversion => crate::pbs::clinvar::minimal::VariantType::Inversion,
+            VariantType::Snv => crate::pbs::clinvar::minimal::VariantType::Snv,
         }
     }
 }
@@ -167,25 +159,23 @@ impl<'de> Deserialize<'de> for ClinicalSignificance {
     }
 }
 
-impl From<ClinicalSignificance>
-    for crate::pbs::annonars::clinvar::v1::minimal::ClinicalSignificance
-{
+impl From<ClinicalSignificance> for crate::pbs::clinvar::minimal::ClinicalSignificance {
     fn from(value: ClinicalSignificance) -> Self {
         match value {
             ClinicalSignificance::Pathogenic => {
-                crate::pbs::annonars::clinvar::v1::minimal::ClinicalSignificance::Pathogenic
+                crate::pbs::clinvar::minimal::ClinicalSignificance::Pathogenic
             }
             ClinicalSignificance::LikelyPathogenic => {
-                crate::pbs::annonars::clinvar::v1::minimal::ClinicalSignificance::LikelyPathogenic
+                crate::pbs::clinvar::minimal::ClinicalSignificance::LikelyPathogenic
             }
             ClinicalSignificance::UncertainSignificance => {
-                crate::pbs::annonars::clinvar::v1::minimal::ClinicalSignificance::UncertainSignificance
+                crate::pbs::clinvar::minimal::ClinicalSignificance::UncertainSignificance
             }
             ClinicalSignificance::LikelyBenign => {
-                crate::pbs::annonars::clinvar::v1::minimal::ClinicalSignificance::LikelyBenign
+                crate::pbs::clinvar::minimal::ClinicalSignificance::LikelyBenign
             }
             ClinicalSignificance::Benign => {
-                crate::pbs::annonars::clinvar::v1::minimal::ClinicalSignificance::Benign
+                crate::pbs::clinvar::minimal::ClinicalSignificance::Benign
             }
         }
     }
@@ -287,24 +277,24 @@ impl<'de> Deserialize<'de> for ReviewStatus {
     }
 }
 
-impl From<ReviewStatus> for crate::pbs::annonars::clinvar::v1::minimal::ReviewStatus {
+impl From<ReviewStatus> for crate::pbs::clinvar::minimal::ReviewStatus {
     fn from(value: ReviewStatus) -> Self {
         match value {
-            ReviewStatus::NoAssertionProvided => crate::pbs::annonars::clinvar::v1::minimal::ReviewStatus::NoAssertionProvided,
+            ReviewStatus::NoAssertionProvided => crate::pbs::clinvar::minimal::ReviewStatus::NoAssertionProvided,
             ReviewStatus::NoAssertionCriteriaProvided => {
-                crate::pbs::annonars::clinvar::v1::minimal::ReviewStatus::NoAssertionCriteriaProvided
+                crate::pbs::clinvar::minimal::ReviewStatus::NoAssertionCriteriaProvided
             }
             ReviewStatus::CriteriaProvidedConflictingInterpretations => {
-                crate::pbs::annonars::clinvar::v1::minimal::ReviewStatus::CriteriaProvidedConflictingInterpretations
+                crate::pbs::clinvar::minimal::ReviewStatus::CriteriaProvidedConflictingInterpretations
             }
             ReviewStatus::CriteriaProvidedSingleSubmitter => {
-                crate::pbs::annonars::clinvar::v1::minimal::ReviewStatus::CriteriaProvidedSingleSubmitter
+                crate::pbs::clinvar::minimal::ReviewStatus::CriteriaProvidedSingleSubmitter
             }
             ReviewStatus::CriteriaProvidedMultipleSubmittersNoConflicts => {
-                crate::pbs::annonars::clinvar::v1::minimal::ReviewStatus::CriteriaProvidedMultipleSubmittersNoConflicts
+                crate::pbs::clinvar::minimal::ReviewStatus::CriteriaProvidedMultipleSubmittersNoConflicts
             }
-            ReviewStatus::ReviewedByExpertPanel => crate::pbs::annonars::clinvar::v1::minimal::ReviewStatus::ReviewedByExpertPanel,
-            ReviewStatus::PracticeGuideline => crate::pbs::annonars::clinvar::v1::minimal::ReviewStatus::PracticeGuideline,
+            ReviewStatus::ReviewedByExpertPanel => crate::pbs::clinvar::minimal::ReviewStatus::ReviewedByExpertPanel,
+            ReviewStatus::PracticeGuideline => crate::pbs::clinvar::minimal::ReviewStatus::PracticeGuideline,
         }
     }
 }

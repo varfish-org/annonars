@@ -10,8 +10,8 @@ use std::{
 use byteorder::ByteOrder as _;
 use prost::Message as _;
 
-pub use crate::gnomad_pbs::exac_cnv::CnvType;
-use crate::gnomad_pbs::exac_cnv::{Population, Record};
+pub use crate::pbs::gnomad::exac_cnv::CnvType;
+use crate::pbs::gnomad::exac_cnv::{Population, Record};
 
 /// The to be imported section.
 #[derive(Clone, Copy, Debug, Default, Eq, PartialEq)]

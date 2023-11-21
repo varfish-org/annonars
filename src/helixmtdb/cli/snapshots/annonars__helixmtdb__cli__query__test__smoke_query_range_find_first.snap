@@ -2,5 +2,5 @@
 source: src/helixmtdb/cli/query.rs
 expression: "&out_data"
 ---
-{"chrom":"chrM","pos":5,"ref_allele":"A","alt_allele":"C","num_total":196554,"num_het":0,"num_hom":1,"feature_type":"non_coding","gene_name":"MT-CRb"}
+{"chrom":"chrM","pos":5,"refAllele":"A","altAllele":"C","numTotal":196554,"numHom":1,"featureType":"non_coding","geneName":"MT-CRb"}
 
