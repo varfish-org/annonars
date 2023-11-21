@@ -1,6 +1,6 @@
 use annonars::{
     clinvar_genes, clinvar_minimal, clinvar_sv, common, cons, db_utils, dbsnp, freqs, functional,
-    genes, gnomad_mtdna, gnomad_nuclear, gnomad_sv, helixmtdb, server, tsv,
+    genes, gnomad_mtdna, gnomad_nuclear, gnomad_sv, helixmtdb, regions, server, tsv,
 };
 use anyhow::Error;
 use clap::{command, Args, Parser, Subcommand};
@@ -52,6 +52,8 @@ enum Commands {
     GnomadNuclear(GnomadNuclear),
     /// "gnomad-sv" sub commands
     GnomadSv(GnomadSv),
+    /// "regions" sub commands
+    Regions(Regions),
     /// "db-utils" sub commands
     DbUtils(DbUtils),
     /// "run-server" command.
@@ -279,6 +281,23 @@ enum GnomadSvCommands {
     Query(gnomad_sv::cli::query::Args),
 }
 
+/// Parsing of "regions" subcommands.
+#[derive(Debug, Args, Clone)]
+struct Regions {
+    /// The sub command to run
+    #[command(subcommand)]
+    command: RegionsCommands,
+}
+
+/// Enum supporting the parsing of "regions *" subcommands.
+#[derive(Debug, Subcommand, Clone)]
+enum RegionsCommands {
+    /// "import" sub command
+    Import(regions::cli::import::Args),
+    /// "query" sub command
+    Query(regions::cli::query::Args),
+}
+
 /// Parsing of "db-utils" subcommands.
 #[derive(Debug, Args, Clone)]
 struct DbUtils {
@@ -386,6 +405,10 @@ pub fn main() -> Result<(), anyhow::Error> {
             Commands::GnomadSv(args) => match &args.command {
                 GnomadSvCommands::Import(args) => gnomad_sv::cli::import::run(&cli.common, args)?,
                 GnomadSvCommands::Query(args) => gnomad_sv::cli::query::run(&cli.common, args)?,
+            },
+            Commands::Regions(args) => match &args.command {
+                RegionsCommands::Import(args) => regions::cli::import::run(&cli.common, args)?,
+                RegionsCommands::Query(args) => regions::cli::query::run(&cli.common, args)?,
             },
             Commands::DbUtils(args) => match &args.command {
                 DbUtilsCommands::Copy(args) => db_utils::cli::copy::run(&cli.common, args)?,

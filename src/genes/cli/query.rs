@@ -63,7 +63,7 @@ pub fn open_rocksdb_from_args(
 fn print_record(
     out_writer: &mut Box<dyn std::io::Write>,
     output_format: common::cli::OutputFormat,
-    value: &genes::Record,
+    value: &genes::base::Record,
 ) -> Result<(), anyhow::Error> {
     match output_format {
         common::cli::OutputFormat::Jsonl => {
@@ -79,13 +79,13 @@ pub fn query_for_gene(
     hgnc_id: &str,
     db: &rocksdb::DBWithThreadMode<rocksdb::MultiThreaded>,
     cf_data: &Arc<rocksdb::BoundColumnFamily>,
-) -> Result<Option<genes::Record>, anyhow::Error> {
+) -> Result<Option<genes::base::Record>, anyhow::Error> {
     let raw_value = db
         .get_cf(cf_data, hgnc_id.as_bytes())
         .map_err(|e| anyhow::anyhow!("error while querying for HGNC ID {}: {}", hgnc_id, e))?;
     raw_value
         .map(|raw_value| {
-            genes::Record::decode(&mut std::io::Cursor::new(&raw_value)).map_err(|e| {
+            genes::base::Record::decode(&mut std::io::Cursor::new(&raw_value)).map_err(|e| {
                 anyhow::anyhow!(
                     "error while decoding gene record for HGNC ID {}: {}",
                     hgnc_id,

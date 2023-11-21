@@ -19,6 +19,7 @@ pub mod gnomad_nuclear;
 pub mod gnomad_sv;
 pub mod helixmtdb;
 pub mod pbs;
+pub mod regions;
 pub mod server;
 pub mod tsv;
 
