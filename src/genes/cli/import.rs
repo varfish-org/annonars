@@ -17,8 +17,8 @@ use crate::{
 };
 
 use super::data::{
-    self, acmg_sf, clingen_gene, dbnsfp_gene, gnomad_constraints, gtex, hgnc, ncbi, omim, orpha,
-    rcnv, shet,
+    self, acmg_sf, clingen_gene, dbnsfp_gene, domino, gnomad_constraints, gtex, hgnc, ncbi, omim,
+    orpha, rcnv, shet,
 };
 
 /// Command line arguments for `genes import` sub command.
@@ -58,6 +58,9 @@ pub struct Args {
     /// Path to the JSONL file with the GTEx informatino.
     #[arg(long, required = true)]
     pub path_in_gtex: String,
+    /// Path to the DOMINO TSV file.
+    #[arg(long, required = true)]
+    pub path_in_domino: String,
 
     /// Path to output RocksDB.
     #[arg(long, required = true)]
@@ -346,6 +349,27 @@ fn load_gtex(path: &str) -> Result<HashMap<String, gtex::Record>, anyhow::Error>
     Ok(result)
 }
 
+/// Load DOMINO information
+///
+/// # Result
+///
+/// A map from gene symbol to DOMINO gene record.
+fn load_domino(path: &str) -> Result<HashMap<String, domino::Record>, anyhow::Error> {
+    info!("  loading DOMINO information from {}", path);
+    let mut result = HashMap::new();
+
+    let mut reader = csv::ReaderBuilder::new()
+        .has_headers(true)
+        .delimiter(b'\t')
+        .from_path(path)?;
+    for record in reader.deserialize::<domino::Record>() {
+        let record = record?;
+        result.insert(record.gene_symbol.clone(), record);
+    }
+
+    Ok(result)
+}
+
 /// Convert from `data::*` records to protobuf records.
 fn convert_record(record: data::Record) -> pbs::genes::Record {
     let data::Record {
@@ -360,6 +384,7 @@ fn convert_record(record: data::Record) -> pbs::genes::Record {
         rcnv,
         shet,
         gtex,
+        domino,
     } = record;
 
     let acmg_sf = acmg_sf.map(|acmg_sf| {
@@ -899,6 +924,11 @@ fn convert_record(record: data::Record) -> pbs::genes::Record {
         }
     });
 
+    let domino = domino.map(|domino| {
+        let domino::Record { gene_symbol, score } = domino;
+        pbs::genes::DominoRecord { gene_symbol, score }
+    });
+
     pbs::genes::Record {
         acmg_sf,
         clingen,
@@ -911,6 +941,7 @@ fn convert_record(record: data::Record) -> pbs::genes::Record {
         rcnv,
         shet,
         gtex,
+        domino,
     }
 }
 
@@ -928,6 +959,7 @@ fn write_rocksdb(
     rcnv_by_hgnc_id: HashMap<String, rcnv::Record>,
     shet_by_hgnc_id: HashMap<String, shet::Record>,
     gtex_by_hgnc_id: HashMap<String, gtex::Record>,
+    domino_by_symbol: HashMap<String, domino::Record>,
     args: &&Args,
 ) -> Result<(), anyhow::Error> {
     // Construct RocksDB options and open file for writing.
@@ -974,6 +1006,7 @@ fn write_rocksdb(
             rcnv: rcnv_by_hgnc_id.get(&hgnc_id).cloned(),
             shet: shet_by_hgnc_id.get(&hgnc_id).cloned(),
             gtex: gtex_by_hgnc_id.get(&hgnc_id).cloned(),
+            domino: domino_by_symbol.get(&hgnc_record.symbol).cloned(),
         });
         tracing::debug!("writing {:?} -> {:?}", &hgnc, &record);
         db.put_cf(&cf_genes, hgnc_id, &record.encode_to_vec())?;
@@ -1005,6 +1038,7 @@ pub fn run(common_args: &common::cli::Args, args: &Args) -> Result<(), anyhow::E
     let rcnv_by_hgnc_id = load_rcnv(&args.path_in_rcnv)?;
     let shet_by_hgnc_id = load_shet(&args.path_in_shet)?;
     let gtex_by_hgnc_id = load_gtex(&args.path_in_gtex)?;
+    let domino_by_symbol = load_domino(&args.path_in_domino)?;
     info!(
         "... done loadin genes data files in {:?}",
         before_loading.elapsed()
@@ -1024,6 +1058,7 @@ pub fn run(common_args: &common::cli::Args, args: &Args) -> Result<(), anyhow::E
         rcnv_by_hgnc_id,
         shet_by_hgnc_id,
         gtex_by_hgnc_id,
+        domino_by_symbol,
         &args,
     )?;
     info!(
@@ -1064,6 +1099,7 @@ pub mod test {
             path_in_rcnv: String::from("tests/genes/rcnv/rcnv.tsv"),
             path_in_shet: String::from("tests/genes/shet/shet.tsv"),
             path_in_gtex: String::from("tests/genes/gtex/genes_tpm.jsonl"),
+            path_in_domino: String::from("tests/genes/domino/domino.tsv"),
             path_out_rocksdb: tmp_dir
                 .to_path_buf()
                 .into_os_string()

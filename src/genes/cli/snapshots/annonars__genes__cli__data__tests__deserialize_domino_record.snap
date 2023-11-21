@@ -1,0 +1,43 @@
+---
+source: src/genes/cli/data.rs
+expression: records
+---
+- gene_symbol: SF3B1
+  score: 0.99999987
+- gene_symbol: CSNK2A1
+  score: 0.99999894
+- gene_symbol: LHX2
+  score: 0.99999882
+- gene_symbol: DACH1
+  score: 0.99999843
+- gene_symbol: PAX6
+  score: 0.99999815
+- gene_symbol: PRPF8
+  score: 0.99999699
+- gene_symbol: ATP2B1
+  score: 0.99999646
+- gene_symbol: DYNC1H1
+  score: 0.99999641
+- gene_symbol: PIK3CA
+  score: 0.99999578
+- gene_symbol: PTEN
+  score: 0.99999549
+- gene_symbol: TBL1XR1
+  score: 0.99999526
+- gene_symbol: HNRNPR
+  score: 0.99999428
+- gene_symbol: TOP2B
+  score: 0.99999406
+- gene_symbol: GSK3B
+  score: 0.99999361
+- gene_symbol: CDK8
+  score: 0.99999266
+- gene_symbol: XPO1
+  score: 0.99999264
+- gene_symbol: SREBF1
+  score: 0.99999208
+- gene_symbol: PIAS1
+  score: 0.99999156
+- gene_symbol: NR2F2
+  score: 0.99999147
+

@@ -30,6 +30,8 @@ pub struct Record {
     pub shet: Option<shet::Record>,
     /// Information from GTEx.
     pub gtex: Option<gtex::Record>,
+    /// Information from DOMINO.
+    pub domino: Option<domino::Record>,
 }
 
 /// Code for data from the ACMG secondary findings list.
@@ -2067,6 +2069,22 @@ pub mod gtex {
     }
 }
 
+/// Code for data from DOMINO.
+pub mod domino {
+    use serde::{Deserialize, Serialize};
+
+    /// A record from the DOMINO table.
+    #[derive(Debug, Clone, Serialize, Deserialize)]
+    pub struct Record {
+        /// Gene symbol
+        #[serde(alias = "#HGNC ID")]
+        pub gene_symbol: String,
+        /// The score value.
+        #[serde(alias = "Score")]
+        pub score: f64,
+    }
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -2220,6 +2238,22 @@ mod tests {
             .map(|s| serde_json::from_str::<gtex::Record>(s).unwrap())
             .collect::<Vec<_>>();
 
+        insta::assert_yaml_snapshot!(records);
+
+        Ok(())
+    }
+
+    #[test]
+    fn deserialize_domino_record() -> Result<(), anyhow::Error> {
+        let path_tsv = "tests/genes/domino/domino.tsv";
+        let str_tsv = std::fs::read_to_string(path_tsv).unwrap();
+        let mut rdr = csv::ReaderBuilder::new()
+            .delimiter(b'\t')
+            .has_headers(true)
+            .from_reader(str_tsv.as_bytes());
+        let records = rdr
+            .deserialize()
+            .collect::<Result<Vec<domino::Record>, csv::Error>>()?;
         insta::assert_yaml_snapshot!(records);
 
         Ok(())
