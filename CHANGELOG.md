@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.26.1](https://github.com/bihealth/annonars/compare/v0.26.0...v0.26.1) (2023-11-21)
+
+
+### Build System
+
+* cleanup serde_with dependency ([#312](https://github.com/bihealth/annonars/issues/312)) ([932b840](https://github.com/bihealth/annonars/commit/932b840845b8adfc66820fdc7a78c97aff8690da))
+
 ## [0.26.0](https://github.com/bihealth/annonars/compare/v0.25.0...v0.26.0) (2023-11-20)
 
 
