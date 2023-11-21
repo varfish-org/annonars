@@ -20,11 +20,11 @@ message CarrierCounts {
 
 // Store the carrier counts for the given sub cohort and sub cohort factored by sex.
 message CarrierCountsBySex {
-    // Overall allele counts in the sub cohort.
+    // Overall carrier counts in the sub cohort.
     CarrierCounts overall = 1;
-    // Allele counts in female/XX karyotype individuals of sub cohort.
+    // Carrier counts in female/XX karyotype individuals of sub cohort.
     optional CarrierCounts xx = 2;
-    // Allele counts in male/XY karyotype individuals of sub cohort.
+    // Carrier counts in male/XY karyotype individuals of sub cohort.
     optional CarrierCounts xy = 3;
 }
 
@@ -49,11 +49,21 @@ enum Population {
 }
 
 // Store the carrier counts for a population.
-message PopulationAlleleCounts {
+message PopulationCarrierCounts {
     // The population.
     Population population = 1;
     // The overall allele counts and the one by sex.
     CarrierCountsBySex counts = 2;
+}
+
+// Store the allele counts for the given cohort.
+message CohortCarrierCounts {
+    // Name of the cohort, empty for global.
+    optional string cohort = 1;
+    // The overall carrier counts and the one by sex.
+    CarrierCountsBySex by_sex = 2;
+    // Carrier counts for each population.
+    repeated PopulationCarrierCounts by_population = 3;
 }
 
 // One record in the gnomAD-CNV v4 dataset.
@@ -91,8 +101,9 @@ message Record {
     // Symbols of genes predicted to be impacted by variant
     repeated string genes = 13;
 
-    // Global carrier counts.
-    CarrierCountsBySex counts = 14;
     // Carrier counts in the different population.
-    repeated PopulationAlleleCounts by_population = 15;
+    //
+    // The populations in gnomAD CNV v4 are: empty for global, "non_neuro",
+    // and "non_neuro_coontrols".
+    repeated CohortCarrierCounts carrier_counts = 14;
 }
