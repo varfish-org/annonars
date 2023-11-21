@@ -1,0 +1,25 @@
+// Genomic region annotation with ClinGen information.
+
+syntax = "proto3";
+
+package annonars.regions.clingen;
+
+import "annonars/genes/base.proto";
+
+// Dosage pathogenicity region annotation.
+message Region {
+    // ISCA ID
+    string isca_id = 1;
+    // ISCA Region Name
+    string isca_region_name = 2;
+    // Genomic locaion.
+    string genomic_location = 3;
+    // Haploinsufficiency score.
+    annonars.genes.base.ClingenDosageScore haploinsufficiency_score = 4;
+    // Triplosensitivity score.
+    annonars.genes.base.ClingenDosageScore triplosensitivity_score = 5;
+    // Haploinsufficiency Disease ID.
+    optional string haploinsufficiency_disease_id = 6;
+    // Haploinsufficiency Disease ID.
+    optional string triplosensitivity_disease_id = 7;
+}

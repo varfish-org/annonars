@@ -371,7 +371,7 @@ fn load_domino(path: &str) -> Result<HashMap<String, domino::Record>, anyhow::Er
 }
 
 /// Convert from `data::*` records to protobuf records.
-fn convert_record(record: data::Record) -> pbs::genes::Record {
+fn convert_record(record: data::Record) -> pbs::genes::base::Record {
     let data::Record {
         acmg_sf,
         clingen,
@@ -402,7 +402,7 @@ fn convert_record(record: data::Record) -> pbs::genes::Record {
             variants_to_report,
         } = acmg_sf;
 
-        pbs::genes::AcmgSecondaryFindingRecord {
+        pbs::genes::base::AcmgSecondaryFindingRecord {
             hgnc_id,
             ensembl_gene_id,
             ncbi_gene_id,
@@ -428,15 +428,15 @@ fn convert_record(record: data::Record) -> pbs::genes::Record {
             triplosensitivity_disease_id,
         } = clingen;
 
-        pbs::genes::ClingenDosageRecord {
+        pbs::genes::base::ClingenDosageRecord {
             gene_symbol,
             ncbi_gene_id,
             genomic_location,
-            haploinsufficiency_score: Into::<pbs::genes::ClingenDosageScore>::into(
+            haploinsufficiency_score: Into::<pbs::genes::base::ClingenDosageScore>::into(
                 clingen_gene::Score::try_from(haploinsufficiency_score)
                     .expect("invalid haploinsufficiency score"),
             ) as i32,
-            triplosensitivity_score: Into::<pbs::genes::ClingenDosageScore>::into(
+            triplosensitivity_score: Into::<pbs::genes::base::ClingenDosageScore>::into(
                 clingen_gene::Score::try_from(triplosensitivity_score)
                     .expect("invalid triplosensitivity score"),
             ) as i32,
@@ -548,7 +548,7 @@ fn convert_record(record: data::Record) -> pbs::genes::Record {
             zfin_zebrafish_phenotype_tag,
         } = dbnsfp;
 
-        pbs::genes::DbnsfpRecord {
+        pbs::genes::base::DbnsfpRecord {
             gene_name,
             ensembl_gene,
             chr,
@@ -680,7 +680,7 @@ fn convert_record(record: data::Record) -> pbs::genes::Record {
             exac_oe_lof,
         } = gnomad_constraints;
 
-        pbs::genes::GnomadConstraintsRecord {
+        pbs::genes::base::GnomadConstraintsRecord {
             ensembl_gene_id,
             entrez_id,
             gene_symbol,
@@ -762,7 +762,7 @@ fn convert_record(record: data::Record) -> pbs::genes::Record {
             mane_select,
         } = hgnc;
 
-        Some(pbs::genes::HgncRecord {
+        Some(pbs::genes::base::HgncRecord {
             hgnc_id,
             symbol,
             name,
@@ -796,7 +796,7 @@ fn convert_record(record: data::Record) -> pbs::genes::Record {
             lsdb: lsdb
                 .map(|lsdb| {
                     lsdb.iter()
-                        .map(|lsdb| pbs::genes::HgncLsdb {
+                        .map(|lsdb| pbs::genes::base::HgncLsdb {
                             name: lsdb.name.clone(),
                             url: lsdb.url.clone(),
                         })
@@ -831,14 +831,14 @@ fn convert_record(record: data::Record) -> pbs::genes::Record {
             summary,
             rif_entries,
         } = ncbi;
-        pbs::genes::NcbiRecord {
+        pbs::genes::base::NcbiRecord {
             gene_id,
             summary,
             rif_entries: rif_entries
                 .map(|rif_entries| {
                     rif_entries
                         .into_iter()
-                        .map(|rif_entry| pbs::genes::RifEntry {
+                        .map(|rif_entry| pbs::genes::base::RifEntry {
                             pmids: rif_entry.pmids.unwrap_or_default(),
                             text: rif_entry.text,
                         })
@@ -850,11 +850,11 @@ fn convert_record(record: data::Record) -> pbs::genes::Record {
 
     let omim = omim.map(|omim| {
         let omim::Record { hgnc_id, diseases } = omim;
-        pbs::genes::OmimRecord {
+        pbs::genes::base::OmimRecord {
             hgnc_id,
             omim_diseases: diseases
                 .into_iter()
-                .map(|disease| pbs::genes::OmimTerm {
+                .map(|disease| pbs::genes::base::OmimTerm {
                     omim_id: disease.omim_id,
                     label: disease.label,
                 })
@@ -864,11 +864,11 @@ fn convert_record(record: data::Record) -> pbs::genes::Record {
 
     let orpha = orpha.map(|orpha| {
         let orpha::Record { hgnc_id, diseases } = orpha;
-        pbs::genes::OrphaRecord {
+        pbs::genes::base::OrphaRecord {
             hgnc_id,
             orpha_diseases: diseases
                 .into_iter()
-                .map(|disease| pbs::genes::OrphaTerm {
+                .map(|disease| pbs::genes::base::OrphaTerm {
                     orpha_id: disease.orpha_id,
                     label: disease.label,
                 })
@@ -882,7 +882,7 @@ fn convert_record(record: data::Record) -> pbs::genes::Record {
             p_haplo,
             p_triplo,
         } = rcnv;
-        pbs::genes::RcnvRecord {
+        pbs::genes::base::RcnvRecord {
             hgnc_id,
             p_haplo,
             p_triplo,
@@ -891,7 +891,7 @@ fn convert_record(record: data::Record) -> pbs::genes::Record {
 
     let shet = shet.map(|shet| {
         let shet::Record { hgnc_id, s_het } = shet;
-        pbs::genes::ShetRecord { hgnc_id, s_het }
+        pbs::genes::base::ShetRecord { hgnc_id, s_het }
     });
 
     let gtex = gtex.map(|gtex| {
@@ -909,14 +909,14 @@ fn convert_record(record: data::Record) -> pbs::genes::Record {
                     tissue_detailed,
                     tpms,
                 } = record;
-                pbs::genes::GtexTissueRecord {
+                pbs::genes::base::GtexTissueRecord {
                     tissue: tissue as i32,
                     tissue_detailed: tissue_detailed as i32,
                     tpms,
                 }
             })
             .collect::<Vec<_>>();
-        pbs::genes::GtexRecord {
+        pbs::genes::base::GtexRecord {
             hgnc_id,
             ensembl_gene_id,
             ensembl_gene_version,
@@ -926,10 +926,10 @@ fn convert_record(record: data::Record) -> pbs::genes::Record {
 
     let domino = domino.map(|domino| {
         let domino::Record { gene_symbol, score } = domino;
-        pbs::genes::DominoRecord { gene_symbol, score }
+        pbs::genes::base::DominoRecord { gene_symbol, score }
     });
 
-    pbs::genes::Record {
+    pbs::genes::base::Record {
         acmg_sf,
         clingen,
         dbnsfp,

@@ -104,9 +104,9 @@ pub mod clingen_gene {
         }
     }
 
-    impl From<Score> for crate::pbs::genes::ClingenDosageScore {
+    impl From<Score> for crate::pbs::genes::base::ClingenDosageScore {
         fn from(val: Score) -> Self {
-            use crate::pbs::genes::ClingenDosageScore::*;
+            use crate::pbs::genes::base::ClingenDosageScore::*;
             match val {
                 Score::SufficientEvidence => SufficientEvidenceAvailable,
                 Score::SomeEvidence => SomeEvidenceAvailable,
@@ -1616,7 +1616,7 @@ pub mod shet {
 pub mod gtex {
     use serde::{Deserialize, Serialize};
 
-    use crate::pbs::genes::{GtexTissue, GtexTissueDetailed};
+    use crate::pbs::genes::base::{GtexTissue, GtexTissueDetailed};
 
     /// GTEx V8 tissue types.
     #[derive(Debug, Clone, Serialize, Deserialize)]

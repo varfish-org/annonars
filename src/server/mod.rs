@@ -271,10 +271,10 @@ fn extract_gene_names(
     iter.seek(b"");
     while iter.valid() {
         if let Some(iter_value) = iter.value() {
-            let record = genes::Record::decode(std::io::Cursor::new(iter_value))?;
-            let genes::Record { hgnc, .. } = record;
+            let record = genes::base::Record::decode(std::io::Cursor::new(iter_value))?;
+            let genes::base::Record { hgnc, .. } = record;
             if let Some(hgnc) = hgnc {
-                let genes::HgncRecord {
+                let genes::base::HgncRecord {
                     hgnc_id,
                     symbol,
                     name,
