@@ -86,19 +86,33 @@ fn load_acmg(path: &str) -> Result<HashMap<String, acmg_sf::Record>, anyhow::Err
 ///
 /// # Result
 ///
-/// A map from HGNC ID to ClinGen record.
-fn load_clingen(path: &str) -> Result<HashMap<String, Vec<clingen_gene::Record>>, anyhow::Error> {
-    info!("  loading ClinGen curations from {}", path);
-    let mut result: HashMap<String, Vec<_>> = HashMap::new();
+/// A map from gene symbol to ClinGen record.
+fn load_clingen(path: &str) -> Result<HashMap<String, clingen_gene::Gene>, anyhow::Error> {
+    info!("  loading ClinGen gene curations from {}", path);
+    let mut result = HashMap::new();
 
-    let mut reader = csv::ReaderBuilder::new().from_path(path)?;
-    for record in reader.deserialize::<clingen_gene::Record>() {
-        let record = record.unwrap();
-        if let Some(entry) = result.get_mut(&record.hgnc_id) {
-            entry.push(record);
-        } else {
-            result.insert(record.hgnc_id.clone(), vec![record]);
+    // Construct reader and skip initial 5 lines.
+    let mut reader = std::fs::File::open(path)
+        .map_err(|e| anyhow::anyhow!("problem opening file: {}", e))
+        .map(BufReader::new)?;
+
+    {
+        let mut buf = String::new();
+        for _ in 0..5 {
+            reader.read_line(&mut buf)?;
+            buf.clear();
         }
+    }
+
+    let mut csv_reader = csv::ReaderBuilder::new()
+        .delimiter(b'\t')
+        .has_headers(true)
+        .flexible(true)
+        .from_reader(reader);
+    for record in csv_reader.deserialize() {
+        let record: clingen_gene::Gene =
+            record.map_err(|e| anyhow::anyhow!("problem parsing record: {}", e))?;
+        result.insert(record.gene_symbol.clone(), record);
     }
 
     Ok(result)
@@ -379,46 +393,31 @@ fn convert_record(record: data::Record) -> pbs::genes::Record {
     });
 
     let clingen = clingen.map(|clingen| {
-        let first = clingen[0].clone();
-        let mut result = pbs::genes::ClingenCurationRecord {
-            gene_symbol: first.gene_symbol,
-            hgnc_id: first.hgnc_id,
-            gene_url: first.gene_url,
-            disease_records: Vec::new(),
-        };
+        let clingen_gene::Gene {
+            gene_symbol,
+            ncbi_gene_id,
+            genomic_location,
+            haploinsufficiency_score,
+            triplosensitivity_score,
+            haploinsufficiency_disease_id,
+            triplosensitivity_disease_id,
+        } = clingen;
 
-        for record in clingen {
-            result
-                .disease_records
-                .push(pbs::genes::ClingenCurationDiseaseRecord {
-                    disease_label: record.disease_label.clone(),
-                    mondo_id: record.mondo_id.clone(),
-                    disease_url: record.disease_url.clone(),
-                    mode_of_inheritance: record.mode_of_inheritance.clone(),
-                    dosage_haploinsufficiency_assertion: record
-                        .dosage_haploinsufficiency_assertion
-                        .clone(),
-                    dosage_triplosensitivity_assertion: record
-                        .dosage_triplosensitivity_assertion
-                        .clone(),
-                    dosage_report: record.dosage_report.clone(),
-                    dosage_group: record.dosage_group.clone(),
-                    gene_disease_validity_assertion_classifications: record
-                        .gene_disease_validity_assertion_classifications
-                        .clone(),
-                    gene_disease_validity_assertion_reports: record
-                        .gene_disease_validity_assertion_reports
-                        .clone(),
-                    gene_disease_validity_gceps: record.gene_disease_validity_gceps.clone(),
-                    actionability_assertion_classifications: record
-                        .actionability_assertion_classifications
-                        .clone(),
-                    actionability_assertion_reports: record.actionability_assertion_reports.clone(),
-                    actionability_groups: record.actionability_groups.clone(),
-                });
+        pbs::genes::ClingenDosageRecord {
+            gene_symbol,
+            ncbi_gene_id,
+            genomic_location,
+            haploinsufficiency_score: Into::<pbs::genes::ClingenDosageScore>::into(
+                clingen_gene::Score::try_from(haploinsufficiency_score)
+                    .expect("invalid haploinsufficiency score"),
+            ) as i32,
+            triplosensitivity_score: Into::<pbs::genes::ClingenDosageScore>::into(
+                clingen_gene::Score::try_from(triplosensitivity_score)
+                    .expect("invalid triplosensitivity score"),
+            ) as i32,
+            haploinsufficiency_disease_id,
+            triplosensitivity_disease_id,
         }
-
-        result
     });
 
     let dbnsfp = dbnsfp.map(|dbnsfp| {
@@ -919,7 +918,7 @@ fn convert_record(record: data::Record) -> pbs::genes::Record {
 #[allow(clippy::too_many_arguments)]
 fn write_rocksdb(
     acmg_by_hgnc_id: HashMap<String, acmg_sf::Record>,
-    clingen_by_hgnc_id: HashMap<String, Vec<clingen_gene::Record>>,
+    clingen_by_symbol: HashMap<String, clingen_gene::Gene>,
     dbnsfp_by_symbol: HashMap<String, dbnsfp_gene::Record>,
     constraints_by_ensembl_id: HashMap<String, gnomad_constraints::Record>,
     hgnc: HashMap<String, hgnc::Record>,
@@ -957,7 +956,7 @@ fn write_rocksdb(
         let hgnc_id = hgnc_record.hgnc_id.clone();
         let record = convert_record(data::Record {
             acmg_sf: acmg_by_hgnc_id.get(&hgnc_id).cloned(),
-            clingen: clingen_by_hgnc_id.get(&hgnc_id).cloned(),
+            clingen: clingen_by_symbol.get(&hgnc_record.symbol).cloned(),
             dbnsfp: dbnsfp_by_symbol.get(&hgnc_record.symbol).cloned(),
             gnomad_constraints: hgnc_record
                 .ensembl_gene_id
@@ -996,7 +995,7 @@ pub fn run(common_args: &common::cli::Args, args: &Args) -> Result<(), anyhow::E
     let before_loading = Instant::now();
     info!("Loading genes data files...");
     let acmg_by_hgnc_id = load_acmg(&args.path_in_acmg)?;
-    let clingen_by_hgnc_id = load_clingen(&args.path_in_clingen)?;
+    let clingen_by_symbol = load_clingen(&args.path_in_clingen)?;
     let constraints_by_ensembl_id = load_gnomad_constraints(&args.path_in_gnomad_constraints)?;
     let dbnsfp_by_symbol = load_dbnsfp(&args.path_in_dbnsfp)?;
     let hgnc = load_hgnc(&args.path_in_hgnc)?;
@@ -1015,7 +1014,7 @@ pub fn run(common_args: &common::cli::Args, args: &Args) -> Result<(), anyhow::E
     info!("Writing genes database...");
     write_rocksdb(
         acmg_by_hgnc_id,
-        clingen_by_hgnc_id,
+        clingen_by_symbol,
         dbnsfp_by_symbol,
         constraints_by_ensembl_id,
         hgnc,
@@ -1051,7 +1050,9 @@ pub mod test {
         };
         let args = Args {
             path_in_acmg: String::from("tests/genes/acmg/acmg.tsv"),
-            path_in_clingen: String::from("tests/genes/clingen/clingen.csv"),
+            path_in_clingen: String::from(
+                "tests/genes/clingen/ClinGen_gene_curation_list_GRCh37.tsv",
+            ),
             path_in_gnomad_constraints: String::from(
                 "tests/genes/gnomad_constraints/gnomad_constraints.tsv",
             ),

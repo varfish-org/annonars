@@ -51,3 +51,24 @@ macro_rules! set_snapshot_suffix {
 }
 
 pub use set_snapshot_suffix;
+
+/// Assembly to be passed on the command line.
+#[derive(
+    Debug,
+    Clone,
+    Copy,
+    PartialEq,
+    Eq,
+    PartialOrd,
+    Ord,
+    clap::ValueEnum,
+    serde::Deserialize,
+    serde::Serialize,
+)]
+#[serde(rename_all = "snake_case")]
+pub enum Assembly {
+    /// GRCh37
+    Grch37,
+    /// GRCh38
+    Grch38,
+}

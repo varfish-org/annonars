@@ -5,13 +5,13 @@ use serde::{Deserialize, Serialize};
 /// Entry in the genes RocksDB database.
 ///
 /// Note that the HGNC ID is used for the keys, e.g., `"HGNC:5"`.
-#[serde_with::skip_serializing_none]
 #[derive(Debug, Clone, Serialize, Deserialize)]
+#[serde_with::skip_serializing_none]
 pub struct Record {
     /// Information from the ACMG secondary finding list.
     pub acmg_sf: Option<acmg_sf::Record>,
     /// Information from the ClinGen gene curation.
-    pub clingen: Option<Vec<clingen_gene::Record>>,
+    pub clingen: Option<clingen_gene::Gene>,
     /// Information from dbNSFP genes.
     pub dbnsfp: Option<dbnsfp_gene::Record>,
     /// Information from the gnomAD constraints database.
@@ -64,84 +64,161 @@ pub mod acmg_sf {
     }
 }
 
-/// Code for deserializing data from ClinGen CSV file.
+/// Code for deserializing data from ClinGen gene TSV file.
 pub mod clingen_gene {
-    use serde::{Deserialize, Deserializer, Serialize, Serializer};
-
-    /// A record from the ClinGen gene curation.
-    #[derive(Debug, Clone, Serialize, Deserialize)]
-    pub struct Record {
-        /// HGNC gene symbol.
-        pub gene_symbol: String,
-        /// HGNC gene ID.
-        pub hgnc_id: String,
-        /// URL in clinicalgenome.org knowledge base for gene.
-        pub gene_url: String,
-        /// ClinGen disease label.
-        pub disease_label: Option<String>,
-        /// MONDO disease ID.
-        pub mondo_id: Option<String>,
-        /// URL in clinicalgenome.org knowledge base for disease.
-        pub disease_url: Option<String>,
-        /// Annotated mode of inheritance.
-        #[serde(serialize_with = "serialize_vec", deserialize_with = "deserialize_vec")]
-        pub mode_of_inheritance: Vec<String>,
-        /// Dosage haploinsufficiency assertion.
-        pub dosage_haploinsufficiency_assertion: Option<String>,
-        /// Dosage triplosensitivity assertion.
-        pub dosage_triplosensitivity_assertion: Option<String>,
-        /// URL of dosage report in clinicalgenome.org knowledge base.
-        pub dosage_report: Option<String>,
-        /// Working group with dosage report (always "Dosage Working Group") or empty.
-        pub dosage_group: Option<String>,
-        /// Validity assertion classifications.
-        #[serde(serialize_with = "serialize_vec", deserialize_with = "deserialize_vec")]
-        pub gene_disease_validity_assertion_classifications: Vec<String>,
-        /// Validity assertion report URLs.
-        #[serde(serialize_with = "serialize_vec", deserialize_with = "deserialize_vec")]
-        pub gene_disease_validity_assertion_reports: Vec<String>,
-        /// Validity assertion Gene Curation Expert Panels.
-        #[serde(serialize_with = "serialize_vec", deserialize_with = "deserialize_vec")]
-        pub gene_disease_validity_gceps: Vec<String>,
-        /// Actionability assertion classifications.
-        #[serde(serialize_with = "serialize_vec", deserialize_with = "deserialize_vec")]
-        pub actionability_assertion_classifications: Vec<String>,
-        /// Actionability assertion report URLs.
-        #[serde(serialize_with = "serialize_vec", deserialize_with = "deserialize_vec")]
-        pub actionability_assertion_reports: Vec<String>,
-        /// Actionability assertion Gene Curation Expert Panels.
-        #[serde(serialize_with = "serialize_vec", deserialize_with = "deserialize_vec")]
-        pub actionability_groups: Vec<String>,
+    /// Dosage pathogenicity score.
+    #[derive(
+        Debug, Copy, Clone, PartialEq, Eq, PartialOrd, Ord, serde::Deserialize, serde::Serialize,
+    )]
+    #[serde(rename_all = "snake_case")]
+    pub enum Score {
+        /// Sufficient evidence for dosage pathogenicity (3)
+        SufficientEvidence,
+        /// Some evidence for dosage pathogenicity (2)
+        SomeEvidence,
+        /// Little evidence for dosage pathogenicity (1)
+        LittleEvidence,
+        /// No evidence for dosage pathogenicity (0)
+        NoEvidenceAvailable,
+        /// Gene associated with autosomal recessive phenotype (30)
+        GeneAssociatedWithRecessivePhenotype,
+        /// Dosage sensitivity unlikely (40)
+        DosageSensitivityUnlikely,
     }
 
-    /// Deserialize `Vec<String>` as " | "-separated string, empty is "".
-    ///
-    /// cf. https://stackoverflow.com/a/56384732/84349
-    fn deserialize_vec<'de, D>(deserializer: D) -> Result<Vec<String>, D::Error>
-    where
-        D: Deserializer<'de>,
-    {
-        let value: String = Deserialize::deserialize(deserializer)?;
-        if value.is_empty() {
-            Ok(Vec::new())
-        } else {
-            Ok(value
-                .split(" | ")
-                .map(|s| s.trim().to_string())
-                .filter(|s| !s.is_empty())
-                .collect())
+    impl TryFrom<Option<u32>> for Score {
+        type Error = anyhow::Error;
+
+        fn try_from(value: Option<u32>) -> Result<Self, Self::Error> {
+            match value {
+                None | Some(0) => Ok(Self::NoEvidenceAvailable),
+                Some(1) => Ok(Self::LittleEvidence),
+                Some(2) => Ok(Self::SomeEvidence),
+                Some(3) => Ok(Self::SufficientEvidence),
+                Some(30) => Ok(Self::GeneAssociatedWithRecessivePhenotype),
+                Some(40) => Ok(Self::DosageSensitivityUnlikely),
+                _ => anyhow::bail!("invalid score: {:?}", value),
+            }
         }
     }
 
-    /// Serialize `Vec<String>`, counterpart to `deserialize_vec`.
-    fn serialize_vec<S>(x: &Vec<String>, s: S) -> Result<S::Ok, S::Error>
+    impl From<Score> for crate::pbs::genes::ClingenDosageScore {
+        fn from(val: Score) -> Self {
+            use crate::pbs::genes::ClingenDosageScore::*;
+            match val {
+                Score::SufficientEvidence => SufficientEvidenceAvailable,
+                Score::SomeEvidence => SomeEvidenceAvailable,
+                Score::LittleEvidence => LittleEvidence,
+                Score::NoEvidenceAvailable => NoEvidenceAvailable,
+                Score::GeneAssociatedWithRecessivePhenotype => Recessive,
+                Score::DosageSensitivityUnlikely => Unlikely,
+            }
+        }
+    }
+
+    /// `ClinGen` dosage sensitivy gene record to be used in the app.
+    #[derive(Debug, Clone, PartialEq, serde::Deserialize, serde::Serialize)]
+    pub struct Gene {
+        /// Gene symbol.
+        #[serde(alias = "#Gene Symbol")]
+        pub gene_symbol: String,
+        /// NCBI gene ID.
+        #[serde(alias = "Gene ID")]
+        pub ncbi_gene_id: String,
+        /// Genomic location.
+        #[serde(alias = "Genomic Location")]
+        pub genomic_location: String,
+        /// Haploinsufficiency score.
+        #[serde(alias = "Haploinsufficiency Score", deserialize_with = "parse_score")]
+        pub haploinsufficiency_score: Option<u32>,
+        /// Triplosensitivity score.
+        #[serde(alias = "Triplosensitivity Score", deserialize_with = "parse_score")]
+        pub triplosensitivity_score: Option<u32>,
+        /// Haploinsufficiency Disease ID.
+        #[serde(alias = "Haploinsufficiency Disease ID")]
+        pub haploinsufficiency_disease_id: Option<String>,
+        /// Haploinsufficiency Disease ID.
+        #[serde(alias = "Triplosensitivity Disease ID")]
+        pub triplosensitivity_disease_id: Option<String>,
+    }
+
+    /// Helper for parsing the scores which may have interesting values.
+    fn parse_score<'de, D>(d: D) -> Result<Option<u32>, D::Error>
     where
-        S: Serializer,
+        D: serde::Deserializer<'de>,
     {
-        if x.is_empty() {
-            s.serialize_str("")
+        let tmp: String = serde::Deserialize::deserialize(d)?;
+        if tmp.is_empty() || tmp == "Not yet evaluated" || tmp == "-1" {
+            Ok(None)
         } else {
-            s.serialize_str(&x.join(" | "))
+            Ok(Some(tmp.parse().map_err(serde::de::Error::custom)?))
+        }
+    }
+
+    impl TryInto<bio::bio_types::genome::Interval> for Gene {
+        type Error = anyhow::Error;
+
+        fn try_into(self) -> Result<bio::bio_types::genome::Interval, Self::Error> {
+            genomic_location_to_interval(&self.genomic_location)
+        }
+    }
+
+    /// Helper to convert genomic location string into an interval.
+    fn genomic_location_to_interval(
+        genomic_location: &str,
+    ) -> Result<bio::bio_types::genome::Interval, anyhow::Error> {
+        let mut parts = genomic_location.split(':');
+        let chrom = parts.next().ok_or_else(|| {
+            anyhow::anyhow!(
+                "could not parse chromosome from genomic location: {}",
+                genomic_location
+            )
+        })?;
+        let mut parts = parts
+            .next()
+            .ok_or_else(|| anyhow::anyhow!("could not parse region {}", genomic_location))?
+            .split('-');
+        let begin = parts
+            .next()
+            .unwrap()
+            .parse::<u64>()
+            .map_err(|e| anyhow::anyhow!("could not parse start position from: {}", e))?
+            .saturating_sub(1);
+        let end = parts
+            .next()
+            .unwrap()
+            .parse::<u64>()
+            .map_err(|e| anyhow::anyhow!("could not parse end position from: {}", e))?;
+        Ok(bio::bio_types::genome::Interval::new(
+            chrom.to_string(),
+            begin..end,
+        ))
+    }
+
+    /// `ClinGen` dosage sensitivy region record to be used in the app.
+    #[derive(Debug, Clone, PartialEq, serde::Deserialize, serde::Serialize)]
+    pub struct Region {
+        /// ISCA ID
+        pub isca_id: String,
+        /// ISCA Region Name
+        pub isca_region_name: String,
+        /// Genomic locaion.
+        pub genomic_location: String,
+        /// Haploinsufficiency score.
+        pub haploinsufficiency_score: Score,
+        /// Triplosensitivity score.
+        pub triplosensitivity_score: Score,
+        /// Haploinsufficiency Disease ID.
+        pub haploinsufficiency_disease_id: Option<String>,
+        /// Haploinsufficiency Disease ID.
+        pub triplosensitivity_disease_id: Option<String>,
+    }
+
+    impl TryInto<bio::bio_types::genome::Interval> for Region {
+        type Error = anyhow::Error;
+
+        fn try_into(self) -> Result<bio::bio_types::genome::Interval, Self::Error> {
+            genomic_location_to_interval(&self.genomic_location)
         }
     }
 }
@@ -2010,14 +2087,17 @@ mod tests {
 
     #[test]
     fn deserialize_clingen_record() -> Result<(), anyhow::Error> {
-        let path_csv = "tests/genes/clingen/clingen.csv";
-        let str_csv = std::fs::read_to_string(path_csv)?;
+        let path_tsv = "tests/genes/clingen/ClinGen_gene_curation_list_GRCh37.tsv";
+        let str_tsv = std::fs::read_to_string(path_tsv)?;
+        let str_tsv = str_tsv.lines().collect::<Vec<_>>()[5..].join("\n");
         let mut rdr = csv::ReaderBuilder::new()
             .has_headers(true)
-            .from_reader(str_csv.as_bytes());
+            .delimiter(b'\t')
+            .flexible(true)
+            .from_reader(str_tsv.as_bytes());
         let records = rdr
             .deserialize()
-            .collect::<Result<Vec<clingen_gene::Record>, csv::Error>>()?;
+            .collect::<Result<Vec<clingen_gene::Gene>, csv::Error>>()?;
         insta::assert_yaml_snapshot!(records);
 
         Ok(())
