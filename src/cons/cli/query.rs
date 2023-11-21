@@ -4,10 +4,7 @@ use std::sync::Arc;
 
 use prost::Message;
 
-use crate::{
-    common::{self, cli::extract_chrom, keys, spdi},
-    cons,
-};
+use crate::common::{self, cli::extract_chrom, keys, spdi};
 
 /// Command line arguments for `cons query` sub command.
 #[derive(clap::Parser, Debug, Clone)]
@@ -100,7 +97,7 @@ pub fn open_rocksdb_from_args(
 fn print_values(
     out_writer: &mut Box<dyn std::io::Write>,
     output_format: common::cli::OutputFormat,
-    record: &cons::pbs::Record,
+    record: &crate::pbs::cons::Record,
 ) -> Result<(), anyhow::Error> {
     match output_format {
         common::cli::OutputFormat::Jsonl => {
@@ -184,7 +181,7 @@ pub fn run(common: &common::cli::Args, args: &Args) -> Result<(), anyhow::Error>
             }
 
             // Decode the record list and iterate it.
-            let record_list = cons::pbs::RecordList::decode(value)?;
+            let record_list = crate::pbs::cons::RecordList::decode(value)?;
             for record in &record_list.records {
                 // Skip record if end of iterator is before start of range.  This can happen as we
                 // jump two base pairs before the start position as alignment columns span one codon.

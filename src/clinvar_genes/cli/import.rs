@@ -5,10 +5,10 @@ use std::{collections::HashSet, io::BufRead, sync::Arc};
 use clap::Parser;
 use prost::Message;
 
-use crate::pbs::annonars::clinvar::v1::minimal::{
+use crate::pbs::clinvar::minimal::{
     ClinicalSignificance, Record, ReferenceAssertion, ReviewStatus,
 };
-use crate::pbs::annonars::clinvar::v1::per_gene::{
+use crate::pbs::clinvar::per_gene::{
     ClinvarPerGeneRecord, CoarseClinicalSignificance, GeneFreqRecordCounts, GeneImpactRecordCounts,
     GeneVariantsForRelease, Impact,
 };

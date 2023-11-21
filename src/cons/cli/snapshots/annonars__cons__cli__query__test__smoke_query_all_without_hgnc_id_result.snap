@@ -2,10 +2,10 @@
 source: src/cons/cli/query.rs
 expression: "&out_data"
 ---
-{"chromosome":"13","start":95248334,"stop":95248336,"hgnc_id":"HGNC:20324","enst_id":"ENST00000261296","exon_num":1,"exon_count":12,"alignment":"RRRRRRRRRRRRRRRR-RRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRR--RR-RRR---RRRR-R--RRR----------------"}
-{"chromosome":"13","start":95248337,"stop":95248339,"hgnc_id":"HGNC:20324","enst_id":"ENST00000261296","exon_num":1,"exon_count":12,"alignment":"KKKKKKKKKKKKKKKK-KKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKK--KK-KKK---KKKK-K--KKK----------------"}
-{"chromosome":"13","start":95248340,"stop":95248342,"hgnc_id":"HGNC:20324","enst_id":"ENST00000261296","exon_num":1,"exon_count":12,"alignment":"AAAAAAAAAAAAAAAA-AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAADAAAAAAAAA--EE-EEE---EEED-A--ASS----------------"}
-{"chromosome":"13","start":95248343,"stop":95248345,"hgnc_id":"HGNC:20324","enst_id":"ENST00000261296","exon_num":1,"exon_count":12,"alignment":"FFFFFFFFFFFFFFFY-YFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF--FF-FFF----LLF-F---FF----------------"}
-{"chromosome":"13","start":95248346,"stop":95248348,"hgnc_id":"HGNC:20324","enst_id":"ENST00000261296","exon_num":1,"exon_count":12,"alignment":"GGGGSGGGGGDGGS-S-GSSSSSSSSSSSGGSSSSSSSSSSSSGGCSSGSRHNDNNNTGGGG--------------------GG----------------"}
-{"chromosome":"13","start":95248349,"stop":95248351,"hgnc_id":"HGNC:20324","enst_id":"ENST00000261296","exon_num":1,"exon_count":12,"alignment":"GGGGGGGGGGGSSGGG-GGGGGGGCGNSSNNDDDDSRGSSSSSSSSSSRSSGGGSGSSSSSS--------------------R-----------------"}
+{"chrom":"13","start":95248334,"stop":95248336,"hgncId":"HGNC:20324","enstId":"ENST00000261296","exonNum":1,"exonCount":12,"alignment":"RRRRRRRRRRRRRRRR-RRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRR--RR-RRR---RRRR-R--RRR----------------"}
+{"chrom":"13","start":95248337,"stop":95248339,"hgncId":"HGNC:20324","enstId":"ENST00000261296","exonNum":1,"exonCount":12,"alignment":"KKKKKKKKKKKKKKKK-KKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKK--KK-KKK---KKKK-K--KKK----------------"}
+{"chrom":"13","start":95248340,"stop":95248342,"hgncId":"HGNC:20324","enstId":"ENST00000261296","exonNum":1,"exonCount":12,"alignment":"AAAAAAAAAAAAAAAA-AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAADAAAAAAAAA--EE-EEE---EEED-A--ASS----------------"}
+{"chrom":"13","start":95248343,"stop":95248345,"hgncId":"HGNC:20324","enstId":"ENST00000261296","exonNum":1,"exonCount":12,"alignment":"FFFFFFFFFFFFFFFY-YFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF--FF-FFF----LLF-F---FF----------------"}
+{"chrom":"13","start":95248346,"stop":95248348,"hgncId":"HGNC:20324","enstId":"ENST00000261296","exonNum":1,"exonCount":12,"alignment":"GGGGSGGGGGDGGS-S-GSSSSSSSSSSSGGSSSSSSSSSSSSGGCSSGSRHNDNNNTGGGG--------------------GG----------------"}
+{"chrom":"13","start":95248349,"stop":95248351,"hgncId":"HGNC:20324","enstId":"ENST00000261296","exonNum":1,"exonCount":12,"alignment":"GGGGGGGGGGGSSGGG-GGGGGGGCGNSSNNDDDDSRGSSSSSSSSSSRSSGGGSGSSSSSS--------------------R-----------------"}
 

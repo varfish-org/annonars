@@ -2,8 +2,8 @@
 source: src/dbsnp/cli/query.rs
 expression: "&out_data"
 ---
-{"chrom":"17","pos":41267746,"ref_allele":"C","alt_allele":"A","rs_id":80357446}
-{"chrom":"17","pos":41267746,"ref_allele":"C","alt_allele":"CA","rs_id":431825385}
-{"chrom":"17","pos":41267746,"ref_allele":"C","alt_allele":"T","rs_id":80357446}
-{"chrom":"17","pos":41267746,"ref_allele":"CA","alt_allele":"C","rs_id":80357951}
+{"chrom":"17","pos":41267746,"refAllele":"C","altAllele":"A","rsId":80357446}
+{"chrom":"17","pos":41267746,"refAllele":"C","altAllele":"CA","rsId":431825385}
+{"chrom":"17","pos":41267746,"refAllele":"C","altAllele":"T","rsId":80357446}
+{"chrom":"17","pos":41267746,"refAllele":"CA","altAllele":"C","rsId":80357951}
 

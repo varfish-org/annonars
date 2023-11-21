@@ -1,0 +1,2133 @@
+---
+source: src/pbs/gnomad/gnomad2.rs
+expression: records
+---
+- chrom: "1"
+  pos: 55505599
+  refAllele: C
+  altAllele: G
+  vep:
+    - allele: G
+      consequence: missense_variant
+      impact: MODERATE
+      symbol: PCSK9
+      gene: ENSG00000169174
+      featureType: Transcript
+      feature: ENST00000302118
+      featureBiotype: protein_coding
+      exon: 1/12
+      hgvsc: "ENST00000302118.5:c.89C>G"
+      hgvsp: "ENSP00000303208.5:p.Ala30Gly"
+      cdnaPosition: "379"
+      cdsPosition: "89"
+      proteinPosition: "30"
+      aminoAcids: A/G
+      codons: gCg/gGg
+      dbsnpId: "1"
+      strand: "1"
+      variantClass: SNV
+      minimised: "1"
+      symbolSource: HGNC
+      hgncId: "20001"
+      canonical: true
+      ccds: CCDS603.1
+      ensp: ENSP00000303208
+      swissprot: Q8NBP7
+      uniparc: UPI00001615E1
+      genePheno: "1"
+      sift:
+        prediction: deleterious_low_confidence
+        score: 0.03
+      polyphen:
+        prediction: possibly_damaging
+        score: 0.583
+      domains:
+        - id: SignalP-noTM
+          source: Cleavage_site_(Signalp)
+        - id: PTHR10795
+          source: hmmpanther
+        - id: PTHR10795
+          source: hmmpanther
+      lofInfo: "MUTANT_DONOR_MES:8.16693067332728&DE_NOVO_DONOR_MES:-1.61109392005567&DE_NOVO_DONOR_MES_POS:-122&EXON_END:55505717&INTRON_START:55505718&DE_NOVO_DONOR_PROB:0.146539915246404&INTRON_END:55509515&DE_NOVO_DONOR_POS:-119&EXON_START:55505221"
+    - allele: G
+      consequence: missense_variant
+      impact: MODERATE
+      symbol: PCSK9
+      gene: ENSG00000169174
+      featureType: Transcript
+      feature: ENST00000452118
+      featureBiotype: protein_coding
+      exon: 1/6
+      hgvsc: "ENST00000452118.2:c.89C>G"
+      hgvsp: "ENSP00000401598.2:p.Ala30Gly"
+      cdnaPosition: "169"
+      cdsPosition: "89"
+      proteinPosition: "30"
+      aminoAcids: A/G
+      codons: gCg/gGg
+      dbsnpId: "1"
+      strand: "1"
+      variantClass: SNV
+      minimised: "1"
+      symbolSource: HGNC
+      hgncId: "20001"
+      ensp: ENSP00000401598
+      trembl: B4DEZ9
+      uniparc: UPI00017A6F55
+      genePheno: "1"
+      sift:
+        prediction: deleterious_low_confidence
+        score: 0.02
+      polyphen:
+        prediction: possibly_damaging
+        score: 0.655
+      domains:
+        - id: SignalP-noTM
+          source: Cleavage_site_(Signalp)
+        - id: PTHR10795
+          source: hmmpanther
+      lofInfo: "DE_NOVO_DONOR_MES_POS:-122&DE_NOVO_DONOR_MES:-1.61109392005567&MUTANT_DONOR_MES:8.16693067332728&INTRON_END:55509515&DE_NOVO_DONOR_POS:-119&EXON_END:55505717&DE_NOVO_DONOR_PROB:0.146539915246404&INTRON_START:55505718&EXON_START:55505431"
+    - allele: G
+      consequence: upstream_gene_variant
+      impact: MODIFIER
+      symbol: PCSK9
+      gene: ENSG00000169174
+      featureType: Transcript
+      feature: ENST00000543384
+      featureBiotype: protein_coding
+      dbsnpId: "1"
+      distance: "296"
+      strand: "1"
+      variantClass: SNV
+      minimised: "1"
+      symbolSource: HGNC
+      hgncId: "20001"
+      ensp: ENSP00000441859
+      trembl: F5GWF0
+      uniparc: UPI000206501F
+      genePheno: "1"
+    - allele: G
+      consequence: regulatory_region_variant
+      impact: MODIFIER
+      featureType: RegulatoryFeature
+      feature: ENSR00001037993
+      featureBiotype: promoter
+      dbsnpId: "1"
+      variantClass: SNV
+      minimised: "1"
+  alleleCounts:
+    - byPopulation:
+        - population: afr
+          counts:
+            overall:
+              an: 8706
+            xx:
+              an: 3678
+            xy:
+              an: 5028
+          faf95: 0
+          faf99: 0
+        - population: amr
+          counts:
+            overall:
+              an: 848
+            xx:
+              an: 414
+            xy:
+              an: 434
+          faf95: 0
+          faf99: 0
+        - population: asj
+          counts:
+            overall:
+              an: 290
+            xx:
+              an: 80
+            xy:
+              an: 210
+        - population: eas
+          counts:
+            overall:
+              an: 1558
+            xx:
+              an: 538
+            xy:
+              an: 1020
+          faf95: 0
+          faf99: 0
+        - population: eas_jpn
+          counts: {}
+        - population: eas_oea
+          counts: {}
+        - population: eas_kor
+          counts: {}
+        - population: fin
+          counts:
+            overall:
+              an: 3476
+            xx:
+              an: 1846
+            xy:
+              an: 1630
+        - population: nfe
+          counts:
+            overall:
+              ac: 1
+              an: 15428
+              af: 0.0000648172
+            xx:
+              ac: 1
+              an: 6806
+              af: 0.000146929
+            xy:
+              an: 8622
+          faf95: 0
+          faf99: 0
+        - population: nfe_bgr
+          counts: {}
+        - population: nfe_est
+          counts:
+            overall:
+              an: 4592
+        - population: nfe_nwe
+          counts:
+            overall:
+              an: 8594
+        - population: nfe_onf
+          counts:
+            overall:
+              an: 2136
+        - population: nfe_seu
+          counts:
+            overall:
+              ac: 1
+              an: 106
+              af: 0.00943396
+        - population: nfe_swe
+          counts: {}
+        - population: oth
+          counts:
+            overall:
+              an: 1086
+            xx:
+              an: 560
+            xy:
+              an: 526
+        - population: sas
+          counts: {}
+      bySex:
+        overall:
+          ac: 1
+          an: 31392
+          af: 0.0000318552
+        xx:
+          ac: 1
+          an: 13922
+          af: 0.0000718288
+        xy:
+          an: 17470
+      raw:
+        ac: 1
+        an: 31416
+        af: 0.0000318309
+      popmax: nfe
+      afPopmax: 0.0000648172
+      acPopmax: 1
+      anPopmax: 15428
+      nhomaltPopmax: 0
+    - cohort: controls
+      byPopulation:
+        - population: afr
+          counts:
+            overall:
+              an: 2570
+            xx:
+              an: 1164
+            xy:
+              an: 1406
+          faf95: 0
+          faf99: 0
+        - population: amr
+          counts:
+            overall:
+              an: 246
+            xx:
+              an: 120
+            xy:
+              an: 126
+          faf95: 0
+          faf99: 0
+        - population: asj
+          counts:
+            overall:
+              an: 38
+            xx:
+              an: 24
+            xy:
+              an: 14
+        - population: eas
+          counts:
+            overall:
+              an: 914
+            xx:
+              an: 342
+            xy:
+              an: 572
+          faf95: 0
+          faf99: 0
+        - population: eas_jpn
+          counts: {}
+        - population: eas_oea
+          counts: {}
+        - population: eas_kor
+          counts: {}
+        - population: fin
+          counts:
+            overall:
+              an: 1162
+            xx:
+              an: 556
+            xy:
+              an: 606
+        - population: nfe
+          counts:
+            overall:
+              ac: 1
+              an: 5518
+              af: 0.000181225
+            xx:
+              ac: 1
+              an: 2576
+              af: 0.000388199
+            xy:
+              an: 2942
+          faf95: 0
+          faf99: 0
+        - population: nfe_bgr
+          counts: {}
+        - population: nfe_est
+          counts:
+            overall:
+              an: 4104
+        - population: nfe_nwe
+          counts:
+            overall:
+              an: 920
+        - population: nfe_onf
+          counts:
+            overall:
+              an: 438
+        - population: nfe_seu
+          counts:
+            overall:
+              ac: 1
+              an: 56
+              af: 0.0178571
+        - population: nfe_swe
+          counts: {}
+        - population: oth
+          counts:
+            overall:
+              an: 424
+            xx:
+              an: 226
+            xy:
+              an: 198
+        - population: sas
+          counts: {}
+      bySex:
+        overall:
+          ac: 1
+          an: 10872
+          af: 0.0000919794
+        xx:
+          ac: 1
+          an: 5008
+          af: 0.000199681
+        xy:
+          an: 5864
+      raw:
+        ac: 1
+        an: 10884
+        af: 0.000091878
+      popmax: nfe
+      afPopmax: 0.000181225
+      acPopmax: 1
+      anPopmax: 5518
+      nhomaltPopmax: 0
+    - cohort: non_cancer
+      byPopulation:
+        - population: afr
+          counts: {}
+          faf95: 0
+          faf99: 0
+        - population: amr
+          counts: {}
+          faf95: 0
+          faf99: 0
+        - population: asj
+          counts: {}
+        - population: eas
+          counts: {}
+          faf95: 0
+          faf99: 0
+        - population: eas_jpn
+          counts: {}
+        - population: eas_oea
+          counts: {}
+        - population: eas_kor
+          counts: {}
+        - population: fin
+          counts: {}
+        - population: nfe
+          counts: {}
+          faf95: 0
+          faf99: 0
+        - population: nfe_bgr
+          counts: {}
+        - population: nfe_est
+          counts: {}
+        - population: nfe_nwe
+          counts: {}
+        - population: nfe_onf
+          counts: {}
+        - population: nfe_seu
+          counts: {}
+        - population: nfe_swe
+          counts: {}
+        - population: oth
+          counts: {}
+        - population: sas
+          counts: {}
+      bySex: {}
+    - cohort: non_neuro
+      byPopulation:
+        - population: afr
+          counts:
+            overall:
+              an: 3384
+            xx:
+              an: 1778
+            xy:
+              an: 1606
+          faf95: 0
+          faf99: 0
+        - population: amr
+          counts:
+            overall:
+              an: 554
+            xx:
+              an: 310
+            xy:
+              an: 244
+          faf95: 0
+          faf99: 0
+        - population: asj
+          counts:
+            overall:
+              an: 246
+            xx:
+              an: 60
+            xy:
+              an: 186
+        - population: eas
+          counts:
+            overall:
+              an: 1558
+            xx:
+              an: 538
+            xy:
+              an: 1020
+          faf95: 0
+          faf99: 0
+        - population: eas_jpn
+          counts: {}
+        - population: eas_oea
+          counts: {}
+        - population: eas_kor
+          counts: {}
+        - population: fin
+          counts:
+            overall:
+              an: 1164
+            xx:
+              an: 558
+            xy:
+              an: 606
+        - population: nfe
+          counts:
+            overall:
+              ac: 1
+              an: 13618
+              af: 0.0000734322
+            xx:
+              ac: 1
+              an: 5982
+              af: 0.000167168
+            xy:
+              an: 7636
+          faf95: 0
+          faf99: 0
+        - population: nfe_bgr
+          counts: {}
+        - population: nfe_est
+          counts:
+            overall:
+              an: 4146
+        - population: nfe_nwe
+          counts:
+            overall:
+              an: 7698
+        - population: nfe_onf
+          counts:
+            overall:
+              an: 1720
+        - population: nfe_seu
+          counts:
+            overall:
+              ac: 1
+              an: 54
+              af: 0.0185185
+        - population: nfe_swe
+          counts: {}
+        - population: oth
+          counts:
+            overall:
+              an: 734
+            xx:
+              an: 364
+            xy:
+              an: 370
+        - population: sas
+          counts: {}
+      bySex:
+        overall:
+          ac: 1
+          an: 21258
+          af: 0.0000470411
+        xx:
+          ac: 1
+          an: 9590
+          af: 0.000104275
+        xy:
+          an: 11668
+      raw:
+        ac: 1
+        an: 21272
+        af: 0.0000470102
+      popmax: nfe
+      afPopmax: 0.0000734322
+      acPopmax: 1
+      anPopmax: 13618
+      nhomaltPopmax: 0
+    - cohort: non_topmed
+      byPopulation:
+        - population: afr
+          counts:
+            overall:
+              an: 8544
+            xx:
+              an: 3610
+            xy:
+              an: 4934
+          faf95: 0
+          faf99: 0
+        - population: amr
+          counts:
+            overall:
+              an: 810
+            xx:
+              an: 394
+            xy:
+              an: 416
+          faf95: 0
+          faf99: 0
+        - population: asj
+          counts:
+            overall:
+              an: 138
+            xx:
+              an: 62
+            xy:
+              an: 76
+        - population: eas
+          counts:
+            overall:
+              an: 1520
+            xx:
+              an: 520
+            xy:
+              an: 1000
+          faf95: 0
+          faf99: 0
+        - population: eas_jpn
+          counts: {}
+        - population: eas_oea
+          counts: {}
+        - population: eas_kor
+          counts: {}
+        - population: fin
+          counts:
+            overall:
+              an: 3476
+            xx:
+              an: 1846
+            xy:
+              an: 1630
+        - population: nfe
+          counts:
+            overall:
+              ac: 1
+              an: 11088
+              af: 0.0000901876
+            xx:
+              ac: 1
+              an: 5610
+              af: 0.000178253
+            xy:
+              an: 5478
+          faf95: 0
+          faf99: 0
+        - population: nfe_bgr
+          counts: {}
+        - population: nfe_est
+          counts:
+            overall:
+              an: 4570
+        - population: nfe_nwe
+          counts:
+            overall:
+              an: 4898
+        - population: nfe_onf
+          counts:
+            overall:
+              an: 1514
+        - population: nfe_seu
+          counts:
+            overall:
+              ac: 1
+              an: 106
+              af: 0.00943396
+        - population: nfe_swe
+          counts: {}
+        - population: oth
+          counts:
+            overall:
+              an: 1010
+            xx:
+              an: 544
+            xy:
+              an: 466
+        - population: sas
+          counts: {}
+      bySex:
+        overall:
+          ac: 1
+          an: 26586
+          af: 0.0000376138
+        xx:
+          ac: 1
+          an: 12586
+          af: 0.0000794534
+        xy:
+          an: 14000
+      raw:
+        ac: 1
+        an: 26608
+        af: 0.0000375827
+      popmax: nfe
+      afPopmax: 0.0000901876
+      acPopmax: 1
+      anPopmax: 11088
+      nhomaltPopmax: 0
+  rfInfo:
+    rfTpProbability: 0.77474
+  variantInfo:
+    variantType: snv
+    alleleType: snv
+    nAltAlleles: 1
+  qualityInfo:
+    fs: 1.515
+    inbreedingCoeff: 0.0198
+    mq: 59.95
+    mqRankSum: -1.385
+    qd: 12.71
+    readPosRankSum: 0.308
+    vqsrNegativeTrainSite: true
+    baseQRankSum: 2.21
+    clippingRankSum: 1.33
+    sor: 1.022
+    dp: 696568
+    vqslod: -2.305
+    vqsrCulprit: MQ
+    pabMax: 1
+  ageInfo:
+    ageHistHomNSmaller: 0
+    ageHistHomNLarger: 0
+    ageHistHetNSmaller: 0
+    ageHistHetNLarger: 0
+  depthInfo:
+    dpHistAllNLarger: 2
+    dpHistAltNLarger: 0
+- chrom: "1"
+  pos: 55516888
+  refAllele: G
+  altAllele: GA
+  vep:
+    - allele: A
+      consequence: intron_variant
+      impact: MODIFIER
+      symbol: PCSK9
+      gene: ENSG00000169174
+      featureType: Transcript
+      feature: ENST00000302118
+      featureBiotype: protein_coding
+      intron: 3/11
+      hgvsc: "ENST00000302118.5:c.524-1063_524-1062insA"
+      existingVariation: rs527413419
+      dbsnpId: "1"
+      strand: "1"
+      variantClass: insertion
+      minimised: "1"
+      symbolSource: HGNC
+      hgncId: "20001"
+      canonical: true
+      ccds: CCDS603.1
+      ensp: ENSP00000303208
+      swissprot: Q8NBP7
+      uniparc: UPI00001615E1
+      genePheno: "1"
+      gmaf: 0.0032
+      amrMaf: 0.0113
+      easMaf: 0.0014
+      eurMaf: 0
+      sasMaf: 0
+      aaMaf: 0
+    - allele: A
+      consequence: frameshift_variant
+      impact: HIGH
+      symbol: PCSK9
+      gene: ENSG00000169174
+      featureType: Transcript
+      feature: ENST00000452118
+      featureBiotype: protein_coding
+      exon: 4/6
+      hgvsc: "ENST00000452118.2:c.547_548insA"
+      hgvsp: "ENSP00000401598.2:p.Gly183GlufsTer23"
+      cdnaPosition: 627-628
+      cdsPosition: 547-548
+      proteinPosition: "183"
+      aminoAcids: G/EX
+      codons: ggc/gAgc
+      existingVariation: rs527413419
+      dbsnpId: "1"
+      strand: "1"
+      variantClass: insertion
+      minimised: "1"
+      symbolSource: HGNC
+      hgncId: "20001"
+      ensp: ENSP00000401598
+      trembl: B4DEZ9
+      uniparc: UPI00017A6F55
+      genePheno: "1"
+      gmaf: 0.0032
+      amrMaf: 0.0113
+      easMaf: 0.0014
+      eurMaf: 0
+      sasMaf: 0
+      aaMaf: 0
+      lof: HC
+      lofInfo: "GERP_DIST:364.1444&BP_DIST:304&PERCENTILE:0.885113268608414&DIST_FROM_LAST_EXON:210&50_BP_RULE:PASS&PHYLOCSF_TOO_SHORT"
+    - allele: A
+      consequence: non_coding_transcript_exon_variant&non_coding_transcript_variant
+      impact: MODIFIER
+      symbol: PCSK9
+      gene: ENSG00000169174
+      featureType: Transcript
+      feature: ENST00000490692
+      featureBiotype: processed_transcript
+      exon: 1/8
+      hgvsc: "ENST00000490692.1:n.282_283insA"
+      cdnaPosition: 282-283
+      existingVariation: rs527413419
+      dbsnpId: "1"
+      strand: "1"
+      variantClass: insertion
+      minimised: "1"
+      symbolSource: HGNC
+      hgncId: "20001"
+      genePheno: "1"
+      gmaf: 0.0032
+      amrMaf: 0.0113
+      easMaf: 0.0014
+      eurMaf: 0
+      sasMaf: 0
+      aaMaf: 0
+    - allele: A
+      consequence: intron_variant
+      impact: MODIFIER
+      symbol: PCSK9
+      gene: ENSG00000169174
+      featureType: Transcript
+      feature: ENST00000543384
+      featureBiotype: protein_coding
+      intron: 1/9
+      hgvsc: "ENST00000543384.1:c.-77-1063_-77-1062insA"
+      existingVariation: rs527413419
+      dbsnpId: "1"
+      strand: "1"
+      variantClass: insertion
+      minimised: "1"
+      symbolSource: HGNC
+      hgncId: "20001"
+      ensp: ENSP00000441859
+      trembl: F5GWF0
+      uniparc: UPI000206501F
+      genePheno: "1"
+      gmaf: 0.0032
+      amrMaf: 0.0113
+      easMaf: 0.0014
+      eurMaf: 0
+      sasMaf: 0
+      aaMaf: 0
+  alleleCounts:
+    - byPopulation:
+        - population: afr
+          counts:
+            overall:
+              ac: 154
+              an: 8702
+              af: 0.0176971
+            xx:
+              ac: 67
+              an: 3674
+              af: 0.0182363
+            xy:
+              ac: 87
+              an: 5028
+              af: 0.0173031
+          faf95: 0.0154185
+          faf99: 0.0154183
+        - population: amr
+          counts:
+            overall:
+              an: 848
+            xx:
+              an: 414
+            xy:
+              an: 434
+          faf95: 0
+          faf99: 0
+        - population: asj
+          counts:
+            overall:
+              an: 290
+            xx:
+              an: 80
+            xy:
+              an: 210
+        - population: eas
+          counts:
+            overall:
+              an: 1560
+            xx:
+              an: 538
+            xy:
+              an: 1022
+          faf95: 0
+          faf99: 0
+        - population: eas_jpn
+          counts: {}
+        - population: eas_oea
+          counts: {}
+        - population: eas_kor
+          counts: {}
+        - population: fin
+          counts:
+            overall:
+              an: 3476
+            xx:
+              an: 1846
+            xy:
+              an: 1630
+        - population: nfe
+          counts:
+            overall:
+              ac: 1
+              an: 15420
+              af: 0.0000648508
+            xx:
+              an: 6800
+            xy:
+              ac: 1
+              an: 8620
+              af: 0.000116009
+          faf95: 0
+          faf99: 0
+        - population: nfe_bgr
+          counts: {}
+        - population: nfe_est
+          counts:
+            overall:
+              an: 4584
+        - population: nfe_nwe
+          counts:
+            overall:
+              ac: 1
+              an: 8592
+              af: 0.000116387
+        - population: nfe_onf
+          counts:
+            overall:
+              an: 2138
+        - population: nfe_seu
+          counts:
+            overall:
+              an: 106
+        - population: nfe_swe
+          counts: {}
+        - population: oth
+          counts:
+            overall:
+              ac: 1
+              an: 1086
+              af: 0.00092081
+            xx:
+              an: 560
+            xy:
+              ac: 1
+              an: 526
+              af: 0.00190114
+        - population: sas
+          counts: {}
+      bySex:
+        overall:
+          ac: 156
+          an: 31382
+          af: 0.004971
+        xx:
+          ac: 67
+          an: 13912
+          af: 0.00481599
+        xy:
+          ac: 89
+          an: 17470
+          af: 0.00509445
+      raw:
+        ac: 156
+        an: 31416
+        af: 0.00496562
+      popmax: afr
+      afPopmax: 0.0176971
+      acPopmax: 154
+      anPopmax: 8702
+      nhomaltPopmax: 0
+    - cohort: controls
+      byPopulation:
+        - population: afr
+          counts:
+            overall:
+              ac: 40
+              an: 2572
+              af: 0.0155521
+            xx:
+              ac: 25
+              an: 1164
+              af: 0.0214777
+            xy:
+              ac: 15
+              an: 1408
+              af: 0.0106534
+          faf95: 0.0154185
+          faf99: 0.0154183
+        - population: amr
+          counts:
+            overall:
+              an: 246
+            xx:
+              an: 120
+            xy:
+              an: 126
+          faf95: 0
+          faf99: 0
+        - population: asj
+          counts:
+            overall:
+              an: 38
+            xx:
+              an: 24
+            xy:
+              an: 14
+        - population: eas
+          counts:
+            overall:
+              an: 916
+            xx:
+              an: 342
+            xy:
+              an: 574
+          faf95: 0
+          faf99: 0
+        - population: eas_jpn
+          counts: {}
+        - population: eas_oea
+          counts: {}
+        - population: eas_kor
+          counts: {}
+        - population: fin
+          counts:
+            overall:
+              an: 1162
+            xx:
+              an: 556
+            xy:
+              an: 606
+        - population: nfe
+          counts:
+            overall:
+              an: 5514
+            xx:
+              an: 2576
+            xy:
+              an: 2938
+          faf95: 0
+          faf99: 0
+        - population: nfe_bgr
+          counts: {}
+        - population: nfe_est
+          counts:
+            overall:
+              an: 4096
+        - population: nfe_nwe
+          counts:
+            overall:
+              an: 922
+        - population: nfe_onf
+          counts:
+            overall:
+              an: 440
+        - population: nfe_seu
+          counts:
+            overall:
+              an: 56
+        - population: nfe_swe
+          counts: {}
+        - population: oth
+          counts:
+            overall:
+              an: 422
+            xx:
+              an: 224
+            xy:
+              an: 198
+        - population: sas
+          counts: {}
+      bySex:
+        overall:
+          ac: 40
+          an: 10870
+          af: 0.00367985
+        xx:
+          ac: 25
+          an: 5006
+          af: 0.00499401
+        xy:
+          ac: 15
+          an: 5864
+          af: 0.00255798
+      raw:
+        ac: 40
+        an: 10884
+        af: 0.00367512
+      popmax: afr
+      afPopmax: 0.0155521
+      acPopmax: 40
+      anPopmax: 2572
+      nhomaltPopmax: 0
+    - cohort: non_cancer
+      byPopulation:
+        - population: afr
+          counts: {}
+          faf95: 0.0154185
+          faf99: 0.0154183
+        - population: amr
+          counts: {}
+          faf95: 0
+          faf99: 0
+        - population: asj
+          counts: {}
+        - population: eas
+          counts: {}
+          faf95: 0
+          faf99: 0
+        - population: eas_jpn
+          counts: {}
+        - population: eas_oea
+          counts: {}
+        - population: eas_kor
+          counts: {}
+        - population: fin
+          counts: {}
+        - population: nfe
+          counts: {}
+          faf95: 0
+          faf99: 0
+        - population: nfe_bgr
+          counts: {}
+        - population: nfe_est
+          counts: {}
+        - population: nfe_nwe
+          counts: {}
+        - population: nfe_onf
+          counts: {}
+        - population: nfe_seu
+          counts: {}
+        - population: nfe_swe
+          counts: {}
+        - population: oth
+          counts: {}
+        - population: sas
+          counts: {}
+      bySex: {}
+    - cohort: non_neuro
+      byPopulation:
+        - population: afr
+          counts:
+            overall:
+              ac: 48
+              an: 3386
+              af: 0.014176
+            xx:
+              ac: 31
+              an: 1778
+              af: 0.0174353
+            xy:
+              ac: 17
+              an: 1608
+              af: 0.0105721
+          faf95: 0.0154185
+          faf99: 0.0154183
+        - population: amr
+          counts:
+            overall:
+              an: 554
+            xx:
+              an: 310
+            xy:
+              an: 244
+          faf95: 0
+          faf99: 0
+        - population: asj
+          counts:
+            overall:
+              an: 246
+            xx:
+              an: 60
+            xy:
+              an: 186
+        - population: eas
+          counts:
+            overall:
+              an: 1560
+            xx:
+              an: 538
+            xy:
+              an: 1022
+          faf95: 0
+          faf99: 0
+        - population: eas_jpn
+          counts: {}
+        - population: eas_oea
+          counts: {}
+        - population: eas_kor
+          counts: {}
+        - population: fin
+          counts:
+            overall:
+              an: 1164
+            xx:
+              an: 558
+            xy:
+              an: 606
+        - population: nfe
+          counts:
+            overall:
+              ac: 1
+              an: 13610
+              af: 0.0000734754
+            xx:
+              an: 5976
+            xy:
+              ac: 1
+              an: 7634
+              af: 0.000130993
+          faf95: 0
+          faf99: 0
+        - population: nfe_bgr
+          counts: {}
+        - population: nfe_est
+          counts:
+            overall:
+              an: 4138
+        - population: nfe_nwe
+          counts:
+            overall:
+              ac: 1
+              an: 7696
+              af: 0.000129938
+        - population: nfe_onf
+          counts:
+            overall:
+              an: 1722
+        - population: nfe_seu
+          counts:
+            overall:
+              an: 54
+        - population: nfe_swe
+          counts: {}
+        - population: oth
+          counts:
+            overall:
+              an: 732
+            xx:
+              an: 362
+            xy:
+              an: 370
+        - population: sas
+          counts: {}
+      bySex:
+        overall:
+          ac: 49
+          an: 21252
+          af: 0.00230567
+        xx:
+          ac: 31
+          an: 9582
+          af: 0.00323523
+        xy:
+          ac: 18
+          an: 11670
+          af: 0.00154242
+      raw:
+        ac: 49
+        an: 21272
+        af: 0.0023035
+      popmax: afr
+      afPopmax: 0.014176
+      acPopmax: 48
+      anPopmax: 3386
+      nhomaltPopmax: 0
+    - cohort: non_topmed
+      byPopulation:
+        - population: afr
+          counts:
+            overall:
+              ac: 152
+              an: 8540
+              af: 0.0177986
+            xx:
+              ac: 66
+              an: 3606
+              af: 0.0183028
+            xy:
+              ac: 86
+              an: 4934
+              af: 0.0174301
+          faf95: 0.0154185
+          faf99: 0.0154183
+        - population: amr
+          counts:
+            overall:
+              an: 810
+            xx:
+              an: 394
+            xy:
+              an: 416
+          faf95: 0
+          faf99: 0
+        - population: asj
+          counts:
+            overall:
+              an: 138
+            xx:
+              an: 62
+            xy:
+              an: 76
+        - population: eas
+          counts:
+            overall:
+              an: 1522
+            xx:
+              an: 520
+            xy:
+              an: 1002
+          faf95: 0
+          faf99: 0
+        - population: eas_jpn
+          counts: {}
+        - population: eas_oea
+          counts: {}
+        - population: eas_kor
+          counts: {}
+        - population: fin
+          counts:
+            overall:
+              an: 3476
+            xx:
+              an: 1846
+            xy:
+              an: 1630
+        - population: nfe
+          counts:
+            overall:
+              ac: 1
+              an: 11080
+              af: 0.0000902527
+            xx:
+              an: 5606
+            xy:
+              ac: 1
+              an: 5474
+              af: 0.000182682
+          faf95: 0
+          faf99: 0
+        - population: nfe_bgr
+          counts: {}
+        - population: nfe_est
+          counts:
+            overall:
+              an: 4562
+        - population: nfe_nwe
+          counts:
+            overall:
+              ac: 1
+              an: 4896
+              af: 0.000204248
+        - population: nfe_onf
+          counts:
+            overall:
+              an: 1516
+        - population: nfe_seu
+          counts:
+            overall:
+              an: 106
+        - population: nfe_swe
+          counts: {}
+        - population: oth
+          counts:
+            overall:
+              ac: 1
+              an: 1010
+              af: 0.000990099
+            xx:
+              an: 544
+            xy:
+              ac: 1
+              an: 466
+              af: 0.00214592
+        - population: sas
+          counts: {}
+      bySex:
+        overall:
+          ac: 154
+          an: 26576
+          af: 0.0057947
+        xx:
+          ac: 66
+          an: 12578
+          af: 0.00524726
+        xy:
+          ac: 88
+          an: 13998
+          af: 0.00628661
+      raw:
+        ac: 154
+        an: 26608
+        af: 0.00578773
+      popmax: afr
+      afPopmax: 0.0177986
+      acPopmax: 152
+      anPopmax: 8540
+      nhomaltPopmax: 0
+  rfInfo:
+    rfTpProbability: 0.952127
+    rfPositiveLabel: true
+    rfLabel: TP
+    rfTrain: true
+  variantInfo:
+    variantType: indel
+    alleleType: ins
+    nAltAlleles: 1
+  qualityInfo:
+    fs: 0.52
+    inbreedingCoeff: -0.0043
+    mq: 60
+    mqRankSum: -0.017
+    qd: 15.91
+    readPosRankSum: 0.122
+    vqsrPositiveTrainSite: true
+    baseQRankSum: -0.161
+    clippingRankSum: -0.129
+    sor: 0.654
+    dp: 660105
+    vqslod: 4.41
+    vqsrCulprit: FS
+    pabMax: 1
+  ageInfo:
+    ageHistHomNSmaller: 0
+    ageHistHomNLarger: 0
+    ageHistHetNSmaller: 64
+    ageHistHetNLarger: 2
+  depthInfo:
+    dpHistAllNLarger: 1
+    dpHistAltNLarger: 0
+- chrom: X
+  pos: 69902634
+  refAllele: C
+  altAllele: T
+  vep:
+    - allele: T
+      consequence: missense_variant
+      impact: MODERATE
+      symbol: TEX11
+      gene: ENSG00000120498
+      featureType: Transcript
+      feature: ENST00000344304
+      featureBiotype: protein_coding
+      exon: 13/29
+      hgvsc: "ENST00000344304.3:c.1091G>A"
+      hgvsp: "ENSP00000340995.3:p.Arg364His"
+      cdnaPosition: "1091"
+      cdsPosition: "1091"
+      proteinPosition: "364"
+      aminoAcids: R/H
+      codons: cGt/cAt
+      existingVariation: rs201471690
+      dbsnpId: "1"
+      strand: "-1"
+      variantClass: SNV
+      minimised: "1"
+      symbolSource: HGNC
+      hgncId: "11733"
+      ccds: CCDS35323.1
+      ensp: ENSP00000340995
+      swissprot: Q8IYF3
+      uniparc: UPI000013CA89
+      genePheno: "1"
+      sift:
+        prediction: tolerated
+        score: 1
+      polyphen:
+        prediction: benign
+        score: 0.007
+      domains:
+        - id: PTHR22904
+          source: hmmpanther
+        - id: PTHR22904
+          source: hmmpanther
+        - id: PF08631
+          source: Pfam_domain
+      gmaf: 0.0005
+      afrMaf: 0
+      amrMaf: 0.0008
+      easMaf: 0
+      eurMaf: 0
+      sasMaf: 0.001
+      aaMaf: 0
+      exacAdjMaf: 0
+      exacAfrMaf: 0.00003295
+      exacAmrMaf: 0.0001237
+      exacEasMaf: 0.00002495
+      exacFinMaf: 0
+      exacNfeMaf: 0
+      exacOthMaf: 0.00002306
+      exacSasMaf: 0
+      lofInfo: "EXON_START:69902524&EXON_END:69902675&DE_NOVO_DONOR_MES:0.0381663094165419&DE_NOVO_DONOR_POS:-108&DE_NOVO_DONOR_MES_POS:-108&MUTANT_DONOR_MES:6.38837132164763&DE_NOVO_DONOR_PROB:0.0218748740634797&INTRON_END:69902523&INTRON_START:69898740"
+    - allele: T
+      consequence: missense_variant
+      impact: MODERATE
+      symbol: TEX11
+      gene: ENSG00000120498
+      featureType: Transcript
+      feature: ENST00000374320
+      featureBiotype: protein_coding
+      exon: 3/19
+      hgvsc: "ENST00000374320.2:c.116G>A"
+      hgvsp: "ENSP00000363440.2:p.Arg39His"
+      cdnaPosition: "338"
+      cdsPosition: "116"
+      proteinPosition: "39"
+      aminoAcids: R/H
+      codons: cGt/cAt
+      existingVariation: rs201471690
+      dbsnpId: "1"
+      strand: "-1"
+      variantClass: SNV
+      minimised: "1"
+      symbolSource: HGNC
+      hgncId: "11733"
+      ensp: ENSP00000363440
+      swissprot: Q8IYF3
+      uniparc: UPI00004A2D6C
+      genePheno: "1"
+      sift:
+        prediction: tolerated
+        score: 1
+      polyphen:
+        prediction: benign
+        score: 0.007
+      domains:
+        - id: PTHR22904
+          source: hmmpanther
+        - id: PTHR22904
+          source: hmmpanther
+        - id: PF08631
+          source: Pfam_domain
+      gmaf: 0.0005
+      afrMaf: 0
+      amrMaf: 0.0008
+      easMaf: 0
+      eurMaf: 0
+      sasMaf: 0.001
+      aaMaf: 0
+      exacAdjMaf: 0
+      exacAfrMaf: 0.00003295
+      exacAmrMaf: 0.0001237
+      exacEasMaf: 0.00002495
+      exacFinMaf: 0
+      exacNfeMaf: 0
+      exacOthMaf: 0.00002306
+      exacSasMaf: 0
+      lofInfo: "INTRON_END:69902523&DE_NOVO_DONOR_PROB:0.0218748740634797&MUTANT_DONOR_MES:6.38837132164763&INTRON_START:69898740&EXON_START:69902524&EXON_END:69902675&DE_NOVO_DONOR_MES:0.0381663094165419&DE_NOVO_DONOR_POS:-108&DE_NOVO_DONOR_MES_POS:-108"
+    - allele: T
+      consequence: missense_variant
+      impact: MODERATE
+      symbol: TEX11
+      gene: ENSG00000120498
+      featureType: Transcript
+      feature: ENST00000374333
+      featureBiotype: protein_coding
+      exon: 14/30
+      hgvsc: "ENST00000374333.2:c.1046G>A"
+      hgvsp: "ENSP00000363453.2:p.Arg349His"
+      cdnaPosition: "1145"
+      cdsPosition: "1046"
+      proteinPosition: "349"
+      aminoAcids: R/H
+      codons: cGt/cAt
+      existingVariation: rs201471690
+      dbsnpId: "1"
+      strand: "-1"
+      variantClass: SNV
+      minimised: "1"
+      symbolSource: HGNC
+      hgncId: "11733"
+      ccds: CCDS43968.1
+      ensp: ENSP00000363453
+      swissprot: Q8IYF3
+      uniparc: UPI00002122F2
+      genePheno: "1"
+      sift:
+        prediction: tolerated
+        score: 1
+      polyphen:
+        prediction: benign
+        score: 0.003
+      domains:
+        - id: PTHR22904
+          source: hmmpanther
+        - id: PTHR22904
+          source: hmmpanther
+        - id: PF08631
+          source: Pfam_domain
+      gmaf: 0.0005
+      afrMaf: 0
+      amrMaf: 0.0008
+      easMaf: 0
+      eurMaf: 0
+      sasMaf: 0.001
+      aaMaf: 0
+      exacAdjMaf: 0
+      exacAfrMaf: 0.00003295
+      exacAmrMaf: 0.0001237
+      exacEasMaf: 0.00002495
+      exacFinMaf: 0
+      exacNfeMaf: 0
+      exacOthMaf: 0.00002306
+      exacSasMaf: 0
+      lofInfo: "DE_NOVO_DONOR_POS:-108&DE_NOVO_DONOR_MES_POS:-108&EXON_START:69902524&EXON_END:69902675&DE_NOVO_DONOR_MES:0.0381663094165419&INTRON_START:69898740&INTRON_END:69902523&DE_NOVO_DONOR_PROB:0.0218748740634797&MUTANT_DONOR_MES:6.38837132164763"
+    - allele: T
+      consequence: missense_variant
+      impact: MODERATE
+      symbol: TEX11
+      gene: ENSG00000120498
+      featureType: Transcript
+      feature: ENST00000395889
+      featureBiotype: protein_coding
+      exon: 15/31
+      hgvsc: "ENST00000395889.2:c.1091G>A"
+      hgvsp: "ENSP00000379226.2:p.Arg364His"
+      cdnaPosition: "1247"
+      cdsPosition: "1091"
+      proteinPosition: "364"
+      aminoAcids: R/H
+      codons: cGt/cAt
+      existingVariation: rs201471690
+      dbsnpId: "1"
+      strand: "-1"
+      variantClass: SNV
+      minimised: "1"
+      symbolSource: HGNC
+      hgncId: "11733"
+      canonical: true
+      ccds: CCDS35323.1
+      ensp: ENSP00000379226
+      swissprot: Q8IYF3
+      uniparc: UPI000013CA89
+      genePheno: "1"
+      sift:
+        prediction: tolerated
+        score: 1
+      polyphen:
+        prediction: benign
+        score: 0.007
+      domains:
+        - id: PTHR22904
+          source: hmmpanther
+        - id: PTHR22904
+          source: hmmpanther
+        - id: PF08631
+          source: Pfam_domain
+      gmaf: 0.0005
+      afrMaf: 0
+      amrMaf: 0.0008
+      easMaf: 0
+      eurMaf: 0
+      sasMaf: 0.001
+      aaMaf: 0
+      exacAdjMaf: 0
+      exacAfrMaf: 0.00003295
+      exacAmrMaf: 0.0001237
+      exacEasMaf: 0.00002495
+      exacFinMaf: 0
+      exacNfeMaf: 0
+      exacOthMaf: 0.00002306
+      exacSasMaf: 0
+      lofInfo: "INTRON_END:69902523&DE_NOVO_DONOR_PROB:0.0218748740634797&MUTANT_DONOR_MES:6.38837132164763&INTRON_START:69898740&EXON_END:69902675&EXON_START:69902524&DE_NOVO_DONOR_MES:0.0381663094165419&DE_NOVO_DONOR_POS:-108&DE_NOVO_DONOR_MES_POS:-108"
+  alleleCounts:
+    - byPopulation:
+        - population: afr
+          counts:
+            overall:
+              ac: 1
+              an: 5881
+              af: 0.000170039
+            xx:
+              ac: 1
+              an: 3682
+              af: 0.000271592
+            xy:
+              an: 2199
+          faf95: 0
+          faf99: 0
+        - population: amr
+          counts:
+            overall:
+              an: 612
+            xx:
+              an: 414
+            xy:
+              an: 198
+          faf95: 0
+          faf99: 0
+        - population: asj
+          counts:
+            overall:
+              an: 175
+            xx:
+              an: 80
+            xy:
+              an: 95
+        - population: eas
+          counts:
+            overall:
+              an: 1008
+            xx:
+              an: 538
+            xy:
+              an: 470
+          faf95: 0
+          faf99: 0
+        - population: eas_jpn
+          counts: {}
+        - population: eas_oea
+          counts: {}
+        - population: eas_kor
+          counts: {}
+        - population: fin
+          counts:
+            overall:
+              an: 2574
+            xx:
+              an: 1844
+            xy:
+              an: 730
+        - population: nfe
+          counts:
+            overall:
+              an: 10810
+            xx:
+              an: 6806
+            xy:
+              an: 4004
+          faf95: 0
+          faf99: 0
+        - population: nfe_bgr
+          counts: {}
+        - population: nfe_est
+          counts:
+            overall:
+              an: 3312
+        - population: nfe_nwe
+          counts:
+            overall:
+              an: 5938
+        - population: nfe_onf
+          counts:
+            overall:
+              an: 1486
+        - population: nfe_seu
+          counts:
+            overall:
+              an: 74
+        - population: nfe_swe
+          counts: {}
+        - population: oth
+          counts:
+            overall:
+              an: 797
+            xx:
+              an: 562
+            xy:
+              an: 235
+        - population: sas
+          counts: {}
+      bySex:
+        overall:
+          ac: 1
+          an: 21857
+          af: 0.0000457519
+        xx:
+          ac: 1
+          an: 13926
+          af: 0.0000718081
+        xy:
+          an: 7931
+      raw:
+        ac: 1
+        an: 22675
+        af: 0.0000441014
+      popmax: afr
+      afPopmax: 0.000170039
+      acPopmax: 1
+      anPopmax: 5881
+      nhomaltPopmax: 0
+    - cohort: controls
+      byPopulation:
+        - population: afr
+          counts:
+            overall:
+              an: 1779
+            xx:
+              an: 1166
+            xy:
+              an: 613
+          faf95: 0
+          faf99: 0
+        - population: amr
+          counts:
+            overall:
+              an: 177
+            xx:
+              an: 120
+            xy:
+              an: 57
+          faf95: 0
+          faf99: 0
+        - population: asj
+          counts:
+            overall:
+              an: 31
+            xx:
+              an: 24
+            xy:
+              an: 7
+        - population: eas
+          counts:
+            overall:
+              an: 611
+            xx:
+              an: 342
+            xy:
+              an: 269
+          faf95: 0
+          faf99: 0
+        - population: eas_jpn
+          counts: {}
+        - population: eas_oea
+          counts: {}
+        - population: eas_kor
+          counts: {}
+        - population: fin
+          counts:
+            overall:
+              an: 828
+            xx:
+              an: 554
+            xy:
+              an: 274
+        - population: nfe
+          counts:
+            overall:
+              an: 3888
+            xx:
+              an: 2578
+            xy:
+              an: 1310
+          faf95: 0
+          faf99: 0
+        - population: nfe_bgr
+          counts: {}
+        - population: nfe_est
+          counts:
+            overall:
+              an: 2928
+        - population: nfe_nwe
+          counts:
+            overall:
+              an: 610
+        - population: nfe_onf
+          counts:
+            overall:
+              an: 310
+        - population: nfe_seu
+          counts:
+            overall:
+              an: 40
+        - population: nfe_swe
+          counts: {}
+        - population: oth
+          counts:
+            overall:
+              an: 313
+            xx:
+              an: 226
+            xy:
+              an: 87
+        - population: sas
+          counts: {}
+      bySex:
+        overall:
+          an: 7627
+        xx:
+          an: 5010
+        xy:
+          an: 2617
+      raw:
+        an: 7950
+    - cohort: non_cancer
+      byPopulation:
+        - population: afr
+          counts: {}
+          faf95: 0
+          faf99: 0
+        - population: amr
+          counts: {}
+          faf95: 0
+          faf99: 0
+        - population: asj
+          counts: {}
+        - population: eas
+          counts: {}
+          faf95: 0
+          faf99: 0
+        - population: eas_jpn
+          counts: {}
+        - population: eas_oea
+          counts: {}
+        - population: eas_kor
+          counts: {}
+        - population: fin
+          counts: {}
+        - population: nfe
+          counts: {}
+          faf95: 0
+          faf99: 0
+        - population: nfe_bgr
+          counts: {}
+        - population: nfe_est
+          counts: {}
+        - population: nfe_nwe
+          counts: {}
+        - population: nfe_onf
+          counts: {}
+        - population: nfe_seu
+          counts: {}
+        - population: nfe_swe
+          counts: {}
+        - population: oth
+          counts: {}
+        - population: sas
+          counts: {}
+      bySex: {}
+    - cohort: non_neuro
+      byPopulation:
+        - population: afr
+          counts:
+            overall:
+              an: 2486
+            xx:
+              an: 1780
+            xy:
+              an: 706
+          faf95: 0
+          faf99: 0
+        - population: amr
+          counts:
+            overall:
+              an: 420
+            xx:
+              an: 310
+            xy:
+              an: 110
+          faf95: 0
+          faf99: 0
+        - population: asj
+          counts:
+            overall:
+              an: 148
+            xx:
+              an: 60
+            xy:
+              an: 88
+        - population: eas
+          counts:
+            overall:
+              an: 1008
+            xx:
+              an: 538
+            xy:
+              an: 470
+          faf95: 0
+          faf99: 0
+        - population: eas_jpn
+          counts: {}
+        - population: eas_oea
+          counts: {}
+        - population: eas_kor
+          counts: {}
+        - population: fin
+          counts:
+            overall:
+              an: 830
+            xx:
+              an: 556
+            xy:
+              an: 274
+        - population: nfe
+          counts:
+            overall:
+              an: 9531
+            xx:
+              an: 5982
+            xy:
+              an: 3549
+          faf95: 0
+          faf99: 0
+        - population: nfe_bgr
+          counts: {}
+        - population: nfe_est
+          counts:
+            overall:
+              an: 2957
+        - population: nfe_nwe
+          counts:
+            overall:
+              an: 5329
+        - population: nfe_onf
+          counts:
+            overall:
+              an: 1206
+        - population: nfe_seu
+          counts:
+            overall:
+              an: 39
+        - population: nfe_swe
+          counts: {}
+        - population: oth
+          counts:
+            overall:
+              an: 526
+            xx:
+              an: 364
+            xy:
+              an: 162
+        - population: sas
+          counts: {}
+      bySex:
+        overall:
+          an: 14949
+        xx:
+          an: 9590
+        xy:
+          an: 5359
+      raw:
+        an: 15435
+    - cohort: non_topmed
+      byPopulation:
+        - population: afr
+          counts:
+            overall:
+              ac: 1
+              an: 5767
+              af: 0.0001734
+            xx:
+              ac: 1
+              an: 3614
+              af: 0.000276702
+            xy:
+              an: 2153
+          faf95: 0
+          faf99: 0
+        - population: amr
+          counts:
+            overall:
+              an: 583
+            xx:
+              an: 394
+            xy:
+              an: 189
+          faf95: 0
+          faf99: 0
+        - population: asj
+          counts:
+            overall:
+              an: 93
+            xx:
+              an: 62
+            xy:
+              an: 31
+        - population: eas
+          counts:
+            overall:
+              an: 981
+            xx:
+              an: 520
+            xy:
+              an: 461
+          faf95: 0
+          faf99: 0
+        - population: eas_jpn
+          counts: {}
+        - population: eas_oea
+          counts: {}
+        - population: eas_kor
+          counts: {}
+        - population: fin
+          counts:
+            overall:
+              an: 2574
+            xx:
+              an: 1844
+            xy:
+              an: 730
+        - population: nfe
+          counts:
+            overall:
+              an: 8098
+            xx:
+              an: 5610
+            xy:
+              an: 2488
+          faf95: 0
+          faf99: 0
+        - population: nfe_bgr
+          counts: {}
+        - population: nfe_est
+          counts:
+            overall:
+              an: 3297
+        - population: nfe_nwe
+          counts:
+            overall:
+              an: 3627
+        - population: nfe_onf
+          counts:
+            overall:
+              an: 1100
+        - population: nfe_seu
+          counts:
+            overall:
+              an: 74
+        - population: nfe_swe
+          counts: {}
+        - population: oth
+          counts:
+            overall:
+              an: 752
+            xx:
+              an: 546
+            xy:
+              an: 206
+        - population: sas
+          counts: {}
+      bySex:
+        overall:
+          ac: 1
+          an: 18848
+          af: 0.000053056
+        xx:
+          ac: 1
+          an: 12590
+          af: 0.0000794281
+        xy:
+          an: 6258
+      raw:
+        ac: 1
+        an: 19603
+        af: 0.0000510126
+      popmax: afr
+      afPopmax: 0.0001734
+      acPopmax: 1
+      anPopmax: 5767
+      nhomaltPopmax: 0
+  nonpar: true
+  rfInfo:
+    rfTpProbability: 0.208912
+  variantInfo:
+    variantType: snv
+    alleleType: snv
+    nAltAlleles: 1
+  qualityInfo:
+    fs: 3.617
+    inbreedingCoeff: -0.0007
+    mq: 60
+    mqRankSum: 0.344
+    qd: 4.62
+    readPosRankSum: 1.23
+    baseQRankSum: 1.87
+    clippingRankSum: 1.62
+    sor: 1.358
+    dp: 464079
+    vqslod: 13.71
+    vqsrCulprit: MQ
+    pabMax: 0.0871586
+  ageInfo:
+    ageHistHomNSmaller: 0
+    ageHistHomNLarger: 0
+    ageHistHetNSmaller: 1
+    ageHistHetNLarger: 0
+  depthInfo:
+    dpHistAllNLarger: 0
+    dpHistAltNLarger: 0
+

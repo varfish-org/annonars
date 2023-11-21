@@ -4,7 +4,7 @@ use std::sync::Arc;
 
 use prost::Message;
 
-use crate::{common, pbs::annonars::clinvar::v1::per_gene::ClinvarPerGeneRecord};
+use crate::{common, pbs::clinvar::per_gene::ClinvarPerGeneRecord};
 
 /// Command line arguments for `clinvar-gene query` sub command.
 #[derive(clap::Parser, Debug, Clone)]

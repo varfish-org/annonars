@@ -7,7 +7,7 @@ use actix_web::{
 };
 use prost::Message;
 
-use crate::genes::pbs;
+use crate::pbs::genes;
 
 use super::error::CustomError;
 use serde_with::{formats::CommaSeparator, StringWithSeparator};
@@ -29,7 +29,7 @@ struct Request {
 struct Container {
     // TODO: add data version
     /// The resulting gene information.
-    pub genes: indexmap::IndexMap<String, pbs::Record>,
+    pub genes: indexmap::IndexMap<String, genes::Record>,
 }
 
 /// Query for annotations for one variant.
@@ -55,7 +55,7 @@ async fn handle(
                 .get_cf(&cf_genes, hgnc_id)
                 .map_err(|e| CustomError::new(anyhow::anyhow!("problem querying database: {}", e)))?
                 .ok_or_else(|| CustomError::new(anyhow::anyhow!("no such gene: {}", hgnc_id)))?;
-            let record = pbs::Record::decode(std::io::Cursor::new(raw_buf))
+            let record = genes::Record::decode(std::io::Cursor::new(raw_buf))
                 .map_err(|e| CustomError::new(anyhow::anyhow!("problem decoding value: {}", e)))?;
             genes.insert(hgnc_id.to_string(), record);
         }

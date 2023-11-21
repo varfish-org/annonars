@@ -109,7 +109,7 @@ pub fn open_rocksdb_from_args(
 fn print_record(
     out_writer: &mut Box<dyn std::io::Write>,
     output_format: common::cli::OutputFormat,
-    value: &crate::pbs::annonars::clinvar::v1::sv::Record,
+    value: &crate::pbs::clinvar::sv::Record,
 ) -> Result<(), anyhow::Error> {
     match output_format {
         common::cli::OutputFormat::Jsonl => {
@@ -126,7 +126,7 @@ pub fn query_for_accession(
     db: &rocksdb::DBWithThreadMode<rocksdb::MultiThreaded>,
     cf_data: &Arc<rocksdb::BoundColumnFamily>,
     cf_by_rcv: &Arc<rocksdb::BoundColumnFamily>,
-) -> Result<Option<crate::pbs::annonars::clinvar::v1::sv::Record>, anyhow::Error> {
+) -> Result<Option<crate::pbs::clinvar::sv::Record>, anyhow::Error> {
     // Execute query.
     tracing::debug!("accession = {:?}", &accession);
     let vcv = if accession.starts_with("VCV") {
@@ -145,10 +145,8 @@ pub fn query_for_accession(
     raw_value
         .map(|raw_value| {
             // Decode via prost.
-            crate::pbs::annonars::clinvar::v1::sv::Record::decode(&mut std::io::Cursor::new(
-                &raw_value,
-            ))
-            .map_err(|e| anyhow::anyhow!("failed to decode record: {}", e))
+            crate::pbs::clinvar::sv::Record::decode(&mut std::io::Cursor::new(&raw_value))
+                .map_err(|e| anyhow::anyhow!("failed to decode record: {}", e))
         })
         .transpose()
 }
@@ -166,10 +164,9 @@ fn print_all(
     iter.seek(b"");
     while iter.valid() {
         if let Some(raw_value) = iter.value() {
-            let record = crate::pbs::annonars::clinvar::v1::sv::Record::decode(
-                &mut std::io::Cursor::new(&raw_value),
-            )
-            .map_err(|e| anyhow::anyhow!("failed to decode record: {}", e))?;
+            let record =
+                crate::pbs::clinvar::sv::Record::decode(&mut std::io::Cursor::new(&raw_value))
+                    .map_err(|e| anyhow::anyhow!("failed to decode record: {}", e))?;
             print_record(out_writer, out_format, &record)?;
             iter.next();
         } else {
@@ -241,13 +238,12 @@ impl IntervalTrees {
         iter.seek(b"");
         while iter.valid() {
             if let Some(raw_value) = iter.value() {
-                let record = crate::pbs::annonars::clinvar::v1::sv::Record::decode(
-                    &mut std::io::Cursor::new(&raw_value),
-                )
-                .map_err(|e| anyhow::anyhow!("failed to decode record: {}", e))?;
+                let record =
+                    crate::pbs::clinvar::sv::Record::decode(&mut std::io::Cursor::new(&raw_value))
+                        .map_err(|e| anyhow::anyhow!("failed to decode record: {}", e))?;
                 tracing::trace!("iterator at {:?} => {:?}", &iter.key(), &record);
 
-                let crate::pbs::annonars::clinvar::v1::sv::Record {
+                let crate::pbs::clinvar::sv::Record {
                     chromosome,
                     start,
                     stop,
@@ -278,7 +274,7 @@ impl IntervalTrees {
     pub fn query(
         &self,
         range: &spdi::Range,
-    ) -> Result<Vec<crate::pbs::annonars::clinvar::v1::sv::Record>, anyhow::Error> {
+    ) -> Result<Vec<crate::pbs::clinvar::sv::Record>, anyhow::Error> {
         let contig = extract_chrom::from_range(range, Some(&self.meta.genome_release))?;
         let cf_data = self.db.cf_handle(&self.cf_data_name).ok_or_else(|| {
             anyhow::anyhow!("no column family with name {:?} found", &self.cf_data_name)
@@ -288,7 +284,7 @@ impl IntervalTrees {
         if let Some(tree) = self.trees.get(&contig) {
             for entry in tree.find(&interval) {
                 if let Some(raw_value) = self.db.get_cf(&cf_data, entry.data().as_bytes())? {
-                    let record = crate::pbs::annonars::clinvar::v1::sv::Record::decode(
+                    let record = crate::pbs::clinvar::sv::Record::decode(
                         &mut std::io::Cursor::new(&raw_value),
                     )
                     .map_err(|e| anyhow::anyhow!("failed to decode record: {}", e))?;

@@ -4,13 +4,13 @@ use std::{str::FromStr, sync::Arc};
 
 use crate::{
     common::noodles::{get_f32, get_i32, get_string, get_vec_str},
-    gnomad_pbs::exac_cnv::CnvType,
-    gnomad_pbs::gnomad_cnv4::{
+    pbs::gnomad::exac_cnv::CnvType,
+    pbs::gnomad::gnomad_cnv4::{
         CarrierCounts, CarrierCountsBySex, Population, PopulationAlleleCounts, Record,
     },
 };
 
-use prost::Message;
+use prost::Message as _;
 
 impl FromStr for CnvType {
     type Err = anyhow::Error;

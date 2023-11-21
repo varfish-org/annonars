@@ -1,0 +1,29 @@
+syntax = "proto3";
+
+package annonars.cons.base;
+
+// List of `Record`s.
+message RecordList {
+    // The records in the list.
+    repeated Record records = 1;
+}
+
+// Protocol buffer for the UCSC conservation record.
+message Record {
+    // Chromosome name.
+    string chrom = 1;
+    // 1-based, inclusive start position.
+    int32 start = 2;
+    // 1-based, inclusive stop position.
+    int32 stop = 3;
+    // HGNC identifier.
+    string hgnc_id = 4;
+    // ENST identifier.
+    string enst_id = 5;
+    // Exon number (1-based).
+    int32 exon_num = 6;
+    // Exon count.
+    int32 exon_count = 7;
+    // Alignment.
+    string alignment = 8;
+}

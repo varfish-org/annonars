@@ -3,13 +3,13 @@
 use std::sync::Arc;
 
 use clap::Parser;
-use indicatif::ParallelProgressIterator;
-use prost::Message;
+use indicatif::ParallelProgressIterator as _;
+use prost::Message as _;
 use rayon::prelude::{IntoParallelRefIterator, ParallelIterator};
 
 use crate::{
     common::{self},
-    gnomad_pbs,
+    pbs,
 };
 
 /// Command line arguments for `gnomad_mtdna import` sub command.
@@ -145,7 +145,7 @@ fn process_window(
             for allele_no in 0..vcf_record.alternate_bases().len() {
                 let key_buf: Vec<u8> =
                     common::keys::Var::from_vcf_allele(&vcf_record, allele_no).into();
-                let record = gnomad_pbs::mtdna::Record::from_vcf_allele(
+                let record = pbs::gnomad::mtdna::Record::from_vcf_allele(
                     &vcf_record,
                     allele_no,
                     &details_options,
@@ -168,13 +168,13 @@ pub fn run(common: &common::cli::Args, args: &Args) -> Result<(), anyhow::Error>
             .import_fields_json
             .clone()
             .map(|v| {
-                serde_json::to_string(&serde_json::from_str::<gnomad_pbs::mtdna::DetailsOptions>(
+                serde_json::to_string(&serde_json::from_str::<pbs::gnomad::mtdna::DetailsOptions>(
                     &v,
                 )?)
             })
             .or_else(|| {
                 Some(serde_json::to_string(
-                    &gnomad_pbs::mtdna::DetailsOptions::default(),
+                    &pbs::gnomad::mtdna::DetailsOptions::default(),
                 ))
             })
             .transpose()?,
@@ -231,7 +231,7 @@ pub fn run(common: &common::cli::Args, args: &Args) -> Result<(), anyhow::Error>
 
 #[cfg(test)]
 mod test {
-    use crate::gnomad_pbs::mtdna::DetailsOptions;
+    use crate::pbs::gnomad::mtdna::DetailsOptions;
 
     use super::*;
 

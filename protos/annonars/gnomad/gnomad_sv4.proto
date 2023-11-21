@@ -1,0 +1,181 @@
+// Protocol buffers for representing gnomAD-SV v4 data.
+
+syntax = "proto3";
+
+package annonars.gnomad.gnomad_sv4;
+
+import "annonars/gnomad/gnomad_sv2.proto";
+
+// Enumeration for filters.
+enum Filter {
+    // All filters passed.
+    PASS = 0;
+    // Low-quality variant that did not pass manual review of supporting
+    // evidence.
+    FAIL_MANUAL_REVIEW = 1;
+    // Unacceptably high rate of no-call GTs
+    HIGH_NCR = 2;
+    // SVs that are overlapped by over 50% by IGH or MHC regions, these
+    // variants are of low confidence.
+    IGH_MHC_OVERLAP = 3;
+    // Deletions under 1 kbp that are uniquely from wham and have SR-only
+    // support.
+    LOWQUAL_WHAM_SR_DEL = 4;
+    // Multiallelic site
+    MULTIALLELIC = 5;
+    // SVs that are enriched for non-reference genotypes in outlier samples,
+    // likely indicating noisy or unreliable genotypes.
+    OUTLIER_SAMPLE_ENRICHED = 6;
+    // Multiple large CNVs called at the same locus likely indicates unreliable
+    // clustering and/or low-quality multiallelic locus.
+    REDUNDANT_LG_CNV = 7;
+    // Likely reference artifact sites that are homozygous alternative in over
+    // 99% of the samples.
+    REFERENCE_ARTIFACT = 8;
+    // Variant is unresolved
+    UNRESOLVED = 9;
+    // Generic failure.
+    FAIL = 10;
+}
+
+// The types of SV in gnomad-SV v2.
+enum SvType {
+    // Breakend.
+    BND = 0;
+    // Copy number variable region.
+    CNV = 1;
+    // Complex variant.
+    CPX = 2;
+    // Translocation.
+    CTX = 3;
+    // Deletion.
+    DEL = 4;
+    // Duplication.
+    DUP = 5;
+    // Insertion.
+    INS = 6;
+    // Inversion.
+    INV = 7;
+}
+
+// Store the relevant allele counts and frequencies in a given sub cohort.
+message AlleleCounts {
+    // Total number of alleles genotyped (for biallelic sites) or individuals
+    // with copy-state estimates (for multiallelic sites).
+    int32 ac = 1;
+    // Allele frequency (for biallelic sites) or copy-state frequency (for
+    // multiallelic sites).
+    float af = 2;
+    // Number of non-reference alleles observed (for biallelic sites) or
+    // individuals at each copy state (for multiallelic sites).
+    int32 an = 3;
+
+    // Hemizygous alternate genotype frequency (biallelic sites only).
+    float freq_hemialt = 4;
+    // Hemizygous reference genotype frequency (biallelic sites only).
+    float freq_hemiref = 5;
+    // Heterozygous genotype frequency (biallelic sites only).
+    float freq_het = 6;
+    // Homozygous alternate genotype frequency (biallelic sites only).
+    float freq_homalt = 7;
+    // Homozygous reference genotype frequency (biallelic sites only).
+    float freq_homref = 8;
+
+    // Total number of individuals with complete genotypes (biallelic sites
+    // only).
+    int32 n_bi_genos = 9;
+
+    // Number of individuals with hemizygous alternate genotypes (biallelic
+    // sites only).
+    int32 n_hemialt = 10;
+    // Number of individuals with hemizygous reference genotypes (biallelic
+    // sites only).
+    int32 n_hemiref = 11;
+    // Number of individuals with heterozygous genotypes (biallelic sites
+    // only).
+    int32 n_het = 12;
+    // Number of individuals with homozygous alternate genotypes (biallelic
+    // sites only).
+    int32 n_homalt = 13;
+    // Number of individuals with homozygous reference genotypes (biallelic
+    // sites only).
+    int32 n_homref = 14;
+}
+
+// Store the allele counts for the given sub cohort and sub cohort factored by sex.
+message AlleleCountsBySex {
+    // Overall allele counts in the sub cohort.
+    AlleleCounts overall = 1;
+    // Allele counts in female/XX karyotype individuals of sub cohort.
+    AlleleCounts xx = 2;
+    // Allele counts in male/XY karyotype individuals of sub cohort.
+    AlleleCounts xy = 3;
+}
+
+// gnomAD SV population.
+enum Population {
+    // African
+    AFR = 0;
+    // Amish
+    AMI = 1;
+    // Admixed American
+    AMR = 2;
+    // Ashkenazi Jewish
+    ASJ = 3;
+    // East Asian
+    EAS = 4;
+    // Finnish
+    FIN = 5;
+    // Middle Eastern
+    MID = 6;
+    // Non-Finnish European
+    NFE = 7;
+    // South Asian
+    SAS = 8;
+    // Other
+    OTHER = 9;
+}
+
+// Store the allele counts for the given sub cohort in the given population.
+message PopulationAlleleCounts {
+    // Name of the population.
+    Population population = 1;
+    // The overall allele counts and the one by sex.
+    AlleleCountsBySex counts = 2;
+}
+
+// Store the allele counts for the given cohort.
+message CohortAlleleCounts {
+    // Name of the cohort, empty for global.
+    optional string cohort = 1;
+    // The overall allele counts and the one by sex.
+    AlleleCountsBySex by_sex = 2;
+    // Allele counts for each population.
+    repeated PopulationAlleleCounts by_population = 3;
+}
+
+// Protocol buffer for the gnomAD-SV v4 VCF record.
+message Record {
+    // Chromosome name.
+    string chrom = 1;
+    // 1-based start position.
+    int32 pos = 2;
+    // End position of the structural variant
+    optional int32 end = 3;
+    // Chromosome of second breakpoint position.
+    optional string chrom2 = 4;
+    // End coordinate of second breakpoint position.
+    optional int32 end2 = 5;
+    // Identifier of the record.
+    string id = 6;
+
+    // Site-level filters.
+    repeated Filter filters = 7;
+    // SV Type.
+    SvType sv_type = 8;
+    // Refined complex type.
+    optional annonars.gnomad.gnomad_sv2.CpxType cpx_type = 9;
+
+    // Variant allele counts in the different cohorts and population.
+    repeated CohortAlleleCounts allele_counts = 10;
+}

@@ -1,0 +1,55 @@
+---
+source: src/pbs/gnomad/vep_gnomad3.rs
+expression: vep
+---
+allele: G
+consequence: missense_variant
+impact: MODERATE
+symbol: MT-ND5
+gene: ENSG00000198786
+featureType: Transcript
+feature: ENST00000361567
+featureBiotype: protein_coding
+exon: 1/1
+hgvsc: "ENST00000361567.2:c.208A>G"
+hgvsp: "ENSP00000354813.2:p.Thr70Ala"
+cdnaPosition: "208"
+cdsPosition: "208"
+proteinPosition: "70"
+aminoAcids: T/A
+codons: Aca/Gca
+dbsnpId: "1"
+strand: "1"
+variantClass: SNV
+symbolSource: HGNC
+hgncId: "HGNC:7461"
+canonical: true
+appris: P1
+ensp: ENSP00000354813
+genePheno: "1"
+sift:
+  prediction: deleterious_low_confidence
+  score: 0.02
+polyphen:
+  prediction: benign
+  score: 0.033
+domains:
+  - id: 5xtc
+    source: ENSP_mappings
+  - id: 5xtd
+    source: ENSP_mappings
+  - id: 5xth
+    source: ENSP_mappings
+  - id: 5xti
+    source: ENSP_mappings
+  - id: 5xti
+    source: ENSP_mappings
+  - id: PF00662
+    source: Pfam
+  - id: PTHR42829
+    source: PANTHER
+  - id: PTHR42829
+    source: PANTHER
+  - id: TIGR01974
+    source: TIGRFAM
+

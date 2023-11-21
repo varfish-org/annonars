@@ -75,10 +75,9 @@ fn jsonl_import(
             variant_type,
             ..
         } = record;
-        let clinical_significance: crate::pbs::annonars::clinvar::v1::minimal::ClinicalSignificance =
+        let clinical_significance: crate::pbs::clinvar::minimal::ClinicalSignificance =
             clinical_significance.into();
-        let review_status: crate::pbs::annonars::clinvar::v1::minimal::ReviewStatus =
-            review_status.into();
+        let review_status: crate::pbs::clinvar::minimal::ReviewStatus = review_status.into();
         let clinvar_minimal::cli::reading::SequenceLocation {
             assembly,
             chr,
@@ -154,10 +153,9 @@ fn jsonl_import(
             }
             Ok(data) => {
                 let record = if let Some(data) = data {
-                    let mut record =
-                        crate::pbs::annonars::clinvar::v1::sv::Record::decode(&data[..])?;
+                    let mut record = crate::pbs::clinvar::sv::Record::decode(&data[..])?;
                     record.reference_assertions.push(
-                        crate::pbs::annonars::clinvar::v1::minimal::ReferenceAssertion {
+                        crate::pbs::clinvar::minimal::ReferenceAssertion {
                             rcv: rcv.clone(),
                             title,
                             clinical_significance: clinical_significance.into(),
@@ -169,7 +167,7 @@ fn jsonl_import(
                         .sort_by_key(|a| (a.clinical_significance, a.review_status));
                     record
                 } else {
-                    crate::pbs::annonars::clinvar::v1::sv::Record {
+                    crate::pbs::clinvar::sv::Record {
                         release: assembly,
                         chromosome: chr,
                         start,
@@ -178,7 +176,7 @@ fn jsonl_import(
                         alternative: alternate_allele_vcf,
                         vcv: vcv.clone(),
                         reference_assertions: vec![
-                            crate::pbs::annonars::clinvar::v1::minimal::ReferenceAssertion {
+                            crate::pbs::clinvar::minimal::ReferenceAssertion {
                                 rcv: rcv.clone(),
                                 title,
                                 clinical_significance: clinical_significance.into(),
@@ -189,9 +187,8 @@ fn jsonl_import(
                         inner_stop,
                         outer_start,
                         outer_stop,
-                        variant_type: crate::pbs::annonars::clinvar::v1::minimal::VariantType::from(
-                            variant_type,
-                        ) as i32,
+                        variant_type: crate::pbs::clinvar::minimal::VariantType::from(variant_type)
+                            as i32,
                     }
                 };
                 let buf = record.encode_to_vec();

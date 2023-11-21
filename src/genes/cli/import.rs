@@ -13,7 +13,7 @@ use tracing::info;
 
 use crate::{
     common::{self, version},
-    genes::pbs,
+    pbs,
 };
 
 use super::data::{
@@ -332,8 +332,8 @@ fn load_gtex(path: &str) -> Result<HashMap<String, gtex::Record>, anyhow::Error>
     Ok(result)
 }
 
-/// Convert from `data::*` records to `pbs::*` records.
-fn convert_record(record: data::Record) -> pbs::Record {
+/// Convert from `data::*` records to protobuf records.
+fn convert_record(record: data::Record) -> pbs::genes::Record {
     let data::Record {
         acmg_sf,
         clingen,
@@ -363,7 +363,7 @@ fn convert_record(record: data::Record) -> pbs::Record {
             variants_to_report,
         } = acmg_sf;
 
-        pbs::AcmgSecondaryFindingRecord {
+        pbs::genes::AcmgSecondaryFindingRecord {
             hgnc_id,
             ensembl_gene_id,
             ncbi_gene_id,
@@ -380,7 +380,7 @@ fn convert_record(record: data::Record) -> pbs::Record {
 
     let clingen = clingen.map(|clingen| {
         let first = clingen[0].clone();
-        let mut result = pbs::ClingenCurationRecord {
+        let mut result = pbs::genes::ClingenCurationRecord {
             gene_symbol: first.gene_symbol,
             hgnc_id: first.hgnc_id,
             gene_url: first.gene_url,
@@ -390,7 +390,7 @@ fn convert_record(record: data::Record) -> pbs::Record {
         for record in clingen {
             result
                 .disease_records
-                .push(pbs::ClingenCurationDiseaseRecord {
+                .push(pbs::genes::ClingenCurationDiseaseRecord {
                     disease_label: record.disease_label.clone(),
                     mondo_id: record.mondo_id.clone(),
                     disease_url: record.disease_url.clone(),
@@ -524,7 +524,7 @@ fn convert_record(record: data::Record) -> pbs::Record {
             zfin_zebrafish_phenotype_tag,
         } = dbnsfp;
 
-        pbs::DbnsfpRecord {
+        pbs::genes::DbnsfpRecord {
             gene_name,
             ensembl_gene,
             chr,
@@ -656,7 +656,7 @@ fn convert_record(record: data::Record) -> pbs::Record {
             exac_oe_lof,
         } = gnomad_constraints;
 
-        pbs::GnomadConstraintsRecord {
+        pbs::genes::GnomadConstraintsRecord {
             ensembl_gene_id,
             entrez_id,
             gene_symbol,
@@ -738,7 +738,7 @@ fn convert_record(record: data::Record) -> pbs::Record {
             mane_select,
         } = hgnc;
 
-        Some(pbs::HgncRecord {
+        Some(pbs::genes::HgncRecord {
             hgnc_id,
             symbol,
             name,
@@ -772,7 +772,7 @@ fn convert_record(record: data::Record) -> pbs::Record {
             lsdb: lsdb
                 .map(|lsdb| {
                     lsdb.iter()
-                        .map(|lsdb| pbs::HgncLsdb {
+                        .map(|lsdb| pbs::genes::HgncLsdb {
                             name: lsdb.name.clone(),
                             url: lsdb.url.clone(),
                         })
@@ -807,14 +807,14 @@ fn convert_record(record: data::Record) -> pbs::Record {
             summary,
             rif_entries,
         } = ncbi;
-        pbs::NcbiRecord {
+        pbs::genes::NcbiRecord {
             gene_id,
             summary,
             rif_entries: rif_entries
                 .map(|rif_entries| {
                     rif_entries
                         .into_iter()
-                        .map(|rif_entry| pbs::RifEntry {
+                        .map(|rif_entry| pbs::genes::RifEntry {
                             pmids: rif_entry.pmids.unwrap_or_default(),
                             text: rif_entry.text,
                         })
@@ -826,11 +826,11 @@ fn convert_record(record: data::Record) -> pbs::Record {
 
     let omim = omim.map(|omim| {
         let omim::Record { hgnc_id, diseases } = omim;
-        pbs::OmimRecord {
+        pbs::genes::OmimRecord {
             hgnc_id,
             omim_diseases: diseases
                 .into_iter()
-                .map(|disease| pbs::OmimTerm {
+                .map(|disease| pbs::genes::OmimTerm {
                     omim_id: disease.omim_id,
                     label: disease.label,
                 })
@@ -840,11 +840,11 @@ fn convert_record(record: data::Record) -> pbs::Record {
 
     let orpha = orpha.map(|orpha| {
         let orpha::Record { hgnc_id, diseases } = orpha;
-        pbs::OrphaRecord {
+        pbs::genes::OrphaRecord {
             hgnc_id,
             orpha_diseases: diseases
                 .into_iter()
-                .map(|disease| pbs::OrphaTerm {
+                .map(|disease| pbs::genes::OrphaTerm {
                     orpha_id: disease.orpha_id,
                     label: disease.label,
                 })
@@ -858,7 +858,7 @@ fn convert_record(record: data::Record) -> pbs::Record {
             p_haplo,
             p_triplo,
         } = rcnv;
-        pbs::RcnvRecord {
+        pbs::genes::RcnvRecord {
             hgnc_id,
             p_haplo,
             p_triplo,
@@ -867,7 +867,7 @@ fn convert_record(record: data::Record) -> pbs::Record {
 
     let shet = shet.map(|shet| {
         let shet::Record { hgnc_id, s_het } = shet;
-        pbs::ShetRecord { hgnc_id, s_het }
+        pbs::genes::ShetRecord { hgnc_id, s_het }
     });
 
     let gtex = gtex.map(|gtex| {
@@ -885,14 +885,14 @@ fn convert_record(record: data::Record) -> pbs::Record {
                     tissue_detailed,
                     tpms,
                 } = record;
-                pbs::GtexTissueRecord {
+                pbs::genes::GtexTissueRecord {
                     tissue: tissue as i32,
                     tissue_detailed: tissue_detailed as i32,
                     tpms,
                 }
             })
             .collect::<Vec<_>>();
-        pbs::GtexRecord {
+        pbs::genes::GtexRecord {
             hgnc_id,
             ensembl_gene_id,
             ensembl_gene_version,
@@ -900,7 +900,7 @@ fn convert_record(record: data::Record) -> pbs::Record {
         }
     });
 
-    pbs::Record {
+    pbs::genes::Record {
         acmg_sf,
         clingen,
         dbnsfp,

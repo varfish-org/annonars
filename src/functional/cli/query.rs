@@ -97,7 +97,7 @@ pub fn open_rocksdb_from_args(
 fn print_record(
     out_writer: &mut Box<dyn std::io::Write>,
     output_format: common::cli::OutputFormat,
-    value: &crate::pbs::annonars::functional::v1::refseq::Record,
+    value: &crate::pbs::functional::refseq::Record,
 ) -> Result<(), anyhow::Error> {
     match output_format {
         common::cli::OutputFormat::Jsonl => {
@@ -113,17 +113,15 @@ pub fn query_for_accession(
     accession: &str,
     db: &rocksdb::DBWithThreadMode<rocksdb::MultiThreaded>,
     cf_data: &Arc<rocksdb::BoundColumnFamily>,
-) -> Result<Option<crate::pbs::annonars::functional::v1::refseq::Record>, anyhow::Error> {
+) -> Result<Option<crate::pbs::functional::refseq::Record>, anyhow::Error> {
     let raw_value = db.get_cf(cf_data, accession.as_bytes()).map_err(|e| {
         anyhow::anyhow!("error while querying for accession {:?}: {}", accession, e)
     })?;
     raw_value
         .map(|raw_value| {
             // Decode via prost.
-            crate::pbs::annonars::functional::v1::refseq::Record::decode(&mut std::io::Cursor::new(
-                &raw_value,
-            ))
-            .map_err(|e| anyhow::anyhow!("failed to decode record: {}", e))
+            crate::pbs::functional::refseq::Record::decode(&mut std::io::Cursor::new(&raw_value))
+                .map_err(|e| anyhow::anyhow!("failed to decode record: {}", e))
         })
         .transpose()
 }
@@ -141,9 +139,9 @@ fn print_all(
     iter.seek(b"");
     while iter.valid() {
         if let Some(raw_value) = iter.value() {
-            let record = crate::pbs::annonars::functional::v1::refseq::Record::decode(
-                &mut std::io::Cursor::new(&raw_value),
-            )
+            let record = crate::pbs::functional::refseq::Record::decode(&mut std::io::Cursor::new(
+                &raw_value,
+            ))
             .map_err(|e| anyhow::anyhow!("failed to decode record: {}", e))?;
             print_record(out_writer, out_format, &record)?;
             iter.next();
@@ -216,13 +214,13 @@ impl IntervalTrees {
         iter.seek(b"");
         while iter.valid() {
             if let Some(raw_value) = iter.value() {
-                let record = crate::pbs::annonars::functional::v1::refseq::Record::decode(
+                let record = crate::pbs::functional::refseq::Record::decode(
                     &mut std::io::Cursor::new(&raw_value),
                 )
                 .map_err(|e| anyhow::anyhow!("failed to decode record: {}", e))?;
                 tracing::trace!("iterator at {:?} => {:?}", &iter.key(), &record);
 
-                let crate::pbs::annonars::functional::v1::refseq::Record {
+                let crate::pbs::functional::refseq::Record {
                     chromosome,
                     start,
                     stop,
@@ -253,7 +251,7 @@ impl IntervalTrees {
     pub fn query(
         &self,
         range: &spdi::Range,
-    ) -> Result<Vec<crate::pbs::annonars::functional::v1::refseq::Record>, anyhow::Error> {
+    ) -> Result<Vec<crate::pbs::functional::refseq::Record>, anyhow::Error> {
         let contig = extract_chrom::from_range(range, Some(&self.meta.genome_release))?;
         let cf_data = self.db.cf_handle(&self.cf_data_name).ok_or_else(|| {
             anyhow::anyhow!("no column family with name {:?} found", &self.cf_data_name)
@@ -263,7 +261,7 @@ impl IntervalTrees {
         if let Some(tree) = self.trees.get(&contig) {
             for entry in tree.find(&interval) {
                 if let Some(raw_value) = self.db.get_cf(&cf_data, entry.data().as_bytes())? {
-                    let record = crate::pbs::annonars::functional::v1::refseq::Record::decode(
+                    let record = crate::pbs::functional::refseq::Record::decode(
                         &mut std::io::Cursor::new(&raw_value),
                     )
                     .map_err(|e| anyhow::anyhow!("failed to decode record: {}", e))?;

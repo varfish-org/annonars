@@ -1,0 +1,21 @@
+// Common protocol buffer definitions for VEP records.
+
+syntax = "proto3";
+
+package annonars.gnomad.vep_common;
+
+// Protocol buffer for `Vep.domains`
+message Domain {
+    // Domain ID.
+    string id = 1;
+    // Domain source.
+    string source = 2;
+}
+
+// Protocol buffer for `Vep.sift` and `Vep.polyphen`.
+message Prediction {
+    // Prediction.
+    string prediction = 1;
+    // Score.
+    float score = 2;
+}

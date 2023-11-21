@@ -2,8 +2,8 @@
 source: src/helixmtdb/cli/query.rs
 expression: "&out_data"
 ---
-{"chrom":"chrM","pos":5,"ref_allele":"A","alt_allele":"C","num_total":196554,"num_het":0,"num_hom":1,"feature_type":"non_coding","gene_name":"MT-CRb"}
-{"chrom":"chrM","pos":10,"ref_allele":"T","alt_allele":"C","num_total":196554,"num_het":1,"num_hom":7,"feature_type":"non_coding","gene_name":"MT-CRb"}
-{"chrom":"chrM","pos":11,"ref_allele":"C","alt_allele":"T","num_total":196554,"num_het":1,"num_hom":0,"feature_type":"non_coding","gene_name":"MT-CRb"}
-{"chrom":"chrM","pos":12,"ref_allele":"T","alt_allele":"C","num_total":196554,"num_het":0,"num_hom":1,"feature_type":"non_coding","gene_name":"MT-CRb"}
+{"chrom":"chrM","pos":5,"refAllele":"A","altAllele":"C","numTotal":196554,"numHom":1,"featureType":"non_coding","geneName":"MT-CRb"}
+{"chrom":"chrM","pos":10,"refAllele":"T","altAllele":"C","numTotal":196554,"numHet":1,"numHom":7,"featureType":"non_coding","geneName":"MT-CRb"}
+{"chrom":"chrM","pos":11,"refAllele":"C","altAllele":"T","numTotal":196554,"numHet":1,"featureType":"non_coding","geneName":"MT-CRb"}
+{"chrom":"chrM","pos":12,"refAllele":"T","altAllele":"C","numTotal":196554,"numHom":1,"featureType":"non_coding","geneName":"MT-CRb"}
 

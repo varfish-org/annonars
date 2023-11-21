@@ -2,5 +2,5 @@
 source: src/dbsnp/cli/query.rs
 expression: "&out_data"
 ---
-{"chrom":"17","pos":41267746,"ref_allele":"C","alt_allele":"CA","rs_id":431825385}
+{"chrom":"17","pos":41267746,"refAllele":"C","altAllele":"CA","rsId":431825385}
 

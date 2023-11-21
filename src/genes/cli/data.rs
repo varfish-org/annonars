@@ -1537,7 +1537,7 @@ pub mod shet {
 pub mod gtex {
     use serde::{Deserialize, Serialize};
 
-    use crate::genes::pbs::{GtexTissue, GtexTissueDetailed};
+    use crate::pbs::genes::{GtexTissue, GtexTissueDetailed};
 
     /// GTEx V8 tissue types.
     #[derive(Debug, Clone, Serialize, Deserialize)]

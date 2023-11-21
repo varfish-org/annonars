@@ -41,6 +41,8 @@ noodles-core = "0.12"
 noodles-csi = "0.28"
 noodles-tabix = "0.34"
 noodles-vcf = "0.47"
+pbjson = "0.6"
+pbjson-types = "0.6"
 prost = "0.12"
 rayon = "1.8"
 rocksdb-utils-lookup = "0.3"
@@ -57,6 +59,8 @@ noodles-gff = "0.25.0"
 
 [build-dependencies]
 prost-build = "0.12"
+pbjson-build = "0.6"
+anyhow = "1.0"
 
 [dev-dependencies]
 insta = { version = "1.33", features = ["yaml"] }

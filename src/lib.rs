@@ -16,7 +16,6 @@ pub mod functional;
 pub mod genes;
 pub mod gnomad_mtdna;
 pub mod gnomad_nuclear;
-pub mod gnomad_pbs;
 pub mod gnomad_sv;
 pub mod helixmtdb;
 pub mod pbs;

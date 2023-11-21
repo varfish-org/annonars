@@ -6,7 +6,7 @@ use clap::Parser;
 use noodles_gff as gff;
 use prost::Message;
 
-use crate::pbs::annonars::functional::v1::refseq::{
+use crate::pbs::functional::refseq::{
     Category as RefseqCategory, Record as RefseqRecord, RegulatoryClass as RefseqRegulatoryClass,
 };
 use crate::{

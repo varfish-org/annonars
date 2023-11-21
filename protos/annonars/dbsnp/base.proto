@@ -1,0 +1,17 @@
+syntax = "proto3";
+
+package annonars.dbsnp.base;
+
+// Protocol buffer for the dbSNP VCF record.
+message Record {
+    // Chromosome name.
+    string chrom = 1;
+    // 1-based start position.
+    int32 pos = 2;
+    // Reference allele.
+    string ref_allele = 3;
+    /// Alternate allele.
+    string alt_allele = 4;
+    /// The rs ID.
+    int32 rs_id = 5;
+}
