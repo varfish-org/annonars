@@ -169,7 +169,7 @@ fn load_decipher_hi(path: &str) -> Result<HashMap<String, decipher_hi::Record>, 
         .from_reader(reader);
     for record in reader.deserialize::<decipher_hi::Record>() {
         let record = record?;
-        result.insert(record.hgnc_symbol.clone(), record);
+        result.insert(record.hgnc_id.clone(), record);
     }
 
     Ok(result)
