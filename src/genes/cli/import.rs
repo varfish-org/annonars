@@ -487,7 +487,12 @@ fn convert_record(record: data::Record) -> pbs::genes::base::Record {
     });
 
     let decipher_hi = decipher_hi.map(|decipher| {
-        let decipher_hi::Record { hgnc_id, hgnc_symbol, p_hi, hi_index } = decipher;
+        let decipher_hi::Record {
+            hgnc_id,
+            hgnc_symbol,
+            p_hi,
+            hi_index,
+        } = decipher;
 
         pbs::genes::base::DecipherHiRecord {
             hgnc_id,
@@ -1014,7 +1019,7 @@ fn write_rocksdb(
     shet_by_hgnc_id: HashMap<String, shet::Record>,
     gtex_by_hgnc_id: HashMap<String, gtex::Record>,
     domino_by_symbol: HashMap<String, domino::Record>,
-    decipher_hi_by_symbol: HashMap<String, decipher_hi::Record>,
+    decipher_hi_by_hgnc_id: HashMap<String, decipher_hi::Record>,
     args: &&Args,
 ) -> Result<(), anyhow::Error> {
     // Construct RocksDB options and open file for writing.
@@ -1063,7 +1068,7 @@ fn write_rocksdb(
             shet: shet_by_hgnc_id.get(&hgnc_id).cloned(),
             gtex: gtex_by_hgnc_id.get(&hgnc_id).cloned(),
             domino: domino_by_symbol.get(&hgnc_record.symbol).cloned(),
-            decipher_hi: decipher_hi_by_symbol.get(&hgnc_record.symbol).cloned(),
+            decipher_hi: decipher_hi_by_hgnc_id.get(&hgnc_id).cloned(),
         });
         tracing::debug!("writing {:?} -> {:?}", &hgnc, &record);
         db.put_cf(&cf_genes, hgnc_id, &record.encode_to_vec())?;
@@ -1097,7 +1102,7 @@ pub fn run(common_args: &common::cli::Args, args: &Args) -> Result<(), anyhow::E
     let shet_by_hgnc_id = load_shet(&args.path_in_shet)?;
     let gtex_by_hgnc_id = load_gtex(&args.path_in_gtex)?;
     let domino_by_symbol = load_domino(&args.path_in_domino)?;
-    let decipher_hi_by_symbol = load_decipher_hi(&args.path_in_decipher_hi)?;
+    let decipher_hi_by_hgnc_id = load_decipher_hi(&args.path_in_decipher_hi)?;
     info!(
         "... done loadin genes data files in {:?}",
         before_loading.elapsed()
@@ -1119,7 +1124,7 @@ pub fn run(common_args: &common::cli::Args, args: &Args) -> Result<(), anyhow::E
         shet_by_hgnc_id,
         gtex_by_hgnc_id,
         domino_by_symbol,
-        decipher_hi_by_symbol,
+        decipher_hi_by_hgnc_id,
         &args,
     )?;
     info!(
