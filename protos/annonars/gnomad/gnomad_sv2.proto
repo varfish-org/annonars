@@ -10,79 +10,79 @@ package annonars.gnomad.gnomad_sv2;
 // Protocol buffer enum for site-level filters.
 enum Filter {
     // All filters passed.
-    PASS = 0;
+    Filter_PASS = 0;
     // Site does not meet minimum requirements for fraction of PCR- samples
     // with non-null genotypes. Flags sites more prone to false discoveries.
-    LOW_CALL_RATE = 1;
+    Filter_LOW_CALL_RATE = 1;
     // Multiallelic site.
-    MULTIALLELIC = 2;
+    Filter_MULTIALLELIC = 2;
     // Site enriched for non-reference genotypes among PCR+ samples. Likely
     // reflects technical batch effects. All PCR- samples have been assigned
     // null GTs for these sites.
-    PCRPLUS_ENRICHED = 3;
+    Filter_PCRPLUS_ENRICHED = 3;
     // Variant is unresolved.
-    UNRESOLVED = 4;
+    Filter_UNRESOLVED = 4;
     // Allele frequency for this variant in PCR- samples is sensitive to
     // choice of GQ filtering thresholds. All PCR- samples have been assigned
     // null GTs for these sites.
-    UNSTABLE_AF_PCRMINUS = 5;
+    Filter_UNSTABLE_AF_PCRMINUS = 5;
 }
 
 // The types of SV in gnomad-SV v2.
 enum SvType {
     // Breakend.
-    BND = 0;
+    SvType_BND = 0;
     // Complex variant.
-    CPX = 1;
+    SvType_CPX = 1;
     // Translocation.
-    CTX = 2;
+    SvType_CTX = 2;
     // Deletion.
-    DEL = 3;
+    SvType_DEL = 3;
     // Duplication.
-    DUP = 4;
+    SvType_DUP = 4;
     // Insertion.
-    INS = 5;
+    SvType_INS = 5;
     // Inversion.
-    INV = 6;
+    SvType_INV = 6;
     // Copy number variable region.
-    MCNV = 7;
+    SvType_MCNV = 7;
 }
 
 // Further definition of CPX type.
 enum CpxType {
     // CCR: Complex chromosomal rearrangement, involving two or more
     // chromosomes and multiple SV signatures.
-    CCR = 0;
+    CpxType_CCR = 0;
     // INS_iDEL: Insertion with deletion at insertion site.
-    INS_IDEL = 1;
+    CpxType_INS_IDEL = 1;
     // INVdel: Complex inversion with 3' flanking deletion.
-    INV_Del = 2;
+    CpxType_INV_DEL = 2;
     // INVdup: Complex inversion with 3' flanking duplication.
-    INV_DUP = 3;
+    CpxType_INV_DUP = 3;
     // dDUP: Dispersed duplication.
-    DDUP = 4;
+    CpxType_DDUP = 4;
     // dDUP_iDEL: Dispersed duplication with deletion at insertion site.
-    DDUP_IDEL = 5;
+    CpxType_DDUP_IDEL = 5;
     // delINVdel: Complex inversion with 5' and 3' flanking deletions.
-    DEL_INV_DEL = 6;
+    CpxType_DEL_INV_DEL = 6;
     // delINVdup: Complex inversion with 5' flanking deletion and 3' flanking
     // duplication.
-    DEL_INV_DUP = 7;
+    CpxType_DEL_INV_DUP = 7;
     // delINV: Complex inversion with 5' flanking deletion.
-    DEL_INV = 8;
+    CpxType_DEL_INV = 8;
     // dupINVdel: Complex inversion with 5' flanking duplication and 3'
     // flanking deletion.
-    DUP_INV_DEL = 9;
+    CpxType_DUP_INV_DEL = 9;
     // dupINVdup: Complex inversion with 5' and 3' flanking duplications.
-    DUP_INV_DUP = 10;
+    CpxType_DUP_INV_DUP = 10;
     // dupINV: Complex inversion with 5' flanking duplication.
-    DUP_INV = 11;
+    CpxType_DUP_INV = 11;
     // piDUP_FR: Palindromic inverted tandem duplication, forward-reverse
     // orientation.
-    PI_DUP_FR = 12;
+    CpxType_PI_DUP_FR = 12;
     // piDUP_RF: Palindromic inverted tandem duplication, reverse-forward
     // orientation.
-    PI_DUP_RF = 13;
+    CpxType_PI_DUP_RF = 13;
 }
 
 // Store the relevant allele counts and frequencies in a given sub cohort.
@@ -129,15 +129,15 @@ message AlleleCountsBySex {
 // gnomAD SV population.
 enum Population {
     // African
-    AFR = 0;
+    Population_AFR = 0;
     // Ad Mixed American
-    AMR = 1;
+    Population_AMR = 1;
     // East Asian
-    EAS = 2;
+    Population_EAS = 2;
     // European.
-    EUR = 3;
+    Population_EUR = 3;
     // Other,
-    OTHER = 4;
+    Population_OTHER = 4;
 }
 
 // Store the allele counts for the given sub cohort in the given population.

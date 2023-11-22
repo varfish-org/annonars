@@ -2,5 +2,5 @@
 source: src/regions/cli/query.rs
 expression: "&out_data"
 ---
-{"iscaId":"ISCA-46735","iscaRegionName":"Xp11.23 population region (DGV_Gold_Standard_June_2021_gssvL136075)","genomicLocation":"chrX:47880294-47952112","haploinsufficiencyScore":"CLINGEN_DOSAGE_SCORE_UNLIKELY","triplosensitivityScore":"CLINGEN_DOSAGE_SCORE_NO_EVIDENCE_AVAILABLE"}
+{"iscaId":"ISCA-46735","iscaRegionName":"Xp11.23 population region (DGV_Gold_Standard_June_2021_gssvL136075)","genomicLocation":"chrX:47880294-47952112","haploinsufficiencyScore":"ClingenDosageScore_UNLIKELY","triplosensitivityScore":"ClingenDosageScore_NO_EVIDENCE_AVAILABLE"}
 

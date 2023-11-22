@@ -2,6 +2,6 @@
 source: src/functional/cli/query.rs
 expression: "&out_data"
 ---
-{"chromosome":"1","start":3157509,"stop":3157803,"id":"id-GeneID:112577578","dbxref":"GeneID:112577578","category":"REGULATORY","regulatoryClass":"ENHANCER","experiment":"EXISTENCE:reporter gene assay evidence [ECO:0000049][PMID:27701403]","function":"activates a minimal TATA promoter and a strong SV40 promoter by Sharpr-MPRA in K562 cells"}
-{"chromosome":"1","start":3157509,"stop":3157803,"id":"id-GeneID:112577578-2","dbxref":"GeneID:112577578","category":"REGION"}
+{"chromosome":"1","start":3157509,"stop":3157803,"id":"id-GeneID:112577578","dbxref":"GeneID:112577578","category":"Category_REGULATORY","regulatoryClass":"RegulatoryClass_ENHANCER","experiment":"EXISTENCE:reporter gene assay evidence [ECO:0000049][PMID:27701403]","function":"activates a minimal TATA promoter and a strong SV40 promoter by Sharpr-MPRA in K562 cells"}
+{"chromosome":"1","start":3157509,"stop":3157803,"id":"id-GeneID:112577578-2","dbxref":"GeneID:112577578","category":"Category_REGION"}
 

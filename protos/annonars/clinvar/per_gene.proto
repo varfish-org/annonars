@@ -9,37 +9,37 @@ import "annonars/clinvar/minimal.proto";
 // Impact on gene in ClinVar.
 enum Impact {
     // 3' UTR variant
-    THREE_PRIME_UTR_VARIANT = 0;
+    Impact_THREE_PRIME_UTR_VARIANT = 0;
     // 5' UTR variant
-    FIVE_PRIME_UTR_VARIANT = 1;
+    Impact_FIVE_PRIME_UTR_VARIANT = 1;
     // downstream gene variant
-    DOWNSTREAM_TRANSCRIPT_VARIANT = 2;
+    Impact_DOWNSTREAM_TRANSCRIPT_VARIANT = 2;
     // frameshift variant
-    FRAMESHIFT_VARIANT = 3;
+    Impact_FRAMESHIFT_VARIANT = 3;
     // inframe indel
-    INFRAME_INDEL = 4;
+    Impact_INFRAME_INDEL = 4;
     // start lost
-    START_LOST = 5;
+    Impact_START_LOST = 5;
     // intron variant
-    INTRON_VARIANT = 6;
+    Impact_INTRON_VARIANT = 6;
     // missense variant
-    MISSENSE_VARIANT = 7;
+    Impact_MISSENSE_VARIANT = 7;
     // non-coding transcript variant
-    NON_CODING_TRANSCRIPT_VARIANT = 8;
+    Impact_NON_CODING_TRANSCRIPT_VARIANT = 8;
     // stop gained
-    STOP_GAINED = 9;
+    Impact_STOP_GAINED = 9;
     // no sequence alteration
-    NO_SEQUENCE_ALTERATION = 10;
+    Impact_NO_SEQUENCE_ALTERATION = 10;
     // splice acceptor variant
-    SPLICE_ACCEPTOR_VARIANT = 11;
+    Impact_SPLICE_ACCEPTOR_VARIANT = 11;
     // splice donor variant
-    SPLICE_DONOR_VARIANT = 12;
+    Impact_SPLICE_DONOR_VARIANT = 12;
     // stop lost
-    STOP_LOST = 13;
+    Impact_STOP_LOST = 13;
     // synonymous variant
-    SYNONYMOUS_VARIANT = 14;
+    Impact_SYNONYMOUS_VARIANT = 14;
     // upstream gene variant
-    UPSTREAM_TRANSCRIPT_VARIANT = 15;
+    Impact_UPSTREAM_TRANSCRIPT_VARIANT = 15;
 }
 
 // Counts of variants by impact.
@@ -53,11 +53,11 @@ message GeneImpactRecordCounts {
 // Coarsened clinical significance
 enum CoarseClinicalSignificance {
     // benign / likely benign
-    COARSE_BENIGN = 0;
+    CoarseClinicalSignificance_BENIGN = 0;
     // uncertain signifiance
-    COARSE_UNCERTAIN = 1;
+    CoarseClinicalSignificance_UNCERTAIN = 1;
     // pathogenic / likely pathogenic
-    COARSE_PATHOGENIC = 2;
+    CoarseClinicalSignificance_PATHOGENIC = 2;
 }
 
 // Counts per frequency and impact.
@@ -79,7 +79,7 @@ message GeneVariantsForRelease {
 // ClinVar detailed information per gene.
 message ClinvarPerGeneRecord {
     // Counts of variants per impact
-    repeated GeneImpactRecordCounts per_impact_counts = 1;
+    repeated GeneImpactRecordCounts per_Impact_counts = 1;
     // Counts of variants per impact / frequency
     repeated GeneFreqRecordCounts per_freq_counts = 2;
     // Variants for the given gene.

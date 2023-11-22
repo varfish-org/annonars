@@ -31,21 +31,21 @@ message CarrierCountsBySex {
 // ExAC population.
 enum Population {
     // African
-    AFR = 0;
+    Population_AFR = 0;
     // Ad Mixed American
-    AMR = 1;
+    Population_AMR = 1;
     // Ashkenazi Jewish
-    ASJ = 2;
+    Population_ASJ = 2;
     // East Asian
-    EAS = 3;
+    Population_EAS = 3;
     // Finnish
-    FIN = 4;
+    Population_FIN = 4;
     // Middle Eastern
-    MID = 5;
+    Population_MID = 5;
     // Non-Finnish European
-    NFE = 6;
+    Population_NFE = 6;
     // South Asian
-    SAS = 7;
+    Population_SAS = 7;
 }
 
 // Store the carrier counts for a population.

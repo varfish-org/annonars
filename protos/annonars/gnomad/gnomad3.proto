@@ -8,13 +8,13 @@ import "annonars/gnomad/vep_gnomad3.proto";
 enum Filter {
     // Allele count is zero after filtering out low-confidence genotypes (GQ < 20; DP < 10; and AB <
     // 0.2 for het calls).
-    ALLELE_COUNT_IS_ZERO = 0;
+    Filter_ALLELE_COUNT_IS_ZERO = 0;
     // Failed VQSR filtering thresholds of -2.7739 for SNPs and -1.0606 for indels.
-    AS_VSQR = 1;
+    Filter_AS_VSQR = 1;
     // InbreedingCoeff < -0.3.
-    INBREEDING_COEFF = 2;
+    Filter_INBREEDING_COEFF = 2;
     // Passed all variant filters
-    PASS = 3;
+    Filter_PASS = 3;
 }
 
 // Store details on variant effect predictions.

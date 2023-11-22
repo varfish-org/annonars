@@ -7,12 +7,12 @@ import "annonars/gnomad/vep_gnomad3.proto";
 // Protocol buffer enum for site-level filters.
 enum Filter {
     // Variant overlaps site that is commonly reported in literature to be artifact prone.
-    ARTIFACT_PRONE_SITE = 0;
+    Filter_ARTIFACT_PRONE_SITE = 0;
     // Allele where all samples with the variant call had at least 2 different heteroplasmic indels
     // called at the position.
-    INDEL_STACK = 1;
+    Filter_INDEL_STACK = 1;
     // No-pass-genotypes site (no individuals were PASS for the variant).
-    NO_PASS_GENOTYPE = 2;
+    Filter_NO_PASS_GENOTYPE = 2;
 }
 
 // Encapsulate VCF INFO fields related to quality.

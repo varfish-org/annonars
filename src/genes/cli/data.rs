@@ -1739,37 +1739,37 @@ pub mod gtex {
     impl From<Tissue> for GtexTissue {
         fn from(val: Tissue) -> Self {
             match val {
-                Tissue::AdiposeTissue => GtexTissue::TissueAdiposeTissue,
-                Tissue::AdrenalGland => GtexTissue::TissueAdrenalGland,
-                Tissue::Bladder => GtexTissue::TissueBladder,
-                Tissue::Blood => GtexTissue::TissueBlood,
-                Tissue::BloodVessel => GtexTissue::TissueBloodVessel,
-                Tissue::BoneMarrow => GtexTissue::TissueBoneMarrow,
-                Tissue::Brain => GtexTissue::TissueBrain,
-                Tissue::Breast => GtexTissue::TissueBreast,
-                Tissue::CervixUteri => GtexTissue::TissueCervixUteri,
-                Tissue::Colon => GtexTissue::TissueColon,
-                Tissue::Esophagus => GtexTissue::TissueEsophagus,
-                Tissue::FallopianTube => GtexTissue::TissueFallopianTube,
-                Tissue::Heart => GtexTissue::TissueHeart,
-                Tissue::Kidney => GtexTissue::TissueKidney,
-                Tissue::Liver => GtexTissue::TissueLiver,
-                Tissue::Lung => GtexTissue::TissueLung,
-                Tissue::Muscle => GtexTissue::TissueMuscle,
-                Tissue::Nerve => GtexTissue::TissueNerve,
-                Tissue::Ovary => GtexTissue::TissueOvary,
-                Tissue::Pancreas => GtexTissue::TissuePancreas,
-                Tissue::Pituitary => GtexTissue::TissuePituitary,
-                Tissue::Prostate => GtexTissue::TissueProstate,
-                Tissue::SalivaryGland => GtexTissue::TissueSalivaryGland,
-                Tissue::Skin => GtexTissue::TissueSkin,
-                Tissue::SmallIntestine => GtexTissue::TissueSmallIntestine,
-                Tissue::Spleen => GtexTissue::TissueSpleen,
-                Tissue::Stomach => GtexTissue::TissueStomach,
-                Tissue::Testis => GtexTissue::TissueTestis,
-                Tissue::Thyroid => GtexTissue::TissueThyroid,
-                Tissue::Uterus => GtexTissue::TissueUterus,
-                Tissue::Vagina => GtexTissue::TissueVagina,
+                Tissue::AdiposeTissue => GtexTissue::AdiposeTissue,
+                Tissue::AdrenalGland => GtexTissue::AdrenalGland,
+                Tissue::Bladder => GtexTissue::Bladder,
+                Tissue::Blood => GtexTissue::Blood,
+                Tissue::BloodVessel => GtexTissue::BloodVessel,
+                Tissue::BoneMarrow => GtexTissue::BoneMarrow,
+                Tissue::Brain => GtexTissue::Brain,
+                Tissue::Breast => GtexTissue::Breast,
+                Tissue::CervixUteri => GtexTissue::CervixUteri,
+                Tissue::Colon => GtexTissue::Colon,
+                Tissue::Esophagus => GtexTissue::Esophagus,
+                Tissue::FallopianTube => GtexTissue::FallopianTube,
+                Tissue::Heart => GtexTissue::Heart,
+                Tissue::Kidney => GtexTissue::Kidney,
+                Tissue::Liver => GtexTissue::Liver,
+                Tissue::Lung => GtexTissue::Lung,
+                Tissue::Muscle => GtexTissue::Muscle,
+                Tissue::Nerve => GtexTissue::Nerve,
+                Tissue::Ovary => GtexTissue::Ovary,
+                Tissue::Pancreas => GtexTissue::Pancreas,
+                Tissue::Pituitary => GtexTissue::Pituitary,
+                Tissue::Prostate => GtexTissue::Prostate,
+                Tissue::SalivaryGland => GtexTissue::SalivaryGland,
+                Tissue::Skin => GtexTissue::Skin,
+                Tissue::SmallIntestine => GtexTissue::SmallIntestine,
+                Tissue::Spleen => GtexTissue::Spleen,
+                Tissue::Stomach => GtexTissue::Stomach,
+                Tissue::Testis => GtexTissue::Testis,
+                Tissue::Thyroid => GtexTissue::Thyroid,
+                Tissue::Uterus => GtexTissue::Uterus,
+                Tissue::Vagina => GtexTissue::Vagina,
             }
         }
     }
@@ -1947,119 +1947,83 @@ pub mod gtex {
     impl From<TissueDetailed> for GtexTissueDetailed {
         fn from(val: TissueDetailed) -> Self {
             match val {
-                TissueDetailed::AdiposeSubcutaneous => {
-                    GtexTissueDetailed::TissueDetailedAdiposeSubcutaneous
-                }
+                TissueDetailed::AdiposeSubcutaneous => GtexTissueDetailed::AdiposeSubcutaneous,
                 TissueDetailed::AdiposeVisceralOmentum => {
-                    GtexTissueDetailed::TissueDetailedAdiposeVisceralOmentum
+                    GtexTissueDetailed::AdiposeVisceralOmentum
                 }
-                TissueDetailed::AdrenalGland => GtexTissueDetailed::TissueDetailedAdrenalGland,
-                TissueDetailed::ArteryAorta => GtexTissueDetailed::TissueDetailedArteryAorta,
-                TissueDetailed::ArteryCoronary => GtexTissueDetailed::TissueDetailedArteryCoronary,
-                TissueDetailed::ArteryTibial => GtexTissueDetailed::TissueDetailedArteryTibial,
-                TissueDetailed::Bladder => GtexTissueDetailed::TissueDetailedBladder,
-                TissueDetailed::BrainAmygdala => GtexTissueDetailed::TissueDetailedBrainAmygdala,
+                TissueDetailed::AdrenalGland => GtexTissueDetailed::AdrenalGland,
+                TissueDetailed::ArteryAorta => GtexTissueDetailed::ArteryAorta,
+                TissueDetailed::ArteryCoronary => GtexTissueDetailed::ArteryCoronary,
+                TissueDetailed::ArteryTibial => GtexTissueDetailed::ArteryTibial,
+                TissueDetailed::Bladder => GtexTissueDetailed::Bladder,
+                TissueDetailed::BrainAmygdala => GtexTissueDetailed::BrainAmygdala,
                 TissueDetailed::BrainAnteriorCingulateCortex => {
-                    GtexTissueDetailed::TissueDetailedBrainAnteriorCingulateCortex
+                    GtexTissueDetailed::BrainAnteriorCingulateCortex
                 }
                 TissueDetailed::BrainCaudateBasalGanglia => {
-                    GtexTissueDetailed::TissueDetailedBrainCaudateBasalGanglia
+                    GtexTissueDetailed::BrainCaudateBasalGanglia
                 }
                 TissueDetailed::BrainCerebellarHemisphere => {
-                    GtexTissueDetailed::TissueDetailedBrainCerebellarHemisphere
+                    GtexTissueDetailed::BrainCerebellarHemisphere
                 }
-                TissueDetailed::BrainCerebellum => {
-                    GtexTissueDetailed::TissueDetailedBrainCerebellum
-                }
-                TissueDetailed::BrainCortex => GtexTissueDetailed::TissueDetailedBrainCortex,
-                TissueDetailed::BrainFrontalCortex => {
-                    GtexTissueDetailed::TissueDetailedBrainFrontalCortex
-                }
-                TissueDetailed::BrainHippocampus => {
-                    GtexTissueDetailed::TissueDetailedBrainHippocampus
-                }
-                TissueDetailed::BrainHypothalamus => {
-                    GtexTissueDetailed::TissueDetailedBrainHypothalamus
-                }
-                TissueDetailed::BrainNucleusAccumbens => {
-                    GtexTissueDetailed::TissueDetailedBrainNucleusAccumbens
-                }
+                TissueDetailed::BrainCerebellum => GtexTissueDetailed::BrainCerebellum,
+                TissueDetailed::BrainCortex => GtexTissueDetailed::BrainCortex,
+                TissueDetailed::BrainFrontalCortex => GtexTissueDetailed::BrainFrontalCortex,
+                TissueDetailed::BrainHippocampus => GtexTissueDetailed::BrainHippocampus,
+                TissueDetailed::BrainHypothalamus => GtexTissueDetailed::BrainHypothalamus,
+                TissueDetailed::BrainNucleusAccumbens => GtexTissueDetailed::BrainNucleusAccumbens,
                 TissueDetailed::BrainPutamenBasalGanglia => {
-                    GtexTissueDetailed::TissueDetailedBrainPutamenBasalGanglia
+                    GtexTissueDetailed::BrainPutamenBasalGanglia
                 }
-                TissueDetailed::BrainSpinalCord => {
-                    GtexTissueDetailed::TissueDetailedBrainSpinalCord
-                }
-                TissueDetailed::BrainSubstantiaNigra => {
-                    GtexTissueDetailed::TissueDetailedBrainSubstantiaNigra
-                }
-                TissueDetailed::BreastMammaryTissue => {
-                    GtexTissueDetailed::TissueDetailedBreastMammaryTissue
-                }
+                TissueDetailed::BrainSpinalCord => GtexTissueDetailed::BrainSpinalCord,
+                TissueDetailed::BrainSubstantiaNigra => GtexTissueDetailed::BrainSubstantiaNigra,
+                TissueDetailed::BreastMammaryTissue => GtexTissueDetailed::BreastMammaryTissue,
                 TissueDetailed::CellsCulturedFibroblasts => {
-                    GtexTissueDetailed::TissueDetailedCellsCulturedFibroblasts
+                    GtexTissueDetailed::CellsCulturedFibroblasts
                 }
                 TissueDetailed::CellsEbvTransformedLymphocytes => {
-                    GtexTissueDetailed::TissueDetailedCellsEbvTransformedLymphocytes
+                    GtexTissueDetailed::CellsEbvTransformedLymphocytes
                 }
-                TissueDetailed::CellsLeukemiaCellLine => {
-                    GtexTissueDetailed::TissueDetailedCellsLeukemiaCellLine
-                }
-                TissueDetailed::CervixEctocervix => {
-                    GtexTissueDetailed::TissueDetailedCervixEctocervix
-                }
-                TissueDetailed::CervixEndocervix => {
-                    GtexTissueDetailed::TissueDetailedCervixEndocervix
-                }
-                TissueDetailed::ColonSigmoid => GtexTissueDetailed::TissueDetailedColonSigmoid,
-                TissueDetailed::ColonTransverse => {
-                    GtexTissueDetailed::TissueDetailedColonTransverse
-                }
+                TissueDetailed::CellsLeukemiaCellLine => GtexTissueDetailed::CellsLeukemiaCellLine,
+                TissueDetailed::CervixEctocervix => GtexTissueDetailed::CervixEctocervix,
+                TissueDetailed::CervixEndocervix => GtexTissueDetailed::CervixEndocervix,
+                TissueDetailed::ColonSigmoid => GtexTissueDetailed::ColonSigmoid,
+                TissueDetailed::ColonTransverse => GtexTissueDetailed::ColonTransverse,
                 TissueDetailed::EsophagusGastroesophagealJunction => {
-                    GtexTissueDetailed::TissueDetailedEsophagusGastroesophagealJunction
+                    GtexTissueDetailed::EsophagusGastroesophagealJunction
                 }
-                TissueDetailed::EsophagusMucosa => {
-                    GtexTissueDetailed::TissueDetailedEsophagusMucosa
-                }
-                TissueDetailed::EsophagusMuscularis => {
-                    GtexTissueDetailed::TissueDetailedEsophagusMuscularis
-                }
-                TissueDetailed::FallopianTube => GtexTissueDetailed::TissueDetailedFallopianTube,
-                TissueDetailed::HeartAtrialAppendage => {
-                    GtexTissueDetailed::TissueDetailedHeartAtrialAppendage
-                }
-                TissueDetailed::HeartLeftVentricle => {
-                    GtexTissueDetailed::TissueDetailedHeartLeftVentricle
-                }
-                TissueDetailed::KidneyCortex => GtexTissueDetailed::TissueDetailedKidneyCortex,
-                TissueDetailed::KidneyMedulla => GtexTissueDetailed::TissueDetailedKidneyMedulla,
-                TissueDetailed::Liver => GtexTissueDetailed::TissueDetailedLiver,
-                TissueDetailed::Lung => GtexTissueDetailed::TissueDetailedLung,
-                TissueDetailed::MinorSalivaryGland => {
-                    GtexTissueDetailed::TissueDetailedMinorSalivaryGland
-                }
-                TissueDetailed::MuscleSkeletal => GtexTissueDetailed::TissueDetailedMuscleSkeletal,
-                TissueDetailed::NerveTibial => GtexTissueDetailed::TissueDetailedNerveTibial,
-                TissueDetailed::Ovary => GtexTissueDetailed::TissueDetailedOvary,
-                TissueDetailed::Pancreas => GtexTissueDetailed::TissueDetailedPancreas,
-                TissueDetailed::Pituitary => GtexTissueDetailed::TissueDetailedPituitary,
-                TissueDetailed::Prostate => GtexTissueDetailed::TissueDetailedProstate,
+                TissueDetailed::EsophagusMucosa => GtexTissueDetailed::EsophagusMucosa,
+                TissueDetailed::EsophagusMuscularis => GtexTissueDetailed::EsophagusMuscularis,
+                TissueDetailed::FallopianTube => GtexTissueDetailed::FallopianTube,
+                TissueDetailed::HeartAtrialAppendage => GtexTissueDetailed::HeartAtrialAppendage,
+                TissueDetailed::HeartLeftVentricle => GtexTissueDetailed::HeartLeftVentricle,
+                TissueDetailed::KidneyCortex => GtexTissueDetailed::KidneyCortex,
+                TissueDetailed::KidneyMedulla => GtexTissueDetailed::KidneyMedulla,
+                TissueDetailed::Liver => GtexTissueDetailed::Liver,
+                TissueDetailed::Lung => GtexTissueDetailed::Lung,
+                TissueDetailed::MinorSalivaryGland => GtexTissueDetailed::MinorSalivaryGland,
+                TissueDetailed::MuscleSkeletal => GtexTissueDetailed::MuscleSkeletal,
+                TissueDetailed::NerveTibial => GtexTissueDetailed::NerveTibial,
+                TissueDetailed::Ovary => GtexTissueDetailed::Ovary,
+                TissueDetailed::Pancreas => GtexTissueDetailed::Pancreas,
+                TissueDetailed::Pituitary => GtexTissueDetailed::Pituitary,
+                TissueDetailed::Prostate => GtexTissueDetailed::Prostate,
                 TissueDetailed::SkinNotSunExposedSuprapubic => {
-                    GtexTissueDetailed::TissueDetailedSkinNotSunExposedSuprapubic
+                    GtexTissueDetailed::SkinNotSunExposedSuprapubic
                 }
                 TissueDetailed::SkinSunExposedLowerLeg => {
-                    GtexTissueDetailed::TissueDetailedSkinSunExposedLowerLeg
+                    GtexTissueDetailed::SkinSunExposedLowerLeg
                 }
                 TissueDetailed::SmallIntestineTerminalIleum => {
-                    GtexTissueDetailed::TissueDetailedSmallIntestineTerminalIleum
+                    GtexTissueDetailed::SmallIntestineTerminalIleum
                 }
-                TissueDetailed::Spleen => GtexTissueDetailed::TissueDetailedSpleen,
-                TissueDetailed::Stomach => GtexTissueDetailed::TissueDetailedStomach,
-                TissueDetailed::Testis => GtexTissueDetailed::TissueDetailedTestis,
-                TissueDetailed::Thyroid => GtexTissueDetailed::TissueDetailedThyroid,
-                TissueDetailed::Uterus => GtexTissueDetailed::TissueDetailedUterus,
-                TissueDetailed::Vagina => GtexTissueDetailed::TissueDetailedVagina,
-                TissueDetailed::WholeBlood => GtexTissueDetailed::TissueDetailedWholeBlood,
+                TissueDetailed::Spleen => GtexTissueDetailed::Spleen,
+                TissueDetailed::Stomach => GtexTissueDetailed::Stomach,
+                TissueDetailed::Testis => GtexTissueDetailed::Testis,
+                TissueDetailed::Thyroid => GtexTissueDetailed::Thyroid,
+                TissueDetailed::Uterus => GtexTissueDetailed::Uterus,
+                TissueDetailed::Vagina => GtexTissueDetailed::Vagina,
+                TissueDetailed::WholeBlood => GtexTissueDetailed::WholeBlood,
             }
         }
     }
