@@ -64,6 +64,18 @@ message ClingenDosageRecord {
     optional string triplosensitivity_disease_id = 8;
 }
 
+// Decipher HI Predictions
+message DecipherHiRecord {
+    // HGNC identifier.
+    string hgnc_id = 1;
+    // Official HGNC gene symbol.
+    string hgnc_symbol = 2;
+    // P(HI) prediction from DECIPHER HI.
+    double p_hi = 3;
+    // Percent HI index.
+    double hi_index = 4;
+}
+
 // Information from DOMINO.
 message DominoRecord {
     // Gene symbol.
@@ -820,4 +832,6 @@ message Record {
     GtexRecord gtex = 11;
     // Information from DOMINO.
     DominoRecord domino = 13;
+    // DECIPHER HI score.
+    DecipherHiRecord decipher_hi = 14;
 }

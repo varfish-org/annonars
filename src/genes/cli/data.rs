@@ -34,6 +34,8 @@ pub struct Record {
     pub gtex: Option<gtex::Record>,
     /// Information from DOMINO.
     pub domino: Option<domino::Record>,
+    /// DECIPHER HI predictions.
+    pub decipher_hi: Option<decipher_hi::Record>,
 }
 
 /// Code for data from the ACMG secondary findings list.
@@ -224,6 +226,22 @@ pub mod clingen_gene {
         fn try_into(self) -> Result<bio::bio_types::genome::Interval, Self::Error> {
             genomic_location_to_interval(&self.genomic_location)
         }
+    }
+}
+
+/// Code for deserializing data from DECIPHER HI.
+pub mod decipher_hi {
+    /// DECIPHER HI prediction.
+    #[derive(Debug, Clone, PartialEq, serde::Deserialize, serde::Serialize)]
+    pub struct Record {
+        /// HGNC identifier.
+        pub hgnc_id: String,
+        /// Official HGNC gene symbol.
+        pub hgnc_symbol: String,
+        /// P(HI) prediction from DECIPHER HI.
+        pub p_hi: f64,
+        /// Percent HI index.
+        pub hi_index: f64,
     }
 }
 
@@ -2118,6 +2136,23 @@ mod tests {
         let records = rdr
             .deserialize()
             .collect::<Result<Vec<clingen_gene::Gene>, csv::Error>>()?;
+        insta::assert_yaml_snapshot!(records);
+
+        Ok(())
+    }
+
+    #[test]
+    fn deserialize_decipher_hi_record() -> Result<(), anyhow::Error> {
+        let path_tsv = "tests/genes/decipher/decipher_hi_prediction.tsv";
+        let str_tsv = std::fs::read_to_string(path_tsv)?;
+        let mut rdr = csv::ReaderBuilder::new()
+            .has_headers(true)
+            .delimiter(b'\t')
+            .flexible(false)
+            .from_reader(str_tsv.as_bytes());
+        let records = rdr
+            .deserialize()
+            .collect::<Result<Vec<decipher_hi::Record>, csv::Error>>()?;
         insta::assert_yaml_snapshot!(records);
 
         Ok(())
