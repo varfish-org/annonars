@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.28.0](https://github.com/bihealth/annonars/compare/v0.27.0...v0.28.0) (2023-11-22)
+
+
+### Features
+
+* adding information from DECIPHER HI ([#323](https://github.com/bihealth/annonars/issues/323)) ([#324](https://github.com/bihealth/annonars/issues/324)) ([06b51a6](https://github.com/bihealth/annonars/commit/06b51a64f599bee58a1326e5a4dbdcfb0fbf3803))
+
 ## [0.27.0](https://github.com/bihealth/annonars/compare/v0.26.1...v0.27.0) (2023-11-21)
 
 
