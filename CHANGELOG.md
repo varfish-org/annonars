@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.29.0](https://github.com/bihealth/annonars/compare/v0.28.0...v0.29.0) (2023-11-22)
+
+
+### Bug Fixes
+
+* use prefixing conventions for enums ([#326](https://github.com/bihealth/annonars/issues/326)) ([6e4aab9](https://github.com/bihealth/annonars/commit/6e4aab9476cefdc03d137f8defcaaadd73186a6a))
+
 ## [0.28.0](https://github.com/bihealth/annonars/compare/v0.27.0...v0.28.0) (2023-11-22)
 
 
