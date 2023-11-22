@@ -83,6 +83,9 @@ impl FromStr for CpxType {
 
     fn from_str(s: &str) -> Result<Self, Self::Err> {
         Ok(match s {
+            "CTX_INV" => CpxType::CtxInv,
+            "CTX_PP/QQ" => CpxType::CtxPpQq,
+            "CTX_PQ/QP" => CpxType::CtxPqQp,
             "CCR" => CpxType::Ccr,
             "dDUP" => CpxType::Ddup,
             "dDUP_iDEL" => CpxType::DdupIdel,
