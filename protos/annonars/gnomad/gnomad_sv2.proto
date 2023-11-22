@@ -89,6 +89,12 @@ enum CpxType {
     // piDUP_RF: Palindromic inverted tandem duplication, reverse-forward
     // orientation.
     CPX_TYPE_PI_DUP_RF = 14;
+    // CTX_INV: new in gnomAD SV 4.0 but not documented yet
+    CPX_TYPE_CTX_INV = 15;
+    // CTX_PP/QQ: new in gnomAD SV 4.0 but not documented yet
+    CPX_TYPE_CTX_PP_QQ = 16;
+    // CTX_PQ/QP: new in gnomAD SV 4.0 but not documented yet
+    CPX_TYPE_CTX_PQ_QP = 17;
 }
 
 // Store the relevant allele counts and frequencies in a given sub cohort.
