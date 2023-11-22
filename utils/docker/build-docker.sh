@@ -21,6 +21,6 @@ docker build . \
     --file utils/docker/Dockerfile \
     --build-arg git_treeish=$GIT_TAG \
     --build-arg git_url=$GIT_URL \
-    --no-cache \
     --pull \
-    -t ghcr.io/$ORG/$REPO:$DOCKER_VERSION
+    -t ghcr.io/$ORG/$REPO:$DOCKER_VERSION \
+    "$@"

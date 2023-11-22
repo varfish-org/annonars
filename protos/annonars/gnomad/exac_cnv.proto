@@ -6,28 +6,32 @@ package annonars.gnomad.exac_cnv;
 
 // Enumeration for the CNV type.
 enum CnvType {
+    // unknown
+    CNV_TYPE_UNKNOWN = 0;
     // Deletion.
-    DEL = 0;
+    CNV_TYPE_DEL = 1;
     // Duplication.
-    DUP = 1;
+    CNV_TYPE_DUP = 2;
 }
 
 // ExAC population.
 enum Population {
+    // unknown
+    POPULATION_UNKNOWN = 0;
     // African
-    AFR = 0;
+    POPULATION_AFR = 1;
     // Ad Mixed American
-    AMR = 1;
+    POPULATION_AMR = 2;
     // East Asian
-    EAS = 2;
+    POPULATION_EAS = 3;
     // Finnish
-    FIN = 3;
+    POPULATION_FIN = 4;
     // Non-Finnish European
-    NFE = 4;
+    POPULATION_NFE = 5;
     // South Asian
-    SAS = 5;
+    POPULATION_SAS = 6;
     // Other,
-    OTHER = 6;
+    POPULATION_OTHER = 7;
 }
 
 // Protocol buffer for the ExAC CNV data.

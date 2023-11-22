@@ -2,5 +2,5 @@
 source: src/clinvar_sv/cli/query.rs
 expression: "&out_data"
 ---
-{"release":"GRCh37","chromosome":"22","start":34150132,"stop":34182300,"innerStart":34150132,"outerStart":34182300,"vcv":"VCV000057627","referenceAssertions":[{"rcv":"RCV000051361","title":"GRCh38/hg38 22q12.3(chr22:33754145-33786313)x1 AND See cases","reviewStatus":"CRITERIA_PROVIDED_SINGLE_SUBMITTER"}]}
+{"release":"GRCh37","chromosome":"22","start":34150132,"stop":34182300,"innerStart":34150132,"outerStart":34182300,"vcv":"VCV000057627","referenceAssertions":[{"rcv":"RCV000051361","title":"GRCh38/hg38 22q12.3(chr22:33754145-33786313)x1 AND See cases","reviewStatus":"REVIEW_STATUS_CRITERIA_PROVIDED_MULTIPLE_SUBMITTERS_NO_CONFLICTS"}]}
 

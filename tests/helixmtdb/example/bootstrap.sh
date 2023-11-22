@@ -10,13 +10,9 @@ if [[ tests/gnomad-nuclear/example-genomes/gnomad-genomes.vcf \
     tabix -f tests/gnomad-nuclear/example-genomes/gnomad-genomes.vcf.bgz
 fi
 
-rm -rf tests/gnomad-nuclear/example-genomes/gnomad-genomes.vcf.bgz.db
+rm -rf tests/helixmtdb/example/helixmtdb.vcf.bgz.db
 cargo run --all-features -- \
-    gnomad-mtdna import \
-    --import-fields-json '{
-        "vep": true,
-    }' \
+    helixmtdb import \
     --genome-release grch37 \
-    --gnomad-kind genomes \
-    --path-in-vcf tests/gnomad-nuclear/example-genomes/gnomad-genomes.vcf.bgz \
-    --path-out-rocksdb tests/gnomad-nuclear/example-genomes/gnomad-genomes.vcf.bgz.db
+    --path-in-vcf tests/helixmtdb/example/helixmtdb.vcf.bgz \
+    --path-out-rocksdb tests/helixmtdb/example/helixmtdb.vcf.bgz.db

@@ -150,13 +150,13 @@ pub mod counts_by_freq {
         fn from(val: CoarseClinicalSignificance) -> Self {
             match val {
                 CoarseClinicalSignificance::Benign => {
-                    crate::pbs::clinvar::per_gene::CoarseClinicalSignificance::CoarseBenign
+                    crate::pbs::clinvar::per_gene::CoarseClinicalSignificance::Benign
                 }
                 CoarseClinicalSignificance::Uncertain => {
-                    crate::pbs::clinvar::per_gene::CoarseClinicalSignificance::CoarseUncertain
+                    crate::pbs::clinvar::per_gene::CoarseClinicalSignificance::Uncertain
                 }
                 CoarseClinicalSignificance::Pathogenic => {
-                    crate::pbs::clinvar::per_gene::CoarseClinicalSignificance::CoarsePathogenic
+                    crate::pbs::clinvar::per_gene::CoarseClinicalSignificance::Pathogenic
                 }
             }
         }

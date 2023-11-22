@@ -6,50 +6,56 @@ package annonars.clinvar.minimal;
 
 // Enumeration for variant type.
 enum VariantType {
+    // unknown
+    VARIANT_UNKNOWN = 0;
     // deletion
-    DELETION = 0;
+    VARIANT_TYPE_DELETION = 1;
     // duplication
-    DUPLICATION = 1;
+    VARIANT_TYPE_DUPLICATION = 2;
     // indel
-    INDEL = 2;
+    VARIANT_TYPE_INDEL = 3;
     // insertion
-    INSERTION = 3;
+    VARIANT_TYPE_INSERTION = 4;
     // inversion
-    INVERSION = 4;
+    VARIANT_TYPE_INVERSION = 5;
     // single nucleotide variant
-    SNV = 5;
+    VARIANT_TYPE_SNV = 6;
 }
 
 // Enumeration for ClinVar pathogenicity.
 enum ClinicalSignificance {
+    // unknown
+    CLINICAL_SIGNIFICANCE_UNKNOWN = 0;
     // Pathogenic.
-    PATHOGENIC = 0;
+    CLINICAL_SIGNIFICANCE_PATHOGENIC = 1;
     // Likely pathogenic.
-    LIKELY_PATHOGENIC = 1;
+    CLINICAL_SIGNIFICANCE_LIKELY_PATHOGENIC = 2;
     // Uncertain significance.
-    UNCERTAIN_SIGNIFICANCE = 2;
+    CLINICAL_SIGNIFICANCE_UNCERTAIN_SIGNIFICANCE = 3;
     // Likely benign.
-    LIKELY_BENIGN = 3;
+    CLINICAL_SIGNIFICANCE_LIKELY_BENIGN = 4;
     // Benign.
-    BENIGN = 4;
+    CLINICAL_SIGNIFICANCE_BENIGN = 5;
 }
 
 /// Enumeration for ClinVar review status.
 enum ReviewStatus {
+    // unknown
+    REVIEW_STATUS_PRACTICE_UNKNOWN = 0;
     // "practice guideline"
-    PRACTICE_GUIDELINE = 0;
+    REVIEW_STATUS_PRACTICE_GUIDELINE = 1;
     // "reviewed by expert panel"
-    REVIEWED_BY_EXPERT_PANEL = 1;
+    REVIEW_STATUS_REVIEWED_BY_EXPERT_PANEL = 2;
     // "criteria provided, multiple submitters, no conflicts"
-    CRITERIA_PROVIDED_MULTIPLE_SUBMITTERS_NO_CONFLICTS = 2;
+    REVIEW_STATUS_CRITERIA_PROVIDED_MULTIPLE_SUBMITTERS_NO_CONFLICTS = 3;
     // "criteria provided, single submitter"
-    CRITERIA_PROVIDED_SINGLE_SUBMITTER = 3;
+    REVIEW_STATUS_CRITERIA_PROVIDED_SINGLE_SUBMITTER = 4;
     // "criteria provided, conflicting interpretations"
-    CRITERIA_PROVIDED_CONFLICTING_INTERPRETATIONS = 4;
+    REVIEW_STATUS_CRITERIA_PROVIDED_CONFLICTING_INTERPRETATIONS = 5;
     // "no assertion criteria provided"
-    NO_ASSERTION_CRITERIA_PROVIDED = 5;
+    REVIEW_STATUS_NO_ASSERTION_CRITERIA_PROVIDED = 6;
     // "no assertion provided"
-    NO_ASSERTION_PROVIDED = 6;
+    REVIEW_STATUS_NO_ASSERTION_PROVIDED = 7;
 }
 
 // Record for storing information about a reference clinvar assertion.

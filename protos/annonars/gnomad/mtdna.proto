@@ -6,13 +6,15 @@ import "annonars/gnomad/vep_gnomad3.proto";
 
 // Protocol buffer enum for site-level filters.
 enum Filter {
+    // unknown
+    FILTER_UNKNOWN = 0;
     // Variant overlaps site that is commonly reported in literature to be artifact prone.
-    ARTIFACT_PRONE_SITE = 0;
+    FILTER_ARTIFACT_PRONE_SITE = 1;
     // Allele where all samples with the variant call had at least 2 different heteroplasmic indels
     // called at the position.
-    INDEL_STACK = 1;
+    FILTER_INDEL_STACK = 2;
     // No-pass-genotypes site (no individuals were PASS for the variant).
-    NO_PASS_GENOTYPE = 2;
+    FILTER_NO_PASS_GENOTYPE = 3;
 }
 
 // Encapsulate VCF INFO fields related to quality.
@@ -209,16 +211,16 @@ message Record {
     repeated Filter filters = 12;
 
     // MitoTip raw score
-    optional float mitotip_score = 14;
+    optional float mitotip_score = 13;
     // MitoTip score interpretation
-    optional string mitotip_trna_prediction = 15;
+    optional string mitotip_trna_prediction = 14;
     // tRNA pathogenicity classification from PON-mt-tRNA
-    optional string pon_mt_trna_prediction = 16;
+    optional string pon_mt_trna_prediction = 15;
     // tRNA ML_probability_of_pathogenicity from PON-mt-tRNA
-    optional string pon_ml_probability_of_pathogenicity = 17;
+    optional string pon_ml_probability_of_pathogenicity = 16;
 
     // VEP v3 annotation records.
-    repeated annonars.gnomad.vep_gnomad3.Vep vep = 13;
+    repeated annonars.gnomad.vep_gnomad3.Vep vep = 17;
     // Summary information for variant quality interpretation.
     optional QualityInfo quality_info = 18;
     // Information related to heteroplasmy levels.
