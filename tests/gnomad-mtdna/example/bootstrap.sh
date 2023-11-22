@@ -13,6 +13,7 @@ fi
 rm -rf tests/gnomad-mtdna/example/gnomad-mtdna.vcf.bgz.db
 cargo run --all-features -- \
     gnomad-mtdna import \
+    --gnomad-version 3.0 \
     --import-fields-json '{
         "vep": true,
         "quality": true,

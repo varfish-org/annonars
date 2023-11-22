@@ -54,6 +54,7 @@ impl ToString for Population {
             Population::Mid => "MID".to_string(),
             Population::Nfe => "NFE".to_string(),
             Population::Sas => "SAS".to_string(),
+            _ => unreachable!("unknown population: {:?}", self),
         }
     }
 }

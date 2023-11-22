@@ -6,16 +6,18 @@ import "annonars/gnomad/vep_gnomad2.proto";
 
 // Protocol buffer enum for site-level filters.
 enum Filter {
+    // unknown
+    FILTER_UNKNOWN = 0;
     // Allele count is zero after filtering out low-confidence genotypes (GQ < 20; DP < 10; and AB <
     // 0.2 for het calls).
-    FILTER_ALLELE_COUNT_IS_ZERO = 0;
+    FILTER_ALLELE_COUNT_IS_ZERO = 1;
     // InbreedingCoeff < -0.3.
-    FILTER_INBREEDING_COEFF = 1;
+    FILTER_INBREEDING_COEFF = 2;
     // Passed all variant filters
-    FILTER_PASS = 2;
+    FILTER_PASS = 3;
     // Failed random forest filtering thresholds of 0.055272738028512555, 0.20641025579497013
     // (probabilities of being a true positive variant) for SNPs, indels
-    FILTER_RANDOM_FOREST = 3;
+    FILTER_RANDOM_FOREST = 4;
 }
 
 // Store the relevant allele counts and frequencies in a given sub cohort.

@@ -54,6 +54,7 @@ impl ToString for Population {
             Population::Eas => "EAS",
             Population::Eur => "EUR",
             Population::Other => "OTH",
+            _ => unreachable!("unknown population: {:?}", self),
         }
         .to_string()
     }

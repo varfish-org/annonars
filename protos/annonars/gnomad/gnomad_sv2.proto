@@ -9,80 +9,86 @@ package annonars.gnomad.gnomad_sv2;
 
 // Protocol buffer enum for site-level filters.
 enum Filter {
+    // unknown
+    FILTER_UNKNOWN = 0;
     // All filters passed.
-    FILTER_PASS = 0;
+    FILTER_PASS = 1;
     // Site does not meet minimum requirements for fraction of PCR- samples
     // with non-null genotypes. Flags sites more prone to false discoveries.
-    FILTER_LOW_CALL_RATE = 1;
+    FILTER_LOW_CALL_RATE = 2;
     // Multiallelic site.
-    FILTER_MULTIALLELIC = 2;
+    FILTER_MULTIALLELIC = 3;
     // Site enriched for non-reference genotypes among PCR+ samples. Likely
     // reflects technical batch effects. All PCR- samples have been assigned
     // null GTs for these sites.
-    FILTER_PCRPLUS_ENRICHED = 3;
+    FILTER_PCRPLUS_ENRICHED = 4;
     // Variant is unresolved.
-    FILTER_UNRESOLVED = 4;
+    FILTER_UNRESOLVED = 5;
     // Allele frequency for this variant in PCR- samples is sensitive to
     // choice of GQ filtering thresholds. All PCR- samples have been assigned
     // null GTs for these sites.
-    FILTER_UNSTABLE_AF_PCRMINUS = 5;
+    FILTER_UNSTABLE_AF_PCRMINUS = 6;
 }
 
 // The types of SV in gnomad-SV v2.
 enum SvType {
+    // unknown
+    SV_TYPE_UNKNOWN = 0;
     // Breakend.
-    SV_TYPE_BND = 0;
+    SV_TYPE_BND = 1;
     // Complex variant.
-    SV_TYPE_CPX = 1;
+    SV_TYPE_CPX = 2;
     // Translocation.
-    SV_TYPE_CTX = 2;
+    SV_TYPE_CTX = 3;
     // Deletion.
-    SV_TYPE_DEL = 3;
+    SV_TYPE_DEL = 4;
     // Duplication.
-    SV_TYPE_DUP = 4;
+    SV_TYPE_DUP = 5;
     // Insertion.
-    SV_TYPE_INS = 5;
+    SV_TYPE_INS = 6;
     // Inversion.
-    SV_TYPE_INV = 6;
+    SV_TYPE_INV = 7;
     // Copy number variable region.
-    SV_TYPE_MCNV = 7;
+    SV_TYPE_MCNV = 8;
 }
 
 // Further definition of CPX type.
 enum CpxType {
+    // unknown
+    CPX_TYPE_UNKNOWN = 0;
     // CCR: Complex chromosomal rearrangement, involving two or more
     // chromosomes and multiple SV signatures.
-    CPX_TYPE_CCR = 0;
+    CPX_TYPE_CCR = 1;
     // INS_iDEL: Insertion with deletion at insertion site.
-    CPX_TYPE_INS_IDEL = 1;
+    CPX_TYPE_INS_IDEL = 2;
     // INVdel: Complex inversion with 3' flanking deletion.
-    CPX_TYPE_INV_DEL = 2;
+    CPX_TYPE_INV_DEL = 3;
     // INVdup: Complex inversion with 3' flanking duplication.
-    CPX_TYPE_INV_DUP = 3;
+    CPX_TYPE_INV_DUP = 4;
     // dDUP: Dispersed duplication.
-    CPX_TYPE_DDUP = 4;
+    CPX_TYPE_DDUP = 5;
     // dDUP_iDEL: Dispersed duplication with deletion at insertion site.
-    CPX_TYPE_DDUP_IDEL = 5;
+    CPX_TYPE_DDUP_IDEL = 6;
     // delINVdel: Complex inversion with 5' and 3' flanking deletions.
-    CPX_TYPE_DEL_INV_DEL = 6;
+    CPX_TYPE_DEL_INV_DEL = 7;
     // delINVdup: Complex inversion with 5' flanking deletion and 3' flanking
     // duplication.
-    CPX_TYPE_DEL_INV_DUP = 7;
+    CPX_TYPE_DEL_INV_DUP = 8;
     // delINV: Complex inversion with 5' flanking deletion.
-    CPX_TYPE_DEL_INV = 8;
+    CPX_TYPE_DEL_INV = 9;
     // dupINVdel: Complex inversion with 5' flanking duplication and 3'
     // flanking deletion.
-    CPX_TYPE_DUP_INV_DEL = 9;
+    CPX_TYPE_DUP_INV_DEL = 10;
     // dupINVdup: Complex inversion with 5' and 3' flanking duplications.
-    CPX_TYPE_DUP_INV_DUP = 10;
+    CPX_TYPE_DUP_INV_DUP = 11;
     // dupINV: Complex inversion with 5' flanking duplication.
-    CPX_TYPE_DUP_INV = 11;
+    CPX_TYPE_DUP_INV = 12;
     // piDUP_FR: Palindromic inverted tandem duplication, forward-reverse
     // orientation.
-    CPX_TYPE_PI_DUP_FR = 12;
+    CPX_TYPE_PI_DUP_FR = 13;
     // piDUP_RF: Palindromic inverted tandem duplication, reverse-forward
     // orientation.
-    CPX_TYPE_PI_DUP_RF = 13;
+    CPX_TYPE_PI_DUP_RF = 14;
 }
 
 // Store the relevant allele counts and frequencies in a given sub cohort.
@@ -128,16 +134,18 @@ message AlleleCountsBySex {
 
 // gnomAD SV population.
 enum Population {
+    // unknown
+    POPULATION_UNKNOWN = 0;
     // African
-    POPULATION_AFR = 0;
+    POPULATION_AFR = 1;
     // Ad Mixed American
-    POPULATION_AMR = 1;
+    POPULATION_AMR = 2;
     // East Asian
-    POPULATION_EAS = 2;
+    POPULATION_EAS = 3;
     // European.
-    POPULATION_EUR = 3;
+    POPULATION_EUR = 4;
     // Other,
-    POPULATION_OTHER = 4;
+    POPULATION_OTHER = 5;
 }
 
 // Store the allele counts for the given sub cohort in the given population.

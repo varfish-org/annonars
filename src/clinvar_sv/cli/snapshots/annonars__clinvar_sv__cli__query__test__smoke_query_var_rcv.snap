@@ -2,5 +2,5 @@
 source: src/clinvar_sv/cli/query.rs
 expression: "&out_data"
 ---
-{"release":"GRCh37","chromosome":"X","start":102885179,"stop":102967225,"innerStart":102885179,"outerStart":102967225,"vcv":"VCV000057688","referenceAssertions":[{"rcv":"RCV000051426","title":"GRCh38/hg38 Xq22.2(chrX:103630251-103712297)x1 AND See cases","clinicalSignificance":"CLINICAL_SIGNIFICANCE_UNCERTAIN_SIGNIFICANCE","reviewStatus":"REVIEW_STATUS_CRITERIA_PROVIDED_SINGLE_SUBMITTER"}]}
+{"release":"GRCh37","chromosome":"X","start":102885179,"stop":102967225,"innerStart":102885179,"outerStart":102967225,"vcv":"VCV000057688","referenceAssertions":[{"rcv":"RCV000051426","title":"GRCh38/hg38 Xq22.2(chrX:103630251-103712297)x1 AND See cases","clinicalSignificance":"CLINICAL_SIGNIFICANCE_LIKELY_PATHOGENIC","reviewStatus":"REVIEW_STATUS_CRITERIA_PROVIDED_MULTIPLE_SUBMITTERS_NO_CONFLICTS"}]}
 
