@@ -2,5 +2,5 @@
 source: src/clinvar_minimal/cli/query.rs
 expression: "&out_data"
 ---
-{"release":"GRCh37","chromosome":"13","start":95235557,"stop":95235557,"reference":"A","alternative":"G","vcv":"VCV001273284","referenceAssertions":[{"rcv":"RCV001679107","title":"NM_014305.4(TGDS):c.314-67T>C AND not provided","clinicalSignificance":"ClinicalSignificance_BENIGN","reviewStatus":"ReviewStatus_CRITERIA_PROVIDED_SINGLE_SUBMITTER"}]}
+{"release":"GRCh37","chromosome":"13","start":95235557,"stop":95235557,"reference":"A","alternative":"G","vcv":"VCV001273284","referenceAssertions":[{"rcv":"RCV001679107","title":"NM_014305.4(TGDS):c.314-67T>C AND not provided","clinicalSignificance":"CLINICAL_SIGNIFICANCE_BENIGN","reviewStatus":"REVIEW_STATUS_CRITERIA_PROVIDED_SINGLE_SUBMITTER"}]}
 

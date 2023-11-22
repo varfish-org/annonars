@@ -2,5 +2,5 @@
 source: src/functional/cli/query.rs
 expression: "&out_data"
 ---
-{"chromosome":"1","start":1004592,"stop":1004706,"id":"id-GeneID:106783496-2","dbxref":"GeneID:106783496","category":"Category_REGION"}
+{"chromosome":"1","start":1004592,"stop":1004706,"id":"id-GeneID:106783496-2","dbxref":"GeneID:106783496","category":"CATEGORY_REGION"}
 

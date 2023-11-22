@@ -795,7 +795,7 @@ expression: records
   excludedAc: 1
   an: 56433
   filters:
-    - Filter_NO_PASS_GENOTYPE
+    - FILTER_NO_PASS_GENOTYPE
   vep:
     - allele: CTCAA
       consequence: intergenic_variant
@@ -1576,7 +1576,7 @@ expression: records
   excludedAc: 1
   an: 56433
   filters:
-    - Filter_NO_PASS_GENOTYPE
+    - FILTER_NO_PASS_GENOTYPE
   vep:
     - allele: G
       consequence: intergenic_variant
