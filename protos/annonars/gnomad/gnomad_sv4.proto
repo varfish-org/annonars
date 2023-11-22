@@ -9,53 +9,53 @@ import "annonars/gnomad/gnomad_sv2.proto";
 // Enumeration for filters.
 enum Filter {
     // All filters passed.
-    Filter_PASS = 0;
+    FILTER_PASS = 0;
     // Low-quality variant that did not pass manual review of supporting
     // evidence.
-    Filter_FAIL_MANUAL_REVIEW = 1;
+    FILTER_FAIL_MANUAL_REVIEW = 1;
     // Unacceptably high rate of no-call GTs
-    Filter_HIGH_NCR = 2;
+    FILTER_HIGH_NCR = 2;
     // SVs that are overlapped by over 50% by IGH or MHC regions, these
     // variants are of low confidence.
-    Filter_IGH_MHC_OVERLAP = 3;
+    FILTER_IGH_MHC_OVERLAP = 3;
     // Deletions under 1 kbp that are uniquely from wham and have SR-only
     // support.
-    Filter_LOWQUAL_WHAM_SR_DEL = 4;
+    FILTER_LOWQUAL_WHAM_SR_DEL = 4;
     // Multiallelic site
-    Filter_MULTIALLELIC = 5;
+    FILTER_MULTIALLELIC = 5;
     // SVs that are enriched for non-reference genotypes in outlier samples,
     // likely indicating noisy or unreliable genotypes.
-    Filter_OUTLIER_SAMPLE_ENRICHED = 6;
+    FILTER_OUTLIER_SAMPLE_ENRICHED = 6;
     // Multiple large CNVs called at the same locus likely indicates unreliable
     // clustering and/or low-quality multiallelic locus.
-    Filter_REDUNDANT_LG_CNV = 7;
+    FILTER_REDUNDANT_LG_CNV = 7;
     // Likely reference artifact sites that are homozygous alternative in over
     // 99% of the samples.
-    Filter_REFERENCE_ARTIFACT = 8;
+    FILTER_REFERENCE_ARTIFACT = 8;
     // Variant is unresolved
-    Filter_UNRESOLVED = 9;
+    FILTER_UNRESOLVED = 9;
     // Generic failure.
-    Filter_FAIL = 10;
+    FILTER_FAIL = 10;
 }
 
 // The types of SV in gnomad-SV v2.
 enum SvType {
     // Breakend.
-    SvType_BND = 0;
+    SV_TYPE_BND = 0;
     // Copy number variable region.
-    SvType_CNV = 1;
+    SV_TYPE_CNV = 1;
     // Complex variant.
-    SvType_CPX = 2;
+    SV_TYPE_CPX = 2;
     // Translocation.
-    SvType_CTX = 3;
+    SV_TYPE_CTX = 3;
     // Deletion.
-    SvType_DEL = 4;
+    SV_TYPE_DEL = 4;
     // Duplication.
-    SvType_DUP = 5;
+    SV_TYPE_DUP = 5;
     // Insertion.
-    SvType_INS = 6;
+    SV_TYPE_INS = 6;
     // Inversion.
-    SvType_INV = 7;
+    SV_TYPE_INV = 7;
 }
 
 // Store the relevant allele counts and frequencies in a given sub cohort.
@@ -115,25 +115,25 @@ message AlleleCountsBySex {
 // gnomAD SV population.
 enum Population {
     // African
-    Population_AFR = 0;
+    POPULATION_AFR = 0;
     // Amish
-    Population_AMI = 1;
+    POPULATION_AMI = 1;
     // Admixed American
-    Population_AMR = 2;
+    POPULATION_AMR = 2;
     // Ashkenazi Jewish
-    Population_ASJ = 3;
+    POPULATION_ASJ = 3;
     // East Asian
-    Population_EAS = 4;
+    POPULATION_EAS = 4;
     // Finnish
-    Population_FIN = 5;
+    POPULATION_FIN = 5;
     // Middle Eastern
-    Population_MID = 6;
+    POPULATION_MID = 6;
     // Non-Finnish European
-    Population_NFE = 7;
+    POPULATION_NFE = 7;
     // South Asian
-    Population_SAS = 8;
+    POPULATION_SAS = 8;
     // Other
-    Population_OTHER = 9;
+    POPULATION_OTHER = 9;
 }
 
 // Store the allele counts for the given sub cohort in the given population.

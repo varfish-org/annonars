@@ -7,61 +7,61 @@ package annonars.functional.refseq;
 // Enumeration for `gbkey` field.
 enum Category {
     // Miscaellaneous feature.
-    Category_MISC_FEATURE = 0;
+    CATEGORY_MISC_FEATURE = 0;
     // Miscaellaneous recombination feature.
-    Category_MISC_RECOMB = 1;
+    CATEGORY_MISC_RECOMB = 1;
     // Miscaellaneous structure.
-    Category_MISC_STRUCTURE = 2;
+    CATEGORY_MISC_STRUCTURE = 2;
     // Mobile element.
-    Category_MOBILE_ELEMENT = 3;
+    CATEGORY_MOBILE_ELEMENT = 3;
     // Protein binding annotation.
-    Category_PROTEIN_BIND = 4;
+    CATEGORY_PROTEIN_BIND = 4;
     // Region.
-    Category_REGION = 5;
+    CATEGORY_REGION = 5;
     // Regulatory element.
-    Category_REGULATORY = 6;
+    CATEGORY_REGULATORY = 6;
     // Repeat region
-    Category_REPEAT_REGION = 7;
+    CATEGORY_REPEAT_REGION = 7;
     // Replication origin.
-    Category_REP_ORIGIN = 8;
+    CATEGORY_REP_ORIGIN = 8;
 }
 
 // Enumeration for `regulatory_class` field.
 enum RegulatoryClass {
     // CCAAT signal.
-    RegulatoryClass_CAAT_SIGNAL = 0;
+    REGULATORY_CLASS_CAAT_SIGNAL = 0;
     // DNase I hypersensitive site.
-    RegulatoryClass_DNASE_I_HYPERSENSITIVE_SITE = 1;
+    REGULATORY_CLASS_DNASE_I_HYPERSENSITIVE_SITE = 1;
     // Enhancer.
-    RegulatoryClass_ENHANCER = 2;
+    REGULATORY_CLASS_ENHANCER = 2;
     // Enhancer blocking element.
-    RegulatoryClass_ENHANCER_BLOCKING_ELEMENT = 3;
+    REGULATORY_CLASS_ENHANCER_BLOCKING_ELEMENT = 3;
     // Epigenetically modified region.
-    RegulatoryClass_EPIGENETICALLY_MODIFIED_REGION = 4;
+    REGULATORY_CLASS_EPIGENETICALLY_MODIFIED_REGION = 4;
     // GC signal.
-    RegulatoryClass_GC_SIGNAL = 5;
+    REGULATORY_CLASS_GC_SIGNAL = 5;
     // Imprinting control region.
-    RegulatoryClass_IMPRINTING_CONTROL_REGION = 6;
+    REGULATORY_CLASS_IMPRINTING_CONTROL_REGION = 6;
     // Insulator.
-    RegulatoryClass_INSULATOR = 7;
+    REGULATORY_CLASS_INSULATOR = 7;
     // Locus control region.
-    RegulatoryClass_LOCUS_CONTROL_REGION = 8;
+    REGULATORY_CLASS_LOCUS_CONTROL_REGION = 8;
     // Matrix attachment region.
-    RegulatoryClass_MATRIX_ATTACHMENT_REGION = 9;
+    REGULATORY_CLASS_MATRIX_ATTACHMENT_REGION = 9;
     // Micrococcal nuclease hypersensitive site.
-    RegulatoryClass_MICROCOCCAL_NUCLEASE_HYPERSENSITIVE_SITE = 10;
+    REGULATORY_CLASS_MICROCOCCAL_NUCLEASE_HYPERSENSITIVE_SITE = 10;
     // Promoter.
-    RegulatoryClass_PROMOTER = 11;
+    REGULATORY_CLASS_PROMOTER = 11;
     // Replication regulatory region.
-    RegulatoryClass_REPLICATION_REGULATORY_REGION = 12;
+    REGULATORY_CLASS_REPLICATION_REGULATORY_REGION = 12;
     // Response element.
-    RegulatoryClass_RESPONSE_ELEMENT = 13;
+    REGULATORY_CLASS_RESPONSE_ELEMENT = 13;
     // Silencer.
-    RegulatoryClass_SILENCER = 14;
+    REGULATORY_CLASS_SILENCER = 14;
     // TATA box.
-    RegulatoryClass_TATA_BOX = 15;
+    REGULATORY_CLASS_TATA_BOX = 15;
     // Transcriptional cis regulatory region.
-    RegulatoryClass_TRANSCRIPTIONAL_CIS_REGULATORY_REGION = 16;
+    REGULATORY_CLASS_TRANSCRIPTIONAL_CIS_REGULATORY_REGION = 16;
 }
 
 // Message for storing a RefSeq regulatory element.

@@ -31,17 +31,17 @@ message AcmgSecondaryFindingRecord {
 /// Enumeration for Haploinsufficiency / Triplosensitivity scores.
 enum ClingenDosageScore {
     // Sufficient evidence for dosage pathogenicity
-    ClingenDosageScore_SUFFICIENT_EVIDENCE_AVAILABLE = 0;
+    CLINGEN_DOSAGE_SCORE_SUFFICIENT_EVIDENCE_AVAILABLE = 0;
     // Some evidence for dosage pathogenicity
-    ClingenDosageScore_SOME_EVIDENCE_AVAILABLE = 1;
+    CLINGEN_DOSAGE_SCORE_SOME_EVIDENCE_AVAILABLE = 1;
     // Little evidence for dosage pathogenicity
-    ClingenDosageScore_LITTLE_EVIDENCE = 2;
+    CLINGEN_DOSAGE_SCORE_LITTLE_EVIDENCE = 2;
     // No evidence available
-    ClingenDosageScore_NO_EVIDENCE_AVAILABLE = 3;
+    CLINGEN_DOSAGE_SCORE_NO_EVIDENCE_AVAILABLE = 3;
     // Gene associated with autosomal recessive phenotype
-    ClingenDosageScore_RECESSIVE = 4;
+    CLINGEN_DOSAGE_SCORE_RECESSIVE = 4;
     // Dosage sensitivity unlikely
-    ClingenDosageScore_UNLIKELY = 5;
+    CLINGEN_DOSAGE_SCORE_UNLIKELY = 5;
 }
 
 /// `ClinGen` gene dosage sensitivity record.
@@ -414,9 +414,9 @@ message GnomadConstraintsRecord {
 // Status of the symbol report, which can be either "Approved" or "Entry Withdrawn".
 enum HgncStatus {
     // Approved by HGNC.
-    HgncStatus_APPROVED = 0;
+    HGNC_STATUS_APPROVED = 0;
     // Withdrawn by HGNC.
-    HgncStatus_WITHDRAWN = 1;
+    HGNC_STATUS_WITHDRAWN = 1;
 }
 
 // Information from the locus-specific dabase.
@@ -604,184 +604,184 @@ message ShetRecord {
 // Enumeration for GTEx V8 tissue
 enum GtexTissue {
     // Adipose Tissue
-    GtexTissue_ADIPOSE_TISSUE = 0;
+    GTEX_TISSUE_ADIPOSE_TISSUE = 0;
     // Adrenal Gland
-    GtexTissue_ADRENAL_GLAND = 1;
+    GTEX_TISSUE_ADRENAL_GLAND = 1;
     // Bladder
-    GtexTissue_BLADDER = 2;
+    GTEX_TISSUE_BLADDER = 2;
     // Blood
-    GtexTissue_BLOOD = 3;
+    GTEX_TISSUE_BLOOD = 3;
     // Blood Vessel
-    GtexTissue_BLOOD_VESSEL = 4;
+    GTEX_TISSUE_BLOOD_VESSEL = 4;
     // Bone Marrow
-    GtexTissue_BONE_MARROW = 5;
+    GTEX_TISSUE_BONE_MARROW = 5;
     // Brain
-    GtexTissue_BRAIN = 6;
+    GTEX_TISSUE_BRAIN = 6;
     // Breast
-    GtexTissue_BREAST = 7;
+    GTEX_TISSUE_BREAST = 7;
     // Cervix Uteri
-    GtexTissue_CERVIX_UTERI = 8;
+    GTEX_TISSUE_CERVIX_UTERI = 8;
     // Colon
-    GtexTissue_COLON = 9;
+    GTEX_TISSUE_COLON = 9;
     // Esophagus
-    GtexTissue_ESOPHAGUS = 10;
+    GTEX_TISSUE_ESOPHAGUS = 10;
     // Fallopian Tube
-    GtexTissue_FALLOPIAN_TUBE = 11;
+    GTEX_TISSUE_FALLOPIAN_TUBE = 11;
     // Heart
-    GtexTissue_HEART = 12;
+    GTEX_TISSUE_HEART = 12;
     // Kidney
-    GtexTissue_KIDNEY = 13;
+    GTEX_TISSUE_KIDNEY = 13;
     // Liver
-    GtexTissue_LIVER = 14;
+    GTEX_TISSUE_LIVER = 14;
     // Lung
-    GtexTissue_LUNG = 15;
+    GTEX_TISSUE_LUNG = 15;
     // Muscle
-    GtexTissue_MUSCLE = 16;
+    GTEX_TISSUE_MUSCLE = 16;
     // Nerve
-    GtexTissue_NERVE = 17;
+    GTEX_TISSUE_NERVE = 17;
     // Ovary
-    GtexTissue_OVARY = 18;
+    GTEX_TISSUE_OVARY = 18;
     // Pancreas
-    GtexTissue_PANCREAS = 19;
+    GTEX_TISSUE_PANCREAS = 19;
     // Pituitary
-    GtexTissue_PITUITARY = 20;
+    GTEX_TISSUE_PITUITARY = 20;
     // Prostate
-    GtexTissue_PROSTATE = 21;
+    GTEX_TISSUE_PROSTATE = 21;
     // Salivary Gland
-    GtexTissue_SALIVARY_GLAND = 22;
+    GTEX_TISSUE_SALIVARY_GLAND = 22;
     // Skin
-    GtexTissue_SKIN = 23;
+    GTEX_TISSUE_SKIN = 23;
     // Small Intestine
-    GtexTissue_SMALL_INTESTINE = 24;
+    GTEX_TISSUE_SMALL_INTESTINE = 24;
     // Spleen
-    GtexTissue_SPLEEN = 25;
+    GTEX_TISSUE_SPLEEN = 25;
     // Stomach
-    GtexTissue_STOMACH = 26;
+    GTEX_TISSUE_STOMACH = 26;
     // Testis
-    GtexTissue_TESTIS = 27;
+    GTEX_TISSUE_TESTIS = 27;
     // Thyroid
-    GtexTissue_THYROID = 28;
+    GTEX_TISSUE_THYROID = 28;
     // Uterus
-    GtexTissue_UTERUS = 29;
+    GTEX_TISSUE_UTERUS = 29;
     // Vagina
-    GtexTissue_VAGINA = 30;
+    GTEX_TISSUE_VAGINA = 30;
 }
 
 
 // Enumeration for GTEx V8 tissue details
 enum GtexTissueDetailed {
     // Adipose - Subcutaneous
-    GtexTissueDetailed_ADIPOSE_SUBCUTANEOUS = 0;
+    GTEX_TISSUE_DETAILED_ADIPOSE_SUBCUTANEOUS = 0;
     // Adipose - Visceral (Omentum)
-    GtexTissueDetailed_ADIPOSE_VISCERAL_OMENTUM = 1;
+    GTEX_TISSUE_DETAILED_ADIPOSE_VISCERAL_OMENTUM = 1;
     // Adrenal Gland
-    GtexTissueDetailed_ADRENAL_GLAND = 2;
+    GTEX_TISSUE_DETAILED_ADRENAL_GLAND = 2;
     // Artery - Aorta
-    GtexTissueDetailed_ARTERY_AORTA = 3;
+    GTEX_TISSUE_DETAILED_ARTERY_AORTA = 3;
     // Artery - Coronary
-    GtexTissueDetailed_ARTERY_CORONARY = 4;
+    GTEX_TISSUE_DETAILED_ARTERY_CORONARY = 4;
     // Artery - Tibial
-    GtexTissueDetailed_ARTERY_TIBIAL = 5;
+    GTEX_TISSUE_DETAILED_ARTERY_TIBIAL = 5;
     // Bladder
-    GtexTissueDetailed_BLADDER = 6;
+    GTEX_TISSUE_DETAILED_BLADDER = 6;
     // Brain - Amygdala
-    GtexTissueDetailed_BRAIN_AMYGDALA = 7;
+    GTEX_TISSUE_DETAILED_BRAIN_AMYGDALA = 7;
     // Brain - Anterior cingulate cortex (BA24)
-    GtexTissueDetailed_BRAIN_ANTERIOR_CINGULATE_CORTEX = 8;
+    GTEX_TISSUE_DETAILED_BRAIN_ANTERIOR_CINGULATE_CORTEX = 8;
     // Brain - Caudate (basal ganglia)
-    GtexTissueDetailed_BRAIN_CAUDATE_BASAL_GANGLIA = 9;
+    GTEX_TISSUE_DETAILED_BRAIN_CAUDATE_BASAL_GANGLIA = 9;
     // Brain - Cerebellar Hemisphere
-    GtexTissueDetailed_BRAIN_CEREBELLAR_HEMISPHERE = 10;
+    GTEX_TISSUE_DETAILED_BRAIN_CEREBELLAR_HEMISPHERE = 10;
     // Brain - Cerebellum
-    GtexTissueDetailed_BRAIN_CEREBELLUM = 11;
+    GTEX_TISSUE_DETAILED_BRAIN_CEREBELLUM = 11;
     // Brain - Cortex
-    GtexTissueDetailed_BRAIN_CORTEX = 12;
+    GTEX_TISSUE_DETAILED_BRAIN_CORTEX = 12;
     // Brain - Frontal Cortex (BA9)
-    GtexTissueDetailed_BRAIN_FRONTAL_CORTEX = 13;
+    GTEX_TISSUE_DETAILED_BRAIN_FRONTAL_CORTEX = 13;
     // Brain - Hippocampus
-    GtexTissueDetailed_BRAIN_HIPPOCAMPUS = 14;
+    GTEX_TISSUE_DETAILED_BRAIN_HIPPOCAMPUS = 14;
     // Brain - Hypothalamus
-    GtexTissueDetailed_BRAIN_HYPOTHALAMUS = 15;
+    GTEX_TISSUE_DETAILED_BRAIN_HYPOTHALAMUS = 15;
     // Brain - Nucleus accumbens (basal ganglia)
-    GtexTissueDetailed_BRAIN_NUCLEUS_ACCUMBENS = 16;
+    GTEX_TISSUE_DETAILED_BRAIN_NUCLEUS_ACCUMBENS = 16;
     // Brain - Putamen (basal ganglia)
-    GtexTissueDetailed_BRAIN_PUTAMEN_BASAL_GANGLIA = 17;
+    GTEX_TISSUE_DETAILED_BRAIN_PUTAMEN_BASAL_GANGLIA = 17;
     // Brain - Spinal cord (cervical c-1)
-    GtexTissueDetailed_BRAIN_SPINAL_CORD = 18;
+    GTEX_TISSUE_DETAILED_BRAIN_SPINAL_CORD = 18;
     // Brain - Substantia nigra
-    GtexTissueDetailed_BRAIN_SUBSTANTIA_NIGRA = 19;
+    GTEX_TISSUE_DETAILED_BRAIN_SUBSTANTIA_NIGRA = 19;
     // Breast - Mammary Tissue
-    GtexTissueDetailed_BREAST_MAMMARY_TISSUE = 20;
+    GTEX_TISSUE_DETAILED_BREAST_MAMMARY_TISSUE = 20;
     // Cells - Cultured fibroblasts
-    GtexTissueDetailed_CELLS_CULTURED_FIBROBLASTS = 21;
+    GTEX_TISSUE_DETAILED_CELLS_CULTURED_FIBROBLASTS = 21;
     // Cells - EBV-transformed lymphocytes
-    GtexTissueDetailed_CELLS_EBV_TRANSFORMED_LYMPHOCYTES = 22;
+    GTEX_TISSUE_DETAILED_CELLS_EBV_TRANSFORMED_LYMPHOCYTES = 22;
     // Cells - Leukemia cell line (CML)
-    GtexTissueDetailed_CELLS_LEUKEMIA_CELL_LINE = 23;
+   GTEX_TISSUE_DETAILED_CELLS_LEUKEMIA_CELL_LINE = 23;
     // Cervix - Ectocervix
-    GtexTissueDetailed_CERVIX_ECTOCERVIX = 24;
+   GTEX_TISSUE_DETAILED_CERVIX_ECTOCERVIX = 24;
     // Cervix - Endocervix
-    GtexTissueDetailed_CERVIX_ENDOCERVIX = 25;
+   GTEX_TISSUE_DETAILED_CERVIX_ENDOCERVIX = 25;
     // Colon - Sigmoid
-    GtexTissueDetailed_COLON_SIGMOID = 26;
+   GTEX_TISSUE_DETAILED_COLON_SIGMOID = 26;
     // Colon - Transverse
-    GtexTissueDetailed_COLON_TRANSVERSE = 27;
+   GTEX_TISSUE_DETAILED_COLON_TRANSVERSE = 27;
     // Esophagus - Gastroesophageal Junction
-    GtexTissueDetailed_ESOPHAGUS_GASTROESOPHAGEAL_JUNCTION = 28;
+   GTEX_TISSUE_DETAILED_ESOPHAGUS_GASTROESOPHAGEAL_JUNCTION = 28;
     // Esophagus - Mucosa
-    GtexTissueDetailed_ESOPHAGUS_MUCOSA = 29;
+   GTEX_TISSUE_DETAILED_ESOPHAGUS_MUCOSA = 29;
     // Esophagus - Muscularis
-    GtexTissueDetailed_ESOPHAGUS_MUSCULARIS = 30;
+   GTEX_TISSUE_DETAILED_ESOPHAGUS_MUSCULARIS = 30;
     // Fallopian Tube
-    GtexTissueDetailed_FALLOPIAN_TUBE = 31;
+   GTEX_TISSUE_DETAILED_FALLOPIAN_TUBE = 31;
     // Heart - Atrial Appendage
-    GtexTissueDetailed_HEART_ATRIAL_APPENDAGE = 32;
+   GTEX_TISSUE_DETAILED_HEART_ATRIAL_APPENDAGE = 32;
     // Heart - Left Ventricle
-    GtexTissueDetailed_HEART_LEFT_VENTRICLE = 33;
+   GTEX_TISSUE_DETAILED_HEART_LEFT_VENTRICLE = 33;
     // Kidney - Cortex
-    GtexTissueDetailed_KIDNEY_CORTEX = 34;
+   GTEX_TISSUE_DETAILED_KIDNEY_CORTEX = 34;
     // Kidney - Medulla
-    GtexTissueDetailed_KIDNEY_MEDULLA = 35;
+   GTEX_TISSUE_DETAILED_KIDNEY_MEDULLA = 35;
     // Liver
-    GtexTissueDetailed_LIVER = 36;
+   GTEX_TISSUE_DETAILED_LIVER = 36;
     // Lung
-    GtexTissueDetailed_LUNG = 37;
+   GTEX_TISSUE_DETAILED_LUNG = 37;
     // Minor Salivary Gland
-    GtexTissueDetailed_MINOR_SALIVARY_GLAND = 38;
+   GTEX_TISSUE_DETAILED_MINOR_SALIVARY_GLAND = 38;
     // Muscle - Skeletal
-    GtexTissueDetailed_MUSCLE_SKELETAL = 39;
+   GTEX_TISSUE_DETAILED_MUSCLE_SKELETAL = 39;
     // Nerve - Tibial
-    GtexTissueDetailed_NERVE_TIBIAL = 40;
+   GTEX_TISSUE_DETAILED_NERVE_TIBIAL = 40;
     // Ovary
-    GtexTissueDetailed_OVARY = 41;
+   GTEX_TISSUE_DETAILED_OVARY = 41;
     // Pancreas
-    GtexTissueDetailed_PANCREAS = 42;
+   GTEX_TISSUE_DETAILED_PANCREAS = 42;
     // Pituitary
-    GtexTissueDetailed_PITUITARY = 43;
+   GTEX_TISSUE_DETAILED_PITUITARY = 43;
     // Prostate
-    GtexTissueDetailed_PROSTATE = 44;
+   GTEX_TISSUE_DETAILED_PROSTATE = 44;
     // Salivary Gland
-    GtexTissueDetailed_SALIVARY_GLAND = 45;
+   GTEX_TISSUE_DETAILED_SALIVARY_GLAND = 45;
     // Skin - Not Sun Exposed (Suprapubic)
-    GtexTissueDetailed_SKIN_NOT_SUN_EXPOSED_SUPRAPUBIC = 46;
+   GTEX_TISSUE_DETAILED_SKIN_NOT_SUN_EXPOSED_SUPRAPUBIC = 46;
     // Skin - Sun Exposed (Lower leg)
-    GtexTissueDetailed_SKIN_SUN_EXPOSED_LOWER_LEG = 47;
+   GTEX_TISSUE_DETAILED_SKIN_SUN_EXPOSED_LOWER_LEG = 47;
     // Small Intestine - Terminal Ileum
-    GtexTissueDetailed_SMALL_INTESTINE_TERMINAL_ILEUM = 48;
+   GTEX_TISSUE_DETAILED_SMALL_INTESTINE_TERMINAL_ILEUM = 48;
     // Spleen
-    GtexTissueDetailed_SPLEEN = 49;
+   GTEX_TISSUE_DETAILED_SPLEEN = 49;
     // Stomach
-    GtexTissueDetailed_STOMACH = 50;
+   GTEX_TISSUE_DETAILED_STOMACH = 50;
     // Testis
-    GtexTissueDetailed_TESTIS = 51;
+   GTEX_TISSUE_DETAILED_TESTIS = 51;
     // Thyroid
-    GtexTissueDetailed_THYROID = 52;
+   GTEX_TISSUE_DETAILED_THYROID = 52;
     // Uterus
-    GtexTissueDetailed_UTERUS = 53;
+   GTEX_TISSUE_DETAILED_UTERUS = 53;
     // Vagina
-    GtexTissueDetailed_VAGINA = 54;
+   GTEX_TISSUE_DETAILED_VAGINA = 54;
     // Whole Blood
-    GtexTissueDetailed_WHOLE_BLOOD = 55;
+   GTEX_TISSUE_DETAILED_WHOLE_BLOOD = 55;
 }
 
 // Entry with the tissue-specific information for a gene.
