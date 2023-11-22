@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.29.1](https://github.com/bihealth/annonars/compare/v0.29.0...v0.29.1) (2023-11-22)
+
+
+### Bug Fixes
+
+* adding missing INFO/CPX_TYPE values for gnomAD-SV v4.0 ([#329](https://github.com/bihealth/annonars/issues/329)) ([3d628d8](https://github.com/bihealth/annonars/commit/3d628d88af58e3a5c02daa9e158164df093a8d02))
+
 ## [0.29.0](https://github.com/bihealth/annonars/compare/v0.28.0...v0.29.0) (2023-11-22)
 
 
