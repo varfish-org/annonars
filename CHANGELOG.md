@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.29.2](https://github.com/bihealth/annonars/compare/v0.29.1...v0.29.2) (2023-11-23)
+
+
+### Bug Fixes
+
+* adding some missing interval-related conversions ([#331](https://github.com/bihealth/annonars/issues/331)) ([7730d07](https://github.com/bihealth/annonars/commit/7730d07f9cee8a45bea932679907e7a03d0e5256))
+
 ## [0.29.1](https://github.com/bihealth/annonars/compare/v0.29.0...v0.29.1) (2023-11-22)
 
 
