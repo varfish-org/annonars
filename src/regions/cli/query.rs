@@ -186,6 +186,7 @@ fn print_all(
 }
 
 /// Helper data structure that provides per-chromosome interval trees for querying.
+#[derive(Debug)]
 pub struct IntervalTrees {
     /// Per-chromosome interval trees.
     trees: rustc_hash::FxHashMap<String, ArrayBackedIntervalTree<u64, Vec<u8>>>,
@@ -250,6 +251,7 @@ impl IntervalTrees {
                 let key = iter.key().unwrap().to_vec();
                 tracing::trace!("iterator at {:?} => {:?}", &key, &record);
 
+                println!("INSERTING {:?}", &record.tree_data());
                 let TreeData {
                     chromosome,
                     start,
