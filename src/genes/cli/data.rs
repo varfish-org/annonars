@@ -1363,9 +1363,9 @@ pub mod hgnc {
         Withdrawn,
     }
 
-    impl Into<pbs::genes::base::HgncStatus> for Status {
-        fn into(self) -> pbs::genes::base::HgncStatus {
-            match self {
+    impl From<Status> for pbs::genes::base::HgncStatus {
+        fn from(val: Status) -> Self {
+            match val {
                 Status::Approve => pbs::genes::base::HgncStatus::Approved,
                 Status::Withdrawn => pbs::genes::base::HgncStatus::Withdrawn,
             }
