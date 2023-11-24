@@ -1,5 +1,13 @@
 # Changelog
 
+## [0.29.3](https://github.com/bihealth/annonars/compare/v0.29.2...v0.29.3) (2023-11-24)
+
+
+### Bug Fixes
+
+* another issue in enum protobuf conversion (with regions) ([#335](https://github.com/bihealth/annonars/issues/335)) ([aeeace3](https://github.com/bihealth/annonars/commit/aeeace35c76c502d39cdf1eac6aeb88fb2f938f0))
+* resolve issue with enum conversion to protobuf ones ([#333](https://github.com/bihealth/annonars/issues/333)) ([517ba37](https://github.com/bihealth/annonars/commit/517ba377fa37a1743c37c637a37cf78ccd7287df))
+
 ## [0.29.2](https://github.com/bihealth/annonars/compare/v0.29.1...v0.29.2) (2023-11-23)
 
 
