@@ -1350,6 +1350,8 @@ pub mod hgnc {
     use serde::{Deserialize, Serialize};
     use serde_with::DisplayFromStr;
 
+    use crate::pbs;
+
     /// Status of the symbol report, which can be either "Approved" or "Entry Withdrawn".
     #[derive(Debug, Clone, Serialize, Deserialize)]
     pub enum Status {
@@ -1359,6 +1361,15 @@ pub mod hgnc {
         /// Withdrawn symbol.
         #[serde(rename = "Entry Withdrawn")]
         Withdrawn,
+    }
+
+    impl Into<pbs::genes::base::HgncStatus> for Status {
+        fn into(self) -> pbs::genes::base::HgncStatus {
+            match self {
+                Status::Approve => pbs::genes::base::HgncStatus::Approved,
+                Status::Withdrawn => pbs::genes::base::HgncStatus::Withdrawn,
+            }
+        }
     }
 
     /// Information from the locus-specific dabase.
