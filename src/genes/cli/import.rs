@@ -825,7 +825,7 @@ fn convert_record(record: data::Record) -> pbs::genes::base::Record {
             name,
             locus_group,
             locus_type,
-            status: status as i32,
+            status: Into::<pbs::genes::base::HgncStatus>::into(status) as i32,
             location,
             location_sortable,
             alias_symbol: alias_symbol.unwrap_or_default(),
@@ -967,8 +967,10 @@ fn convert_record(record: data::Record) -> pbs::genes::base::Record {
                     tpms,
                 } = record;
                 pbs::genes::base::GtexTissueRecord {
-                    tissue: tissue as i32,
-                    tissue_detailed: tissue_detailed as i32,
+                    tissue: Into::<pbs::genes::base::GtexTissue>::into(tissue) as i32,
+                    tissue_detailed: Into::<pbs::genes::base::GtexTissueDetailed>::into(
+                        tissue_detailed,
+                    ) as i32,
                     tpms,
                 }
             })
