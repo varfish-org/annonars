@@ -1,5 +1,13 @@
 # Changelog
 
+## [0.29.4](https://github.com/bihealth/annonars/compare/v0.29.3...v0.29.4) (2023-11-24)
+
+
+### Bug Fixes
+
+* adding Debug trait to regions query IntervalTree ([#337](https://github.com/bihealth/annonars/issues/337)) ([2e014f4](https://github.com/bihealth/annonars/commit/2e014f4b9721e60fae4839dbb6e21febb3f48c76))
+* log to stderr ([#336](https://github.com/bihealth/annonars/issues/336)) ([aefa8ae](https://github.com/bihealth/annonars/commit/aefa8ae5cdbebf68aef1bf4129e33f575a2d8cfe))
+
 ## [0.29.3](https://github.com/bihealth/annonars/compare/v0.29.2...v0.29.3) (2023-11-24)
 
 
