@@ -321,6 +321,7 @@ pub fn main() -> Result<(), anyhow::Error> {
     // Build a tracing subscriber according to the configuration in `cli.common`.
     let collector = tracing_subscriber::fmt()
         .with_target(false)
+        .with_writer(std::io::stderr)
         .with_max_level(match cli.common.verbose.log_level() {
             Some(level) => match level {
                 log::Level::Error => tracing::Level::ERROR,
