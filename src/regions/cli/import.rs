@@ -5,7 +5,7 @@ use std::sync::Arc;
 use clap::Parser;
 use prost::Message;
 
-use crate::{common, genes::cli::data::clingen_gene};
+use crate::{common, genes::cli::data::clingen_gene, pbs};
 
 /// Helper data structures for reading CSV files.
 pub mod clingen {
@@ -178,8 +178,12 @@ fn tsv_import(
             isca_id,
             isca_region_name,
             genomic_location,
-            haploinsufficiency_score: haploinsufficiency_score as i32,
-            triplosensitivity_score: triplosensitivity_score as i32,
+            haploinsufficiency_score: Into::<pbs::genes::base::ClingenDosageScore>::into(
+                haploinsufficiency_score,
+            ) as i32,
+            triplosensitivity_score: Into::<pbs::genes::base::ClingenDosageScore>::into(
+                triplosensitivity_score,
+            ) as i32,
             haploinsufficiency_disease_id,
             triplosensitivity_disease_id,
         };
