@@ -8,19 +8,28 @@
 set -x
 set -euo pipefail
 
-CMAKE_INSTALL_PREFIX=${CMAKE_INSTALL_PREFIX-$HOME/.local/share/protoc}
+wget -O /tmp/protoc-${PROTOC_VERSION}-linux-x86_64.zip \
+    https://github.com/protocolbuffers/protobuf/releases/download/v${PROTOC_VERSION}/protoc-${PROTOC_VERSION}-linux-x86_64.zip
 
-mkdir -p utils/var
-cd utils/var
+pushd /tmp
+unzip protoc-${PROTOC_VERSION}-linux-x86_64.zip
+cp -r bin/. /usr/local/bin/.
+cp -r include/. /usr/local/include/.
+popd
 
-apt-get update
-apt-get install -y git cmake build-essential
+# CMAKE_INSTALL_PREFIX=${CMAKE_INSTALL_PREFIX-$HOME/.local/share/protoc}
 
-if [[ ! -e protobuf ]]; then
-    git clone https://github.com/protocolbuffers/protobuf.git
-fi
-cd protobuf
-git submodule update --init --recursive
+# mkdir -p utils/var
+# cd utils/var
 
-cmake . -DCMAKE_INSTALL_PREFIX=$CMAKE_INSTALL_PREFIX
-make -j 8 install
+# apt-get update
+# apt-get install -y git cmake build-essential
+
+# if [[ ! -e protobuf ]]; then
+#     git clone https://github.com/protocolbuffers/protobuf.git
+# fi
+# cd protobuf
+# git submodule update --init --recursive
+
+# cmake . -DCMAKE_INSTALL_PREFIX=$CMAKE_INSTALL_PREFIX
+# make -j 8 install

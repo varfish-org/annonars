@@ -20,12 +20,12 @@ FROM rust:1-bookworm AS builder
 #
 # Install dependencies for compilation of C code (e.g., rocksdb).
 RUN apt-get update && \
-    apt-get install -y clang
+    apt-get install -y git clang
 # Add the needed Cargo components.
 RUN rustup component add rustfmt
 # Install build dependency `protoc`.
 COPY utils/install-protoc.sh /tmp
-RUN CMAKE_INSTALL_PREFIX=/usr/local bash /tmp/install-protoc.sh
+RUN PROTOC_VERSION=25.1 bash /tmp/install-protoc.sh
 
 # Now for the two-step building.
 #
