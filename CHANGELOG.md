@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.30.0](https://github.com/bihealth/annonars/compare/v0.29.4...v0.30.0) (2023-11-30)
+
+
+### Features
+
+* implementing REST access to ClinVar SV data ([#343](https://github.com/bihealth/annonars/issues/343)) ([e1975c6](https://github.com/bihealth/annonars/commit/e1975c6f164567c72a4401f27c48e42b2bb17b66))
+
 ## [0.29.4](https://github.com/bihealth/annonars/compare/v0.29.3...v0.29.4) (2023-11-24)
 
 
