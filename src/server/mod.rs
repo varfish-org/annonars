@@ -10,6 +10,7 @@ use prost::Message;
 use rayon::prelude::*;
 
 use crate::{
+    clinvar_sv::cli::query::{self as clinvarsv_query, IntervalTrees as ClinvarsvIntervalTrees},
     common::{self, cli::GenomeRelease},
     pbs::genes,
 };
@@ -181,6 +182,8 @@ pub struct WebServerData {
     pub genes: Option<GeneInfoDb>,
     /// Release-specific annotations for each `GenomeRelease`.
     pub annos: enum_map::EnumMap<GenomeRelease, ReleaseAnnos>,
+    /// Release-specific ClinVar SV interval tree indexed databased.
+    pub clinvar_svs: enum_map::EnumMap<GenomeRelease, Option<ClinvarsvIntervalTrees>>,
     /// Version information for each database.
     pub db_infos: enum_map::EnumMap<GenomeRelease, enum_map::EnumMap<AnnoDb, Option<DbInfo>>>,
 }
@@ -201,6 +204,9 @@ pub struct Args {
     /// ClinVar database(s), one for each release.
     #[arg(long)]
     pub path_clinvar: Vec<String>,
+    /// ClinVar SV database(s), one for each release.
+    #[arg(long)]
+    pub path_clinvar_sv: Vec<String>,
     /// CADD database(s), one for each release.
     #[arg(long)]
     pub path_cadd: Vec<String>,
@@ -367,6 +373,30 @@ pub fn run(args_common: &common::cli::Args, args: &Args) -> Result<(), anyhow::E
             name_to_hgnc_idx,
         });
     }
+
+    tracing::info!("Opening ClinVar SV databases...");
+    let before_clinvar_sv = Instant::now();
+    for path_clinvar_sv in &args.path_clinvar_sv {
+        tracing::info!("  - {}", path_clinvar_sv);
+        let (clinvar_sv_db, clinvar_sv_meta) = clinvarsv_query::open_rocksdb(
+            path_clinvar_sv,
+            "clinvar_sv",
+            "meta",
+            "clinvar_sv_by_rcv",
+        )
+        .map_err(|e| anyhow::anyhow!("problem opening RocksDB database: {}", e))?;
+        let genome_release: GenomeRelease = clinvar_sv_meta.genome_release.parse()?;
+        tracing::info!("    => {}", genome_release);
+        let clinvar_sv_interval_trees =
+            ClinvarsvIntervalTrees::with_db(clinvar_sv_db, "clinvar_sv", clinvar_sv_meta)
+                .map_err(|e| anyhow::anyhow!("problem building interval trees: {}", e))?;
+        data.clinvar_svs[genome_release] = Some(clinvar_sv_interval_trees);
+    }
+    tracing::info!(
+        "...done opening ClinVar SV databases in {:?}",
+        before_clinvar_sv.elapsed()
+    );
+
     // Argument lists from the command line with the corresponding database enum value.
     let paths_db_pairs = [
         (&args.path_clinvar, AnnoDb::Clinvar),

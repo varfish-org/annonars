@@ -39,3 +39,31 @@ message Record {
     // The reference assertions, sorted by (ClinicalSignificance, ReviewStatus).
     repeated annonars.clinvar.minimal.ReferenceAssertion reference_assertions = 13;
 }
+
+// Record with overlap information.
+message ResponseRecord {
+    // The record.
+    Record record = 1;
+    // The reciprocal overlap with the query.
+    double overlap = 2;
+}
+
+// Information regarding the pagination.
+message PageInfo {
+    // The total number of records.
+    uint32 total = 1;
+    // The number of records per page.
+    uint32 per_page = 2;
+    // The current page number.
+    uint32 current_page = 3;
+    // The total number of pages.
+    uint32 total_pages = 4;
+}
+
+// One page of results as returned by the server.
+message ResponsePage {
+    // The records in this page.
+    repeated ResponseRecord records = 1;
+    // Pagination information.
+    PageInfo page_info = 2;
+}
