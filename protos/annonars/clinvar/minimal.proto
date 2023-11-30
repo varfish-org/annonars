@@ -7,7 +7,7 @@ package annonars.clinvar.minimal;
 // Enumeration for variant type.
 enum VariantType {
     // unknown
-    VARIANT_UNKNOWN = 0;
+    VARIANT_TYPE_UNKNOWN = 0;
     // deletion
     VARIANT_TYPE_DELETION = 1;
     // duplication

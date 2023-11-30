@@ -23,7 +23,6 @@ use super::fetch::{fetch_pos_protobuf, fetch_var_protobuf, fetch_var_tsv_json};
 #[serde(rename_all = "snake_case")]
 struct Request {
     /// Genome release specification.
-    #[allow(dead_code)]
     pub genome_release: String,
     /// Chromosome name.
     pub chromosome: String,

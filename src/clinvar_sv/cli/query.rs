@@ -179,6 +179,7 @@ fn print_all(
 }
 
 /// Helper data structure that provides per-chromosome interval trees for querying.
+#[derive(Debug)]
 pub struct IntervalTrees {
     /// Per-chromosome interval trees.
     trees: rustc_hash::FxHashMap<String, ArrayBackedIntervalTree<u64, String>>,
