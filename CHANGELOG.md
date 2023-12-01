@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.30.1](https://github.com/bihealth/annonars/compare/v0.30.0...v0.30.1) (2023-12-01)
+
+
+### Bug Fixes
+
+* enum mapping from protobuf ([#345](https://github.com/bihealth/annonars/issues/345)) ([7dfccaa](https://github.com/bihealth/annonars/commit/7dfccaabba46556ac2c60afa4eb2f30b87fa3ffe))
+
 ## [0.30.0](https://github.com/bihealth/annonars/compare/v0.29.4...v0.30.0) (2023-11-30)
 
 
