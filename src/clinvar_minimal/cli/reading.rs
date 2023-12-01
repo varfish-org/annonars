@@ -87,12 +87,12 @@ impl From<VariantType> for crate::pbs::clinvar::minimal::VariantType {
 impl From<i32> for VariantType {
     fn from(value: i32) -> Self {
         match value {
-            0 => VariantType::Deletion,
-            1 => VariantType::Duplication,
-            2 => VariantType::Indel,
-            3 => VariantType::Insertion,
-            4 => VariantType::Inversion,
-            5 => VariantType::Snv,
+            1 => VariantType::Deletion,
+            2 => VariantType::Duplication,
+            3 => VariantType::Indel,
+            4 => VariantType::Insertion,
+            5 => VariantType::Inversion,
+            6 => VariantType::Snv,
             _ => unreachable!(),
         }
     }
@@ -184,11 +184,11 @@ impl From<ClinicalSignificance> for crate::pbs::clinvar::minimal::ClinicalSignif
 impl From<i32> for ClinicalSignificance {
     fn from(value: i32) -> Self {
         match value {
-            0 => ClinicalSignificance::Pathogenic,
-            1 => ClinicalSignificance::LikelyPathogenic,
-            2 => ClinicalSignificance::UncertainSignificance,
-            3 => ClinicalSignificance::LikelyBenign,
-            4 => ClinicalSignificance::Benign,
+            1 => ClinicalSignificance::Pathogenic,
+            2 => ClinicalSignificance::LikelyPathogenic,
+            3 => ClinicalSignificance::UncertainSignificance,
+            4 => ClinicalSignificance::LikelyBenign,
+            5 => ClinicalSignificance::Benign,
             _ => unreachable!(),
         }
     }
@@ -302,13 +302,13 @@ impl From<ReviewStatus> for crate::pbs::clinvar::minimal::ReviewStatus {
 impl From<i32> for ReviewStatus {
     fn from(value: i32) -> Self {
         match value {
-            0 => ReviewStatus::PracticeGuideline,
-            1 => ReviewStatus::ReviewedByExpertPanel,
-            2 => ReviewStatus::CriteriaProvidedMultipleSubmittersNoConflicts,
-            3 => ReviewStatus::CriteriaProvidedSingleSubmitter,
-            4 => ReviewStatus::CriteriaProvidedConflictingInterpretations,
-            5 => ReviewStatus::NoAssertionCriteriaProvided,
-            6 => ReviewStatus::NoAssertionProvided,
+            1 => ReviewStatus::PracticeGuideline,
+            2 => ReviewStatus::ReviewedByExpertPanel,
+            3 => ReviewStatus::CriteriaProvidedMultipleSubmittersNoConflicts,
+            4 => ReviewStatus::CriteriaProvidedSingleSubmitter,
+            5 => ReviewStatus::CriteriaProvidedConflictingInterpretations,
+            6 => ReviewStatus::NoAssertionCriteriaProvided,
+            7 => ReviewStatus::NoAssertionProvided,
             _ => unreachable!(),
         }
     }
