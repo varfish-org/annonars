@@ -211,6 +211,10 @@ pub enum ReviewStatus {
     NoAssertionCriteriaProvided,
     /// "no assertion provided"
     NoAssertionProvided,
+    /// "flagged submission",
+    FlaggedSubmission,
+    /// "no classifications from unflagged records",
+    NoClassificationsFromUnflaggedRecords,
 }
 
 impl Display for ReviewStatus {
@@ -231,6 +235,10 @@ impl Display for ReviewStatus {
             ReviewStatus::NoAssertionProvided => write!(f, "no assertion provided"),
             ReviewStatus::PracticeGuideline => write!(f, "practice guideline"),
             ReviewStatus::ReviewedByExpertPanel => write!(f, "reviewed by expert panel"),
+            ReviewStatus::FlaggedSubmission => write!(f, "flagged submission"),
+            ReviewStatus::NoClassificationsFromUnflaggedRecords => {
+                write!(f, "no classifications from unflagged records")
+            }
         }
     }
 }
@@ -253,6 +261,10 @@ impl FromStr for ReviewStatus {
             "no assertion provided" => Ok(ReviewStatus::NoAssertionProvided),
             "practice guideline" => Ok(ReviewStatus::PracticeGuideline),
             "reviewed by expert panel" => Ok(ReviewStatus::ReviewedByExpertPanel),
+            "flagged submission" => Ok(ReviewStatus::FlaggedSubmission),
+            "no classifications from unflagged records" => {
+                Ok(ReviewStatus::NoClassificationsFromUnflaggedRecords)
+            }
             _ => anyhow::bail!("Unknown review status: {}", s),
         }
     }
@@ -295,6 +307,8 @@ impl From<ReviewStatus> for crate::pbs::clinvar::minimal::ReviewStatus {
             }
             ReviewStatus::ReviewedByExpertPanel => crate::pbs::clinvar::minimal::ReviewStatus::ReviewedByExpertPanel,
             ReviewStatus::PracticeGuideline => crate::pbs::clinvar::minimal::ReviewStatus::PracticeGuideline,
+            ReviewStatus::FlaggedSubmission => crate::pbs::clinvar::minimal::ReviewStatus::FlaggedSubmission,
+            ReviewStatus::NoClassificationsFromUnflaggedRecords => crate::pbs::clinvar::minimal::ReviewStatus::NoClassificationsFromUnflaggedRecords,
         }
     }
 }
@@ -309,6 +323,8 @@ impl From<i32> for ReviewStatus {
             5 => ReviewStatus::CriteriaProvidedConflictingInterpretations,
             6 => ReviewStatus::NoAssertionCriteriaProvided,
             7 => ReviewStatus::NoAssertionProvided,
+            8 => ReviewStatus::FlaggedSubmission,
+            9 => ReviewStatus::NoClassificationsFromUnflaggedRecords,
             _ => unreachable!(),
         }
     }

@@ -213,15 +213,19 @@ mod test {
     use clap_verbosity_flag::Verbosity;
     use temp_testdir::TempDir;
 
-    #[test]
-    fn smoke_test_import_jsonl() {
+    #[tracing_test::traced_test]
+    #[rstest::rstest]
+    #[case("tests/clinvar-minimal/clinvar-seqvars-grch37-tgds.jsonl")]
+    #[case("tests/clinvar-minimal/clinvar-seqvars-grch37-flagged.jsonl")]
+    #[case("tests/clinvar-minimal/clinvar-seqvars-grch37-no-unflagged.jsonl")]
+    fn smoke_test_import_jsonl(#[case] path_in_jsonl: &str) {
         let tmp_dir = TempDir::default();
         let common = common::cli::Args {
             verbose: Verbosity::new(1, 0),
         };
         let args = Args {
             genome_release: common::cli::GenomeRelease::Grch37,
-            path_in_jsonl: String::from("tests/clinvar-minimal/clinvar-seqvars-grch37-tgds.jsonl"),
+            path_in_jsonl: path_in_jsonl.into(),
             path_out_rocksdb: format!("{}", tmp_dir.join("out-rocksdb").display()),
             cf_name: String::from("clinvar"),
             cf_name_by_accession: String::from("clinvar_by_accession"),
