@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.31.0](https://github.com/bihealth/annonars/compare/v0.30.1...v0.31.0) (2023-12-14)
+
+
+### Features
+
+* adding support for new "flagged" review status ([#352](https://github.com/bihealth/annonars/issues/352)) ([61d5248](https://github.com/bihealth/annonars/commit/61d52482128a69fdb08c5c20bf80aa46d09cfcf8))
+
 ## [0.30.1](https://github.com/bihealth/annonars/compare/v0.30.0...v0.30.1) (2023-12-01)
 
 
