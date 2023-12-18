@@ -41,14 +41,6 @@ async fn handle(
     _path: Path<()>,
     query: web::Query<Request>,
 ) -> actix_web::Result<impl Responder, CustomError> {
-    if query.q.len() < 2 {
-        return Ok(Json(Container {
-            // server_version: VERSION.to_string(),
-            // builder_version,
-            genes: Default::default(),
-        }));
-    }
-
     let genes_db = data.genes.as_ref().ok_or(CustomError::new(anyhow::anyhow!(
         "genes database not available"
     )))?;
