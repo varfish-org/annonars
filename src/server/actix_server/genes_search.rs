@@ -55,6 +55,8 @@ struct Request {
     /// The fields to search in.
     #[serde_as(as = "Option<StringWithSeparator::<CommaSeparator, Fields>>")]
     pub fields: Option<Vec<Fields>>,
+    /// Enable case sensitive search.
+    pub case_sensitive: Option<bool>,
 }
 
 /// A scored result.
@@ -97,7 +99,27 @@ async fn handle(
 
     let max_items = 100;
 
-    let q = &query.q;
+    let case_sensitive: bool = query.case_sensitive.unwrap_or(false);
+
+    let q = if case_sensitive {
+        query.q.clone()
+    } else {
+        query.q.to_lowercase()
+    };
+    let equals_q = |val: &str| {
+        if case_sensitive {
+            val == q
+        } else {
+            val.to_lowercase() == q
+        }
+    };
+    let contains_q = |val: &str| {
+        if case_sensitive {
+            val.contains(&q)
+        } else {
+            val.to_lowercase().contains(&q)
+        }
+    };
     let fields: Vec<Fields> = if let Some(fields) = query.fields.as_ref() {
         fields.clone()
     } else {
@@ -111,27 +133,27 @@ async fn handle(
         .gene_names
         .iter()
         .map(|gn| -> Scored<GeneNames> {
-            let score = if (fields_contains(&Fields::HgncId) && &gn.hgnc_id == q)
-                || (fields_contains(&Fields::Symbol) && &gn.symbol == q)
-                || (fields_contains(&Fields::Symbol) && &gn.symbol == q)
-                || (fields_contains(&Fields::Name) && &gn.name == q)
+            let score = if (fields_contains(&Fields::HgncId) && equals_q(&gn.hgnc_id))
+                || (fields_contains(&Fields::Symbol) && equals_q(&gn.symbol))
+                || (fields_contains(&Fields::Symbol) && equals_q(&gn.symbol))
+                || (fields_contains(&Fields::Name) && equals_q(&gn.name))
                 || (fields_contains(&Fields::EnsemblGeneId)
-                    && gn.ensembl_gene_id.iter().any(|s| s == q))
+                    && gn.ensembl_gene_id.iter().any(|s| equals_q(s)))
                 || (fields_contains(&Fields::NcbiGeneId)
-                    && gn.ensembl_gene_id.iter().any(|s| s == q))
+                    && gn.ensembl_gene_id.iter().any(|s| equals_q(s)))
             {
                 1f32
-            } else if fields_contains(&Fields::Symbol) && gn.symbol.contains(q) {
+            } else if fields_contains(&Fields::Symbol) && contains_q(&gn.symbol) {
                 q.len() as f32 / gn.symbol.len() as f32
-            } else if fields_contains(&Fields::Name) && gn.name.contains(q) {
+            } else if fields_contains(&Fields::Name) && contains_q(&gn.name) {
                 q.len() as f32 / gn.name.len() as f32
             } else if fields_contains(&Fields::AliasSymbol)
-                && gn.alias_symbol.iter().any(|s| s.contains(q))
+                && gn.alias_symbol.iter().any(|s| contains_q(s))
             {
                 gn.alias_symbol
                     .iter()
                     .map(|s| {
-                        if s.contains(q) {
+                        if contains_q(s) {
                             q.len() as f32 / s.len() as f32
                         } else {
                             0f32
@@ -140,12 +162,12 @@ async fn handle(
                     .max_by(|a, b| a.partial_cmp(b).unwrap_or(std::cmp::Ordering::Equal))
                     .unwrap_or(0f32)
             } else if fields_contains(&Fields::AliasName)
-                && gn.alias_name.iter().any(|s| s.contains(q))
+                && gn.alias_name.iter().any(|s| contains_q(s))
             {
                 gn.alias_name
                     .iter()
                     .map(|s| {
-                        if s.contains(q) {
+                        if contains_q(s) {
                             q.len() as f32 / s.len() as f32
                         } else {
                             0f32
