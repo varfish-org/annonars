@@ -1,5 +1,14 @@
 # Changelog
 
+## [0.31.1](https://github.com/bihealth/annonars/compare/v0.31.0...v0.31.1) (2023-12-18)
+
+
+### Bug Fixes
+
+* add missing files for test ([#355](https://github.com/bihealth/annonars/issues/355)) ([5037df5](https://github.com/bihealth/annonars/commit/5037df5b52e3ec3f69626b783f95a41bcb949160))
+* allow case insensitive gene search in server ([#354](https://github.com/bihealth/annonars/issues/354)) ([#357](https://github.com/bihealth/annonars/issues/357)) ([701b58c](https://github.com/bihealth/annonars/commit/701b58c8c63607b2da4f0cd4915cd7b6c4f604d7))
+* remove requirements of 2+ elements in gene lookup ([#348](https://github.com/bihealth/annonars/issues/348)) ([#358](https://github.com/bihealth/annonars/issues/358)) ([e3f8c3b](https://github.com/bihealth/annonars/commit/e3f8c3b4876e1a7195b8ebc69ca76c96a3e8686c))
+
 ## [0.31.0](https://github.com/bihealth/annonars/compare/v0.30.1...v0.31.0) (2023-12-14)
 
 
