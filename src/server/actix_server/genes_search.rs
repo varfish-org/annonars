@@ -140,7 +140,7 @@ async fn handle(
                 || (fields_contains(&Fields::EnsemblGeneId)
                     && gn.ensembl_gene_id.iter().any(|s| equals_q(s)))
                 || (fields_contains(&Fields::NcbiGeneId)
-                    && gn.ensembl_gene_id.iter().any(|s| equals_q(s)))
+                    && gn.ncbi_gene_id.iter().any(|s| equals_q(s)))
             {
                 1f32
             } else if fields_contains(&Fields::Symbol) && contains_q(&gn.symbol) {
