@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.31.2](https://github.com/bihealth/annonars/compare/v0.31.1...v0.31.2) (2023-12-22)
+
+
+### Bug Fixes
+
+* ncbi gene ID lookup ([#362](https://github.com/bihealth/annonars/issues/362)) ([#363](https://github.com/bihealth/annonars/issues/363)) ([3f2505f](https://github.com/bihealth/annonars/commit/3f2505fd2636cc87fdbb6ae80408f77fcc411914))
+
 ## [0.31.1](https://github.com/bihealth/annonars/compare/v0.31.0...v0.31.1) (2023-12-18)
 
 
