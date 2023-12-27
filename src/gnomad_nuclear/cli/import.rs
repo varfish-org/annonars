@@ -389,7 +389,7 @@ mod test {
         let args = Args {
             genome_release: common::cli::GenomeRelease::Grch37,
             path_in_vcf: vec![String::from(
-                "tests/gnomad-nuclear/example-exomes-grch37/gnomad-exomes.vcf.bgz",
+                "tests/gnomad-nuclear/example-exomes-grch37/v2.1/gnomad-exomes.vcf.bgz",
             )],
             path_out_rocksdb: format!("{}", tmp_dir.join("out-rocksdb").display()),
             cf_name: String::from("gnomad_nuclear_data"),
@@ -414,7 +414,7 @@ mod test {
         let args = Args {
             genome_release: common::cli::GenomeRelease::Grch37,
             path_in_vcf: vec![String::from(
-                "tests/gnomad-nuclear/example-genomes-grch37/gnomad-genomes.vcf.bgz",
+                "tests/gnomad-nuclear/example-genomes-grch37/v2.1/gnomad-genomes.vcf.bgz",
             )],
             path_out_rocksdb: format!("{}", tmp_dir.join("out-rocksdb").display()),
             cf_name: String::from("gnomad_nuclear_data"),
@@ -439,7 +439,7 @@ mod test {
         let args = Args {
             genome_release: common::cli::GenomeRelease::Grch38,
             path_in_vcf: vec![String::from(
-                "tests/gnomad-nuclear/example-exomes-grch38/gnomad-exomes.vcf.bgz",
+                "tests/gnomad-nuclear/example-exomes-grch38/v2.1/gnomad-exomes.vcf.bgz",
             )],
             path_out_rocksdb: format!("{}", tmp_dir.join("out-rocksdb").display()),
             cf_name: String::from("gnomad_nuclear_data"),
@@ -464,7 +464,7 @@ mod test {
         let args = Args {
             genome_release: common::cli::GenomeRelease::Grch38,
             path_in_vcf: vec![String::from(
-                "tests/gnomad-nuclear/example-genomes-grch38/gnomad-genomes.vcf.bgz",
+                "tests/gnomad-nuclear/example-genomes-grch38/v3.1/gnomad-genomes.vcf.bgz",
             )],
             path_out_rocksdb: format!("{}", tmp_dir.join("out-rocksdb").display()),
             cf_name: String::from("gnomad_nuclear_data"),
