@@ -437,7 +437,7 @@ mod test {
 
     #[test]
     fn test_record_from_vcf_allele_gnomad_exomes_grch37() -> Result<(), anyhow::Error> {
-        let path_vcf = "tests/gnomad-nuclear/example-exomes-grch37/gnomad-exomes.vcf";
+        let path_vcf = "tests/gnomad-nuclear/example-exomes-grch37/v2.1/gnomad-exomes.vcf";
         let mut reader_vcf = noodles_vcf::reader::Builder::default().build_from_path(path_vcf)?;
         let header = reader_vcf.read_header()?;
 
@@ -456,7 +456,7 @@ mod test {
 
     #[test]
     fn test_record_from_vcf_allele_gnomad_genomes_grch37() -> Result<(), anyhow::Error> {
-        let path_vcf = "tests/gnomad-nuclear/example-genomes-grch37/gnomad-genomes.vcf";
+        let path_vcf = "tests/gnomad-nuclear/example-genomes-grch37/v2.1/gnomad-genomes.vcf";
         let mut reader_vcf = noodles_vcf::reader::Builder::default().build_from_path(path_vcf)?;
         let header = reader_vcf.read_header()?;
 
@@ -475,7 +475,7 @@ mod test {
 
     #[test]
     fn test_record_from_vcf_allele_gnomad_exomes_grch38() -> Result<(), anyhow::Error> {
-        let path_vcf = "tests/gnomad-nuclear/example-exomes-grch38/gnomad-exomes.vcf";
+        let path_vcf = "tests/gnomad-nuclear/example-exomes-grch38/v2.1/gnomad-exomes.vcf";
         let mut reader_vcf = noodles_vcf::reader::Builder::default().build_from_path(path_vcf)?;
         let header = reader_vcf.read_header()?;
 

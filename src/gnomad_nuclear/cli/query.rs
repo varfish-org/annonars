@@ -234,7 +234,7 @@ mod test {
         };
         let args = Args {
             path_rocksdb: String::from(
-                "tests/gnomad-nuclear/example-exomes-grch37/gnomad-exomes.vcf.bgz.db",
+                "tests/gnomad-nuclear/example-exomes-grch37/v2.1/gnomad-exomes.vcf.bgz.db",
             ),
             cf_name: String::from("gnomad_nuclear_data"),
             out_file: temp.join("out").to_string_lossy().to_string(),
