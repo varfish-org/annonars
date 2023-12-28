@@ -77,11 +77,11 @@ message Vep {
     // Protein domains, e.g., `[["2p4e", "ENSP_mappings"], ["2qtw", "ENSP_mappings"]]`.
     repeated annonars.gnomad.vep_common.Domain domains = 34;
     // miRNA information.
-    repeated string mirna = 35;
+    optional string mirna = 35;
     // HGVS offset.
     optional string hgvs_offset = 36;
     // PubMed IDs
-    repeated string pubmed = 37;
+    optional string pubmed = 37;
     // Motif name.
     optional string motif_name = 38;
     // Motif name.
@@ -91,7 +91,7 @@ message Vep {
     // Motif score change.
     optional string motif_score_change = 41;
     // Transcription factors.
-    repeated string transcription_factors = 42;
+    optional string transcription_factors = 42;
     // Loss of function prediction.
     optional string lof = 43;
     // Loss of function filter.

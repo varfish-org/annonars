@@ -54,7 +54,7 @@ impl Record {
             .ok_or_else(|| anyhow::anyhow!("no such allele: {}", allele_no))?
             .to_string();
         let filters = gnomad3::Record::extract_filters(record)?;
-        let allele_counts = Self::extract_cohorts_allele_counts(record, options)?;
+        let allele_counts = Self::extract_cohorts_allele_counts(record)?;
         let nonpar = common::noodles::get_flag(record, "non_par")?;
 
         // Extract optional fields.
@@ -158,10 +158,8 @@ impl Record {
     /// Extract the allele counts from the `record` as configured in `options`.
     fn extract_cohorts_allele_counts(
         record: &noodles_vcf::Record,
-        options: &gnomad3::DetailsOptions,
     ) -> Result<Vec<CohortAlleleCounts>, anyhow::Error> {
-        // Initialize global cohort.  We will always extract the non-ancestry group specific
-        // counts for them.
+        // Initialize global cohort.
         let mut global_counts = CohortAlleleCounts {
             cohort: None,
             by_sex: Some(gnomad3::AlleleCountsBySex {
@@ -175,55 +173,52 @@ impl Record {
             ac_grpmax: common::noodles::get_i32(record, "AC_grpmax").ok(),
             an_grpmax: common::noodles::get_i32(record, "AN_grpmax").ok(),
             nhomalt_grpmax: common::noodles::get_i32(record, "nhomalt_grpmax").ok(),
-            by_ancestry_group: Vec::new(), // maybe filled below
+            by_ancestry_group: Vec::new(), // to be filled below
         };
 
-        // If configured to do so, extract the ancestry group specific counts.
-        if options.global_cohort_pops {
+        // Always extract the ancestry group specific counts for v4.
+        for pop in GRPS {
+            global_counts
+                .by_ancestry_group
+                .push(Self::extract_ancestry_group_allele_counts(record, "", pop)?);
+        }
+
+        // Always extract all ancestry groups in all cohorts for v4.
+        let mut result = Vec::new();
+        for cohort in COHORTS {
+            let infix = format!("_{}", cohort);
+            let mut cohort_counts = CohortAlleleCounts {
+                cohort: Some(cohort.to_string()),
+                by_sex: Some(gnomad3::AlleleCountsBySex {
+                    overall: Some(Self::extract_allele_counts(record, &infix, "")?),
+                    xx: Some(Self::extract_allele_counts(record, &infix, "_XX")?),
+                    xy: Some(Self::extract_allele_counts(record, &infix, "_XY")?),
+                }),
+                raw: Some(Self::extract_allele_counts(record, &infix, "_raw")?),
+                grpmax: common::noodles::get_string(record, &format!("grpmax_{}", cohort)).ok(),
+                af_grpmax: common::noodles::get_f32(record, &format!("AF_grpmax_{}", cohort)).ok(),
+                ac_grpmax: common::noodles::get_i32(record, &format!("AC_grpmax_{}", cohort)).ok(),
+                an_grpmax: common::noodles::get_i32(record, &format!("AN_grpmax_{}", cohort)).ok(),
+                nhomalt_grpmax: common::noodles::get_i32(
+                    record,
+                    &format!("nhomalt_grpmax_{}", cohort),
+                )
+                .ok(),
+                by_ancestry_group: Vec::new(), // to be filled below
+            };
+
             for pop in GRPS {
-                global_counts
+                cohort_counts
                     .by_ancestry_group
-                    .push(Self::extract_ancestry_group_allele_counts(record, "", pop)?);
+                    .push(Self::extract_ancestry_group_allele_counts(
+                        record, &infix, pop,
+                    )?);
             }
+
+            result.push(cohort_counts);
         }
-
-        // If configured, extract all ancestry groups in all cohorts.
-        let mut result = vec![global_counts];
-        if options.all_cohorts {
-            for cohort in COHORTS {
-                let infix = format!("_{}", cohort);
-                let mut cohort_counts = CohortAlleleCounts {
-                    cohort: Some(cohort.to_string()),
-                    by_sex: Some(gnomad3::AlleleCountsBySex {
-                        overall: Some(Self::extract_allele_counts(record, &infix, "")?),
-                        xx: Some(Self::extract_allele_counts(record, &infix, "_XX")?),
-                        xy: Some(Self::extract_allele_counts(record, &infix, "_XY")?),
-                    }),
-                    raw: Some(Self::extract_allele_counts(record, &infix, "_raw")?),
-                    grpmax: common::noodles::get_string(record, &format!("{}_grpmax", cohort)).ok(),
-                    af_grpmax: common::noodles::get_f32(record, &format!("AF_{}_grpmax", cohort))
-                        .ok(),
-                    ac_grpmax: common::noodles::get_i32(record, &format!("AC_{}_grpmax", cohort))
-                        .ok(),
-                    an_grpmax: common::noodles::get_i32(record, &format!("AN_{}_grpmax", cohort))
-                        .ok(),
-                    nhomalt_grpmax: common::noodles::get_i32(
-                        record,
-                        &format!("nhomalt_{}_grpmax", cohort),
-                    )
-                    .ok(),
-                    by_ancestry_group: Vec::new(), // to be filled below
-                };
-
-                for pop in GRPS {
-                    cohort_counts.by_ancestry_group.push(
-                        Self::extract_ancestry_group_allele_counts(record, &infix, pop)?,
-                    );
-                }
-
-                result.push(cohort_counts);
-            }
-        }
+        // For gnomAD v4, the "joint" cohort comes first and the global/empty-string cohort second.
+        result.insert(1, global_counts);
 
         Ok(result)
     }
@@ -232,35 +227,35 @@ impl Record {
     fn extract_ancestry_group_allele_counts(
         record: &noodles_vcf::Record,
         infix: &str,
-        pop: &str,
+        grp: &str,
     ) -> Result<AncestryGroupAlleleCounts, anyhow::Error> {
         Ok(AncestryGroupAlleleCounts {
-            ancestry_group: pop.to_string(),
+            ancestry_group: grp.to_string(),
             counts: Some(gnomad3::AlleleCountsBySex {
                 overall: Some(Self::extract_allele_counts(
                     record,
                     infix,
-                    &format!("_{}", pop),
+                    &format!("_{}", grp),
                 )?),
                 xx: Some(Self::extract_allele_counts(
                     record,
                     infix,
-                    &format!("_{}_XX", pop),
+                    &format!("_{}_XX", grp),
                 )?),
                 xy: Some(Self::extract_allele_counts(
                     record,
                     infix,
-                    &format!("_{}_XY", pop),
+                    &format!("_{}_XY", grp),
                 )?),
             }),
             // The faf95 and faf99 value is not present for all ancestry groups.  We use a blanket
             // "ok()" here so things don't blow up randomly.
-            faf95: common::noodles::get_f32(record, &format!("faf95_{}", pop)).ok(),
-            faf99: common::noodles::get_f32(record, &format!("faf99_{}", pop)).ok(),
-            faf95_xx: common::noodles::get_f32(record, &format!("faf95_{}_XX", pop)).ok(),
-            faf99_xx: common::noodles::get_f32(record, &format!("faf99_{}_XX", pop)).ok(),
-            faf95_xy: common::noodles::get_f32(record, &format!("faf95_{}_XY", pop)).ok(),
-            faf99_xy: common::noodles::get_f32(record, &format!("faf99_{}_XY", pop)).ok(),
+            faf95: common::noodles::get_f32(record, &format!("faf95_{}", grp)).ok(),
+            faf99: common::noodles::get_f32(record, &format!("faf99_{}", grp)).ok(),
+            faf95_xx: common::noodles::get_f32(record, &format!("faf95_{}_XX", grp)).ok(),
+            faf99_xx: common::noodles::get_f32(record, &format!("faf99_{}_XX", grp)).ok(),
+            faf95_xy: common::noodles::get_f32(record, &format!("faf95_{}_XY", grp)).ok(),
+            faf99_xy: common::noodles::get_f32(record, &format!("faf99_{}_XY", grp)).ok(),
         })
     }
 

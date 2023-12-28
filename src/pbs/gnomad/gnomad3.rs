@@ -40,9 +40,9 @@ pub struct DetailsOptions {
     pub var_info: bool,
     /// Enable variant effetcs info.
     pub effect_info: bool,
-    /// Enable extraction of sub populations in the "global" cohort.
+    /// Enable extraction of sub populations in the "global" cohort (always done for v4).
     pub global_cohort_pops: bool,
-    /// Enable extraction of all sub cohorts (requires `pop_global_cohorts`).
+    /// Enable extraction of all sub cohorts (requires `global_cohort_pops`; always done for v4).
     pub all_cohorts: bool,
     /// Enable extraction of detailed quality info.
     pub quality: bool,

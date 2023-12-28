@@ -2,16 +2,16 @@
 
 use std::str::FromStr;
 
-include!(concat!(env!("OUT_DIR"), "/annonars.gnomad.vep_gnomad3.rs"));
+include!(concat!(env!("OUT_DIR"), "/annonars.gnomad.vep_gnomad4.rs"));
 include!(concat!(
     env!("OUT_DIR"),
-    "/annonars.gnomad.vep_gnomad3.serde.rs"
+    "/annonars.gnomad.vep_gnomad4.serde.rs"
 ));
 
 impl Vep {
     /// Returns number of fields in a gnomAD v4 VEP entry.
     pub fn num_fields() -> usize {
-        0
+        46
     }
 }
 
@@ -43,47 +43,31 @@ impl FromStr for Vep {
             protein_position: (!values[14].is_empty()).then(|| values[14].to_string()),
             amino_acids: (!values[15].is_empty()).then(|| values[15].to_string()),
             codons: (!values[16].is_empty()).then(|| values[16].to_string()),
-            dbsnp_id: (!values[17].is_empty()).then(|| values[17].to_string()),
+            allele_num: (!values[17].is_empty())
+                .then(|| values[17].parse())
+                .transpose()
+                .map_err(|e| anyhow::anyhow!("problem parsing vep/ALLELE_NUM: {}", e))?,
             distance: (!values[18].is_empty()).then(|| values[18].to_string()),
             strand: (!values[19].is_empty()).then(|| values[19].to_string()),
-            variant_class: (!values[20].is_empty()).then(|| values[20].to_string()),
-            minimised: (!values[21].is_empty()).then(|| values[21].to_string()),
+            flags: (!values[20].is_empty()).then(|| values[20].to_string()),
+            variant_class: (!values[21].is_empty()).then(|| values[21].to_string()),
             symbol_source: (!values[22].is_empty()).then(|| values[22].to_string()),
             hgnc_id: (!values[23].is_empty()).then(|| values[23].to_string()),
             canonical: (!values[24].is_empty()).then(|| values[24] == "YES"),
-            tsl: (!values[25].is_empty())
-                .then(|| values[25].parse())
-                .transpose()?,
-            appris: (!values[26].is_empty()).then(|| values[26].to_string()),
-            ccds: (!values[27].is_empty()).then(|| values[27].to_string()),
-            ensp: (!values[28].is_empty()).then(|| values[28].to_string()),
-            swissprot: (!values[29].is_empty()).then(|| values[29].to_string()),
-            trembl: (!values[30].is_empty()).then(|| values[30].to_string()),
-            uniparc: (!values[31].is_empty()).then(|| values[31].to_string()),
-            gene_pheno: (!values[32].is_empty()).then(|| values[32].to_string()),
-            sift: (!values[33].is_empty())
-                .then(|| -> Result<(String, f32), anyhow::Error> {
-                    let tokens = values[33].split('(').collect::<Vec<_>>();
-                    let mut tmp = tokens[1].chars();
-                    tmp.next_back();
-                    let score = tmp.as_str();
-                    Ok((tokens[0].to_string(), score.parse::<f32>()?))
-                })
-                .transpose()?
-                .map(|val| val.into()),
-            polyphen: (!values[34].is_empty())
-                .then(|| -> Result<(String, f32), anyhow::Error> {
-                    let tokens = values[34].split('(').collect::<Vec<_>>();
-                    let mut tmp = tokens[1].chars();
-                    tmp.next_back();
-                    let score = tmp.as_str();
-                    Ok((tokens[0].to_string(), score.parse::<f32>()?))
-                })
-                .transpose()?
-                .map(|val| val.into()),
-            domains: (!values[35].is_empty())
+            mane_select: (!values[25].is_empty()).then(|| values[25] == "YES"),
+            mane_plus_clinical: (!values[26].is_empty()).then(|| values[26] == "YES"),
+            tsl: (!values[27].is_empty())
+                .then(|| values[27].parse())
+                .transpose()
+                .map_err(|e| anyhow::anyhow!("problem parsing vep/TSL: {}", e))?,
+            appris: (!values[28].is_empty()).then(|| values[28].to_string()),
+            ccds: (!values[29].is_empty()).then(|| values[29].to_string()),
+            ensp: (!values[30].is_empty()).then(|| values[30].to_string()),
+            uniprot_isoform: (!values[31].is_empty()).then(|| values[31].to_string()),
+            source: (!values[32].is_empty()).then(|| values[32].to_string()),
+            domains: (!values[33].is_empty())
                 .then(|| {
-                    let pairs = values[35].split('&').collect::<Vec<_>>();
+                    let pairs = values[33].split('&').collect::<Vec<_>>();
                     pairs
                         .into_iter()
                         .filter(|s| *s != "null")
@@ -97,15 +81,18 @@ impl FromStr for Vep {
                         .collect::<Vec<_>>()
                 })
                 .unwrap_or_default(),
-            hgvs_offset: (!values[36].is_empty()).then(|| values[36].to_string()),
+            mirna: (!values[34].is_empty()).then(|| values[34].to_string()),
+            hgvs_offset: (!values[35].is_empty()).then(|| values[35].to_string()),
+            pubmed: (!values[36].is_empty()).then(|| values[36].to_string()),
             motif_name: (!values[37].is_empty()).then(|| values[37].to_string()),
             motif_pos: (!values[38].is_empty()).then(|| values[38].to_string()),
             high_inf_pos: (!values[39].is_empty()).then(|| values[39].to_string()),
             motif_score_change: (!values[40].is_empty()).then(|| values[40].to_string()),
-            lof: (!values[41].is_empty()).then(|| values[41].to_string()),
-            lof_filter: (!values[42].is_empty()).then(|| values[42].to_string()),
-            lof_flags: (!values[43].is_empty()).then(|| values[43].to_string()),
-            lof_info: (!values[44].is_empty()).then(|| values[44].to_string()),
+            transcription_factors: (!values[41].is_empty()).then(|| values[41].to_string()),
+            lof: (!values[42].is_empty()).then(|| values[42].to_string()),
+            lof_filter: (!values[43].is_empty()).then(|| values[43].to_string()),
+            lof_flags: (!values[44].is_empty()).then(|| values[44].to_string()),
+            lof_info: (!values[45].is_empty()).then(|| values[45].to_string()),
         })
     }
 }
