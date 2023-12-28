@@ -138,7 +138,10 @@ fn load_gnomad_constraints(
     info!("  loading gnomAD constraints from {}", path);
     let mut result = HashMap::new();
 
-    let mut reader = csv::ReaderBuilder::new().delimiter(b'\t').flexible(true).from_path(path)?;
+    let mut reader = csv::ReaderBuilder::new()
+        .delimiter(b'\t')
+        .flexible(true)
+        .from_path(path)?;
     for record in reader.deserialize::<gnomad_constraints::Record>() {
         let record = record?;
         result.insert(record.ensembl_gene_id.clone(), record);

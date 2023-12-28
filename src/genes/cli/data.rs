@@ -2165,7 +2165,9 @@ mod tests {
     #[rstest::rstest]
     #[case::gnomad_v2("2.1")]
     #[case::gnomad_v4("4.0")]
-    fn deserialize_gnomad_constraints(#[case] gnomad_constraints_version: &str) -> Result<(), anyhow::Error> {
+    fn deserialize_gnomad_constraints(
+        #[case] gnomad_constraints_version: &str,
+    ) -> Result<(), anyhow::Error> {
         crate::common::set_snapshot_suffix!("{}", &gnomad_constraints_version);
         let path_tsv = format!(
             "tests/genes/gnomad_constraints/v{gnomad_constraints_version}/gnomad_constraints.tsv",
