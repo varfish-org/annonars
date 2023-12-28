@@ -85,7 +85,7 @@ pub fn open_rocksdb_from_args(
 fn print_record(
     out_writer: &mut Box<dyn std::io::Write>,
     output_format: common::cli::OutputFormat,
-    value: &pbs::gnomad::gnomad2::Record,
+    value: &Box<dyn serde::Serialize>,
 ) -> Result<(), anyhow::Error> {
     match output_format {
         common::cli::OutputFormat::Jsonl => {
@@ -227,7 +227,7 @@ mod test {
 
     use temp_testdir::TempDir;
 
-    fn args_exomes(
+    fn build_args(
         query: ArgsQuery,
         kind: &str,
         genome_release: &str,
@@ -253,13 +253,14 @@ mod test {
 
     #[rstest::rstest]
     #[case("exomes", "grch37", "2.1")]
+    #[case("exomes", "grch38", "4.0")]
     fn smoke_query_exomes_all(
         #[case] kind: &str,
         #[case] genome_release: &str,
         #[case] version: &str,
     ) -> Result<(), anyhow::Error> {
         crate::common::set_snapshot_suffix!("{}-{}-{}", kind, genome_release, version);
-        let (common, args, _temp) = args_exomes(
+        let (common, args, _temp) = build_args(
             ArgsQuery {
                 all: true,
                 ..Default::default()
@@ -283,7 +284,7 @@ mod test {
         #[case] version: &str,
     ) -> Result<(), anyhow::Error> {
         crate::common::set_snapshot_suffix!("{}-{}-{}", kind, genome_release, version);
-        let (common, args, _temp) = args_exomes(
+        let (common, args, _temp) = build_args(
             ArgsQuery {
                 variant: Some(spdi::Var::from_str("GRCh37:1:55516888:G:GA")?),
                 ..Default::default()
@@ -307,7 +308,7 @@ mod test {
         #[case] version: &str,
     ) -> Result<(), anyhow::Error> {
         crate::common::set_snapshot_suffix!("{}-{}-{}", kind, genome_release, version);
-        let (common, args, _temp) = args_exomes(
+        let (common, args, _temp) = build_args(
             ArgsQuery {
                 position: Some(spdi::Pos::from_str("GRCh37:1:55516888")?),
                 ..Default::default()
@@ -331,7 +332,7 @@ mod test {
         #[case] version: &str,
     ) -> Result<(), anyhow::Error> {
         crate::common::set_snapshot_suffix!("{}-{}-{}", kind, genome_release, version);
-        let (common, args, _temp) = args_exomes(
+        let (common, args, _temp) = build_args(
             ArgsQuery {
                 range: Some(spdi::Range::from_str("GRCh37:1:1:249250621")?),
                 ..Default::default()
@@ -355,7 +356,7 @@ mod test {
         #[case] version: &str,
     ) -> Result<(), anyhow::Error> {
         crate::common::set_snapshot_suffix!("{}-{}-{}", kind, genome_release, version);
-        let (common, args, _temp) = args_exomes(
+        let (common, args, _temp) = build_args(
             ArgsQuery {
                 range: Some(spdi::Range::from_str("GRCh37:1:55505599:55505599")?),
                 ..Default::default()
@@ -379,7 +380,7 @@ mod test {
         #[case] version: &str,
     ) -> Result<(), anyhow::Error> {
         crate::common::set_snapshot_suffix!("{}-{}-{}", kind, genome_release, version);
-        let (common, args, _temp) = args_exomes(
+        let (common, args, _temp) = build_args(
             ArgsQuery {
                 range: Some(spdi::Range::from_str("GRCh37:1:55505615:55505615")?),
                 ..Default::default()
@@ -403,7 +404,7 @@ mod test {
         #[case] version: &str,
     ) -> Result<(), anyhow::Error> {
         crate::common::set_snapshot_suffix!("{}-{}-{}", kind, genome_release, version);
-        let (common, args, _temp) = args_exomes(
+        let (common, args, _temp) = build_args(
             ArgsQuery {
                 range: Some(spdi::Range::from_str("GRCh37:1:1:55505598")?),
                 ..Default::default()
@@ -427,7 +428,7 @@ mod test {
         #[case] version: &str,
     ) -> Result<(), anyhow::Error> {
         crate::common::set_snapshot_suffix!("{}-{}-{}", kind, genome_release, version);
-        let (common, args, _temp) = args_exomes(
+        let (common, args, _temp) = build_args(
             ArgsQuery {
                 range: Some(spdi::Range::from_str("GRCh37:1:55516889:249250621")?),
                 ..Default::default()
