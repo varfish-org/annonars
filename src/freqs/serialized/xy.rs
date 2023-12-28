@@ -50,7 +50,7 @@ impl Counts {
             // not in PAR
             Counts {
                 ac_hom: ac_hom_xx,
-                ac_het: ac_xx - 2 * ac_hom_xx,
+                ac_het: ac_xx.saturating_sub(2 * ac_hom_xx),
                 ac_hemi: ac_xy,
                 an,
             }

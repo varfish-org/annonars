@@ -201,7 +201,7 @@ mod test {
             verbose: clap_verbosity_flag::Verbosity::new(1, 0),
         };
         let args = Args {
-            path_rocksdb: String::from("tests/freqs/example/freqs.db"),
+            path_rocksdb: String::from("tests/freqs/grch37/v2.1/example/freqs.db"),
             out_format: common::cli::OutputFormat::Jsonl,
             path_output: temp.join("out").to_string_lossy().to_string(),
             variant,

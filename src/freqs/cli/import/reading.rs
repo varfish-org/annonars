@@ -259,7 +259,7 @@ mod test {
 
     #[test]
     fn guess_assembly_helix_chrmt_ambiguous_ok_initial_none() -> Result<(), anyhow::Error> {
-        let path = "tests/freqs/reading/helix.chrM.vcf";
+        let path = "tests/freqs/grch37/v2.1/reading/helix.chrM.vcf";
         let mut reader = noodles_vcf::reader::Builder::default().build_from_path(path)?;
         let header = reader.read_header()?;
 
@@ -271,7 +271,7 @@ mod test {
 
     #[test]
     fn guess_assembly_helix_chrmt_ambiguous_ok_initial_override() -> Result<(), anyhow::Error> {
-        let path = "tests/freqs/reading/helix.chrM.vcf";
+        let path = "tests/freqs/grch37/v2.1/reading/helix.chrM.vcf";
         let mut reader = noodles_vcf::reader::Builder::default().build_from_path(path)?;
         let header = reader.read_header()?;
 
@@ -284,7 +284,7 @@ mod test {
     #[test]
     fn guess_assembly_helix_chrmt_ambiguous_ok_initial_override_fails() -> Result<(), anyhow::Error>
     {
-        let path = "tests/freqs/reading/helix.chrM.vcf";
+        let path = "tests/freqs/grch37/v2.1/reading/helix.chrM.vcf";
         let mut reader = noodles_vcf::reader::Builder::default().build_from_path(path)?;
         let header = reader.read_header()?;
 
@@ -295,7 +295,7 @@ mod test {
 
     #[test]
     fn guess_assembly_helix_chrmt_ambiguous_fail() -> Result<(), anyhow::Error> {
-        let path = "tests/freqs/reading/helix.chrM.vcf";
+        let path = "tests/freqs/grch37/v2.1/reading/helix.chrM.vcf";
         let mut reader = noodles_vcf::reader::Builder::default().build_from_path(path)?;
         let header = reader.read_header()?;
 
@@ -314,9 +314,9 @@ mod test {
     fn test_multiquery() -> Result<(), anyhow::Error> {
         let mut readers = vec![
             noodles_vcf::indexed_reader::Builder::default()
-                .build_from_path("tests/freqs/reading/gnomad.chrM.vcf.bgz")?,
+                .build_from_path("tests/freqs/grch37/v2.1/reading/gnomad.chrM.vcf.bgz")?,
             noodles_vcf::indexed_reader::Builder::default()
-                .build_from_path("tests/freqs/reading/helix.chrM.vcf.bgz")?,
+                .build_from_path("tests/freqs/grch37/v2.1/reading/helix.chrM.vcf.bgz")?,
         ];
 
         let headers: Vec<_> = readers
