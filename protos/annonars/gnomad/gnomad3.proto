@@ -1,7 +1,7 @@
 // Protobufs for gnomAD v3.
 //
-// In the case of smaller additions in v4.0, we extended the protobufs here and
-// re-used them.
+// In the case of smaller additions in **both exomes and genomes** in v4.0,
+// we extended the protobufs here and re-used them.
 
 syntax = "proto3";
 
@@ -18,8 +18,9 @@ enum Filter {
     FILTER_ALLELE_COUNT_IS_ZERO = 1;
     // Failed VQSR filtering thresholds of:
     //
-    // gnomAD v3: -2.7739 for SNPs and -1.0606 for indels
-    // gnomAD v4: -2.502 for SNPs and -0.7156 for indels
+    // gnomAD-genomes v3: -2.7739 for SNPs and -1.0606 for indels
+    // gnomAD-genomes v4: -2.502 for SNPs and -0.7156 for indels
+    // gnomAD-exomes v4: -1.4526 for SNPs and 0.0717 for indels
     FILTER_AS_VSQR = 2;
     // InbreedingCoeff < -0.3.
     FILTER_INBREEDING_COEFF = 3;
@@ -213,7 +214,7 @@ message VariantInfo {
     // Depth over variant genotypes (does not include depth of reference samples).
     int32 var_dp = 6;
     // Allele-specific depth over variant genotypes (does not include depth of reference samples) (v4 only).
-    int32 as_vardp = 7;
+    optional int32 as_vardp = 7;
 }
 
 // Protocol buffer for the gnomAD-nuclear VCF record.

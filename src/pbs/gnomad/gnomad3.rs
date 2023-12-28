@@ -188,7 +188,7 @@ impl Record {
             was_mixed: common::noodles::get_flag(record, "was_mixed")?,
             monoallelic: common::noodles::get_flag(record, "was_mixed")?,
             var_dp: common::noodles::get_i32(record, "n_alt_alleles")?,
-            as_vardp: common::noodles::get_i32(record, "AS_VarDP")?,
+            as_vardp: common::noodles::get_i32(record, "AS_VarDP").ok(),
         })
     }
 

@@ -13,15 +13,18 @@ include!(concat!(
     "/annonars.gnomad.gnomad4.serde.rs"
 ));
 
-/// The cohorts that are available in the gnomAD-genomes v4.0 VCFs.
-pub static COHORTS: &[&str] = &["joint"];
+/// The cohorts that are available in the gnomAD v4.0 VCFs.
+pub static COHORTS: &[&str] = &[
+    "joint",   // both for exomes and genomes
+    "non_ukb", // only for exomes
+];
 
 /// The ancestry groups that are available in the gnomAD-genomes v4.0 VCFs.
 ///
 /// Here, this excludes the "global" group represented by an empty string.
 pub static GRPS: &[&str] = &[
     "afr",
-    "ami",
+    "ami", // only for genomes
     "amr",
     "asj",
     "eas",
@@ -32,12 +35,33 @@ pub static GRPS: &[&str] = &[
     "sas",
 ];
 
+/// Enumeration for the different types of gnomAD v4.0 records.
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
+pub enum RecordType {
+    /// A record in the gnomAD v4.0 genomes VCF.
+    Genomes,
+    /// A record in the gnomAD v4.0 exomes VCF.
+    Exomes,
+}
+
 impl Record {
     /// Creates a new `Record` from a VCF record and allele number.
+    ///
+    /// # Arguments
+    ///
+    /// - `record` - The VCF record.
+    /// - `allele_no` - The allele number to extract.
+    /// - `options` - The options to use for extracting the details.
+    /// - `record_type` - The type of record to extract.
+    ///
+    /// # Returns
+    ///
+    /// The `Record` or an error if the record could not be extracted.
     pub fn from_vcf_allele(
         record: &noodles_vcf::record::Record,
         allele_no: usize,
         options: &gnomad3::DetailsOptions,
+        record_type: RecordType,
     ) -> Result<Self, anyhow::Error> {
         assert!(allele_no == 0, "only allele 0 is supported");
 
@@ -54,8 +78,13 @@ impl Record {
             .ok_or_else(|| anyhow::anyhow!("no such allele: {}", allele_no))?
             .to_string();
         let filters = gnomad3::Record::extract_filters(record)?;
-        let allele_counts = Self::extract_cohorts_allele_counts(record)?;
+        let allele_counts = Self::extract_cohorts_allele_counts(record, record_type)?;
         let nonpar = common::noodles::get_flag(record, "non_par")?;
+        let outside_broad_capture_region =
+            common::noodles::get_flag(record, "outside_broad_capture_region").ok();
+        let outside_ukb_capture_region =
+            common::noodles::get_flag(record, "outside_ukb_capture_region").ok();
+        let sibling_singleton = common::noodles::get_flag(record, "sibling_singleton").ok();
 
         // Extract optional fields.
         let vep = options
@@ -98,6 +127,9 @@ impl Record {
             allele_counts,
             effect_info,
             nonpar,
+            outside_broad_capture_region,
+            outside_ukb_capture_region,
+            sibling_singleton,
             variant_info,
             quality_info,
             age_info,
@@ -158,6 +190,7 @@ impl Record {
     /// Extract the allele counts from the `record` as configured in `options`.
     fn extract_cohorts_allele_counts(
         record: &noodles_vcf::Record,
+        record_type: RecordType,
     ) -> Result<Vec<CohortAlleleCounts>, anyhow::Error> {
         // Initialize global cohort.
         let mut global_counts = CohortAlleleCounts {
@@ -178,6 +211,10 @@ impl Record {
 
         // Always extract the ancestry group specific counts for v4.
         for pop in GRPS {
+            if record_type == RecordType::Exomes && pop == &"ami" {
+                // The "ami" ancestry group is only present in the genomes VCF.
+                continue;
+            }
             global_counts
                 .by_ancestry_group
                 .push(Self::extract_ancestry_group_allele_counts(record, "", pop)?);
@@ -208,6 +245,11 @@ impl Record {
             };
 
             for pop in GRPS {
+                if record_type == RecordType::Exomes && pop == &"ami" {
+                    // The "ami" ancestry group is only present in the genomes VCF.
+                    continue;
+                }
+
                 cohort_counts
                     .by_ancestry_group
                     .push(Self::extract_ancestry_group_allele_counts(
@@ -295,6 +337,30 @@ mod test {
                 &vcf_record,
                 0,
                 &gnomad3::DetailsOptions::with_all_enabled(),
+                RecordType::Genomes,
+            )?;
+            records.push(record);
+        }
+
+        insta::assert_yaml_snapshot!(records);
+
+        Ok(())
+    }
+
+    #[test]
+    fn test_record_from_vcf_allele_gnomad_exomess_grch38() -> Result<(), anyhow::Error> {
+        let path_vcf = "tests/gnomad-nuclear/example-exomes-grch38/v4.0/gnomad-exomes.vcf";
+        let mut reader_vcf = noodles_vcf::reader::Builder::default().build_from_path(path_vcf)?;
+        let header = reader_vcf.read_header()?;
+
+        let mut records = Vec::new();
+        for row in reader_vcf.records(&header) {
+            let vcf_record = row?;
+            let record = Record::from_vcf_allele(
+                &vcf_record,
+                0,
+                &gnomad3::DetailsOptions::with_all_enabled(),
+                RecordType::Exomes,
             )?;
             records.push(record);
         }
