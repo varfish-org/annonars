@@ -101,7 +101,7 @@ pub fn open_rocksdb_from_args(
 fn print_record(
     out_writer: &mut Box<dyn std::io::Write>,
     output_format: common::cli::OutputFormat,
-    value: &Box<dyn SerializeRecordTrait>,
+    value: &dyn SerializeRecordTrait,
 ) -> Result<(), anyhow::Error> {
     match output_format {
         common::cli::OutputFormat::Jsonl => {
@@ -179,7 +179,7 @@ pub fn run(common: &common::cli::Args, args: &Args) -> Result<(), anyhow::Error>
             _ => unreachable!("unhandled gnomAD version: {}", &meta.gnomad_version),
         };
         if let Some(record) = query_result {
-            print_record(&mut out_writer, args.out_format, &record)?
+            print_record(&mut out_writer, args.out_format, record.as_ref())?
         } else {
             tracing::info!("no record found for variant {:?}", &variant);
         }
@@ -244,7 +244,7 @@ pub fn run(common: &common::cli::Args, args: &Args) -> Result<(), anyhow::Error>
                         '4' => Box::new(pbs::gnomad::gnomad4::Record::decode(&mut cursor)?),
                         _ => unreachable!("unhandled gnomAD version: {}", &meta.gnomad_version),
                     };
-                print_record(&mut out_writer, args.out_format, &record)?;
+                print_record(&mut out_writer, args.out_format, record.as_ref())?;
                 iter.next();
             } else {
                 break;
