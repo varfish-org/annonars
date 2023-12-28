@@ -5,9 +5,9 @@ set -x
 
 SCRIPT_DIR=$( cd -- "$( dirname -- "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )
 
-script_dir_name=$(basename $SCRIPT_DIR)
-data_kind=$(echo $script_dir_name | cut -d - -f 2)
-genome_release=$(echo $script_dir_name | cut -d - -f 3)
+dir_up=$(echo $SCRIPT_DIR | rev | cut -d / -f 2 | rev)
+data_kind=$(echo $dir_up | cut -d - -f 2)
+genome_release=$(echo $dir_up | cut -d - -f 3)
 
 if [[ $SCRIPT_DIR/gnomad-$data_kind.vcf \
         -nt $SCRIPT_DIR/gnomad-$data_kind.vcf.bgz ]]; then
@@ -16,13 +16,9 @@ if [[ $SCRIPT_DIR/gnomad-$data_kind.vcf \
     tabix -f $SCRIPT_DIR/gnomad-$data_kind.vcf.bgz
 fi
 
-if [[ $data_kind == "genomes" ]] && [[ $genome_release == "grch38" ]]; then
-    gnomad_version=3.1
-else
-    gnomad_version=2.1
-fi
+gnomad_version=$(dirname $SCRIPT_DIR | cut -d v -f 2)
 
-if [[ $data_kind == "exomes" ]] && [[ $genome_release == "grch38" ]]; then
+if [[ $data_kind == "exomes" ]] && [[ $genome_release == "grch38" ]] && [[ gnomad_version == "v2.1" ]]; then
     liftover=true
 else
     liftover=false
