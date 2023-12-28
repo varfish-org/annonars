@@ -1,5 +1,13 @@
 # Changelog
 
+## [0.32.0](https://github.com/bihealth/annonars/compare/v0.31.2...v0.32.0) (2023-12-28)
+
+
+### Features
+
+* gnomAD v4 frequency import ([#275](https://github.com/bihealth/annonars/issues/275)) ([#368](https://github.com/bihealth/annonars/issues/368)) ([2a7e098](https://github.com/bihealth/annonars/commit/2a7e098924db0ae5023c3831fdbcc8d171259f51))
+* integrate gnomAD v4 gene constraints ([#367](https://github.com/bihealth/annonars/issues/367)) ([#370](https://github.com/bihealth/annonars/issues/370)) ([2021af3](https://github.com/bihealth/annonars/commit/2021af38a22b733aad1419a98fc26ac588570c88))
+
 ## [0.31.2](https://github.com/bihealth/annonars/compare/v0.31.1...v0.31.2) (2023-12-22)
 
 
