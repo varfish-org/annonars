@@ -9,6 +9,9 @@ homepage = "https://github.com/bihealth/annonars"
 readme = "README.md"
 autobins = false
 
+[package]
+exclude = ["/tests"]
+
 [lib]
 name = "annonars"
 path = "src/lib.rs"
