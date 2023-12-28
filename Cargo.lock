@@ -265,6 +265,7 @@ dependencies = [
  "csv",
  "enum-map",
  "env_logger",
+ "erased-serde",
  "flate2",
  "indexmap",
  "indicatif",
@@ -1004,6 +1005,15 @@ name = "equivalent"
 version = "1.0.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "5443807d6dff69373d433ab9ef5378ad8df50ca6298caf15de6e52e24aaf54d5"
+
+[[package]]
+name = "erased-serde"
+version = "0.4.1"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "4adbf0983fe06bd3a5c19c8477a637c2389feb0994eca7a59e3b961054aa7c0a"
+dependencies = [
+ "serde",
+]
 
 [[package]]
 name = "errno"
