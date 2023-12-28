@@ -138,7 +138,7 @@ fn load_gnomad_constraints(
     info!("  loading gnomAD constraints from {}", path);
     let mut result = HashMap::new();
 
-    let mut reader = csv::ReaderBuilder::new().delimiter(b'\t').from_path(path)?;
+    let mut reader = csv::ReaderBuilder::new().delimiter(b'\t').flexible(true).from_path(path)?;
     for record in reader.deserialize::<gnomad_constraints::Record>() {
         let record = record?;
         result.insert(record.ensembl_gene_id.clone(), record);
@@ -1145,8 +1145,10 @@ pub mod test {
     use clap_verbosity_flag::Verbosity;
     use temp_testdir::TempDir;
 
-    #[test]
-    fn smoke_test() -> Result<(), anyhow::Error> {
+    #[rstest::rstest]
+    #[case::gnomad_v2("2.1")]
+    #[case::gnomad_v4("4.0")]
+    fn smoke_test(#[case] gnomad_constraints_version: &str) -> Result<(), anyhow::Error> {
         let tmp_dir = TempDir::default();
         let common_args = common::cli::Args {
             verbose: Verbosity::new(1, 0),
@@ -1159,8 +1161,8 @@ pub mod test {
             path_in_clingen_38: String::from(
                 "tests/genes/clingen/ClinGen_gene_curation_list_GRCh38.tsv",
             ),
-            path_in_gnomad_constraints: String::from(
-                "tests/genes/gnomad_constraints/gnomad_constraints.tsv",
+            path_in_gnomad_constraints: format!(
+                "tests/genes/gnomad_constraints/v{gnomad_constraints_version}/gnomad_constraints.tsv",
             ),
             path_in_dbnsfp: String::from("tests/genes/dbnsfp/genes.tsv"),
             path_in_hgnc: String::from("tests/genes/hgnc/hgnc_info.jsonl"),
