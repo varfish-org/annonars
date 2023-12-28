@@ -1,0 +1,6 @@
+---
+source: src/freqs/cli/query.rs
+expression: "&out_data"
+---
+{"gnomad_exomes":{"an":128256,"ac_hom":0,"ac_het":1},"gnomad_genomes":{"an":0,"ac_hom":0,"ac_het":0}}
+

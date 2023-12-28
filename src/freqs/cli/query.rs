@@ -237,8 +237,13 @@ mod test {
     }
 
     #[rstest::rstest]
+    #[case("1:55516885:G:A", "grch37", "2.1")]
+    #[case("1:55039933:G:A", "grch38", "4.0")]
     fn smoke_query_exomes_var_single_match_chr_1(
-        #[with("1:55516885:G:A", "grch37", "2.1")] args_freqs: ArgsFreqs,
+        #[case] _variant: &str,
+        #[case] _genome: &str,
+        #[case] _version: &str,
+        #[with(_variant, _genome, _version)] args_freqs: ArgsFreqs,
     ) -> Result<(), anyhow::Error> {
         let ArgsFreqs {
             common_args,
@@ -261,8 +266,13 @@ mod test {
     }
 
     #[rstest::rstest]
+    #[case("X:69902557:G:T", "grch37", "2.1")]
+    #[case("X:17434:A:AC", "grch38", "4.0")]
     fn smoke_query_exomes_var_single_match_chr_x(
-        #[with("X:69902557:G:T", "grch37", "2.1")] args_freqs: ArgsFreqs,
+        #[case] _variant: &str,
+        #[case] _genome: &str,
+        #[case] _version: &str,
+        #[with(_variant, _genome, _version)] args_freqs: ArgsFreqs,
     ) -> Result<(), anyhow::Error> {
         let ArgsFreqs {
             common_args,
@@ -285,8 +295,13 @@ mod test {
     }
 
     #[rstest::rstest]
+    #[case("Y:4967199:G:T", "grch37", "2.1")]
+    #[case("Y:2782947:C:T", "grch38", "4.0")]
     fn smoke_query_exomes_var_single_match_chr_y(
-        #[with("Y:4967199:G:T", "grch37", "2.1")] args_freqs: ArgsFreqs,
+        #[case] _variant: &str,
+        #[case] _genome: &str,
+        #[case] _version: &str,
+        #[with(_variant, _genome, _version)] args_freqs: ArgsFreqs,
     ) -> Result<(), anyhow::Error> {
         let ArgsFreqs {
             common_args,
@@ -309,8 +324,13 @@ mod test {
     }
 
     #[rstest::rstest]
+    #[case("M:11:C:T", "grch37", "2.1")]
+    #[case("M:11:C:T", "grch38", "4.0")]
     fn smoke_query_exomes_var_single_match_chr_mt(
-        #[with("M:11:C:T", "grch37", "2.1")] args_freqs: ArgsFreqs,
+        #[case] _variant: &str,
+        #[case] _genome: &str,
+        #[case] _version: &str,
+        #[with(_variant, _genome, _version)] args_freqs: ArgsFreqs,
     ) -> Result<(), anyhow::Error> {
         let ArgsFreqs {
             common_args,
@@ -334,6 +354,7 @@ mod test {
 
     #[rstest::rstest]
     #[case("1:55516885:G:TT", "grch37", "2.1")]
+    #[case("1:55516885:G:TT", "grch38", "4.0")]
     fn smoke_query_exomes_var_single_nomatch(
         #[case] _variant: &str,
         #[case] _genome: &str,
