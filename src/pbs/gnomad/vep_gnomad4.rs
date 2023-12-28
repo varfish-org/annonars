@@ -9,9 +9,9 @@ include!(concat!(
 ));
 
 impl Vep {
-    /// Returns number of fields in a gnomAD v3 VEP entry.
+    /// Returns number of fields in a gnomAD v4 VEP entry.
     pub fn num_fields() -> usize {
-        45
+        0
     }
 }
 
@@ -117,12 +117,20 @@ mod test {
     #[test]
     fn test_vep_from_string() {
         let s = "\
-        G|missense_variant|MODERATE|MT-ND5|ENSG00000198786|Transcript|ENST00000361567|\
-        protein_coding|1/1||ENST00000361567.2:c.208A>G|ENSP00000354813.2:p.Thr70Ala|208|\
-        208|70|T/A|Aca/Gca|1||1|SNV||HGNC|HGNC:7461|YES||P1||ENSP00000354813||||1|\
-        deleterious_low_confidence(0.020)|benign(0.033)|ENSP_mappings:5xtc&ENSP_mappings:5xtd&\
-        ENSP_mappings:5xth&ENSP_mappings:5xti&ENSP_mappings:5xti&Pfam:PF00662&PANTHER:PTHR42829&\
-        PANTHER:PTHR42829&TIGRFAM:TIGR01974|||||||||";
+        C|upstream_gene_variant|MODIFIER|DDX11L1|ENSG00000223972|\
+        Transcript|ENST00000450305|transcribed_unprocessed_pseudogene||||||||||\
+        1|1979|1||SNV|HGNC|HGNC:37102|YES||||||||Ensembl|||||||||||||||,C|\
+        upstream_gene_variant|MODIFIER|DDX11L1|ENSG00000223972|Transcript|\
+        ENST00000456328|processed_transcript||||||||||1|1838|1||SNV|HGNC|\
+        HGNC:37102||||1|||||Ensembl|||||||||||||||,C|downstream_gene_variant|\
+        MODIFIER|WASH7P|ENSG00000227232|Transcript|ENST00000488147|\
+        unprocessed_pseudogene||||||||||1|4373|-1||SNV|HGNC|HGNC:38034|YES||||||||\
+        Ensembl|||||||||||||||,C|downstream_gene_variant|MODIFIER|WASH7P|653635|\
+        Transcript|NR_024540.1|transcribed_pseudogene||||||||||1|4331|-1||SNV|\
+        EntrezGene|HGNC:38034|YES||||||||RefSeq|||||||||||||||,C|\
+        upstream_gene_variant|MODIFIER|DDX11L1|100287102|Transcript|NR_046018.2|\
+        transcribed_pseudogene||||||||||1|1843|1||SNV|EntrezGene|HGNC:37102|YES\
+        ||||||||RefSeq|||||||||||||||";
         let vep = Vep::from_str(s).unwrap();
 
         insta::assert_yaml_snapshot!(vep);

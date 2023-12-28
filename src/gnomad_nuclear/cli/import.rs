@@ -277,6 +277,19 @@ pub fn run(common: &common::cli::Args, args: &Args) -> Result<(), anyhow::Error>
         noodles_vcf::reader::Builder::default().build_from_path(&args.path_in_vcf[0])?;
     let header = reader_vcf.read_header()?;
 
+    // 4.0: cadd_version
+    // 4.0: gencode_version
+    // 4.0: mane_select_version
+    // 4.0: pangolin_version
+    // 4.0: phylop_version
+    // 4.0: polyphen_version
+    // 4.0: revel_version
+    // 4.0: seqrepo_version
+    // 4.0: sift_version
+    // 4.0: spliceai_version
+    // 4.0: vrs_python_version
+    // 4.0: vrs_schema_version
+
     let vep_version = if let Some(record::value::Collection::Unstructured(values)) = header
         .other_records()
         .get(&record::key::Other::from_str("VEP version")?)

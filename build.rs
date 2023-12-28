@@ -16,6 +16,7 @@ fn main() -> Result<(), anyhow::Error> {
         "annonars/gnomad/exac_cnv.proto",
         "annonars/gnomad/gnomad2.proto",
         "annonars/gnomad/gnomad3.proto",
+        "annonars/gnomad/gnomad4.proto",
         "annonars/gnomad/gnomad_cnv4.proto",
         "annonars/gnomad/gnomad_sv2.proto",
         "annonars/gnomad/gnomad_sv4.proto",
@@ -23,6 +24,7 @@ fn main() -> Result<(), anyhow::Error> {
         "annonars/gnomad/vep_common.proto",
         "annonars/gnomad/vep_gnomad2.proto",
         "annonars/gnomad/vep_gnomad3.proto",
+        "annonars/gnomad/vep_gnomad4.proto",
         "annonars/helixmtdb/base.proto",
         "annonars/regions/clingen.proto",
     ]
