@@ -1171,7 +1171,7 @@ pub mod gnomad_constraints {
             // If parsed as T or None, return that.
             MaybeNA::Value(value) => Ok(value),
 
-            // Otherwise, if value is string an "n/a", return None (and fail if it is any other
+            // Otherwise, if value is string an "NA", return None (and fail if it is any other
             // string)
             MaybeNA::NAString(string) => {
                 if string == "NA" {
@@ -2162,9 +2162,16 @@ mod tests {
         Ok(())
     }
 
-    #[test]
-    fn deserialize_gnomad_constraints() -> Result<(), anyhow::Error> {
-        let path_tsv = "tests/genes/gnomad_constraints/gnomad_constraints.tsv";
+    #[rstest::rstest]
+    #[case::gnomad_v2("2.1")]
+    #[case::gnomad_v4("4.0")]
+    fn deserialize_gnomad_constraints(
+        #[case] gnomad_constraints_version: &str,
+    ) -> Result<(), anyhow::Error> {
+        crate::common::set_snapshot_suffix!("{}", &gnomad_constraints_version);
+        let path_tsv = format!(
+            "tests/genes/gnomad_constraints/v{gnomad_constraints_version}/gnomad_constraints.tsv",
+        );
         let str_tsv = std::fs::read_to_string(path_tsv)?;
         let mut rdr = csv::ReaderBuilder::new()
             .delimiter(b'\t')
