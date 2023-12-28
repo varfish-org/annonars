@@ -195,64 +195,164 @@ mod test {
 
     use temp_testdir::TempDir;
 
-    fn args_exomes(variant: spdi::Var) -> (common::cli::Args, Args, TempDir) {
+    /// Helper struct for `args_freqs`.
+    struct ArgsFreqs {
+        /// Common command line arguments.
+        common_args: common::cli::Args,
+        /// Command line arguments for `freqs query` sub command.
+        args: Args,
+        /// Path to temporary directory.
+        temp: TempDir,
+        /// Genome release.
+        genome: String,
+        /// Version.
+        version: String,
+    }
+
+    #[rstest::fixture]
+    fn args_freqs(
+        #[default("")] variant_str: &str,
+        #[default("grch37")] genome: &str,
+        #[default("2.1")] version: &str,
+    ) -> ArgsFreqs {
         let temp = TempDir::default();
-        let common = common::cli::Args {
+        let common_args = common::cli::Args {
             verbose: clap_verbosity_flag::Verbosity::new(1, 0),
         };
         let args = Args {
-            path_rocksdb: String::from("tests/freqs/grch37/v2.1/example/freqs.db"),
+            path_rocksdb: format!("tests/freqs/{genome}/v{version}/example/freqs.db"),
             out_format: common::cli::OutputFormat::Jsonl,
             path_output: temp.join("out").to_string_lossy().to_string(),
-            variant,
+            variant: spdi::Var::from_str(variant_str).expect("invalid SPDI"),
         };
 
-        (common, args, temp)
+        ArgsFreqs {
+            common_args,
+            args,
+            temp,
+            genome: genome.to_string(),
+            version: version.to_string(),
+        }
     }
 
-    #[test]
-    fn smoke_query_exomes_var_single_match_chr_1() -> Result<(), anyhow::Error> {
-        let (common, args, _temp) = args_exomes(spdi::Var::from_str("1:55516885:G:A")?);
-        run(&common, &args)?;
+    #[rstest::rstest]
+    fn smoke_query_exomes_var_single_match_chr_1(
+        #[with("1:55516885:G:A", "grch37", "2.1")] args_freqs: ArgsFreqs,
+    ) -> Result<(), anyhow::Error> {
+        let ArgsFreqs {
+            common_args,
+            args,
+            temp: _,
+            genome,
+            version,
+        } = args_freqs;
+        crate::common::set_snapshot_suffix!(
+            "{}-{}-{}",
+            &genome,
+            &version,
+            &args.variant.to_string().replace(':', "_")
+        );
+        run(&common_args, &args)?;
         let out_data = std::fs::read_to_string(&args.path_output)?;
         insta::assert_snapshot!(&out_data);
 
         Ok(())
     }
 
-    #[test]
-    fn smoke_query_exomes_var_single_match_chr_x() -> Result<(), anyhow::Error> {
-        let (common, args, _temp) = args_exomes(spdi::Var::from_str("X:69902557:G:T")?);
-        run(&common, &args)?;
+    #[rstest::rstest]
+    fn smoke_query_exomes_var_single_match_chr_x(
+        #[with("X:69902557:G:T", "grch37", "2.1")] args_freqs: ArgsFreqs,
+    ) -> Result<(), anyhow::Error> {
+        let ArgsFreqs {
+            common_args,
+            args,
+            temp: _,
+            genome,
+            version,
+        } = args_freqs;
+        crate::common::set_snapshot_suffix!(
+            "{}-{}-{}",
+            &genome,
+            &version,
+            &args.variant.to_string().replace(':', "_")
+        );
+        run(&common_args, &args)?;
         let out_data = std::fs::read_to_string(&args.path_output)?;
         insta::assert_snapshot!(&out_data);
 
         Ok(())
     }
 
-    #[test]
-    fn smoke_query_exomes_var_single_match_chr_y() -> Result<(), anyhow::Error> {
-        let (common, args, _temp) = args_exomes(spdi::Var::from_str("Y:4967199:G:T")?);
-        run(&common, &args)?;
+    #[rstest::rstest]
+    fn smoke_query_exomes_var_single_match_chr_y(
+        #[with("Y:4967199:G:T", "grch37", "2.1")] args_freqs: ArgsFreqs,
+    ) -> Result<(), anyhow::Error> {
+        let ArgsFreqs {
+            common_args,
+            args,
+            temp: _,
+            genome,
+            version,
+        } = args_freqs;
+        crate::common::set_snapshot_suffix!(
+            "{}-{}-{}",
+            &genome,
+            &version,
+            &args.variant.to_string().replace(':', "_")
+        );
+        run(&common_args, &args)?;
         let out_data = std::fs::read_to_string(&args.path_output)?;
         insta::assert_snapshot!(&out_data);
 
         Ok(())
     }
-    #[test]
-    fn smoke_query_exomes_var_single_match_chr_mt() -> Result<(), anyhow::Error> {
-        let (common, args, _temp) = args_exomes(spdi::Var::from_str("M:11:C:T")?);
-        run(&common, &args)?;
+
+    #[rstest::rstest]
+    fn smoke_query_exomes_var_single_match_chr_mt(
+        #[with("M:11:C:T", "grch37", "2.1")] args_freqs: ArgsFreqs,
+    ) -> Result<(), anyhow::Error> {
+        let ArgsFreqs {
+            common_args,
+            args,
+            temp: _,
+            genome,
+            version,
+        } = args_freqs;
+        crate::common::set_snapshot_suffix!(
+            "{}-{}-{}",
+            &genome,
+            &version,
+            &args.variant.to_string().replace(':', "_")
+        );
+        run(&common_args, &args)?;
         let out_data = std::fs::read_to_string(&args.path_output)?;
         insta::assert_snapshot!(&out_data);
 
         Ok(())
     }
 
-    #[test]
-    fn smoke_query_exomes_var_single_nomatch() -> Result<(), anyhow::Error> {
-        let (common, args, _temp) = args_exomes(spdi::Var::from_str("1:55516885:G:TT")?);
-        run(&common, &args)?;
+    #[rstest::rstest]
+    #[case("1:55516885:G:TT", "grch37", "2.1")]
+    fn smoke_query_exomes_var_single_nomatch(
+        #[case] variant: &str,
+        #[case] genome: &str,
+        #[case] version: &str,
+        #[with(variant, genome, version)] args_freqs: ArgsFreqs,
+    ) -> Result<(), anyhow::Error> {
+        let ArgsFreqs {
+            common_args,
+            args,
+            temp: _,
+            genome,
+            version,
+        } = args_freqs;
+        crate::common::set_snapshot_suffix!(
+            "{}-{}-{}",
+            &genome,
+            &version,
+            &args.variant.to_string().replace(':', "_")
+        );
+        run(&common_args, &args)?;
         let out_data = std::fs::read_to_string(&args.path_output)?;
         insta::assert_snapshot!(&out_data);
 
