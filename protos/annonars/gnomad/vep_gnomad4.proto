@@ -1,0 +1,103 @@
+// Protocol buffer definitions for gnomAD v4 VEP records.
+
+syntax = "proto3";
+
+package annonars.gnomad.vep_gnomad4;
+
+import "annonars/gnomad/vep_common.proto";
+
+// Protocol buffer for the gnomAD-nuclear VEP predictions.
+message Vep {
+    // Allele of record.
+    string allele = 1;
+    // Consequence, e.g., `"missense_variant"`.
+    string consequence = 2;
+    // Impact, e.g., `"MODERATE"`.
+    string impact = 3;
+    // Gene symbol, e.g., `"PCSK9"`.
+    string symbol = 4;
+    // Gene ID, `e.g., "ENSG00000169174"`.
+    string gene = 5;
+    // Feature type, e.g., `"Transcript"`.
+    string feature_type = 6;
+    // Feature ID, e.g., `"ENST00000302118"`.
+    string feature = 7;
+    // Feature biotype, e.g., `"protein_coding"`.
+    string feature_biotype = 8;
+    // Ranked exon number, e.g., `"1/4"`.
+    optional string exon = 9;
+    // Ranked intron number, e.g., `"1/4"`.
+    optional string intron = 10;
+    // cDNA position, e.g., `"ENST00000302118.5:c.89C>G"`.
+    optional string hgvsc = 11;
+    // Protein position, e.g., `"ENSP00000302118.5:p.Thr30Arg"`.
+    optional string hgvsp = 12;
+    // cDNA position, e.g., `"89/1863"`.
+    optional string cdna_position = 13;
+    // CDS position, e.g., `"89/1863"`.
+    optional string cds_position = 14;
+    // Protein position, e.g., `"30/620"`.
+    optional string protein_position = 15;
+    // Amino acids, e.g., `"T/R"`.
+    optional string amino_acids = 16;
+    // Codons, e.g., `"gCg/gGg"`.
+    optional string codons = 17;
+    // Allele count.
+    optional int32 allele_num = 18;
+    // Distance output of VEP.
+    optional string distance = 19;
+    // Strand, e.g., `"1"`.
+    optional string strand = 20;
+    // Flags
+    optional string flags = 21;
+    // Variant class, e.g., `"SNV"`.
+    optional string variant_class = 22;
+    // Symbol source, e.g., `"HGNC"`.
+    optional string symbol_source = 23;
+    // HGNC ID, e.g., `"HGNC:8706"`.
+    optional string hgnc_id = 24;
+    // Whether this is the canonical transcript.
+    optional bool canonical = 25;
+    // Presence in MANE Select
+    optional bool mane_select = 26;
+    // Presence in MANE Plus Clinical
+    optional bool mane_plus_clinical = 27;
+    // Transcript support level, e.g., `"1"`.
+    optional int32 tsl = 28;
+    // APPRIS annotation, e.g. `"P1"`.
+    optional string appris = 29;
+    // CCDS ID, e.g., `"CCDS30547.1"`.
+    optional string ccds = 30;
+    // Ensembl protein ID, e.g., `"ENSP00000302118"`.
+    optional string ensp = 31;
+    // Uniprot isoform.
+    optional string uniprot_isoform = 32;
+    // Value of VEP "SOURCE" field.
+    optional string source = 33;
+    // Protein domains, e.g., `[["2p4e", "ENSP_mappings"], ["2qtw", "ENSP_mappings"]]`.
+    repeated annonars.gnomad.vep_common.Domain domains = 34;
+    // miRNA information.
+    optional string mirna = 35;
+    // HGVS offset.
+    optional string hgvs_offset = 36;
+    // PubMed IDs
+    optional string pubmed = 37;
+    // Motif name.
+    optional string motif_name = 38;
+    // Motif name.
+    optional string motif_pos = 39;
+    // "high inf pos" from VEP.
+    optional string high_inf_pos = 40;
+    // Motif score change.
+    optional string motif_score_change = 41;
+    // Transcription factors.
+    optional string transcription_factors = 42;
+    // Loss of function prediction.
+    optional string lof = 43;
+    // Loss of function filter.
+    optional string lof_filter = 44;
+    // Loss of function flags.
+    optional string lof_flags = 45;
+    // Loss of function info.
+    optional string lof_info = 46;
+}

@@ -1,1 +1,0 @@
-../example-exomes-grch37/bootstrap.sh

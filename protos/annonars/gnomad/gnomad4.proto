@@ -1,0 +1,130 @@
+syntax = "proto3";
+
+package annonars.gnomad.gnomad4;
+
+import "annonars/gnomad/gnomad3.proto";
+import "annonars/gnomad/vep_gnomad4.proto";
+
+// Store details on variant effect predictions.
+message EffectInfo {
+    // Pangolin's largest delta score across 2 splicing consequences, which reflects the probability of the variant being splice-altering">
+    optional float pangolin_largest_ds = 1;
+    // Base-wise conservation score across the 241 placental mammals in the Zoonomia project. Score ranges from -20 to 9.28, and reflects acceleration (faster evolution than expected under neutral drift, assigned negative scores) as well as conservation (slower than expected evolution, assigned positive scores).">
+    optional float phylop = 2;
+    // Score that predicts the possible impact of an amino acid substitution on the structure and function of a human protein, ranging from 0.0 (tolerated) to 1.0 (deleterious).  We prioritize max scores for MANE Select transcripts where possible and otherwise report a score for the canonical transcript.">
+    optional float polyphen_max = 3;
+    // The maximum REVEL score at a site's MANE Select or canonical transcript. It's an ensemble score for predicting the pathogenicity of missense variants (based on 13 other variant predictors). Scores ranges from 0 to 1. Variants with higher scores are predicted to be more likely to be deleterious.">
+    optional float revel_max = 4;
+    // Score reflecting the scaled probability of the amino acid substitution being tolerated, ranging from 0 to 1. Scores below 0.05 are predicted to impact protein function. We prioritize max scores for MANE Select transcripts where possible and otherwise report a score for the canonical transcript.">
+    optional float sift_max = 5;
+    // Illumina's SpliceAI max delta score; interpreted as the probability of the variant being splice-altering.">
+    optional float spliceai_ds_max = 6;
+    // Raw CADD scores are interpretable as the extent to which the annotation profile for a given variant suggests that the variant is likely to be 'observed' (negative values) vs 'simulated' (positive values). Larger values are more deleterious.
+    optional float cadd_raw = 7;
+    // Cadd Phred-like scores ('scaled C-scores') ranging from 1 to 99, based on the rank of each variant relative to all possible 8.6 billion substitutions in the human reference genome. Larger values are more deleterious.
+    optional float cadd_phred = 8;
+}
+
+// Store the allele counts for the given sub cohort in the given ancestry group.
+message AncestryGroupAlleleCounts {
+    // Name of the ancestry group.
+    string ancestry_group = 1;
+    // The overall allele counts and the one by sex.
+    annonars.gnomad.gnomad3.AlleleCountsBySex counts = 2;
+
+    // The filtering allele frequency (using Poisson 95% CI).
+    optional float faf95 = 3;
+    // The filtering allele frequency (using Poisson 99% CI).
+    optional float faf99 = 4;
+    // The filtering allele frequency for XX samples (using Poisson 95% CI).
+    optional float faf95_xx = 5;
+    // The filtering allele frequency for XX samples (using Poisson 99% CI).
+    optional float faf99_xx = 6;
+    // The filtering allele frequency for XY samples (using Poisson 95% CI).
+    optional float faf95_xy = 7;
+    // The filtering allele frequency for XY samples (using Poisson 99% CI).
+    optional float faf99_xy = 8;
+}
+
+// Store the allele counts for the given cohort.
+message CohortAlleleCounts {
+    // Name of the cohort.
+    optional string cohort = 1;
+    // Allele counts for each population.
+    repeated AncestryGroupAlleleCounts by_ancestry_group = 2;
+    // Allele counts by sex.
+    annonars.gnomad.gnomad3.AlleleCountsBySex by_sex = 3;
+    // Raw allele counts.
+    annonars.gnomad.gnomad3.AlleleCounts raw = 4;
+
+    // The ancestry group with maximum AF.
+    optional string grpmax = 5;
+    // Maximum allele frequency across ancestry groups.
+    optional float af_grpmax = 6;
+    // Allele count in ancestry group with maximum AF.
+    optional int32 ac_grpmax = 7;
+    // Total number of alleles in ancestry group with maximum AF.
+    optional int32 an_grpmax = 8;
+    // Total number of homozygous individuals in ancestry group with maximum AF.
+    optional int32 nhomalt_grpmax = 9;
+}
+
+// VRS information
+message VrsInfo {
+    // The computed identifiers for the GA4GH VRS Alleles corresponding to the values in the REF and ALT fields
+    repeated string allele_ids = 1;
+    // Interresidue coordinates used as the location ends for the GA4GH VRS Alleles corresponding to the values in the REF and ALT fields
+    repeated int32 ends = 2;
+    // Interresidue coordinates used as the location starts for the GA4GH VRS Alleles corresponding to the values in the REF and ALT fields
+    repeated int32 starts = 3;
+    // The literal sequence states used for the GA4GH VRS Alleles corresponding to the values in the REF and ALT fields
+    repeated string states = 4;
+}
+
+// Protocol buffer for the gnomAD-nuclear VCF record.
+//
+// The more specialized fields from the INFO column are stored in separate, optional fields such
+// that we don't end up with a humongous message.
+message Record {
+    // Chromosome name.
+    string chrom = 1;
+    // 1-based start position.
+    int32 pos = 2;
+    // Reference allele.
+    string ref_allele = 3;
+    // Alternate allele.
+    string alt_allele = 4;
+
+    // Site-level filters.
+    repeated annonars.gnomad.gnomad3.Filter filters = 5;
+    // VEP annotation records.
+    repeated annonars.gnomad.vep_gnomad4.Vep vep = 6;
+
+    // Variant allele counts in the different cohorts and population.
+    //
+    // The populations in gnomAD v4 are: empty for global, "joint" for exome+genomes.
+    repeated CohortAlleleCounts allele_counts = 7;
+    // Variant (on sex chromosome) falls outside a pseudoautosomal region
+    bool nonpar = 8;
+    // All samples are heterozygous for the variant
+    bool only_het = 9;
+    // Variant falls outside of Broad exome capture regions (exomes only).
+    bool outside_broad_capture_region = 10;
+    // Variant falls outside of UK Biobank exome capture regions(exomes only).
+    bool outside_ukb_capture_region = 11;
+    // Variant was a callset-wide doubleton that was present only in two siblings (i.e., a singleton amongst unrelated samples in cohort) (exomes only).
+    bool sibling_singleton = 12;
+
+    // Information on variant scores.
+    optional EffectInfo effect_info = 13;
+    // Variant-related information details.
+    optional annonars.gnomad.gnomad3.VariantInfo variant_info = 14;
+    // Summary information for variant quality interpretation.
+    optional annonars.gnomad.gnomad3.QualityInfo quality_info = 15;
+    // Age-related information.
+    optional annonars.gnomad.gnomad3.AgeInfo age_info = 16;
+    // Depth of coverage-related information.
+    optional annonars.gnomad.gnomad3.DepthInfo depth_info = 17;
+    // VRS infos.
+    optional VrsInfo vrs_info = 18;
+}

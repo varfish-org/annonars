@@ -25,6 +25,15 @@ pub enum GnomadKind {
     Genomes,
 }
 
+impl From<GnomadKind> for crate::pbs::gnomad::gnomad4::RecordType {
+    fn from(val: GnomadKind) -> Self {
+        match val {
+            GnomadKind::Exomes => crate::pbs::gnomad::gnomad4::RecordType::Exomes,
+            GnomadKind::Genomes => crate::pbs::gnomad::gnomad4::RecordType::Genomes,
+        }
+    }
+}
+
 /// Select the genomAD version (v2/v3; important for the field names).
 #[derive(strum::Display, clap::ValueEnum, Debug, Clone, Copy, PartialEq, Eq, Hash)]
 pub enum GnomadVersion {
@@ -223,7 +232,21 @@ fn process_window(
                         )?
                         .encode_to_vec()
                     }
-                    _ => anyhow::bail!("gnomAD version must be either 2 or 3"),
+                    GnomadVersion::Four => {
+                        let details_options = serde_json::from_str(
+                            args.import_fields_json
+                                .as_ref()
+                                .expect("has been set earlier"),
+                        )?;
+                        crate::pbs::gnomad::gnomad4::Record::from_vcf_allele(
+                            &vcf_record,
+                            allele_no,
+                            &details_options,
+                            args.gnomad_kind.into(),
+                        )?
+                        .encode_to_vec()
+                    }
+                    _ => anyhow::bail!("gnomAD version must be either 2, 3, or 4"),
                 };
                 db.put_cf(&cf_gnomad, &key_buf, &record_buf)?;
             }
@@ -233,11 +256,30 @@ fn process_window(
     Ok(())
 }
 
+/// Some header fields to write to RocksDB meta data (gnomAD v4).
+static MORE_HEADER_FIELDS_V4: &[&str] = &[
+    "cadd_version",
+    "gencode_version",
+    "mane_select_version",
+    "pangolin_version",
+    "phylop_version",
+    "polyphen_version",
+    "revel_version",
+    "seqrepo_version",
+    "sift_version",
+    "spliceai_version",
+    "vrs_python_version",
+    "vrs_schema_version",
+];
+
 /// Implementation of `gnomad_nuclear import` sub command.
 pub fn run(common: &common::cli::Args, args: &Args) -> Result<(), anyhow::Error> {
     let gnomad_version: GnomadVersion = args.gnomad_version.parse()?;
-    if !matches!(gnomad_version, GnomadVersion::Two | GnomadVersion::Three) {
-        anyhow::bail!("gnomAD version must be either 2 or 3");
+    if !matches!(
+        gnomad_version,
+        GnomadVersion::Two | GnomadVersion::Three | GnomadVersion::Four
+    ) {
+        anyhow::bail!("gnomAD version must be either 2, 3, or 4");
     }
 
     // Put defaults for fields to serialize into args.
@@ -264,7 +306,18 @@ pub fn run(common: &common::cli::Args, args: &Args) -> Result<(), anyhow::Error>
                 .transpose()?,
             ..args.clone()
         },
-        _ => anyhow::bail!("gnomAD version must be either 2 or 3"),
+        GnomadVersion::Four => Args {
+            import_fields_json: args
+                .import_fields_json
+                .clone()
+                .map(|v| {
+                    serde_json::to_string(&serde_json::from_str::<gnomad3::DetailsOptions>(&v)?)
+                })
+                .or_else(|| Some(serde_json::to_string(&gnomad3::DetailsOptions::default())))
+                .transpose()?,
+            ..args.clone()
+        },
+        _ => anyhow::bail!("gnomAD version must be either 2, 3, or"),
     };
 
     tracing::info!("Starting 'gnomad-nuclear import' command");
@@ -301,6 +354,18 @@ pub fn run(common: &common::cli::Args, args: &Args) -> Result<(), anyhow::Error>
     } else {
         None
     };
+    // Load additional metadata fields (v4).
+    let mut more_header_values = Vec::new();
+    for header_field in MORE_HEADER_FIELDS_V4 {
+        if let Some(record::value::Collection::Unstructured(values)) = header
+            .other_records()
+            .get(&record::key::Other::from_str(header_field)?)
+        {
+            let val = values.first().expect("missing header value").to_owned();
+            tracing::info!("  {}: {}", header_field, &val);
+            more_header_values.push((header_field.to_string(), val));
+        }
+    }
     tracing::info!(
         "...done opening gnomAD-nuclear VCF file in {:?}",
         before_loading.elapsed()
@@ -344,6 +409,14 @@ pub fn run(common: &common::cli::Args, args: &Args) -> Result<(), anyhow::Error>
     }
     if let Some(age_distributions) = age_distributions {
         db.put_cf(&cf_meta, "gnomad-age-distributions", &age_distributions)?;
+    }
+    // Write additional metadata fields (v4).
+    for (header_field, val) in more_header_values {
+        db.put_cf(
+            &cf_meta,
+            &format!("gnomad-{}", header_field.replace('_', "-")),
+            &val,
+        )?;
     }
     tracing::info!(
         "... done opening RocksDB for writing in {:?}",
@@ -389,7 +462,7 @@ mod test {
         let args = Args {
             genome_release: common::cli::GenomeRelease::Grch37,
             path_in_vcf: vec![String::from(
-                "tests/gnomad-nuclear/example-exomes-grch37/gnomad-exomes.vcf.bgz",
+                "tests/gnomad-nuclear/example-exomes-grch37/v2.1/gnomad-exomes.vcf.bgz",
             )],
             path_out_rocksdb: format!("{}", tmp_dir.join("out-rocksdb").display()),
             cf_name: String::from("gnomad_nuclear_data"),
@@ -414,7 +487,7 @@ mod test {
         let args = Args {
             genome_release: common::cli::GenomeRelease::Grch37,
             path_in_vcf: vec![String::from(
-                "tests/gnomad-nuclear/example-genomes-grch37/gnomad-genomes.vcf.bgz",
+                "tests/gnomad-nuclear/example-genomes-grch37/v2.1/gnomad-genomes.vcf.bgz",
             )],
             path_out_rocksdb: format!("{}", tmp_dir.join("out-rocksdb").display()),
             cf_name: String::from("gnomad_nuclear_data"),
@@ -431,7 +504,7 @@ mod test {
     }
 
     #[test]
-    fn smoke_test_import_gnomad_exomes_grch38() -> Result<(), anyhow::Error> {
+    fn smoke_test_import_gnomad_exomes_grch38_v2_1() -> Result<(), anyhow::Error> {
         let tmp_dir = TempDir::default();
         let common = common::cli::Args {
             verbose: Verbosity::new(1, 0),
@@ -439,7 +512,7 @@ mod test {
         let args = Args {
             genome_release: common::cli::GenomeRelease::Grch38,
             path_in_vcf: vec![String::from(
-                "tests/gnomad-nuclear/example-exomes-grch38/gnomad-exomes.vcf.bgz",
+                "tests/gnomad-nuclear/example-exomes-grch38/v2.1/gnomad-exomes.vcf.bgz",
             )],
             path_out_rocksdb: format!("{}", tmp_dir.join("out-rocksdb").display()),
             cf_name: String::from("gnomad_nuclear_data"),
@@ -456,7 +529,7 @@ mod test {
     }
 
     #[test]
-    fn smoke_test_import_gnomad_genomes_grch38() -> Result<(), anyhow::Error> {
+    fn smoke_test_import_gnomad_genomes_grch38_v3_1() -> Result<(), anyhow::Error> {
         let tmp_dir = TempDir::default();
         let common = common::cli::Args {
             verbose: Verbosity::new(1, 0),
@@ -464,7 +537,7 @@ mod test {
         let args = Args {
             genome_release: common::cli::GenomeRelease::Grch38,
             path_in_vcf: vec![String::from(
-                "tests/gnomad-nuclear/example-genomes-grch38/gnomad-genomes.vcf.bgz",
+                "tests/gnomad-nuclear/example-genomes-grch38/v3.1/gnomad-genomes.vcf.bgz",
             )],
             path_out_rocksdb: format!("{}", tmp_dir.join("out-rocksdb").display()),
             cf_name: String::from("gnomad_nuclear_data"),
@@ -475,6 +548,56 @@ mod test {
             )?),
             gnomad_kind: GnomadKind::Genomes,
             gnomad_version: String::from("3.1"),
+        };
+
+        run(&common, &args)
+    }
+
+    #[test]
+    fn smoke_test_import_gnomad_exomes_grch38_v4_0() -> Result<(), anyhow::Error> {
+        let tmp_dir = TempDir::default();
+        let common = common::cli::Args {
+            verbose: Verbosity::new(1, 0),
+        };
+        let args = Args {
+            genome_release: common::cli::GenomeRelease::Grch38,
+            path_in_vcf: vec![String::from(
+                "tests/gnomad-nuclear/example-exomes-grch38/v4.0/gnomad-exomes.vcf.bgz",
+            )],
+            path_out_rocksdb: format!("{}", tmp_dir.join("out-rocksdb").display()),
+            cf_name: String::from("gnomad_nuclear_data"),
+            path_wal_dir: None,
+            tbi_window_size: 1_000_000,
+            import_fields_json: Some(serde_json::to_string(
+                &gnomad3::DetailsOptions::with_all_enabled(),
+            )?),
+            gnomad_kind: GnomadKind::Exomes,
+            gnomad_version: String::from("4.0"),
+        };
+
+        run(&common, &args)
+    }
+
+    #[test]
+    fn smoke_test_import_gnomad_genomes_grch38_v4_0() -> Result<(), anyhow::Error> {
+        let tmp_dir = TempDir::default();
+        let common = common::cli::Args {
+            verbose: Verbosity::new(1, 0),
+        };
+        let args = Args {
+            genome_release: common::cli::GenomeRelease::Grch38,
+            path_in_vcf: vec![String::from(
+                "tests/gnomad-nuclear/example-genomes-grch38/v4.0/gnomad-genomes.vcf.bgz",
+            )],
+            path_out_rocksdb: format!("{}", tmp_dir.join("out-rocksdb").display()),
+            cf_name: String::from("gnomad_nuclear_data"),
+            path_wal_dir: None,
+            tbi_window_size: 1_000_000,
+            import_fields_json: Some(serde_json::to_string(
+                &gnomad3::DetailsOptions::with_all_enabled(),
+            )?),
+            gnomad_kind: GnomadKind::Genomes,
+            gnomad_version: String::from("4.0"),
         };
 
         run(&common, &args)

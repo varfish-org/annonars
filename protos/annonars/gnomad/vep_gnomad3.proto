@@ -6,7 +6,7 @@ package annonars.gnomad.vep_gnomad3;
 
 import "annonars/gnomad/vep_common.proto";
 
-// Protocol buffer for the gnomAD-mtDNA VEP predictions.
+// Protocol buffer for the gnomAD-nuclear VEP predictions.
 message Vep {
     // Allele of record.
     string allele = 1;
@@ -42,6 +42,7 @@ message Vep {
     optional string amino_acids = 16;
     // Codons, e.g., `"gCg/gGg"`.
     optional string codons = 17;
+    // TODO: actually is optional int32 allele_num = 18;
     // dbSNP ID, e.g., `"rs28942080"`.
     optional string dbsnp_id = 18;
     // Distance output of VEP.

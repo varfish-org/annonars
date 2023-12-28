@@ -9,7 +9,7 @@ include!(concat!(
 ));
 
 impl Vep {
-    /// Returns number of fields in a gnomAD v2 VEP entry.
+    /// Returns number of fields in a gnomAD v3 VEP entry.
     pub fn num_fields() -> usize {
         45
     }

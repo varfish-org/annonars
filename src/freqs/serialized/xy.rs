@@ -43,13 +43,14 @@ impl Counts {
             .or_else(|_| noodles::get_i32(value, "AC_XY"))
             .expect("neither found: AC_male, AC_XY") as u32;
 
-        let nonpar = noodles::get_flag(value, "nonpar").unwrap_or(false);
+        let nonpar = noodles::get_flag(value, "nonpar").unwrap_or(false)
+            || noodles::get_flag(value, "non_par").unwrap_or(false);
 
         if nonpar {
             // not in PAR
             Counts {
                 ac_hom: ac_hom_xx,
-                ac_het: ac_xx - 2 * ac_hom_xx,
+                ac_het: ac_xx.saturating_sub(2 * ac_hom_xx),
                 ac_hemi: ac_xy,
                 an,
             }

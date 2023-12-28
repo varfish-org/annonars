@@ -1,0 +1,21 @@
+---
+source: src/pbs/gnomad/vep_gnomad4.rs
+expression: vep
+---
+allele: C
+consequence: upstream_gene_variant
+impact: MODIFIER
+symbol: DDX11L1
+gene: ENSG00000223972
+featureType: Transcript
+feature: ENST00000450305
+featureBiotype: transcribed_unprocessed_pseudogene
+alleleNum: 1
+distance: "1979"
+strand: "1"
+variantClass: SNV
+symbolSource: HGNC
+hgncId: "HGNC:37102"
+canonical: true
+source: Ensembl
+

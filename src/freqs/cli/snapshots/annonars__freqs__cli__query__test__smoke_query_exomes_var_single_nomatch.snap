@@ -1,6 +1,0 @@
----
-source: src/freqs/cli/query.rs
-assertion_line: 205
-expression: "&out_data"
----
-
