@@ -79,12 +79,14 @@ impl Record {
             .to_string();
         let filters = gnomad3::Record::extract_filters(record)?;
         let allele_counts = Self::extract_cohorts_allele_counts(record, record_type)?;
-        let nonpar = common::noodles::get_flag(record, "non_par")?;
+        let nonpar = common::noodles::get_flag(record, "non_par").unwrap_or_default();
         let outside_broad_capture_region =
-            common::noodles::get_flag(record, "outside_broad_capture_region").ok();
+            common::noodles::get_flag(record, "outside_broad_capture_region").unwrap_or_default();
         let outside_ukb_capture_region =
-            common::noodles::get_flag(record, "outside_ukb_capture_region").ok();
-        let sibling_singleton = common::noodles::get_flag(record, "sibling_singleton").ok();
+            common::noodles::get_flag(record, "outside_ukb_capture_region").unwrap_or_default();
+        let sibling_singleton =
+            common::noodles::get_flag(record, "sibling_singleton").unwrap_or_default();
+        let only_het = common::noodles::get_flag(record, "only_het").unwrap_or_default();
 
         // Extract optional fields.
         let vep = options
@@ -127,6 +129,7 @@ impl Record {
             allele_counts,
             effect_info,
             nonpar,
+            only_het,
             outside_broad_capture_region,
             outside_ukb_capture_region,
             sibling_singleton,

@@ -227,14 +227,20 @@ mod test {
 
     use temp_testdir::TempDir;
 
-    fn args_exomes(query: ArgsQuery) -> (common::cli::Args, Args, TempDir) {
+    fn args_exomes(
+        query: ArgsQuery,
+        kind: &str,
+        genome_release: &str,
+        version: &str,
+    ) -> (common::cli::Args, Args, TempDir) {
         let temp = TempDir::default();
         let common = common::cli::Args {
             verbose: clap_verbosity_flag::Verbosity::new(1, 0),
         };
         let args = Args {
-            path_rocksdb: String::from(
-                "tests/gnomad-nuclear/example-exomes-grch37/v2.1/gnomad-exomes.vcf.bgz.db",
+            path_rocksdb: format!(
+                "tests/gnomad-nuclear/example-{}-{}/v{}/gnomad-{}.vcf.bgz.db",
+                kind, genome_release, version, kind
             ),
             cf_name: String::from("gnomad_nuclear_data"),
             out_file: temp.join("out").to_string_lossy().to_string(),
@@ -245,12 +251,23 @@ mod test {
         (common, args, temp)
     }
 
-    #[test]
-    fn smoke_query_exomes_all() -> Result<(), anyhow::Error> {
-        let (common, args, _temp) = args_exomes(ArgsQuery {
-            all: true,
-            ..Default::default()
-        });
+    #[rstest::rstest]
+    #[case("exomes", "grch37", "2.1")]
+    fn smoke_query_exomes_all(
+        #[case] kind: &str,
+        #[case] genome_release: &str,
+        #[case] version: &str,
+    ) -> Result<(), anyhow::Error> {
+        crate::common::set_snapshot_suffix!("{}-{}-{}", kind, genome_release, version);
+        let (common, args, _temp) = args_exomes(
+            ArgsQuery {
+                all: true,
+                ..Default::default()
+            },
+            kind,
+            genome_release,
+            version,
+        );
         run(&common, &args)?;
         let out_data = std::fs::read_to_string(&args.out_file)?;
         insta::assert_snapshot!(&out_data);
@@ -258,12 +275,23 @@ mod test {
         Ok(())
     }
 
-    #[test]
-    fn smoke_query_exomes_var_single() -> Result<(), anyhow::Error> {
-        let (common, args, _temp) = args_exomes(ArgsQuery {
-            variant: Some(spdi::Var::from_str("GRCh37:1:55516888:G:GA")?),
-            ..Default::default()
-        });
+    #[rstest::rstest]
+    #[case("exomes", "grch37", "2.1")]
+    fn smoke_query_exomes_var_single(
+        #[case] kind: &str,
+        #[case] genome_release: &str,
+        #[case] version: &str,
+    ) -> Result<(), anyhow::Error> {
+        crate::common::set_snapshot_suffix!("{}-{}-{}", kind, genome_release, version);
+        let (common, args, _temp) = args_exomes(
+            ArgsQuery {
+                variant: Some(spdi::Var::from_str("GRCh37:1:55516888:G:GA")?),
+                ..Default::default()
+            },
+            kind,
+            genome_release,
+            version,
+        );
         run(&common, &args)?;
         let out_data = std::fs::read_to_string(&args.out_file)?;
         insta::assert_snapshot!(&out_data);
@@ -271,12 +299,23 @@ mod test {
         Ok(())
     }
 
-    #[test]
-    fn smoke_query_exomes_pos_single() -> Result<(), anyhow::Error> {
-        let (common, args, _temp) = args_exomes(ArgsQuery {
-            position: Some(spdi::Pos::from_str("GRCh37:1:55516888")?),
-            ..Default::default()
-        });
+    #[rstest::rstest]
+    #[case("exomes", "grch37", "2.1")]
+    fn smoke_query_exomes_pos_single(
+        #[case] kind: &str,
+        #[case] genome_release: &str,
+        #[case] version: &str,
+    ) -> Result<(), anyhow::Error> {
+        crate::common::set_snapshot_suffix!("{}-{}-{}", kind, genome_release, version);
+        let (common, args, _temp) = args_exomes(
+            ArgsQuery {
+                position: Some(spdi::Pos::from_str("GRCh37:1:55516888")?),
+                ..Default::default()
+            },
+            kind,
+            genome_release,
+            version,
+        );
         run(&common, &args)?;
         let out_data = std::fs::read_to_string(&args.out_file)?;
         insta::assert_snapshot!(&out_data);
@@ -284,12 +323,23 @@ mod test {
         Ok(())
     }
 
-    #[test]
-    fn smoke_query_exomes_range_find_all_chr1() -> Result<(), anyhow::Error> {
-        let (common, args, _temp) = args_exomes(ArgsQuery {
-            range: Some(spdi::Range::from_str("GRCh37:1:1:249250621")?),
-            ..Default::default()
-        });
+    #[rstest::rstest]
+    #[case("exomes", "grch37", "2.1")]
+    fn smoke_query_exomes_range_find_all_chr1(
+        #[case] kind: &str,
+        #[case] genome_release: &str,
+        #[case] version: &str,
+    ) -> Result<(), anyhow::Error> {
+        crate::common::set_snapshot_suffix!("{}-{}-{}", kind, genome_release, version);
+        let (common, args, _temp) = args_exomes(
+            ArgsQuery {
+                range: Some(spdi::Range::from_str("GRCh37:1:1:249250621")?),
+                ..Default::default()
+            },
+            kind,
+            genome_release,
+            version,
+        );
         run(&common, &args)?;
         let out_data = std::fs::read_to_string(&args.out_file)?;
         insta::assert_snapshot!(&out_data);
@@ -297,12 +347,23 @@ mod test {
         Ok(())
     }
 
-    #[test]
-    fn smoke_query_exomes_range_find_first() -> Result<(), anyhow::Error> {
-        let (common, args, _temp) = args_exomes(ArgsQuery {
-            range: Some(spdi::Range::from_str("GRCh37:1:55505599:55505599")?),
-            ..Default::default()
-        });
+    #[rstest::rstest]
+    #[case("exomes", "grch37", "2.1")]
+    fn smoke_query_exomes_range_find_first(
+        #[case] kind: &str,
+        #[case] genome_release: &str,
+        #[case] version: &str,
+    ) -> Result<(), anyhow::Error> {
+        crate::common::set_snapshot_suffix!("{}-{}-{}", kind, genome_release, version);
+        let (common, args, _temp) = args_exomes(
+            ArgsQuery {
+                range: Some(spdi::Range::from_str("GRCh37:1:55505599:55505599")?),
+                ..Default::default()
+            },
+            kind,
+            genome_release,
+            version,
+        );
         run(&common, &args)?;
         let out_data = std::fs::read_to_string(&args.out_file)?;
         insta::assert_snapshot!(&out_data);
@@ -310,12 +371,23 @@ mod test {
         Ok(())
     }
 
-    #[test]
-    fn smoke_query_exomes_range_find_second() -> Result<(), anyhow::Error> {
-        let (common, args, _temp) = args_exomes(ArgsQuery {
-            range: Some(spdi::Range::from_str("GRCh37:1:55505615:55505615")?),
-            ..Default::default()
-        });
+    #[rstest::rstest]
+    #[case("exomes", "grch37", "2.1")]
+    fn smoke_query_exomes_range_find_second(
+        #[case] kind: &str,
+        #[case] genome_release: &str,
+        #[case] version: &str,
+    ) -> Result<(), anyhow::Error> {
+        crate::common::set_snapshot_suffix!("{}-{}-{}", kind, genome_release, version);
+        let (common, args, _temp) = args_exomes(
+            ArgsQuery {
+                range: Some(spdi::Range::from_str("GRCh37:1:55505615:55505615")?),
+                ..Default::default()
+            },
+            kind,
+            genome_release,
+            version,
+        );
         run(&common, &args)?;
         let out_data = std::fs::read_to_string(&args.out_file)?;
         insta::assert_snapshot!(&out_data);
@@ -323,12 +395,23 @@ mod test {
         Ok(())
     }
 
-    #[test]
-    fn smoke_query_exomes_range_find_none_smaller() -> Result<(), anyhow::Error> {
-        let (common, args, _temp) = args_exomes(ArgsQuery {
-            range: Some(spdi::Range::from_str("GRCh37:1:1:55505598")?),
-            ..Default::default()
-        });
+    #[rstest::rstest]
+    #[case("exomes", "grch37", "2.1")]
+    fn smoke_query_exomes_range_find_none_smaller(
+        #[case] kind: &str,
+        #[case] genome_release: &str,
+        #[case] version: &str,
+    ) -> Result<(), anyhow::Error> {
+        crate::common::set_snapshot_suffix!("{}-{}-{}", kind, genome_release, version);
+        let (common, args, _temp) = args_exomes(
+            ArgsQuery {
+                range: Some(spdi::Range::from_str("GRCh37:1:1:55505598")?),
+                ..Default::default()
+            },
+            kind,
+            genome_release,
+            version,
+        );
         run(&common, &args)?;
         let out_data = std::fs::read_to_string(&args.out_file)?;
         insta::assert_snapshot!(&out_data);
@@ -336,12 +419,23 @@ mod test {
         Ok(())
     }
 
-    #[test]
-    fn smoke_query_exomes_range_find_none_larger() -> Result<(), anyhow::Error> {
-        let (common, args, _temp) = args_exomes(ArgsQuery {
-            range: Some(spdi::Range::from_str("GRCh37:1:55516889:249250621")?),
-            ..Default::default()
-        });
+    #[rstest::rstest]
+    #[case("exomes", "grch37", "2.1")]
+    fn smoke_query_exomes_range_find_none_larger(
+        #[case] kind: &str,
+        #[case] genome_release: &str,
+        #[case] version: &str,
+    ) -> Result<(), anyhow::Error> {
+        crate::common::set_snapshot_suffix!("{}-{}-{}", kind, genome_release, version);
+        let (common, args, _temp) = args_exomes(
+            ArgsQuery {
+                range: Some(spdi::Range::from_str("GRCh37:1:55516889:249250621")?),
+                ..Default::default()
+            },
+            kind,
+            genome_release,
+            version,
+        );
         run(&common, &args)?;
         let out_data = std::fs::read_to_string(&args.out_file)?;
         insta::assert_snapshot!(&out_data);

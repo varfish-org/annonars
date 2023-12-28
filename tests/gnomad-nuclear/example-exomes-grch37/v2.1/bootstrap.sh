@@ -16,9 +16,9 @@ if [[ $SCRIPT_DIR/gnomad-$data_kind.vcf \
     tabix -f $SCRIPT_DIR/gnomad-$data_kind.vcf.bgz
 fi
 
-gnomad_version=$(dirname $SCRIPT_DIR | cut -d v -f 2)
+gnomad_version=$(basename $SCRIPT_DIR | cut -d v -f 2)
 
-if [[ $data_kind == "exomes" ]] && [[ $genome_release == "grch38" ]] && [[ gnomad_version == "v2.1" ]]; then
+if [[ $data_kind == "exomes" ]] && [[ $genome_release == "grch38" ]] && [[ $gnomad_version == "2.1" ]]; then
     liftover=true
 else
     liftover=false

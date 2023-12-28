@@ -1,0 +1,2386 @@
+---
+source: src/pbs/gnomad/gnomad4.rs
+expression: records
+---
+- chrom: chr1
+  pos: 10031
+  refAllele: T
+  altAllele: C
+  alleleCounts:
+    - cohort: joint
+      byAncestryGroup:
+        - ancestryGroup: afr
+          counts:
+            overall:
+              an: 14642
+            xx:
+              an: 7978
+            xy:
+              an: 6664
+          faf95: 0
+          faf99: 0
+        - ancestryGroup: ami
+          counts:
+            overall:
+              an: 352
+            xx:
+              an: 154
+            xy:
+              an: 198
+        - ancestryGroup: amr
+          counts:
+            overall:
+              an: 6420
+            xx:
+              an: 2770
+            xy:
+              an: 3650
+          faf95: 0
+          faf99: 0
+        - ancestryGroup: asj
+          counts:
+            overall:
+              an: 1550
+            xx:
+              an: 814
+            xy:
+              an: 736
+        - ancestryGroup: eas
+          counts:
+            overall:
+              an: 1712
+            xx:
+              an: 770
+            xy:
+              an: 942
+          faf95: 0
+          faf99: 0
+        - ancestryGroup: fin
+          counts:
+            overall:
+              an: 4326
+            xx:
+              an: 1060
+            xy:
+              an: 3266
+        - ancestryGroup: mid
+          counts:
+            overall:
+              an: 192
+            xx:
+              an: 102
+            xy:
+              an: 90
+        - ancestryGroup: nfe
+          counts:
+            overall:
+              an: 25546
+            xx:
+              an: 14998
+            xy:
+              an: 10548
+          faf95: 0
+          faf99: 0
+        - ancestryGroup: remaining
+          counts:
+            overall:
+              an: 782
+            xx:
+              an: 402
+            xy:
+              an: 380
+        - ancestryGroup: sas
+          counts:
+            overall:
+              an: 1120
+            xx:
+              an: 260
+            xy:
+              an: 860
+          faf95: 0
+          faf99: 0
+      bySex:
+        overall:
+          an: 56642
+        xx:
+          an: 29308
+        xy:
+          an: 27334
+      raw:
+        ac: 2
+        an: 121094
+        af: 0.0000165161
+    - byAncestryGroup:
+        - ancestryGroup: afr
+          counts:
+            overall:
+              an: 14642
+            xx:
+              an: 7978
+            xy:
+              an: 6664
+          faf95: 0
+          faf99: 0
+        - ancestryGroup: ami
+          counts:
+            overall:
+              an: 352
+            xx:
+              an: 154
+            xy:
+              an: 198
+        - ancestryGroup: amr
+          counts:
+            overall:
+              an: 6420
+            xx:
+              an: 2770
+            xy:
+              an: 3650
+          faf95: 0
+          faf99: 0
+        - ancestryGroup: asj
+          counts:
+            overall:
+              an: 1550
+            xx:
+              an: 814
+            xy:
+              an: 736
+        - ancestryGroup: eas
+          counts:
+            overall:
+              an: 1712
+            xx:
+              an: 770
+            xy:
+              an: 942
+          faf95: 0
+          faf99: 0
+        - ancestryGroup: fin
+          counts:
+            overall:
+              an: 4326
+            xx:
+              an: 1060
+            xy:
+              an: 3266
+        - ancestryGroup: mid
+          counts:
+            overall:
+              an: 192
+            xx:
+              an: 102
+            xy:
+              an: 90
+        - ancestryGroup: nfe
+          counts:
+            overall:
+              an: 25546
+            xx:
+              an: 14998
+            xy:
+              an: 10548
+          faf95: 0
+          faf99: 0
+        - ancestryGroup: remaining
+          counts:
+            overall:
+              an: 782
+            xx:
+              an: 402
+            xy:
+              an: 380
+        - ancestryGroup: sas
+          counts:
+            overall:
+              an: 1120
+            xx:
+              an: 260
+            xy:
+              an: 860
+          faf95: 0
+          faf99: 0
+      bySex:
+        overall:
+          an: 56642
+        xx:
+          an: 29308
+        xy:
+          an: 27334
+      raw:
+        ac: 2
+        an: 121094
+        af: 0.0000165161
+    - cohort: non_ukb
+      byAncestryGroup:
+        - ancestryGroup: afr
+          counts:
+            overall: {}
+            xx: {}
+            xy: {}
+          faf95: 0
+          faf99: 0
+        - ancestryGroup: ami
+          counts:
+            overall: {}
+            xx: {}
+            xy: {}
+        - ancestryGroup: amr
+          counts:
+            overall: {}
+            xx: {}
+            xy: {}
+          faf95: 0
+          faf99: 0
+        - ancestryGroup: asj
+          counts:
+            overall: {}
+            xx: {}
+            xy: {}
+        - ancestryGroup: eas
+          counts:
+            overall: {}
+            xx: {}
+            xy: {}
+          faf95: 0
+          faf99: 0
+        - ancestryGroup: fin
+          counts:
+            overall: {}
+            xx: {}
+            xy: {}
+        - ancestryGroup: mid
+          counts:
+            overall: {}
+            xx: {}
+            xy: {}
+        - ancestryGroup: nfe
+          counts:
+            overall: {}
+            xx: {}
+            xy: {}
+          faf95: 0
+          faf99: 0
+        - ancestryGroup: remaining
+          counts:
+            overall: {}
+            xx: {}
+            xy: {}
+        - ancestryGroup: sas
+          counts:
+            overall: {}
+            xx: {}
+            xy: {}
+          faf95: 0
+          faf99: 0
+      bySex:
+        overall: {}
+        xx: {}
+        xy: {}
+      raw: {}
+  effectInfo:
+    caddPhred: 8.973
+  variantInfo:
+    variantType: multi-snv
+    alleleType: snv
+    nAltAlleles: 2
+    varDp: 2
+    asVardp: 26
+  qualityInfo:
+    asFs: 5.09715
+    asMq: 35.0722
+    mqRankSum: 0.067
+    asMqRankSum: -0.572
+    asQd: 2.96154
+    readPosRankSum: -1.067
+    asReadPosRankSum: -1.38
+    asSor: 0.0964365
+    asVqslod: -4.5686
+    asCulprit: AS_QD
+    lcr: true
+    asPabMax: 0.6875
+    asQualApprox: 77
+    asSbTable: "21"
+    sor: 0.096
+  ageInfo:
+    ageHistHomNSmaller: 0
+    ageHistHomNLarger: 0
+    ageHistHetNSmaller: 0
+    ageHistHetNLarger: 0
+  depthInfo:
+    dpHistAllNLarger: 527
+    dpHistAltNLarger: 0
+  vrsInfo:
+    alleleIds:
+      - "ga4gh:VA.oTAtTrgYxm81O9fu6Mrhfo1t3eHsgg4L"
+      - "ga4gh:VA.Y283OnlLjyi1T1IT_JzvW255rC6YJsW6"
+    ends:
+      - 10031
+      - 10031
+    starts:
+      - 10030
+      - 10030
+    states:
+      - T
+      - C
+- chrom: chr1
+  pos: 10037
+  refAllele: T
+  altAllele: C
+  alleleCounts:
+    - cohort: joint
+      byAncestryGroup:
+        - ancestryGroup: afr
+          counts:
+            overall:
+              an: 20394
+            xx:
+              an: 11132
+            xy:
+              an: 9262
+          faf95: 0
+          faf99: 0
+        - ancestryGroup: ami
+          counts:
+            overall:
+              an: 494
+            xx:
+              an: 238
+            xy:
+              an: 256
+        - ancestryGroup: amr
+          counts:
+            overall:
+              an: 8296
+            xx:
+              an: 3698
+            xy:
+              an: 4598
+          faf95: 0
+          faf99: 0
+        - ancestryGroup: asj
+          counts:
+            overall:
+              an: 2066
+            xx:
+              an: 1106
+            xy:
+              an: 960
+        - ancestryGroup: eas
+          counts:
+            overall:
+              ac: 1
+              an: 2456
+              af: 0.000407166
+            xx:
+              ac: 1
+              an: 1114
+              af: 0.000897666
+            xy:
+              an: 1342
+          faf95: 0
+          faf99: 0
+        - ancestryGroup: fin
+          counts:
+            overall:
+              ac: 1
+              an: 5568
+              af: 0.000179598
+            xx:
+              an: 1316
+            xy:
+              ac: 1
+              an: 4252
+              af: 0.000235183
+        - ancestryGroup: mid
+          counts:
+            overall:
+              an: 234
+            xx:
+              an: 122
+            xy:
+              an: 112
+        - ancestryGroup: nfe
+          counts:
+            overall:
+              an: 34670
+            xx:
+              an: 20498
+            xy:
+              an: 14172
+          faf95: 0
+          faf99: 0
+        - ancestryGroup: remaining
+          counts:
+            overall:
+              an: 998
+            xx:
+              an: 528
+            xy:
+              an: 470
+        - ancestryGroup: sas
+          counts:
+            overall:
+              an: 1706
+            xx:
+              an: 420
+            xy:
+              an: 1286
+          faf95: 0
+          faf99: 0
+      bySex:
+        overall:
+          ac: 2
+          an: 76882
+          af: 0.0000260139
+        xx:
+          ac: 1
+          an: 40172
+          af: 0.000024893
+        xy:
+          ac: 1
+          an: 36710
+          af: 0.0000272405
+      raw:
+        ac: 4
+        an: 126902
+        af: 0.0000315204
+      grpmax: eas
+      afGrpmax: 0.000407166
+      acGrpmax: 1
+      anGrpmax: 2456
+      nhomaltGrpmax: 0
+    - byAncestryGroup:
+        - ancestryGroup: afr
+          counts:
+            overall:
+              an: 20394
+            xx:
+              an: 11132
+            xy:
+              an: 9262
+          faf95: 0
+          faf99: 0
+        - ancestryGroup: ami
+          counts:
+            overall:
+              an: 494
+            xx:
+              an: 238
+            xy:
+              an: 256
+        - ancestryGroup: amr
+          counts:
+            overall:
+              an: 8296
+            xx:
+              an: 3698
+            xy:
+              an: 4598
+          faf95: 0
+          faf99: 0
+        - ancestryGroup: asj
+          counts:
+            overall:
+              an: 2066
+            xx:
+              an: 1106
+            xy:
+              an: 960
+        - ancestryGroup: eas
+          counts:
+            overall:
+              ac: 1
+              an: 2456
+              af: 0.000407166
+            xx:
+              ac: 1
+              an: 1114
+              af: 0.000897666
+            xy:
+              an: 1342
+          faf95: 0
+          faf99: 0
+        - ancestryGroup: fin
+          counts:
+            overall:
+              ac: 1
+              an: 5568
+              af: 0.000179598
+            xx:
+              an: 1316
+            xy:
+              ac: 1
+              an: 4252
+              af: 0.000235183
+        - ancestryGroup: mid
+          counts:
+            overall:
+              an: 234
+            xx:
+              an: 122
+            xy:
+              an: 112
+        - ancestryGroup: nfe
+          counts:
+            overall:
+              an: 34670
+            xx:
+              an: 20498
+            xy:
+              an: 14172
+          faf95: 0
+          faf99: 0
+        - ancestryGroup: remaining
+          counts:
+            overall:
+              an: 998
+            xx:
+              an: 528
+            xy:
+              an: 470
+        - ancestryGroup: sas
+          counts:
+            overall:
+              an: 1706
+            xx:
+              an: 420
+            xy:
+              an: 1286
+          faf95: 0
+          faf99: 0
+      bySex:
+        overall:
+          ac: 2
+          an: 76882
+          af: 0.0000260139
+        xx:
+          ac: 1
+          an: 40172
+          af: 0.000024893
+        xy:
+          ac: 1
+          an: 36710
+          af: 0.0000272405
+      raw:
+        ac: 4
+        an: 126902
+        af: 0.0000315204
+      grpmax: eas
+      afGrpmax: 0.000407166
+      acGrpmax: 1
+      anGrpmax: 2456
+      nhomaltGrpmax: 0
+    - cohort: non_ukb
+      byAncestryGroup:
+        - ancestryGroup: afr
+          counts:
+            overall: {}
+            xx: {}
+            xy: {}
+          faf95: 0
+          faf99: 0
+        - ancestryGroup: ami
+          counts:
+            overall: {}
+            xx: {}
+            xy: {}
+        - ancestryGroup: amr
+          counts:
+            overall: {}
+            xx: {}
+            xy: {}
+          faf95: 0
+          faf99: 0
+        - ancestryGroup: asj
+          counts:
+            overall: {}
+            xx: {}
+            xy: {}
+        - ancestryGroup: eas
+          counts:
+            overall: {}
+            xx: {}
+            xy: {}
+          faf95: 0
+          faf99: 0
+        - ancestryGroup: fin
+          counts:
+            overall: {}
+            xx: {}
+            xy: {}
+        - ancestryGroup: mid
+          counts:
+            overall: {}
+            xx: {}
+            xy: {}
+        - ancestryGroup: nfe
+          counts:
+            overall: {}
+            xx: {}
+            xy: {}
+          faf95: 0
+          faf99: 0
+        - ancestryGroup: remaining
+          counts:
+            overall: {}
+            xx: {}
+            xy: {}
+        - ancestryGroup: sas
+          counts:
+            overall: {}
+            xx: {}
+            xy: {}
+          faf95: 0
+          faf99: 0
+      bySex:
+        overall: {}
+        xx: {}
+        xy: {}
+      raw: {}
+  effectInfo:
+    caddPhred: 8.902
+  variantInfo:
+    variantType: snv
+    alleleType: snv
+    nAltAlleles: 1
+    varDp: 1
+    asVardp: 82
+  qualityInfo:
+    asFs: 8.58284
+    asMq: 38.3115
+    mqRankSum: 1.371
+    asMqRankSum: 1.371
+    asQd: 2.19512
+    readPosRankSum: -0.48
+    asReadPosRankSum: -0.48
+    asSor: 0.151497
+    asVqslod: -3.1798
+    asCulprit: AS_QD
+    lcr: true
+    asPabMax: 1
+    asQualApprox: 180
+    asSbTable: "49"
+    sor: 0.151
+  ageInfo:
+    ageHistHomNSmaller: 0
+    ageHistHomNLarger: 0
+    ageHistHetNSmaller: 0
+    ageHistHetNLarger: 0
+  depthInfo:
+    dpHistAllNLarger: 888
+    dpHistAltNLarger: 0
+  vrsInfo:
+    alleleIds:
+      - "ga4gh:VA.6pIoPAYDsphCprRcyrititenuEWlZaxV"
+      - "ga4gh:VA.iHyQ1mh_iQX6WcqXcx5vvZF9_jPYDePo"
+    ends:
+      - 10037
+      - 10037
+    starts:
+      - 10036
+      - 10036
+    states:
+      - T
+      - C
+- chrom: chr1
+  pos: 10043
+  refAllele: T
+  altAllele: C
+  alleleCounts:
+    - cohort: joint
+      byAncestryGroup:
+        - ancestryGroup: afr
+          counts:
+            overall:
+              ac: 1
+              an: 22760
+              af: 0.0000439367
+            xx:
+              ac: 1
+              an: 12446
+              af: 0.0000803471
+            xy:
+              an: 10314
+          faf95: 0
+          faf99: 0
+        - ancestryGroup: ami
+          counts:
+            overall:
+              an: 568
+            xx:
+              an: 284
+            xy:
+              an: 284
+        - ancestryGroup: amr
+          counts:
+            overall:
+              an: 8502
+            xx:
+              an: 3888
+            xy:
+              an: 4614
+          faf95: 0
+          faf99: 0
+        - ancestryGroup: asj
+          counts:
+            overall:
+              an: 2276
+            xx:
+              an: 1234
+            xy:
+              an: 1042
+        - ancestryGroup: eas
+          counts:
+            overall:
+              an: 2912
+            xx:
+              an: 1296
+            xy:
+              an: 1616
+          faf95: 0
+          faf99: 0
+        - ancestryGroup: fin
+          counts:
+            overall:
+              an: 5820
+            xx:
+              an: 1280
+            xy:
+              an: 4540
+        - ancestryGroup: mid
+          counts:
+            overall:
+              an: 254
+            xx:
+              an: 136
+            xy:
+              an: 118
+        - ancestryGroup: nfe
+          counts:
+            overall:
+              an: 39236
+            xx:
+              an: 23244
+            xy:
+              an: 15992
+          faf95: 0
+          faf99: 0
+        - ancestryGroup: remaining
+          counts:
+            overall:
+              an: 1148
+            xx:
+              an: 594
+            xy:
+              an: 554
+        - ancestryGroup: sas
+          counts:
+            overall:
+              an: 2158
+            xx:
+              an: 502
+            xy:
+              an: 1656
+          faf95: 0
+          faf99: 0
+      bySex:
+        overall:
+          ac: 1
+          an: 85634
+          af: 0.0000116776
+        xx:
+          ac: 1
+          an: 44904
+          af: 0.0000222697
+        xy:
+          an: 40730
+      raw:
+        ac: 1
+        an: 121430
+        af: 0.0000082352
+      grpmax: afr
+      afGrpmax: 0.0000439367
+      acGrpmax: 1
+      anGrpmax: 22760
+      nhomaltGrpmax: 0
+    - byAncestryGroup:
+        - ancestryGroup: afr
+          counts:
+            overall:
+              ac: 1
+              an: 22760
+              af: 0.0000439367
+            xx:
+              ac: 1
+              an: 12446
+              af: 0.0000803471
+            xy:
+              an: 10314
+          faf95: 0
+          faf99: 0
+        - ancestryGroup: ami
+          counts:
+            overall:
+              an: 568
+            xx:
+              an: 284
+            xy:
+              an: 284
+        - ancestryGroup: amr
+          counts:
+            overall:
+              an: 8502
+            xx:
+              an: 3888
+            xy:
+              an: 4614
+          faf95: 0
+          faf99: 0
+        - ancestryGroup: asj
+          counts:
+            overall:
+              an: 2276
+            xx:
+              an: 1234
+            xy:
+              an: 1042
+        - ancestryGroup: eas
+          counts:
+            overall:
+              an: 2912
+            xx:
+              an: 1296
+            xy:
+              an: 1616
+          faf95: 0
+          faf99: 0
+        - ancestryGroup: fin
+          counts:
+            overall:
+              an: 5820
+            xx:
+              an: 1280
+            xy:
+              an: 4540
+        - ancestryGroup: mid
+          counts:
+            overall:
+              an: 254
+            xx:
+              an: 136
+            xy:
+              an: 118
+        - ancestryGroup: nfe
+          counts:
+            overall:
+              an: 39236
+            xx:
+              an: 23244
+            xy:
+              an: 15992
+          faf95: 0
+          faf99: 0
+        - ancestryGroup: remaining
+          counts:
+            overall:
+              an: 1148
+            xx:
+              an: 594
+            xy:
+              an: 554
+        - ancestryGroup: sas
+          counts:
+            overall:
+              an: 2158
+            xx:
+              an: 502
+            xy:
+              an: 1656
+          faf95: 0
+          faf99: 0
+      bySex:
+        overall:
+          ac: 1
+          an: 85634
+          af: 0.0000116776
+        xx:
+          ac: 1
+          an: 44904
+          af: 0.0000222697
+        xy:
+          an: 40730
+      raw:
+        ac: 1
+        an: 121430
+        af: 0.0000082352
+      grpmax: afr
+      afGrpmax: 0.0000439367
+      acGrpmax: 1
+      anGrpmax: 22760
+      nhomaltGrpmax: 0
+    - cohort: non_ukb
+      byAncestryGroup:
+        - ancestryGroup: afr
+          counts:
+            overall: {}
+            xx: {}
+            xy: {}
+          faf95: 0
+          faf99: 0
+        - ancestryGroup: ami
+          counts:
+            overall: {}
+            xx: {}
+            xy: {}
+        - ancestryGroup: amr
+          counts:
+            overall: {}
+            xx: {}
+            xy: {}
+          faf95: 0
+          faf99: 0
+        - ancestryGroup: asj
+          counts:
+            overall: {}
+            xx: {}
+            xy: {}
+        - ancestryGroup: eas
+          counts:
+            overall: {}
+            xx: {}
+            xy: {}
+          faf95: 0
+          faf99: 0
+        - ancestryGroup: fin
+          counts:
+            overall: {}
+            xx: {}
+            xy: {}
+        - ancestryGroup: mid
+          counts:
+            overall: {}
+            xx: {}
+            xy: {}
+        - ancestryGroup: nfe
+          counts:
+            overall: {}
+            xx: {}
+            xy: {}
+          faf95: 0
+          faf99: 0
+        - ancestryGroup: remaining
+          counts:
+            overall: {}
+            xx: {}
+            xy: {}
+        - ancestryGroup: sas
+          counts:
+            overall: {}
+            xx: {}
+            xy: {}
+          faf95: 0
+          faf99: 0
+      bySex:
+        overall: {}
+        xx: {}
+        xy: {}
+      raw: {}
+  effectInfo:
+    caddPhred: 8.899
+  variantInfo:
+    variantType: snv
+    alleleType: snv
+    nAltAlleles: 1
+    varDp: 1
+    asVardp: 35
+  qualityInfo:
+    asFs: 31.0999
+    asMq: 35.1938
+    mqRankSum: 1.231
+    asMqRankSum: 1.231
+    asQd: 2.77143
+    readPosRankSum: -0.896
+    asReadPosRankSum: -0.896
+    asSor: 0.0014782
+    asVqslod: -5.7927
+    asCulprit: AS_FS
+    lcr: true
+    asPabMax: 1
+    asQualApprox: 97
+    asSbTable: "25"
+    sor: 0.001
+  ageInfo:
+    ageHistHomNSmaller: 0
+    ageHistHomNLarger: 0
+    ageHistHetNSmaller: 0
+    ageHistHetNLarger: 0
+  depthInfo:
+    dpHistAllNLarger: 1232
+    dpHistAltNLarger: 0
+  vrsInfo:
+    alleleIds:
+      - "ga4gh:VA.HdrkFJS16zwJPcGSKX9___fJcdqSATlQ"
+      - "ga4gh:VA.LSHuFx03sqw8WJGN2-n782ME4o04Vl4U"
+    ends:
+      - 10043
+      - 10043
+    starts:
+      - 10042
+      - 10042
+    states:
+      - T
+      - C
+- chrom: chr1
+  pos: 10055
+  refAllele: T
+  altAllele: C
+  alleleCounts:
+    - cohort: joint
+      byAncestryGroup:
+        - ancestryGroup: afr
+          counts:
+            overall:
+              an: 26032
+            xx:
+              an: 14152
+            xy:
+              an: 11880
+          faf95: 0
+          faf99: 0
+        - ancestryGroup: ami
+          counts:
+            overall:
+              an: 682
+            xx:
+              an: 344
+            xy:
+              an: 338
+        - ancestryGroup: amr
+          counts:
+            overall:
+              an: 8056
+            xx:
+              an: 3902
+            xy:
+              an: 4154
+          faf95: 0
+          faf99: 0
+        - ancestryGroup: asj
+          counts:
+            overall:
+              an: 2370
+            xx:
+              an: 1246
+            xy:
+              an: 1124
+        - ancestryGroup: eas
+          counts:
+            overall:
+              an: 3020
+            xx:
+              an: 1256
+            xy:
+              an: 1764
+          faf95: 0
+          faf99: 0
+        - ancestryGroup: fin
+          counts:
+            overall:
+              ac: 1
+              an: 5570
+              af: 0.000179533
+            xx:
+              ac: 1
+              an: 1034
+              af: 0.000967118
+            xy:
+              an: 4536
+        - ancestryGroup: mid
+          counts:
+            overall:
+              an: 216
+            xx:
+              an: 110
+            xy:
+              an: 106
+        - ancestryGroup: nfe
+          counts:
+            overall:
+              an: 44382
+            xx:
+              an: 26312
+            xy:
+              an: 18070
+          faf95: 0
+          faf99: 0
+        - ancestryGroup: remaining
+          counts:
+            overall:
+              an: 1228
+            xx:
+              an: 624
+            xy:
+              an: 604
+        - ancestryGroup: sas
+          counts:
+            overall:
+              an: 2668
+            xx:
+              an: 600
+            xy:
+              an: 2068
+          faf95: 0
+          faf99: 0
+      bySex:
+        overall:
+          ac: 1
+          an: 94224
+          af: 0.000010613
+        xx:
+          ac: 1
+          an: 49580
+          af: 0.0000201694
+        xy:
+          an: 44644
+      raw:
+        ac: 5
+        an: 107704
+        af: 0.0000464235
+    - byAncestryGroup:
+        - ancestryGroup: afr
+          counts:
+            overall:
+              an: 26032
+            xx:
+              an: 14152
+            xy:
+              an: 11880
+          faf95: 0
+          faf99: 0
+        - ancestryGroup: ami
+          counts:
+            overall:
+              an: 682
+            xx:
+              an: 344
+            xy:
+              an: 338
+        - ancestryGroup: amr
+          counts:
+            overall:
+              an: 8056
+            xx:
+              an: 3902
+            xy:
+              an: 4154
+          faf95: 0
+          faf99: 0
+        - ancestryGroup: asj
+          counts:
+            overall:
+              an: 2370
+            xx:
+              an: 1246
+            xy:
+              an: 1124
+        - ancestryGroup: eas
+          counts:
+            overall:
+              an: 3020
+            xx:
+              an: 1256
+            xy:
+              an: 1764
+          faf95: 0
+          faf99: 0
+        - ancestryGroup: fin
+          counts:
+            overall:
+              ac: 1
+              an: 5570
+              af: 0.000179533
+            xx:
+              ac: 1
+              an: 1034
+              af: 0.000967118
+            xy:
+              an: 4536
+        - ancestryGroup: mid
+          counts:
+            overall:
+              an: 216
+            xx:
+              an: 110
+            xy:
+              an: 106
+        - ancestryGroup: nfe
+          counts:
+            overall:
+              an: 44382
+            xx:
+              an: 26312
+            xy:
+              an: 18070
+          faf95: 0
+          faf99: 0
+        - ancestryGroup: remaining
+          counts:
+            overall:
+              an: 1228
+            xx:
+              an: 624
+            xy:
+              an: 604
+        - ancestryGroup: sas
+          counts:
+            overall:
+              an: 2668
+            xx:
+              an: 600
+            xy:
+              an: 2068
+          faf95: 0
+          faf99: 0
+      bySex:
+        overall:
+          ac: 1
+          an: 94224
+          af: 0.000010613
+        xx:
+          ac: 1
+          an: 49580
+          af: 0.0000201694
+        xy:
+          an: 44644
+      raw:
+        ac: 5
+        an: 107704
+        af: 0.0000464235
+    - cohort: non_ukb
+      byAncestryGroup:
+        - ancestryGroup: afr
+          counts:
+            overall: {}
+            xx: {}
+            xy: {}
+          faf95: 0
+          faf99: 0
+        - ancestryGroup: ami
+          counts:
+            overall: {}
+            xx: {}
+            xy: {}
+        - ancestryGroup: amr
+          counts:
+            overall: {}
+            xx: {}
+            xy: {}
+          faf95: 0
+          faf99: 0
+        - ancestryGroup: asj
+          counts:
+            overall: {}
+            xx: {}
+            xy: {}
+        - ancestryGroup: eas
+          counts:
+            overall: {}
+            xx: {}
+            xy: {}
+          faf95: 0
+          faf99: 0
+        - ancestryGroup: fin
+          counts:
+            overall: {}
+            xx: {}
+            xy: {}
+        - ancestryGroup: mid
+          counts:
+            overall: {}
+            xx: {}
+            xy: {}
+        - ancestryGroup: nfe
+          counts:
+            overall: {}
+            xx: {}
+            xy: {}
+          faf95: 0
+          faf99: 0
+        - ancestryGroup: remaining
+          counts:
+            overall: {}
+            xx: {}
+            xy: {}
+        - ancestryGroup: sas
+          counts:
+            overall: {}
+            xx: {}
+            xy: {}
+          faf95: 0
+          faf99: 0
+      bySex:
+        overall: {}
+        xx: {}
+        xy: {}
+      raw: {}
+  effectInfo:
+    caddPhred: 8.878
+  variantInfo:
+    variantType: mixed
+    alleleType: snv
+    nAltAlleles: 4
+    wasMixed: true
+    monoallelic: true
+    varDp: 4
+    asVardp: 75
+  qualityInfo:
+    asFs: 5.94137
+    asMq: 34.8477
+    mqRankSum: 0.107
+    asMqRankSum: 0.715
+    asQd: 1.21333
+    readPosRankSum: -1.157
+    asReadPosRankSum: -1.157
+    asSor: 0.469044
+    negativeTrainSite: true
+    asVqslod: -3.7187
+    asCulprit: AS_QD
+    lcr: true
+    asPabMax: 0.226562
+    asQualApprox: 91
+    asSbTable: "51"
+    sor: 0.616
+  ageInfo:
+    ageHistHomNSmaller: 0
+    ageHistHomNLarger: 0
+    ageHistHetNSmaller: 0
+    ageHistHetNLarger: 0
+  depthInfo:
+    dpHistAllNLarger: 2440
+    dpHistAltNLarger: 0
+  vrsInfo:
+    alleleIds:
+      - "ga4gh:VA.xis4Nhtveh7q75mtkipQAUqZfWUfboWB"
+      - "ga4gh:VA.Ciou33oFTNEilAEegbFai_K0nu3F18A7"
+    ends:
+      - 10055
+      - 10055
+    starts:
+      - 10054
+      - 10054
+    states:
+      - T
+      - C
+- chrom: chr1
+  pos: 10057
+  refAllele: A
+  altAllele: C
+  alleleCounts:
+    - cohort: joint
+      byAncestryGroup:
+        - ancestryGroup: afr
+          counts:
+            overall:
+              ac: 1
+              an: 30736
+              af: 0.0000325351
+            xx:
+              an: 16598
+            xy:
+              ac: 1
+              an: 14138
+              af: 0.0000707314
+          faf95: 0
+          faf99: 0
+        - ancestryGroup: ami
+          counts:
+            overall:
+              an: 742
+            xx:
+              an: 378
+            xy:
+              an: 364
+        - ancestryGroup: amr
+          counts:
+            overall:
+              an: 10448
+            xx:
+              an: 4944
+            xy:
+              an: 5504
+          faf95: 0
+          faf99: 0
+        - ancestryGroup: asj
+          counts:
+            overall:
+              an: 2768
+            xx:
+              an: 1532
+            xy:
+              an: 1236
+        - ancestryGroup: eas
+          counts:
+            overall:
+              an: 3850
+            xx:
+              an: 1670
+            xy:
+              an: 2180
+          faf95: 0
+          faf99: 0
+        - ancestryGroup: fin
+          counts:
+            overall:
+              an: 6886
+            xx:
+              an: 1472
+            xy:
+              an: 5414
+        - ancestryGroup: mid
+          counts:
+            overall:
+              an: 266
+            xx:
+              an: 132
+            xy:
+              an: 134
+        - ancestryGroup: nfe
+          counts:
+            overall:
+              ac: 2
+              an: 52912
+              af: 0.0000377986
+            xx:
+              ac: 2
+              an: 31106
+              af: 0.0000642963
+            xy:
+              an: 21806
+          faf95: 0.00000627
+          faf99: 0.00000235
+        - ancestryGroup: remaining
+          counts:
+            overall:
+              an: 1504
+            xx:
+              an: 764
+            xy:
+              an: 740
+        - ancestryGroup: sas
+          counts:
+            overall:
+              an: 3424
+            xx:
+              an: 784
+            xy:
+              an: 2640
+          faf95: 0
+          faf99: 0
+      bySex:
+        overall:
+          ac: 3
+          an: 113536
+          af: 0.0000264233
+        xx:
+          ac: 2
+          an: 59380
+          af: 0.0000336814
+        xy:
+          ac: 1
+          an: 54156
+          af: 0.0000184652
+      raw:
+        ac: 3
+        an: 124252
+        af: 0.0000241445
+      grpmax: nfe
+      afGrpmax: 0.0000377986
+      acGrpmax: 2
+      anGrpmax: 52912
+      nhomaltGrpmax: 0
+    - byAncestryGroup:
+        - ancestryGroup: afr
+          counts:
+            overall:
+              ac: 1
+              an: 30736
+              af: 0.0000325351
+            xx:
+              an: 16598
+            xy:
+              ac: 1
+              an: 14138
+              af: 0.0000707314
+          faf95: 0
+          faf99: 0
+        - ancestryGroup: ami
+          counts:
+            overall:
+              an: 742
+            xx:
+              an: 378
+            xy:
+              an: 364
+        - ancestryGroup: amr
+          counts:
+            overall:
+              an: 10448
+            xx:
+              an: 4944
+            xy:
+              an: 5504
+          faf95: 0
+          faf99: 0
+        - ancestryGroup: asj
+          counts:
+            overall:
+              an: 2768
+            xx:
+              an: 1532
+            xy:
+              an: 1236
+        - ancestryGroup: eas
+          counts:
+            overall:
+              an: 3850
+            xx:
+              an: 1670
+            xy:
+              an: 2180
+          faf95: 0
+          faf99: 0
+        - ancestryGroup: fin
+          counts:
+            overall:
+              an: 6886
+            xx:
+              an: 1472
+            xy:
+              an: 5414
+        - ancestryGroup: mid
+          counts:
+            overall:
+              an: 266
+            xx:
+              an: 132
+            xy:
+              an: 134
+        - ancestryGroup: nfe
+          counts:
+            overall:
+              ac: 2
+              an: 52912
+              af: 0.0000377986
+            xx:
+              ac: 2
+              an: 31106
+              af: 0.0000642963
+            xy:
+              an: 21806
+          faf95: 0.00000627
+          faf99: 0.00000235
+        - ancestryGroup: remaining
+          counts:
+            overall:
+              an: 1504
+            xx:
+              an: 764
+            xy:
+              an: 740
+        - ancestryGroup: sas
+          counts:
+            overall:
+              an: 3424
+            xx:
+              an: 784
+            xy:
+              an: 2640
+          faf95: 0
+          faf99: 0
+      bySex:
+        overall:
+          ac: 3
+          an: 113536
+          af: 0.0000264233
+        xx:
+          ac: 2
+          an: 59380
+          af: 0.0000336814
+        xy:
+          ac: 1
+          an: 54156
+          af: 0.0000184652
+      raw:
+        ac: 3
+        an: 124252
+        af: 0.0000241445
+      grpmax: nfe
+      afGrpmax: 0.0000377986
+      acGrpmax: 2
+      anGrpmax: 52912
+      nhomaltGrpmax: 0
+    - cohort: non_ukb
+      byAncestryGroup:
+        - ancestryGroup: afr
+          counts:
+            overall: {}
+            xx: {}
+            xy: {}
+          faf95: 0
+          faf99: 0
+        - ancestryGroup: ami
+          counts:
+            overall: {}
+            xx: {}
+            xy: {}
+        - ancestryGroup: amr
+          counts:
+            overall: {}
+            xx: {}
+            xy: {}
+          faf95: 0
+          faf99: 0
+        - ancestryGroup: asj
+          counts:
+            overall: {}
+            xx: {}
+            xy: {}
+        - ancestryGroup: eas
+          counts:
+            overall: {}
+            xx: {}
+            xy: {}
+          faf95: 0
+          faf99: 0
+        - ancestryGroup: fin
+          counts:
+            overall: {}
+            xx: {}
+            xy: {}
+        - ancestryGroup: mid
+          counts:
+            overall: {}
+            xx: {}
+            xy: {}
+        - ancestryGroup: nfe
+          counts:
+            overall: {}
+            xx: {}
+            xy: {}
+          faf95: 0.00000627
+          faf99: 0.00000235
+        - ancestryGroup: remaining
+          counts:
+            overall: {}
+            xx: {}
+            xy: {}
+        - ancestryGroup: sas
+          counts:
+            overall: {}
+            xx: {}
+            xy: {}
+          faf95: 0
+          faf99: 0
+      bySex:
+        overall: {}
+        xx: {}
+        xy: {}
+      raw: {}
+  effectInfo:
+    caddPhred: 8.535
+  variantInfo:
+    variantType: multi-snv
+    alleleType: snv
+    nAltAlleles: 2
+    varDp: 2
+    asVardp: 128
+  qualityInfo:
+    asFs: 37.8704
+    asMq: 36.0861
+    mqRankSum: 0.788
+    asMqRankSum: 0.788
+    asQd: 2.0625
+    readPosRankSum: -0.684
+    asReadPosRankSum: -0.684
+    asSor: 0.758245
+    asVqslod: -3.3117
+    asCulprit: AS_FS
+    lcr: true
+    asPabMax: 1
+    asQualApprox: 264
+    asSbTable: "97"
+    sor: 0.375
+  ageInfo:
+    ageHistHomNSmaller: 0
+    ageHistHomNLarger: 0
+    ageHistHetNSmaller: 0
+    ageHistHetNLarger: 0
+  depthInfo:
+    dpHistAllNLarger: 3622
+    dpHistAltNLarger: 0
+  vrsInfo:
+    alleleIds:
+      - "ga4gh:VA.TV0UyS-jCvsVkEOMbipUnzTc4hYuVNTg"
+      - "ga4gh:VA.33zGTKcHyj5wWpTfc3OfD8-UlPQ-YOfx"
+    ends:
+      - 10057
+      - 10057
+    starts:
+      - 10056
+      - 10056
+    states:
+      - A
+      - C
+- chrom: chr1
+  pos: 10061
+  refAllele: T
+  altAllele: C
+  alleleCounts:
+    - cohort: joint
+      byAncestryGroup:
+        - ancestryGroup: afr
+          counts:
+            overall:
+              an: 29914
+            xx:
+              an: 16040
+            xy:
+              an: 13874
+          faf95: 0
+          faf99: 0
+        - ancestryGroup: ami
+          counts:
+            overall:
+              an: 748
+            xx:
+              an: 378
+            xy:
+              an: 370
+        - ancestryGroup: amr
+          counts:
+            overall:
+              an: 9514
+            xx:
+              an: 4566
+            xy:
+              an: 4948
+          faf95: 0
+          faf99: 0
+        - ancestryGroup: asj
+          counts:
+            overall:
+              an: 2710
+            xx:
+              an: 1466
+            xy:
+              an: 1244
+        - ancestryGroup: eas
+          counts:
+            overall:
+              an: 3612
+            xx:
+              an: 1578
+            xy:
+              an: 2034
+          faf95: 0
+          faf99: 0
+        - ancestryGroup: fin
+          counts:
+            overall:
+              an: 6568
+            xx:
+              an: 1338
+            xy:
+              an: 5230
+        - ancestryGroup: mid
+          counts:
+            overall:
+              an: 244
+            xx:
+              an: 122
+            xy:
+              an: 122
+        - ancestryGroup: nfe
+          counts:
+            overall:
+              an: 50922
+            xx:
+              an: 30192
+            xy:
+              an: 20730
+          faf95: 0
+          faf99: 0
+        - ancestryGroup: remaining
+          counts:
+            overall:
+              an: 1470
+            xx:
+              an: 738
+            xy:
+              an: 732
+        - ancestryGroup: sas
+          counts:
+            overall:
+              an: 3128
+            xx:
+              an: 644
+            xy:
+              an: 2484
+          faf95: 0
+          faf99: 0
+      bySex:
+        overall:
+          an: 108830
+        xx:
+          an: 57062
+        xy:
+          an: 51768
+      raw:
+        ac: 2
+        an: 117910
+        af: 0.0000169621
+    - byAncestryGroup:
+        - ancestryGroup: afr
+          counts:
+            overall:
+              an: 29914
+            xx:
+              an: 16040
+            xy:
+              an: 13874
+          faf95: 0
+          faf99: 0
+        - ancestryGroup: ami
+          counts:
+            overall:
+              an: 748
+            xx:
+              an: 378
+            xy:
+              an: 370
+        - ancestryGroup: amr
+          counts:
+            overall:
+              an: 9514
+            xx:
+              an: 4566
+            xy:
+              an: 4948
+          faf95: 0
+          faf99: 0
+        - ancestryGroup: asj
+          counts:
+            overall:
+              an: 2710
+            xx:
+              an: 1466
+            xy:
+              an: 1244
+        - ancestryGroup: eas
+          counts:
+            overall:
+              an: 3612
+            xx:
+              an: 1578
+            xy:
+              an: 2034
+          faf95: 0
+          faf99: 0
+        - ancestryGroup: fin
+          counts:
+            overall:
+              an: 6568
+            xx:
+              an: 1338
+            xy:
+              an: 5230
+        - ancestryGroup: mid
+          counts:
+            overall:
+              an: 244
+            xx:
+              an: 122
+            xy:
+              an: 122
+        - ancestryGroup: nfe
+          counts:
+            overall:
+              an: 50922
+            xx:
+              an: 30192
+            xy:
+              an: 20730
+          faf95: 0
+          faf99: 0
+        - ancestryGroup: remaining
+          counts:
+            overall:
+              an: 1470
+            xx:
+              an: 738
+            xy:
+              an: 732
+        - ancestryGroup: sas
+          counts:
+            overall:
+              an: 3128
+            xx:
+              an: 644
+            xy:
+              an: 2484
+          faf95: 0
+          faf99: 0
+      bySex:
+        overall:
+          an: 108830
+        xx:
+          an: 57062
+        xy:
+          an: 51768
+      raw:
+        ac: 2
+        an: 117910
+        af: 0.0000169621
+    - cohort: non_ukb
+      byAncestryGroup:
+        - ancestryGroup: afr
+          counts:
+            overall: {}
+            xx: {}
+            xy: {}
+          faf95: 0
+          faf99: 0
+        - ancestryGroup: ami
+          counts:
+            overall: {}
+            xx: {}
+            xy: {}
+        - ancestryGroup: amr
+          counts:
+            overall: {}
+            xx: {}
+            xy: {}
+          faf95: 0
+          faf99: 0
+        - ancestryGroup: asj
+          counts:
+            overall: {}
+            xx: {}
+            xy: {}
+        - ancestryGroup: eas
+          counts:
+            overall: {}
+            xx: {}
+            xy: {}
+          faf95: 0
+          faf99: 0
+        - ancestryGroup: fin
+          counts:
+            overall: {}
+            xx: {}
+            xy: {}
+        - ancestryGroup: mid
+          counts:
+            overall: {}
+            xx: {}
+            xy: {}
+        - ancestryGroup: nfe
+          counts:
+            overall: {}
+            xx: {}
+            xy: {}
+          faf95: 0
+          faf99: 0
+        - ancestryGroup: remaining
+          counts:
+            overall: {}
+            xx: {}
+            xy: {}
+        - ancestryGroup: sas
+          counts:
+            overall: {}
+            xx: {}
+            xy: {}
+          faf95: 0
+          faf99: 0
+      bySex:
+        overall: {}
+        xx: {}
+        xy: {}
+      raw: {}
+  effectInfo:
+    caddPhred: 8.875
+  variantInfo:
+    variantType: mixed
+    alleleType: snv
+    nAltAlleles: 4
+    wasMixed: true
+    monoallelic: true
+    varDp: 4
+    asVardp: 66
+  qualityInfo:
+    asFs: 1.1136
+    asMq: 39.0179
+    mqRankSum: 0.105
+    asMqRankSum: 0.105
+    asQd: 1.51515
+    readPosRankSum: -0.736
+    asReadPosRankSum: 0
+    asSor: 0.883796
+    negativeTrainSite: true
+    asVqslod: -2.4537
+    asCulprit: AS_QD
+    lcr: true
+    asPabMax: 1
+    asQualApprox: 100
+    asSbTable: "71"
+    sor: 0.317
+  ageInfo:
+    ageHistHomNSmaller: 0
+    ageHistHomNLarger: 0
+    ageHistHetNSmaller: 0
+    ageHistHetNLarger: 0
+  depthInfo:
+    dpHistAllNLarger: 4091
+    dpHistAltNLarger: 0
+  vrsInfo:
+    alleleIds:
+      - "ga4gh:VA.gYsvr24SJpCda9SA6gLb5pDrCFGCJAH0"
+      - "ga4gh:VA.v8YvDbtUA8eFjy2-iO_XbUdlEI-y-hSd"
+    ends:
+      - 10061
+      - 10061
+    starts:
+      - 10060
+      - 10060
+    states:
+      - T
+      - C
+- chrom: chr1
+  pos: 10061
+  refAllele: T
+  altAllele: TAACCCTAACCCTAACCCTAACCCTAACCCTAACCCTAACCCTAACCC
+  alleleCounts:
+    - cohort: joint
+      byAncestryGroup:
+        - ancestryGroup: afr
+          counts:
+            overall:
+              an: 29854
+            xx:
+              an: 16040
+            xy:
+              an: 13814
+          faf95: 0
+          faf99: 0
+        - ancestryGroup: ami
+          counts:
+            overall:
+              an: 748
+            xx:
+              an: 378
+            xy:
+              an: 370
+        - ancestryGroup: amr
+          counts:
+            overall:
+              an: 9490
+            xx:
+              an: 4556
+            xy:
+              an: 4934
+          faf95: 0
+          faf99: 0
+        - ancestryGroup: asj
+          counts:
+            overall:
+              an: 2710
+            xx:
+              an: 1466
+            xy:
+              an: 1244
+        - ancestryGroup: eas
+          counts:
+            overall:
+              an: 3616
+            xx:
+              an: 1584
+            xy:
+              an: 2032
+          faf95: 0
+          faf99: 0
+        - ancestryGroup: fin
+          counts:
+            overall:
+              an: 6568
+            xx:
+              an: 1338
+            xy:
+              an: 5230
+        - ancestryGroup: mid
+          counts:
+            overall:
+              an: 268
+            xx:
+              an: 144
+            xy:
+              an: 124
+        - ancestryGroup: nfe
+          counts:
+            overall:
+              an: 50916
+            xx:
+              an: 30190
+            xy:
+              an: 20726
+          faf95: 0
+          faf99: 0
+        - ancestryGroup: remaining
+          counts:
+            overall:
+              an: 1462
+            xx:
+              an: 724
+            xy:
+              an: 738
+        - ancestryGroup: sas
+          counts:
+            overall:
+              an: 3136
+            xx:
+              an: 652
+            xy:
+              an: 2484
+          faf95: 0
+          faf99: 0
+      bySex:
+        overall:
+          an: 108768
+        xx:
+          an: 57072
+        xy:
+          an: 51696
+      raw:
+        ac: 7
+        an: 117852
+        af: 0.0000593965
+    - byAncestryGroup:
+        - ancestryGroup: afr
+          counts:
+            overall:
+              an: 29854
+            xx:
+              an: 16040
+            xy:
+              an: 13814
+          faf95: 0
+          faf99: 0
+        - ancestryGroup: ami
+          counts:
+            overall:
+              an: 748
+            xx:
+              an: 378
+            xy:
+              an: 370
+        - ancestryGroup: amr
+          counts:
+            overall:
+              an: 9490
+            xx:
+              an: 4556
+            xy:
+              an: 4934
+          faf95: 0
+          faf99: 0
+        - ancestryGroup: asj
+          counts:
+            overall:
+              an: 2710
+            xx:
+              an: 1466
+            xy:
+              an: 1244
+        - ancestryGroup: eas
+          counts:
+            overall:
+              an: 3616
+            xx:
+              an: 1584
+            xy:
+              an: 2032
+          faf95: 0
+          faf99: 0
+        - ancestryGroup: fin
+          counts:
+            overall:
+              an: 6568
+            xx:
+              an: 1338
+            xy:
+              an: 5230
+        - ancestryGroup: mid
+          counts:
+            overall:
+              an: 268
+            xx:
+              an: 144
+            xy:
+              an: 124
+        - ancestryGroup: nfe
+          counts:
+            overall:
+              an: 50916
+            xx:
+              an: 30190
+            xy:
+              an: 20726
+          faf95: 0
+          faf99: 0
+        - ancestryGroup: remaining
+          counts:
+            overall:
+              an: 1462
+            xx:
+              an: 724
+            xy:
+              an: 738
+        - ancestryGroup: sas
+          counts:
+            overall:
+              an: 3136
+            xx:
+              an: 652
+            xy:
+              an: 2484
+          faf95: 0
+          faf99: 0
+      bySex:
+        overall:
+          an: 108768
+        xx:
+          an: 57072
+        xy:
+          an: 51696
+      raw:
+        ac: 7
+        an: 117852
+        af: 0.0000593965
+    - cohort: non_ukb
+      byAncestryGroup:
+        - ancestryGroup: afr
+          counts:
+            overall: {}
+            xx: {}
+            xy: {}
+          faf95: 0
+          faf99: 0
+        - ancestryGroup: ami
+          counts:
+            overall: {}
+            xx: {}
+            xy: {}
+        - ancestryGroup: amr
+          counts:
+            overall: {}
+            xx: {}
+            xy: {}
+          faf95: 0
+          faf99: 0
+        - ancestryGroup: asj
+          counts:
+            overall: {}
+            xx: {}
+            xy: {}
+        - ancestryGroup: eas
+          counts:
+            overall: {}
+            xx: {}
+            xy: {}
+          faf95: 0
+          faf99: 0
+        - ancestryGroup: fin
+          counts:
+            overall: {}
+            xx: {}
+            xy: {}
+        - ancestryGroup: mid
+          counts:
+            overall: {}
+            xx: {}
+            xy: {}
+        - ancestryGroup: nfe
+          counts:
+            overall: {}
+            xx: {}
+            xy: {}
+          faf95: 0
+          faf99: 0
+        - ancestryGroup: remaining
+          counts:
+            overall: {}
+            xx: {}
+            xy: {}
+        - ancestryGroup: sas
+          counts:
+            overall: {}
+            xx: {}
+            xy: {}
+          faf95: 0
+          faf99: 0
+      bySex:
+        overall: {}
+        xx: {}
+        xy: {}
+      raw: {}
+  effectInfo:
+    caddPhred: 3.123
+  variantInfo:
+    variantType: mixed
+    alleleType: ins
+    nAltAlleles: 4
+    wasMixed: true
+    monoallelic: true
+    varDp: 4
+    asVardp: 122
+  qualityInfo:
+    asFs: 14.0897
+    asMq: 36.9197
+    mqRankSum: 0.105
+    asMqRankSum: 0.736
+    asQd: 9.36066
+    readPosRankSum: -0.736
+    asReadPosRankSum: -1.026
+    asSor: 0.286063
+    negativeTrainSite: true
+    asVqslod: -0.2163
+    asCulprit: AS_SOR
+    lcr: true
+    asPabMax: 1
+    asQualApprox: 1142
+    asSbTable: "71"
+    sor: 0.317
+  ageInfo:
+    ageHistHomNSmaller: 0
+    ageHistHomNLarger: 0
+    ageHistHetNSmaller: 0
+    ageHistHetNLarger: 0
+  depthInfo:
+    dpHistAllNLarger: 4091
+    dpHistAltNLarger: 0
+  vrsInfo:
+    alleleIds:
+      - "ga4gh:VA.gYsvr24SJpCda9SA6gLb5pDrCFGCJAH0"
+      - "ga4gh:VA.M7T6JmdjlEzfALRbyipvxjLft68Ipy9v"
+    ends:
+      - 10061
+      - 10149
+    starts:
+      - 10060
+      - 10061
+    states:
+      - T
+      - AACCCTAACCCTAACCCTAACCCTAACCCTAACCCTAACCCTAACCCAACCCTAACCCTAACCCTAACCCTAACCCTAACCCTAACCCTAACCCAACCCTAACCCTAACCCTAACCCTAACCCTAACCCTAACCC
+

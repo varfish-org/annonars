@@ -106,23 +106,25 @@ message Record {
     repeated CohortAlleleCounts allele_counts = 7;
     // Variant (on sex chromosome) falls outside a pseudoautosomal region
     bool nonpar = 8;
+    // All samples are heterozygous for the variant
+    bool only_het = 9;
     // Variant falls outside of Broad exome capture regions (exomes only).
-    optional bool outside_broad_capture_region = 9;
+    bool outside_broad_capture_region = 10;
     // Variant falls outside of UK Biobank exome capture regions(exomes only).
-    optional bool outside_ukb_capture_region = 10;
+    bool outside_ukb_capture_region = 11;
     // Variant was a callset-wide doubleton that was present only in two siblings (i.e., a singleton amongst unrelated samples in cohort) (exomes only).
-    optional bool sibling_singleton = 11;
+    bool sibling_singleton = 12;
 
     // Information on variant scores.
-    optional EffectInfo effect_info = 12;
+    optional EffectInfo effect_info = 13;
     // Variant-related information details.
-    optional annonars.gnomad.gnomad3.VariantInfo variant_info = 13;
+    optional annonars.gnomad.gnomad3.VariantInfo variant_info = 14;
     // Summary information for variant quality interpretation.
-    optional annonars.gnomad.gnomad3.QualityInfo quality_info = 14;
+    optional annonars.gnomad.gnomad3.QualityInfo quality_info = 15;
     // Age-related information.
-    optional annonars.gnomad.gnomad3.AgeInfo age_info = 15;
+    optional annonars.gnomad.gnomad3.AgeInfo age_info = 16;
     // Depth of coverage-related information.
-    optional annonars.gnomad.gnomad3.DepthInfo depth_info = 16;
+    optional annonars.gnomad.gnomad3.DepthInfo depth_info = 17;
     // VRS infos.
-    optional VrsInfo vrs_info = 17;
+    optional VrsInfo vrs_info = 18;
 }

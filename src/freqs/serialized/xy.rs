@@ -43,9 +43,8 @@ impl Counts {
             .or_else(|_| noodles::get_i32(value, "AC_XY"))
             .expect("neither found: AC_male, AC_XY") as u32;
 
-        let nonpar = noodles::get_flag(value, "nonpar").unwrap_or(false);
-        // TODO: also non_par (v4.0)
-        // TODO only_het (v4.0)
+        let nonpar = noodles::get_flag(value, "nonpar").unwrap_or(false)
+            || noodles::get_flag(value, "non_par").unwrap_or(false);
 
         if nonpar {
             // not in PAR
