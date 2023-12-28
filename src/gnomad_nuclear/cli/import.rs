@@ -25,9 +25,9 @@ pub enum GnomadKind {
     Genomes,
 }
 
-impl Into<crate::pbs::gnomad::gnomad4::RecordType> for GnomadKind {
-    fn into(self) -> crate::pbs::gnomad::gnomad4::RecordType {
-        match self {
+impl From<GnomadKind> for crate::pbs::gnomad::gnomad4::RecordType {
+    fn from(val: GnomadKind) -> Self {
+        match val {
             GnomadKind::Exomes => crate::pbs::gnomad::gnomad4::RecordType::Exomes,
             GnomadKind::Genomes => crate::pbs::gnomad::gnomad4::RecordType::Genomes,
         }
@@ -414,7 +414,7 @@ pub fn run(common: &common::cli::Args, args: &Args) -> Result<(), anyhow::Error>
     for (header_field, val) in more_header_values {
         db.put_cf(
             &cf_meta,
-            &format!("gnomad-{}", header_field.replace("_", "-")),
+            &format!("gnomad-{}", header_field.replace('_', "-")),
             &val,
         )?;
     }
@@ -504,7 +504,7 @@ mod test {
     }
 
     #[test]
-    fn smoke_test_import_gnomad_exomes_grch38() -> Result<(), anyhow::Error> {
+    fn smoke_test_import_gnomad_exomes_grch38_v2_1() -> Result<(), anyhow::Error> {
         let tmp_dir = TempDir::default();
         let common = common::cli::Args {
             verbose: Verbosity::new(1, 0),
@@ -529,7 +529,7 @@ mod test {
     }
 
     #[test]
-    fn smoke_test_import_gnomad_genomes_grch38() -> Result<(), anyhow::Error> {
+    fn smoke_test_import_gnomad_genomes_grch38_v3_1() -> Result<(), anyhow::Error> {
         let tmp_dir = TempDir::default();
         let common = common::cli::Args {
             verbose: Verbosity::new(1, 0),
@@ -548,6 +548,56 @@ mod test {
             )?),
             gnomad_kind: GnomadKind::Genomes,
             gnomad_version: String::from("3.1"),
+        };
+
+        run(&common, &args)
+    }
+
+    #[test]
+    fn smoke_test_import_gnomad_exomes_grch38_v4_0() -> Result<(), anyhow::Error> {
+        let tmp_dir = TempDir::default();
+        let common = common::cli::Args {
+            verbose: Verbosity::new(1, 0),
+        };
+        let args = Args {
+            genome_release: common::cli::GenomeRelease::Grch38,
+            path_in_vcf: vec![String::from(
+                "tests/gnomad-nuclear/example-exomes-grch38/v4.0/gnomad-exomes.vcf.bgz",
+            )],
+            path_out_rocksdb: format!("{}", tmp_dir.join("out-rocksdb").display()),
+            cf_name: String::from("gnomad_nuclear_data"),
+            path_wal_dir: None,
+            tbi_window_size: 1_000_000,
+            import_fields_json: Some(serde_json::to_string(
+                &gnomad3::DetailsOptions::with_all_enabled(),
+            )?),
+            gnomad_kind: GnomadKind::Exomes,
+            gnomad_version: String::from("4.0"),
+        };
+
+        run(&common, &args)
+    }
+
+    #[test]
+    fn smoke_test_import_gnomad_genomes_grch38_v4_0() -> Result<(), anyhow::Error> {
+        let tmp_dir = TempDir::default();
+        let common = common::cli::Args {
+            verbose: Verbosity::new(1, 0),
+        };
+        let args = Args {
+            genome_release: common::cli::GenomeRelease::Grch38,
+            path_in_vcf: vec![String::from(
+                "tests/gnomad-nuclear/example-genomes-grch38/v4.0/gnomad-genomes.vcf.bgz",
+            )],
+            path_out_rocksdb: format!("{}", tmp_dir.join("out-rocksdb").display()),
+            cf_name: String::from("gnomad_nuclear_data"),
+            path_wal_dir: None,
+            tbi_window_size: 1_000_000,
+            import_fields_json: Some(serde_json::to_string(
+                &gnomad3::DetailsOptions::with_all_enabled(),
+            )?),
+            gnomad_kind: GnomadKind::Genomes,
+            gnomad_version: String::from("4.0"),
         };
 
         run(&common, &args)

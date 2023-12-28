@@ -291,8 +291,9 @@ mod test {
 
     #[rstest::rstest]
     #[case("exomes", "grch37", "2.1")]
-    // #[case("exomes", "grch38", "4.0")]
-    fn smoke_query_exomes_all(
+    #[case("exomes", "grch38", "4.0")]
+    #[case("genomes", "grch38", "4.0")]
+    fn smoke_query_all(
         #[case] kind: &str,
         #[case] genome_release: &str,
         #[case] version: &str,
@@ -316,7 +317,9 @@ mod test {
 
     #[rstest::rstest]
     #[case("exomes", "grch37", "2.1")]
-    fn smoke_query_exomes_var_single(
+    #[case("exomes", "grch38", "4.0")]
+    #[case("genomes", "grch38", "4.0")]
+    fn smoke_query_var_single(
         #[case] kind: &str,
         #[case] genome_release: &str,
         #[case] version: &str,
@@ -324,7 +327,14 @@ mod test {
         crate::common::set_snapshot_suffix!("{}-{}-{}", kind, genome_release, version);
         let (common, args, _temp) = build_args(
             ArgsQuery {
-                variant: Some(spdi::Var::from_str("GRCh37:1:55516888:G:GA")?),
+                variant: Some(spdi::Var::from_str(&format!(
+                    "{}:1:55516888:G:GA",
+                    if genome_release == "grch37" {
+                        "GRCh37"
+                    } else {
+                        "GRCh38"
+                    }
+                ))?),
                 ..Default::default()
             },
             kind,
@@ -340,7 +350,9 @@ mod test {
 
     #[rstest::rstest]
     #[case("exomes", "grch37", "2.1")]
-    fn smoke_query_exomes_pos_single(
+    #[case("exomes", "grch38", "4.0")]
+    #[case("genomes", "grch38", "4.0")]
+    fn smoke_query_pos_single(
         #[case] kind: &str,
         #[case] genome_release: &str,
         #[case] version: &str,
@@ -348,7 +360,14 @@ mod test {
         crate::common::set_snapshot_suffix!("{}-{}-{}", kind, genome_release, version);
         let (common, args, _temp) = build_args(
             ArgsQuery {
-                position: Some(spdi::Pos::from_str("GRCh37:1:55516888")?),
+                position: Some(spdi::Pos::from_str(&format!(
+                    "{}:1:55516888",
+                    if genome_release == "grch37" {
+                        "GRCh37"
+                    } else {
+                        "GRCh38"
+                    }
+                ))?),
                 ..Default::default()
             },
             kind,
@@ -364,7 +383,9 @@ mod test {
 
     #[rstest::rstest]
     #[case("exomes", "grch37", "2.1")]
-    fn smoke_query_exomes_range_find_all_chr1(
+    #[case("exomes", "grch38", "4.0")]
+    #[case("genomes", "grch38", "4.0")]
+    fn smoke_query_range_find_all_chr1(
         #[case] kind: &str,
         #[case] genome_release: &str,
         #[case] version: &str,
@@ -372,7 +393,14 @@ mod test {
         crate::common::set_snapshot_suffix!("{}-{}-{}", kind, genome_release, version);
         let (common, args, _temp) = build_args(
             ArgsQuery {
-                range: Some(spdi::Range::from_str("GRCh37:1:1:249250621")?),
+                range: Some(spdi::Range::from_str(&format!(
+                    "{}:1:1:249250621",
+                    if genome_release == "grch37" {
+                        "GRCh37"
+                    } else {
+                        "GRCh38"
+                    }
+                ))?),
                 ..Default::default()
             },
             kind,
@@ -388,7 +416,9 @@ mod test {
 
     #[rstest::rstest]
     #[case("exomes", "grch37", "2.1")]
-    fn smoke_query_exomes_range_find_first(
+    #[case("exomes", "grch38", "4.0")]
+    #[case("genomes", "grch38", "4.0")]
+    fn smoke_query_range_find_first(
         #[case] kind: &str,
         #[case] genome_release: &str,
         #[case] version: &str,
@@ -396,7 +426,14 @@ mod test {
         crate::common::set_snapshot_suffix!("{}-{}-{}", kind, genome_release, version);
         let (common, args, _temp) = build_args(
             ArgsQuery {
-                range: Some(spdi::Range::from_str("GRCh37:1:55505599:55505599")?),
+                range: Some(spdi::Range::from_str(&format!(
+                    "{}:1:55505599:55505599",
+                    if genome_release == "grch37" {
+                        "GRCh37"
+                    } else {
+                        "GRCh38"
+                    }
+                ))?),
                 ..Default::default()
             },
             kind,
@@ -412,7 +449,9 @@ mod test {
 
     #[rstest::rstest]
     #[case("exomes", "grch37", "2.1")]
-    fn smoke_query_exomes_range_find_second(
+    #[case("exomes", "grch38", "4.0")]
+    #[case("genomes", "grch38", "4.0")]
+    fn smoke_query_range_find_second(
         #[case] kind: &str,
         #[case] genome_release: &str,
         #[case] version: &str,
@@ -420,7 +459,14 @@ mod test {
         crate::common::set_snapshot_suffix!("{}-{}-{}", kind, genome_release, version);
         let (common, args, _temp) = build_args(
             ArgsQuery {
-                range: Some(spdi::Range::from_str("GRCh37:1:55505615:55505615")?),
+                range: Some(spdi::Range::from_str(&format!(
+                    "{}:1:55505615:55505615",
+                    if genome_release == "grch37" {
+                        "GRCh37"
+                    } else {
+                        "GRCh38"
+                    }
+                ))?),
                 ..Default::default()
             },
             kind,
@@ -436,7 +482,9 @@ mod test {
 
     #[rstest::rstest]
     #[case("exomes", "grch37", "2.1")]
-    fn smoke_query_exomes_range_find_none_smaller(
+    #[case("exomes", "grch38", "4.0")]
+    #[case("genomes", "grch38", "4.0")]
+    fn smoke_query_range_find_none_smaller(
         #[case] kind: &str,
         #[case] genome_release: &str,
         #[case] version: &str,
@@ -444,7 +492,14 @@ mod test {
         crate::common::set_snapshot_suffix!("{}-{}-{}", kind, genome_release, version);
         let (common, args, _temp) = build_args(
             ArgsQuery {
-                range: Some(spdi::Range::from_str("GRCh37:1:1:55505598")?),
+                range: Some(spdi::Range::from_str(&format!(
+                    "{}:1:1:55505598",
+                    if genome_release == "grch37" {
+                        "GRCh37"
+                    } else {
+                        "GRCh38"
+                    }
+                ))?),
                 ..Default::default()
             },
             kind,
@@ -460,7 +515,9 @@ mod test {
 
     #[rstest::rstest]
     #[case("exomes", "grch37", "2.1")]
-    fn smoke_query_exomes_range_find_none_larger(
+    #[case("exomes", "grch38", "4.0")]
+    #[case("genomes", "grch38", "4.0")]
+    fn smoke_query_range_find_none_larger(
         #[case] kind: &str,
         #[case] genome_release: &str,
         #[case] version: &str,
@@ -468,7 +525,14 @@ mod test {
         crate::common::set_snapshot_suffix!("{}-{}-{}", kind, genome_release, version);
         let (common, args, _temp) = build_args(
             ArgsQuery {
-                range: Some(spdi::Range::from_str("GRCh37:1:55516889:249250621")?),
+                range: Some(spdi::Range::from_str(&format!(
+                    "{}:1:55516889:249250621",
+                    if genome_release == "grch37" {
+                        "GRCh37"
+                    } else {
+                        "GRCh38"
+                    }
+                ))?),
                 ..Default::default()
             },
             kind,
