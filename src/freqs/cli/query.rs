@@ -201,7 +201,8 @@ mod test {
         common_args: common::cli::Args,
         /// Command line arguments for `freqs query` sub command.
         args: Args,
-        /// Path to temporary directory.
+        /// Path to temporary directory (for RAAI).
+        #[allow(dead_code)]
         temp: TempDir,
         /// Genome release.
         genome: String,
@@ -334,10 +335,10 @@ mod test {
     #[rstest::rstest]
     #[case("1:55516885:G:TT", "grch37", "2.1")]
     fn smoke_query_exomes_var_single_nomatch(
-        #[case] variant: &str,
-        #[case] genome: &str,
-        #[case] version: &str,
-        #[with(variant, genome, version)] args_freqs: ArgsFreqs,
+        #[case] _variant: &str,
+        #[case] _genome: &str,
+        #[case] _version: &str,
+        #[with(_variant, _genome, _version)] args_freqs: ArgsFreqs,
     ) -> Result<(), anyhow::Error> {
         let ArgsFreqs {
             common_args,
