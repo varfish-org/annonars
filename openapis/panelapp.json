@@ -1,0 +1,1876 @@
+{
+  "swagger": "2.0",
+  "info": {
+    "title": "PanelApp API",
+    "description": "PanelApp API",
+    "termsOfService": "https://panelapp.genomicsengland.co.uk/policies/terms/",
+    "contact": {
+      "email": "panelapp@genomicsengland.co.uk"
+    },
+    "version": "v1"
+  },
+  "host": "panelapp.genomicsengland.co.uk",
+  "schemes": [
+    "https"
+  ],
+  "basePath": "/api/v1",
+  "consumes": [
+    "application/json"
+  ],
+  "produces": [
+    "application/json"
+  ],
+  "securityDefinitions": {
+    "api_key": {
+      "type": "apiKey",
+      "in": "header",
+      "name": "Authorization",
+      "description": "Format: \"Token <strong>your token</strong>\". You can find API token in your <a href=\"/accounts/profile/\">profile page</a>"
+    }
+  },
+  "security": [
+    {
+      "api_key": []
+    }
+  ],
+  "paths": {
+    "/activities/": {
+      "get": {
+        "operationId": "activities_list",
+        "description": "",
+        "parameters": [
+          {
+            "name": "page",
+            "in": "query",
+            "description": "A page number within the paginated result set.",
+            "required": false,
+            "type": "integer"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "required": [
+                "count",
+                "results"
+              ],
+              "type": "object",
+              "properties": {
+                "count": {
+                  "type": "integer"
+                },
+                "next": {
+                  "type": "string",
+                  "format": "uri",
+                  "x-nullable": true
+                },
+                "previous": {
+                  "type": "string",
+                  "format": "uri",
+                  "x-nullable": true
+                },
+                "results": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/definitions/Activity"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "activities"
+        ]
+      },
+      "parameters": []
+    },
+    "/entities/": {
+      "get": {
+        "operationId": "entities_list",
+        "description": "Search Entities",
+        "parameters": [
+          {
+            "name": "type",
+            "in": "query",
+            "description": "Multiple values may be separated by commas.",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "tags",
+            "in": "query",
+            "description": "Multiple values may be separated by commas.",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "entity_name",
+            "in": "query",
+            "description": "Multiple values may be separated by commas.",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "page",
+            "in": "query",
+            "description": "A page number within the paginated result set.",
+            "required": false,
+            "type": "integer"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "required": [
+                "count",
+                "results"
+              ],
+              "type": "object",
+              "properties": {
+                "count": {
+                  "type": "integer"
+                },
+                "next": {
+                  "type": "string",
+                  "format": "uri",
+                  "x-nullable": true
+                },
+                "previous": {
+                  "type": "string",
+                  "format": "uri",
+                  "x-nullable": true
+                },
+                "results": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "entities"
+        ]
+      },
+      "parameters": []
+    },
+    "/entities/{entity_name}/": {
+      "get": {
+        "operationId": "entities_read",
+        "description": "Search Entities",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "type": "string"
+            }
+          }
+        },
+        "tags": [
+          "entities"
+        ]
+      },
+      "parameters": [
+        {
+          "name": "entity_name",
+          "in": "path",
+          "required": true,
+          "type": "string"
+        }
+      ]
+    },
+    "/genes/": {
+      "get": {
+        "operationId": "genes_list",
+        "description": "Search Genes",
+        "parameters": [
+          {
+            "name": "type",
+            "in": "query",
+            "description": "Multiple values may be separated by commas.",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "tags",
+            "in": "query",
+            "description": "Multiple values may be separated by commas.",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "entity_name",
+            "in": "query",
+            "description": "Multiple values may be separated by commas.",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "page",
+            "in": "query",
+            "description": "A page number within the paginated result set.",
+            "required": false,
+            "type": "integer"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "required": [
+                "count",
+                "results"
+              ],
+              "type": "object",
+              "properties": {
+                "count": {
+                  "type": "integer"
+                },
+                "next": {
+                  "type": "string",
+                  "format": "uri",
+                  "x-nullable": true
+                },
+                "previous": {
+                  "type": "string",
+                  "format": "uri",
+                  "x-nullable": true
+                },
+                "results": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/definitions/Gene"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "genes"
+        ]
+      },
+      "parameters": []
+    },
+    "/genes/{entity_name}/": {
+      "get": {
+        "operationId": "genes_read",
+        "description": "Search Genes",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "$ref": "#/definitions/Gene"
+            }
+          }
+        },
+        "tags": [
+          "genes"
+        ]
+      },
+      "parameters": [
+        {
+          "name": "entity_name",
+          "in": "path",
+          "required": true,
+          "type": "string"
+        }
+      ]
+    },
+    "/panels/": {
+      "get": {
+        "operationId": "panels_list",
+        "description": "",
+        "parameters": [
+          {
+            "name": "type",
+            "in": "query",
+            "description": "Multiple values may be separated by commas.",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "page",
+            "in": "query",
+            "description": "A page number within the paginated result set.",
+            "required": false,
+            "type": "integer"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "required": [
+                "count",
+                "results"
+              ],
+              "type": "object",
+              "properties": {
+                "count": {
+                  "type": "integer"
+                },
+                "next": {
+                  "type": "string",
+                  "format": "uri",
+                  "x-nullable": true
+                },
+                "previous": {
+                  "type": "string",
+                  "format": "uri",
+                  "x-nullable": true
+                },
+                "results": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/definitions/Panel"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "panels"
+        ]
+      },
+      "parameters": []
+    },
+    "/panels/signedoff/": {
+      "get": {
+        "operationId": "panels_signedoff_list",
+        "summary": "Signed Off Panels Versions",
+        "description": "By default only the latest versions on public panels are returned.\n\nTo get all public and retired panels use `display=all` URL parameter.\nThis also returns previous versions for the panels.\n\nYou can also filter by `panel_id` to return only the versions for a\nspecific panel. To get all versions for a panel use both `display=all`\nand `panel_id` together.",
+        "parameters": [
+          {
+            "name": "panel_id",
+            "in": "query",
+            "description": "",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "display",
+            "in": "query",
+            "description": "",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "page",
+            "in": "query",
+            "description": "A page number within the paginated result set.",
+            "required": false,
+            "type": "integer"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "required": [
+                "count",
+                "results"
+              ],
+              "type": "object",
+              "properties": {
+                "count": {
+                  "type": "integer"
+                },
+                "next": {
+                  "type": "string",
+                  "format": "uri",
+                  "x-nullable": true
+                },
+                "previous": {
+                  "type": "string",
+                  "format": "uri",
+                  "x-nullable": true
+                },
+                "results": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/definitions/HistoricalSnapshot"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "panels"
+        ]
+      },
+      "parameters": []
+    },
+    "/panels/signedoff/{id}/": {
+      "get": {
+        "operationId": "panels_signedoff_read",
+        "summary": "!!! Deprecated - see notes",
+        "description": "Instead, use list of signed off panels endpoint with `panel_id=<panel id>`\nparameter to get the latest version, and then use\n`/api/v1/panels/<panel_id>/?version=<major_version>.<minor_version>` to get\nthe panel data.\n\nThis endpoint will be removed in the second part of 2021.",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "$ref": "#/definitions/HistoricalSnapshot"
+            }
+          }
+        },
+        "tags": [
+          "panels"
+        ]
+      },
+      "parameters": [
+        {
+          "name": "id",
+          "in": "path",
+          "required": true,
+          "type": "string"
+        }
+      ]
+    },
+    "/panels/{id}/": {
+      "get": {
+        "operationId": "panels_read",
+        "summary": "Get individual Panel data",
+        "description": "In addition to the model fields this endpoint also returns `genes`, `strs`, `regions` associated with this panel.\n\nAdditional parameters:\n\n?version=1.1 - get a specific version for this panel",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "$ref": "#/definitions/Panel"
+            }
+          }
+        },
+        "tags": [
+          "panels"
+        ]
+      },
+      "parameters": [
+        {
+          "name": "id",
+          "in": "path",
+          "required": true,
+          "type": "string"
+        }
+      ]
+    },
+    "/panels/{id}/activities/": {
+      "get": {
+        "operationId": "panels_activities",
+        "description": "",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "$ref": "#/definitions/Panel"
+            }
+          }
+        },
+        "tags": [
+          "panels"
+        ]
+      },
+      "parameters": [
+        {
+          "name": "id",
+          "in": "path",
+          "required": true,
+          "type": "string"
+        }
+      ]
+    },
+    "/panels/{id}/versions/": {
+      "get": {
+        "operationId": "panels_versions",
+        "description": "",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "$ref": "#/definitions/Panel"
+            }
+          }
+        },
+        "tags": [
+          "panels"
+        ]
+      },
+      "parameters": [
+        {
+          "name": "id",
+          "in": "path",
+          "required": true,
+          "type": "string"
+        }
+      ]
+    },
+    "/panels/{panel_pk}/genes/": {
+      "get": {
+        "operationId": "panels_genes_list",
+        "description": "",
+        "parameters": [
+          {
+            "name": "entity_name",
+            "in": "query",
+            "description": "Multiple values may be separated by commas.",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "confidence_level",
+            "in": "query",
+            "description": "Filter by confidence level: 0, 1, 2, 3",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "version",
+            "in": "query",
+            "description": "Panel version",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "tags",
+            "in": "query",
+            "description": "Multiple values may be separated by commas.",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "page",
+            "in": "query",
+            "description": "A page number within the paginated result set.",
+            "required": false,
+            "type": "integer"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "required": [
+                "count",
+                "results"
+              ],
+              "type": "object",
+              "properties": {
+                "count": {
+                  "type": "integer"
+                },
+                "next": {
+                  "type": "string",
+                  "format": "uri",
+                  "x-nullable": true
+                },
+                "previous": {
+                  "type": "string",
+                  "format": "uri",
+                  "x-nullable": true
+                },
+                "results": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/definitions/Gene"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "panels"
+        ]
+      },
+      "parameters": [
+        {
+          "name": "panel_pk",
+          "in": "path",
+          "required": true,
+          "type": "string"
+        }
+      ]
+    },
+    "/panels/{panel_pk}/genes/{gene_entity_name}/evaluations/": {
+      "get": {
+        "operationId": "panels_genes_evaluations_list",
+        "description": "",
+        "parameters": [
+          {
+            "name": "page",
+            "in": "query",
+            "description": "A page number within the paginated result set.",
+            "required": false,
+            "type": "integer"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "required": [
+                "count",
+                "results"
+              ],
+              "type": "object",
+              "properties": {
+                "count": {
+                  "type": "integer"
+                },
+                "next": {
+                  "type": "string",
+                  "format": "uri",
+                  "x-nullable": true
+                },
+                "previous": {
+                  "type": "string",
+                  "format": "uri",
+                  "x-nullable": true
+                },
+                "results": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/definitions/Evaluation"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "panels"
+        ]
+      },
+      "parameters": [
+        {
+          "name": "gene_entity_name",
+          "in": "path",
+          "required": true,
+          "type": "string"
+        },
+        {
+          "name": "panel_pk",
+          "in": "path",
+          "required": true,
+          "type": "string"
+        }
+      ]
+    },
+    "/panels/{panel_pk}/regions/": {
+      "get": {
+        "operationId": "panels_regions_list",
+        "description": "",
+        "parameters": [
+          {
+            "name": "entity_name",
+            "in": "query",
+            "description": "Multiple values may be separated by commas.",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "confidence_level",
+            "in": "query",
+            "description": "Filter by confidence level: 0, 1, 2, 3",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "version",
+            "in": "query",
+            "description": "Panel version",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "tags",
+            "in": "query",
+            "description": "Multiple values may be separated by commas.",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "page",
+            "in": "query",
+            "description": "A page number within the paginated result set.",
+            "required": false,
+            "type": "integer"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "required": [
+                "count",
+                "results"
+              ],
+              "type": "object",
+              "properties": {
+                "count": {
+                  "type": "integer"
+                },
+                "next": {
+                  "type": "string",
+                  "format": "uri",
+                  "x-nullable": true
+                },
+                "previous": {
+                  "type": "string",
+                  "format": "uri",
+                  "x-nullable": true
+                },
+                "results": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/definitions/Region"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "panels"
+        ]
+      },
+      "parameters": [
+        {
+          "name": "panel_pk",
+          "in": "path",
+          "required": true,
+          "type": "string"
+        }
+      ]
+    },
+    "/panels/{panel_pk}/regions/{region_entity_name}/evaluations/": {
+      "get": {
+        "operationId": "panels_regions_evaluations_list",
+        "description": "",
+        "parameters": [
+          {
+            "name": "page",
+            "in": "query",
+            "description": "A page number within the paginated result set.",
+            "required": false,
+            "type": "integer"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "required": [
+                "count",
+                "results"
+              ],
+              "type": "object",
+              "properties": {
+                "count": {
+                  "type": "integer"
+                },
+                "next": {
+                  "type": "string",
+                  "format": "uri",
+                  "x-nullable": true
+                },
+                "previous": {
+                  "type": "string",
+                  "format": "uri",
+                  "x-nullable": true
+                },
+                "results": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/definitions/Evaluation"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "panels"
+        ]
+      },
+      "parameters": [
+        {
+          "name": "panel_pk",
+          "in": "path",
+          "required": true,
+          "type": "string"
+        },
+        {
+          "name": "region_entity_name",
+          "in": "path",
+          "required": true,
+          "type": "string"
+        }
+      ]
+    },
+    "/panels/{panel_pk}/strs/": {
+      "get": {
+        "operationId": "panels_strs_list",
+        "description": "",
+        "parameters": [
+          {
+            "name": "entity_name",
+            "in": "query",
+            "description": "Multiple values may be separated by commas.",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "confidence_level",
+            "in": "query",
+            "description": "Filter by confidence level: 0, 1, 2, 3",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "version",
+            "in": "query",
+            "description": "Panel version",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "tags",
+            "in": "query",
+            "description": "Multiple values may be separated by commas.",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "page",
+            "in": "query",
+            "description": "A page number within the paginated result set.",
+            "required": false,
+            "type": "integer"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "required": [
+                "count",
+                "results"
+              ],
+              "type": "object",
+              "properties": {
+                "count": {
+                  "type": "integer"
+                },
+                "next": {
+                  "type": "string",
+                  "format": "uri",
+                  "x-nullable": true
+                },
+                "previous": {
+                  "type": "string",
+                  "format": "uri",
+                  "x-nullable": true
+                },
+                "results": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/definitions/STR"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "panels"
+        ]
+      },
+      "parameters": [
+        {
+          "name": "panel_pk",
+          "in": "path",
+          "required": true,
+          "type": "string"
+        }
+      ]
+    },
+    "/panels/{panel_pk}/strs/{str_entity_name}/evaluations/": {
+      "get": {
+        "operationId": "panels_strs_evaluations_list",
+        "description": "",
+        "parameters": [
+          {
+            "name": "page",
+            "in": "query",
+            "description": "A page number within the paginated result set.",
+            "required": false,
+            "type": "integer"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "required": [
+                "count",
+                "results"
+              ],
+              "type": "object",
+              "properties": {
+                "count": {
+                  "type": "integer"
+                },
+                "next": {
+                  "type": "string",
+                  "format": "uri",
+                  "x-nullable": true
+                },
+                "previous": {
+                  "type": "string",
+                  "format": "uri",
+                  "x-nullable": true
+                },
+                "results": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/definitions/Evaluation"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "panels"
+        ]
+      },
+      "parameters": [
+        {
+          "name": "panel_pk",
+          "in": "path",
+          "required": true,
+          "type": "string"
+        },
+        {
+          "name": "str_entity_name",
+          "in": "path",
+          "required": true,
+          "type": "string"
+        }
+      ]
+    },
+    "/regions/": {
+      "get": {
+        "operationId": "regions_list",
+        "description": "Search Regions",
+        "parameters": [
+          {
+            "name": "type",
+            "in": "query",
+            "description": "Multiple values may be separated by commas.",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "tags",
+            "in": "query",
+            "description": "Multiple values may be separated by commas.",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "entity_name",
+            "in": "query",
+            "description": "Multiple values may be separated by commas.",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "page",
+            "in": "query",
+            "description": "A page number within the paginated result set.",
+            "required": false,
+            "type": "integer"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "required": [
+                "count",
+                "results"
+              ],
+              "type": "object",
+              "properties": {
+                "count": {
+                  "type": "integer"
+                },
+                "next": {
+                  "type": "string",
+                  "format": "uri",
+                  "x-nullable": true
+                },
+                "previous": {
+                  "type": "string",
+                  "format": "uri",
+                  "x-nullable": true
+                },
+                "results": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/definitions/Region"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "regions"
+        ]
+      },
+      "parameters": []
+    },
+    "/regions/{entity_name}/": {
+      "get": {
+        "operationId": "regions_read",
+        "description": "Search Regions",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "$ref": "#/definitions/Region"
+            }
+          }
+        },
+        "tags": [
+          "regions"
+        ]
+      },
+      "parameters": [
+        {
+          "name": "entity_name",
+          "in": "path",
+          "required": true,
+          "type": "string"
+        }
+      ]
+    },
+    "/strs/": {
+      "get": {
+        "operationId": "strs_list",
+        "description": "Search STRs",
+        "parameters": [
+          {
+            "name": "type",
+            "in": "query",
+            "description": "Multiple values may be separated by commas.",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "tags",
+            "in": "query",
+            "description": "Multiple values may be separated by commas.",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "entity_name",
+            "in": "query",
+            "description": "Multiple values may be separated by commas.",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "page",
+            "in": "query",
+            "description": "A page number within the paginated result set.",
+            "required": false,
+            "type": "integer"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "required": [
+                "count",
+                "results"
+              ],
+              "type": "object",
+              "properties": {
+                "count": {
+                  "type": "integer"
+                },
+                "next": {
+                  "type": "string",
+                  "format": "uri",
+                  "x-nullable": true
+                },
+                "previous": {
+                  "type": "string",
+                  "format": "uri",
+                  "x-nullable": true
+                },
+                "results": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/definitions/STR"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "strs"
+        ]
+      },
+      "parameters": []
+    },
+    "/strs/{entity_name}/": {
+      "get": {
+        "operationId": "strs_read",
+        "description": "Search STRs",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "$ref": "#/definitions/STR"
+            }
+          }
+        },
+        "tags": [
+          "strs"
+        ]
+      },
+      "parameters": [
+        {
+          "name": "entity_name",
+          "in": "path",
+          "required": true,
+          "type": "string"
+        }
+      ]
+    }
+  },
+  "definitions": {
+    "Activity": {
+      "required": [
+        "text"
+      ],
+      "type": "object",
+      "properties": {
+        "created": {
+          "title": "Created",
+          "type": "string",
+          "format": "date-time",
+          "readOnly": true
+        },
+        "panel_name": {
+          "title": "Panel name",
+          "type": "string",
+          "readOnly": true
+        },
+        "panel_id": {
+          "title": "Panel id",
+          "type": "string",
+          "readOnly": true
+        },
+        "panel_version": {
+          "title": "Panel version",
+          "type": "string",
+          "readOnly": true
+        },
+        "user_name": {
+          "title": "User name",
+          "type": "string",
+          "readOnly": true
+        },
+        "item_type": {
+          "title": "Item type",
+          "type": "string",
+          "maxLength": 32,
+          "minLength": 1,
+          "x-nullable": true
+        },
+        "text": {
+          "title": "Text",
+          "type": "string",
+          "minLength": 1
+        },
+        "entity_name": {
+          "title": "Entity name",
+          "type": "string",
+          "maxLength": 128,
+          "minLength": 1,
+          "x-nullable": true
+        },
+        "entity_type": {
+          "title": "Entity type",
+          "type": "string",
+          "maxLength": 32,
+          "minLength": 1,
+          "x-nullable": true
+        }
+      }
+    },
+    "PanelType": {
+      "required": [
+        "name",
+        "description"
+      ],
+      "type": "object",
+      "properties": {
+        "name": {
+          "title": "Name",
+          "type": "string",
+          "maxLength": 128,
+          "minLength": 1
+        },
+        "slug": {
+          "title": "Slug",
+          "type": "string",
+          "format": "slug",
+          "pattern": "^[-a-zA-Z0-9_]+$",
+          "readOnly": true,
+          "minLength": 1
+        },
+        "description": {
+          "title": "Description",
+          "type": "string",
+          "minLength": 1
+        }
+      }
+    },
+    "Panel": {
+      "required": [
+        "id",
+        "relevant_disorders"
+      ],
+      "type": "object",
+      "properties": {
+        "id": {
+          "title": "Id",
+          "type": "integer"
+        },
+        "hash_id": {
+          "title": "Hash id",
+          "type": "string",
+          "readOnly": true
+        },
+        "name": {
+          "title": "Name",
+          "type": "string",
+          "readOnly": true
+        },
+        "disease_group": {
+          "title": "Disease group",
+          "type": "string",
+          "readOnly": true
+        },
+        "disease_sub_group": {
+          "title": "Disease sub group",
+          "type": "string",
+          "readOnly": true
+        },
+        "status": {
+          "title": "Status",
+          "type": "string",
+          "readOnly": true
+        },
+        "version": {
+          "title": "Version",
+          "type": "string",
+          "readOnly": true,
+          "minLength": 1
+        },
+        "version_created": {
+          "title": "Version created",
+          "type": "string",
+          "format": "date-time",
+          "readOnly": true
+        },
+        "relevant_disorders": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "x-nullable": true
+          }
+        },
+        "stats": {
+          "title": "Stats",
+          "description": "Object with panel statistics (number of genes or STRs)",
+          "type": "object",
+          "readOnly": true
+        },
+        "types": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/PanelType"
+          },
+          "readOnly": true
+        }
+      },
+      "x-nullable": true
+    },
+    "Gene": {
+      "required": [
+        "entity_type",
+        "entity_name",
+        "confidence_level",
+        "publications",
+        "evidence",
+        "phenotypes",
+        "mode_of_inheritance",
+        "transcript"
+      ],
+      "type": "object",
+      "properties": {
+        "gene_data": {
+          "title": "Gene data",
+          "type": "object",
+          "readOnly": true
+        },
+        "entity_type": {
+          "title": "Entity type",
+          "type": "string",
+          "minLength": 1
+        },
+        "entity_name": {
+          "title": "Entity name",
+          "type": "string",
+          "minLength": 1
+        },
+        "confidence_level": {
+          "title": "Confidence level",
+          "type": "string",
+          "minLength": 1
+        },
+        "penetrance": {
+          "title": "Penetrance",
+          "type": "string",
+          "enum": [
+            "unknown",
+            "Complete",
+            "Incomplete"
+          ],
+          "x-nullable": true
+        },
+        "mode_of_pathogenicity": {
+          "title": "Mode of pathogenicity",
+          "type": "string",
+          "enum": [
+            "",
+            "Loss-of-function variants (as defined in pop up message) DO NOT cause this phenotype - please provide details in the comments",
+            "Other"
+          ],
+          "x-nullable": true
+        },
+        "publications": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "x-nullable": true
+          }
+        },
+        "evidence": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "x-nullable": true
+          }
+        },
+        "phenotypes": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "x-nullable": true
+          }
+        },
+        "mode_of_inheritance": {
+          "title": "Mode of inheritance",
+          "type": "string",
+          "minLength": 1
+        },
+        "tags": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "readOnly": true,
+          "uniqueItems": true
+        },
+        "panel": {
+          "$ref": "#/definitions/Panel"
+        },
+        "transcript": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "x-nullable": true
+          }
+        }
+      }
+    },
+    "HistoricalSnapshot": {
+      "required": [
+        "data"
+      ],
+      "type": "object",
+      "properties": {
+        "data": {
+          "title": "Data",
+          "type": "object"
+        },
+        "signed_off_date": {
+          "title": "Signed off date",
+          "type": "string",
+          "format": "date",
+          "x-nullable": true
+        }
+      }
+    },
+    "Evaluation": {
+      "type": "object",
+      "properties": {
+        "created": {
+          "title": "Created",
+          "type": "string",
+          "format": "date-time",
+          "readOnly": true
+        },
+        "rating": {
+          "title": "Rating",
+          "type": "string",
+          "enum": [
+            "GREEN",
+            "RED",
+            "AMBER"
+          ]
+        },
+        "mode_of_pathogenicity": {
+          "title": "Mode of pathogenicity",
+          "type": "string",
+          "enum": [
+            "",
+            "Loss-of-function variants (as defined in pop up message) DO NOT cause this phenotype - please provide details in the comments",
+            "Other"
+          ],
+          "x-nullable": true
+        },
+        "publications": {
+          "type": "array",
+          "items": {
+            "title": "Publications",
+            "type": "string",
+            "minLength": 1
+          },
+          "x-nullable": true
+        },
+        "phenotypes": {
+          "type": "array",
+          "items": {
+            "title": "Phenotypes",
+            "type": "string",
+            "minLength": 1
+          },
+          "x-nullable": true
+        },
+        "moi": {
+          "title": "Mode of Inheritance",
+          "type": "string",
+          "enum": [
+            "",
+            "MONOALLELIC, autosomal or pseudoautosomal, NOT imprinted",
+            "MONOALLELIC, autosomal or pseudoautosomal, maternally imprinted (paternal allele expressed)",
+            "MONOALLELIC, autosomal or pseudoautosomal, paternally imprinted (maternal allele expressed)",
+            "MONOALLELIC, autosomal or pseudoautosomal, imprinted status unknown",
+            "BIALLELIC, autosomal or pseudoautosomal",
+            "BOTH monoallelic and biallelic, autosomal or pseudoautosomal",
+            "BOTH monoallelic and biallelic (but BIALLELIC mutations cause a more SEVERE disease form), autosomal or pseudoautosomal",
+            "X-LINKED: hemizygous mutation in males, biallelic mutations in females",
+            "X-LINKED: hemizygous mutation in males, monoallelic mutations in females may cause disease (may be less severe, later onset than males)",
+            "MITOCHONDRIAL",
+            "Unknown",
+            "Other"
+          ],
+          "x-nullable": true
+        },
+        "current_diagnostic": {
+          "title": "Current diagnostic",
+          "type": "boolean"
+        },
+        "clinically_relevant": {
+          "title": "Clinically relevant",
+          "description": "Interruptions in the repeated sequence are reported as part of standard diagnostic practise",
+          "type": "boolean",
+          "x-nullable": true
+        }
+      }
+    },
+    "Region": {
+      "required": [
+        "entity_type",
+        "entity_name",
+        "confidence_level",
+        "required_overlap_percentage",
+        "publications",
+        "evidence",
+        "phenotypes",
+        "mode_of_inheritance",
+        "chromosome",
+        "grch37_coordinates",
+        "grch38_coordinates"
+      ],
+      "type": "object",
+      "properties": {
+        "gene_data": {
+          "title": "Gene data",
+          "type": "object",
+          "readOnly": true
+        },
+        "entity_type": {
+          "title": "Entity type",
+          "type": "string",
+          "minLength": 1
+        },
+        "entity_name": {
+          "title": "Entity name",
+          "type": "string",
+          "minLength": 1
+        },
+        "verbose_name": {
+          "title": "Verbose name",
+          "description": "Region Name",
+          "type": "string",
+          "maxLength": 256,
+          "x-nullable": true
+        },
+        "confidence_level": {
+          "title": "Confidence level",
+          "type": "string",
+          "minLength": 1
+        },
+        "penetrance": {
+          "title": "Penetrance",
+          "type": "string",
+          "enum": [
+            "unknown",
+            "Complete",
+            "Incomplete"
+          ],
+          "x-nullable": true
+        },
+        "mode_of_pathogenicity": {
+          "title": "Mode of pathogenicity",
+          "type": "string",
+          "enum": [
+            "",
+            "Loss-of-function variants (as defined in pop up message) DO NOT cause this phenotype - please provide details in the comments",
+            "Other"
+          ],
+          "x-nullable": true
+        },
+        "haploinsufficiency_score": {
+          "title": "Haploinsufficiency score",
+          "type": "string",
+          "enum": [
+            "",
+            "3",
+            "2",
+            "1",
+            "0",
+            "40",
+            "30"
+          ],
+          "x-nullable": true
+        },
+        "triplosensitivity_score": {
+          "title": "Triplosensitivity score",
+          "type": "string",
+          "enum": [
+            "",
+            "3",
+            "2",
+            "1",
+            "0",
+            "40",
+            "30"
+          ],
+          "x-nullable": true
+        },
+        "required_overlap_percentage": {
+          "title": "Required overlap percentage",
+          "description": "Required percent of overlap",
+          "type": "integer",
+          "maximum": 100,
+          "minimum": 0
+        },
+        "type_of_variants": {
+          "title": "Variation type",
+          "type": "string",
+          "enum": [
+            "small",
+            "cnv_loss",
+            "cnv_gain",
+            "cnv_both"
+          ]
+        },
+        "publications": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "x-nullable": true
+          }
+        },
+        "evidence": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "x-nullable": true
+          }
+        },
+        "phenotypes": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "x-nullable": true
+          }
+        },
+        "mode_of_inheritance": {
+          "title": "Mode of inheritance",
+          "type": "string",
+          "minLength": 1
+        },
+        "chromosome": {
+          "title": "Chromosome",
+          "type": "string",
+          "enum": [
+            "1",
+            "2",
+            "3",
+            "4",
+            "5",
+            "6",
+            "7",
+            "8",
+            "9",
+            "10",
+            "11",
+            "12",
+            "13",
+            "14",
+            "15",
+            "16",
+            "17",
+            "18",
+            "19",
+            "20",
+            "21",
+            "22",
+            "X",
+            "Y"
+          ]
+        },
+        "grch37_coordinates": {
+          "type": "array",
+          "items": {
+            "type": "integer"
+          },
+          "maxItems": 2,
+          "minItems": 2
+        },
+        "grch38_coordinates": {
+          "type": "array",
+          "items": {
+            "type": "integer"
+          },
+          "maxItems": 2,
+          "minItems": 2
+        },
+        "tags": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "readOnly": true,
+          "uniqueItems": true
+        },
+        "panel": {
+          "$ref": "#/definitions/Panel"
+        }
+      }
+    },
+    "STR": {
+      "required": [
+        "entity_type",
+        "entity_name",
+        "confidence_level",
+        "publications",
+        "evidence",
+        "phenotypes",
+        "mode_of_inheritance",
+        "repeated_sequence",
+        "chromosome",
+        "grch37_coordinates",
+        "grch38_coordinates",
+        "normal_repeats",
+        "pathogenic_repeats"
+      ],
+      "type": "object",
+      "properties": {
+        "gene_data": {
+          "title": "Gene data",
+          "type": "object",
+          "readOnly": true
+        },
+        "entity_type": {
+          "title": "Entity type",
+          "type": "string",
+          "minLength": 1
+        },
+        "entity_name": {
+          "title": "Entity name",
+          "type": "string",
+          "minLength": 1
+        },
+        "confidence_level": {
+          "title": "Confidence level",
+          "type": "string",
+          "minLength": 1
+        },
+        "penetrance": {
+          "title": "Penetrance",
+          "type": "string",
+          "enum": [
+            "unknown",
+            "Complete",
+            "Incomplete"
+          ],
+          "x-nullable": true
+        },
+        "publications": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "x-nullable": true
+          }
+        },
+        "evidence": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "x-nullable": true
+          }
+        },
+        "phenotypes": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "x-nullable": true
+          }
+        },
+        "mode_of_inheritance": {
+          "title": "Mode of inheritance",
+          "type": "string",
+          "minLength": 1
+        },
+        "repeated_sequence": {
+          "title": "Repeated sequence",
+          "type": "string",
+          "maxLength": 128,
+          "minLength": 1
+        },
+        "chromosome": {
+          "title": "Chromosome",
+          "type": "string",
+          "enum": [
+            "1",
+            "2",
+            "3",
+            "4",
+            "5",
+            "6",
+            "7",
+            "8",
+            "9",
+            "10",
+            "11",
+            "12",
+            "13",
+            "14",
+            "15",
+            "16",
+            "17",
+            "18",
+            "19",
+            "20",
+            "21",
+            "22",
+            "X",
+            "Y"
+          ]
+        },
+        "grch37_coordinates": {
+          "type": "array",
+          "items": {
+            "type": "integer"
+          },
+          "maxItems": 2,
+          "minItems": 2
+        },
+        "grch38_coordinates": {
+          "type": "array",
+          "items": {
+            "type": "integer"
+          },
+          "maxItems": 2,
+          "minItems": 2
+        },
+        "normal_repeats": {
+          "title": "Normal",
+          "description": "=< Maximum normal number of repeats",
+          "type": "integer",
+          "maximum": 2147483647,
+          "minimum": -2147483648
+        },
+        "pathogenic_repeats": {
+          "title": "Pathogenic",
+          "description": ">= Minimum fully penetrant pathogenic number of repeats",
+          "type": "integer",
+          "maximum": 2147483647,
+          "minimum": -2147483648
+        },
+        "tags": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "readOnly": true,
+          "uniqueItems": true
+        },
+        "panel": {
+          "$ref": "#/definitions/Panel"
+        }
+      }
+    }
+  }
+}

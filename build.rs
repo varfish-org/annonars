@@ -3,7 +3,7 @@
 
 use std::{env, path::PathBuf};
 
-fn main() -> Result<(), anyhow::Error> {
+fn build_for_protos() -> Result<(), anyhow::Error> {
     let root = PathBuf::from(env!("CARGO_MANIFEST_DIR")).join("protos");
     let proto_files = vec![
         "annonars/clinvar/minimal.proto",
@@ -52,6 +52,43 @@ fn main() -> Result<(), anyhow::Error> {
     pbjson_build::Builder::new()
         .register_descriptors(&descriptor_set)?
         .build(&[".annonars"])?;
+
+    Ok(())
+}
+
+fn build_for_openapis() -> Result<(), anyhow::Error> {
+    let root = PathBuf::from(env!("CARGO_MANIFEST_DIR")).join("openapis");
+    let openapi_files = vec!["panelapp.json"]
+        .iter()
+        .map(|f| root.join(f))
+        .collect::<Vec<_>>();
+
+    for openapi_file in &openapi_files {
+        println!("cargo:rerun-if-changed={}", openapi_file.display());
+
+        let file = std::fs::File::open(openapi_file).unwrap();
+        let spec = serde_json::from_reader(file).unwrap();
+        let mut generator = progenitor::Generator::default();
+
+        let tokens = generator.generate_tokens(&spec).unwrap();
+        let ast = syn::parse2(tokens).unwrap();
+        let content = prettyplease::unparse(&ast);
+
+        let mut out_file = std::path::Path::new(&std::env::var("OUT_DIR").unwrap()).to_path_buf();
+        out_file.push(format!(
+            "{}openapi.codegen.rs",
+            openapi_file.file_name().unwrap().to_str().unwrap()
+        ));
+
+        std::fs::write(out_file, content).unwrap();
+    }
+
+    Ok(())
+}
+
+fn main() -> Result<(), anyhow::Error> {
+    build_for_protos()?;
+    build_for_openapis()?;
 
     Ok(())
 }
