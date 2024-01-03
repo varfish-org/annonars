@@ -1,5 +1,7 @@
 //! Code for loading gene-related data from the TSV.
 
+pub mod panelapp;
+
 use serde::{Deserialize, Serialize};
 
 /// Entry in the genes RocksDB database.
