@@ -1,5 +1,5 @@
 ---
-source: src/genes/cli/data.rs
+source: src/genes/cli/data/mod.rs
 expression: records
 ---
 - hgnc_id: "HGNC:130"

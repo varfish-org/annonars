@@ -38,6 +38,8 @@ pub struct Gene {
     #[serde(rename = "panel")]
     panel: Option<crate::genes::cli::data::panelapp::Panel>,
     #[serde(rename = "transcript")]
+    #[serde(skip_serializing_if = "Vec::is_empty")]
+    #[serde(default)]
     transcript: Vec<String>,
 }
 

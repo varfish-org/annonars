@@ -2203,6 +2203,20 @@ mod tests {
     }
 
     #[test]
+    fn deserialize_panelapp_record() -> Result<(), anyhow::Error> {
+        let path_jsonl = "tests/genes/panelapp/panelapp.jsonl";
+        let str_jsonl = std::fs::read_to_string(path_jsonl)?;
+        let records = str_jsonl
+            .lines()
+            .map(|s| serde_json::from_str::<panelapp::Gene>(s).unwrap())
+            .collect::<Vec<_>>();
+
+        insta::assert_yaml_snapshot!(records);
+
+        Ok(())
+    }
+
+    #[test]
     fn deserialize_ncbi_record() -> Result<(), anyhow::Error> {
         let path_tsv = "tests/genes/acmg/acmg.tsv";
         let str_tsv = std::fs::read_to_string(path_tsv).unwrap();

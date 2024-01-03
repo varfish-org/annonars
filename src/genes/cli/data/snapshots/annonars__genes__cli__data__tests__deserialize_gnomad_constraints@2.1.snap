@@ -1,5 +1,5 @@
 ---
-source: src/genes/cli/data.rs
+source: src/genes/cli/data/mod.rs
 expression: records
 ---
 - ensembl_gene_id: ENSG00000133703
