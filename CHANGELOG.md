@@ -1,5 +1,17 @@
 # Changelog
 
+## [0.33.0](https://github.com/bihealth/annonars/compare/v0.32.0...v0.33.0) (2024-01-03)
+
+
+### Features
+
+* integrate PanelApp for gene-phenotype links ([#225](https://github.com/bihealth/annonars/issues/225)) ([#377](https://github.com/bihealth/annonars/issues/377)) ([83ffa8e](https://github.com/bihealth/annonars/commit/83ffa8e32b3b2d76cdb915c33d990d8370d5e7fb))
+
+
+### Bug Fixes
+
+* do not package test data ([#371](https://github.com/bihealth/annonars/issues/371)) ([4228794](https://github.com/bihealth/annonars/commit/42287947b26e44881e5b1a9e3b8eea63a12f8b09))
+
 ## [0.32.0](https://github.com/bihealth/annonars/compare/v0.31.2...v0.32.0) (2023-12-28)
 
 
