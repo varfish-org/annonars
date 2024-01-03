@@ -1,4 +1,4 @@
-/* 
+/*
  * PanelApp API
  *
  * PanelApp API
@@ -12,7 +12,7 @@
 #[allow(unused_imports)]
 use serde_json::Value;
 
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Debug, serde::Serialize, serde::Deserialize)]
 pub struct Gene {
   #[serde(rename = "gene_data")]
   gene_data: Option<Value>,
@@ -37,7 +37,7 @@ pub struct Gene {
   #[serde(rename = "tags")]
   tags: Option<Vec<String>>,
   #[serde(rename = "panel")]
-  panel: Option<::models::Panel>,
+  panel: Option<crate::genes::cli::data::panelapp::Panel>,
   #[serde(rename = "transcript")]
   transcript: Vec<String>
 }
@@ -227,16 +227,16 @@ impl Gene {
     self.tags = None;
   }
 
-  pub fn set_panel(&mut self, panel: ::models::Panel) {
+  pub fn set_panel(&mut self, panel: crate::genes::cli::data::panelapp::Panel) {
     self.panel = Some(panel);
   }
 
-  pub fn with_panel(mut self, panel: ::models::Panel) -> Gene {
+  pub fn with_panel(mut self, panel: crate::genes::cli::data::panelapp::Panel) -> Gene {
     self.panel = Some(panel);
     self
   }
 
-  pub fn panel(&self) -> Option<&::models::Panel> {
+  pub fn panel(&self) -> Option<&crate::genes::cli::data::panelapp::Panel> {
     self.panel.as_ref()
   }
 

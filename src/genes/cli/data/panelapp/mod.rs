@@ -1,3 +1,4 @@
+#![allow(missing_docs)]
 //! Code generated with `swagger-codegen` from:
 //!
 //! - https://panelapp.genomicsengland.co.uk/api/docs/?format=openapi

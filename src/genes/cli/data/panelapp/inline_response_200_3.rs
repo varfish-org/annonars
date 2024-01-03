@@ -1,4 +1,4 @@
-/* 
+/*
  * PanelApp API
  *
  * PanelApp API
@@ -12,7 +12,7 @@
 #[allow(unused_imports)]
 use serde_json::Value;
 
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Debug, serde::Serialize, serde::Deserialize)]
 pub struct InlineResponse2003 {
   #[serde(rename = "count")]
   count: i32,
@@ -21,11 +21,11 @@ pub struct InlineResponse2003 {
   #[serde(rename = "previous")]
   previous: Option<String>,
   #[serde(rename = "results")]
-  results: Vec<::models::Panel>
+  results: Vec<crate::genes::cli::data::panelapp::Panel>
 }
 
 impl InlineResponse2003 {
-  pub fn new(count: i32, results: Vec<::models::Panel>) -> InlineResponse2003 {
+  pub fn new(count: i32, results: Vec<crate::genes::cli::data::panelapp::Panel>) -> InlineResponse2003 {
     InlineResponse2003 {
       count: count,
       next: None,
@@ -82,16 +82,16 @@ impl InlineResponse2003 {
     self.previous = None;
   }
 
-  pub fn set_results(&mut self, results: Vec<::models::Panel>) {
+  pub fn set_results(&mut self, results: Vec<crate::genes::cli::data::panelapp::Panel>) {
     self.results = results;
   }
 
-  pub fn with_results(mut self, results: Vec<::models::Panel>) -> InlineResponse2003 {
+  pub fn with_results(mut self, results: Vec<crate::genes::cli::data::panelapp::Panel>) -> InlineResponse2003 {
     self.results = results;
     self
   }
 
-  pub fn results(&self) -> &Vec<::models::Panel> {
+  pub fn results(&self) -> &Vec<crate::genes::cli::data::panelapp::Panel> {
     &self.results
   }
 

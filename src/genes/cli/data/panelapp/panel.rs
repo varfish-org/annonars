@@ -1,4 +1,4 @@
-/* 
+/*
  * PanelApp API
  *
  * PanelApp API
@@ -12,7 +12,7 @@
 #[allow(unused_imports)]
 use serde_json::Value;
 
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Debug, serde::Serialize, serde::Deserialize)]
 pub struct Panel {
   #[serde(rename = "id")]
   id: i32,
@@ -36,7 +36,7 @@ pub struct Panel {
   #[serde(rename = "stats")]
   stats: Option<Value>,
   #[serde(rename = "types")]
-  types: Option<Vec<::models::PanelType>>
+  types: Option<Vec<crate::genes::cli::data::panelapp::PanelType>>
 }
 
 impl Panel {
@@ -220,16 +220,16 @@ impl Panel {
     self.stats = None;
   }
 
-  pub fn set_types(&mut self, types: Vec<::models::PanelType>) {
+  pub fn set_types(&mut self, types: Vec<crate::genes::cli::data::panelapp::PanelType>) {
     self.types = Some(types);
   }
 
-  pub fn with_types(mut self, types: Vec<::models::PanelType>) -> Panel {
+  pub fn with_types(mut self, types: Vec<crate::genes::cli::data::panelapp::PanelType>) -> Panel {
     self.types = Some(types);
     self
   }
 
-  pub fn types(&self) -> Option<&Vec<::models::PanelType>> {
+  pub fn types(&self) -> Option<&Vec<crate::genes::cli::data::panelapp::PanelType>> {
     self.types.as_ref()
   }
 
