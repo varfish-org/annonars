@@ -2,7 +2,7 @@
 //
 // The file was then post-edited to include a dummy value for enum values 0.
 //
-// Also, `GeneDataMessage` was partially completed.
+// Also, `GeneData` was partially completed.
 
 syntax = "proto3";
 
@@ -20,13 +20,13 @@ message Activity {
   string user_name = 9;
 }
 
-message Evaluation {
-  enum EvaluationModeOfPathogenicity {
-    EVALUATION_MODE_OF_PATHOGENICITY = 0;
-    EVALUATION_MODE_OF_PATHOGENICITY_LOSS_OF_FUNCTION_VARIANTS_AS_DEFINED_IN_POP_UP_MESSAGE_DO_NOT_CAUSE_THIS_PHENOTYPE_PLEASE_PROVIDE_DETAILS_IN_THE_COMMENTS = 1;
-    EVALUATION_MODE_OF_PATHOGENICITY_OTHER = 2;
-  }
+enum ModeOfPathogenicity {
+  MODE_OF_PATHOGENICITY = 0;
+  MODE_OF_PATHOGENICITY_SEE_COMMENTS_FOR_LOF = 1;
+  MODE_OF_PATHOGENICITY_OTHER = 2;
+}
 
+message Evaluation {
   enum EvaluationMoi {
     EVALUATION_MOI = 0;
     EVALUATION_MOI_MONOALLELIC_AUTOSOMAL_OR_PSEUDOAUTOSOMAL_NOT_IMPRINTED = 1;
@@ -54,14 +54,14 @@ message Evaluation {
   bool clinically_relevant = 1;
   string created = 2;
   bool current_diagnostic = 3;
-  EvaluationModeOfPathogenicity mode_of_pathogenicity = 4;
+  ModeOfPathogenicity mode_of_pathogenicity = 4;
   EvaluationMoi moi = 5;
   repeated string phenotypes = 6;
   repeated string publications = 7;
   EvaluationRating rating = 8;
 }
 
-message GeneDataMessage {
+message GeneData {
   optional string hgnc_id = 1;
   optional string gene_name = 2;
   repeated string alias = 3;
@@ -69,29 +69,22 @@ message GeneDataMessage {
   optional string hgnc_symbol = 5;
 }
 
+enum Penetrance {
+  PENETRANCE_UNKNOWN = 0;
+  PENETRANCE_COMPLETE = 1;
+  PENETRANCE_INCOMPLETE = 2;
+}
+
 message Gene {
-  enum GeneModeOfPathogenicity {
-    GENE_MODE_OF_PATHOGENICITY = 0;
-    GENE_MODE_OF_PATHOGENICITY_LOSS_OF_FUNCTION_VARIANTS_AS_DEFINED_IN_POP_UP_MESSAGE_DO_NOT_CAUSE_THIS_PHENOTYPE_PLEASE_PROVIDE_DETAILS_IN_THE_COMMENTS = 1;
-    GENE_MODE_OF_PATHOGENICITY_OTHER = 2;
-  }
-
-  enum GenePenetrance {
-    GENE_PENETRANCE = 0;
-    GENE_PENETRANCE_UNKNOWN = 1;
-    GENE_PENETRANCE_COMPLETE = 2;
-    GENE_PENETRANCE_INCOMPLETE = 3;
-  }
-
   string confidence_level = 1;
   string entity_name = 2;
   string entity_type = 3;
   repeated string evidence = 4;
-  GeneDataMessage gene_data = 5;
+  GeneData gene_data = 5;
   string mode_of_inheritance = 6;
-  GeneModeOfPathogenicity mode_of_pathogenicity = 7;
+  ModeOfPathogenicity mode_of_pathogenicity = 7;
   Panel panel = 8;
-  GenePenetrance penetrance = 9;
+  Penetrance penetrance = 9;
   repeated string phenotypes = 10;
   repeated string publications = 11;
   repeated string tags = 12;
@@ -168,18 +161,6 @@ message Region {
     REGION_HAPLOINSUFFICIENCY_SCORE_30 = 6;
   }
 
-  enum RegionModeOfPathogenicity {
-    REGION_MODE_OF_PATHOGENICITY_UNKNOWN = 0;
-    REGION_MODE_OF_PATHOGENICITY_LOSS_OF_FUNCTION_VARIANTS_AS_DEFINED_IN_POP_UP_MESSAGE_DO_NOT_CAUSE_THIS_PHENOTYPE_PLEASE_PROVIDE_DETAILS_IN_THE_COMMENTS = 1;
-    REGION_MODE_OF_PATHOGENICITY_OTHER = 2;
-  }
-
-  enum RegionPenetrance {
-    REGION_PENETRANCE_UNKNOWN = 0;
-    REGION_PENETRANCE_COMPLETE = 1;
-    REGION_PENETRANCE_INCOMPLETE = 2;
-  }
-
   enum RegionTriplosensitivityScore {
     REGION_TRIPLOSENSITIVITY_SCORE_UNKNOWN = 0;
     REGION_TRIPLOSENSITIVITY_SCORE_3 = 1;
@@ -203,14 +184,14 @@ message Region {
   string entity_name = 3;
   string entity_type = 4;
   repeated string evidence = 5;
-  GeneDataMessage gene_data = 6;
+  GeneData gene_data = 6;
   repeated int32 grch37_coordinates = 7;
   repeated int32 grch38_coordinates = 8;
   RegionHaploinsufficiencyScore haploinsufficiency_score = 9;
   string mode_of_inheritance = 10;
-  RegionModeOfPathogenicity mode_of_pathogenicity = 11;
+  ModeOfPathogenicity mode_of_pathogenicity = 11;
   Panel panel = 12;
-  RegionPenetrance penetrance = 13;
+  Penetrance penetrance = 13;
   repeated string phenotypes = 14;
   repeated string publications = 15;
 
@@ -253,18 +234,12 @@ message STR {
     STR_CHROMOSOME_Y = 24;
   }
 
-  enum STRPenetrance {
-    STR_PENETRANCE_UNKNOWN = 0;
-    STR_PENETRANCE_COMPLETE = 1;
-    STR_PENETRANCE_INCOMPLETE = 2;
-  }
-
   STRChromosome chromosome = 1;
   string confidence_level = 2;
   string entity_name = 3;
   string entity_type = 4;
   repeated string evidence = 5;
-  GeneDataMessage gene_data = 6;
+  GeneData gene_data = 6;
   repeated int32 grch37_coordinates = 7;
   repeated int32 grch38_coordinates = 8;
   string mode_of_inheritance = 9;
@@ -275,7 +250,7 @@ message STR {
 
   // >= Minimum fully penetrant pathogenic number of repeats
   int32 pathogenic_repeats = 12;
-  STRPenetrance penetrance = 13;
+  Penetrance penetrance = 13;
   repeated string phenotypes = 14;
   repeated string publications = 15;
   string repeated_sequence = 16;

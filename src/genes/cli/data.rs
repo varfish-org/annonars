@@ -1,7 +1,5 @@
 //! Code for loading gene-related data from the TSV.
 
-pub mod panelapp;
-
 use serde::{Deserialize, Serialize};
 
 /// Entry in the genes RocksDB database.
@@ -29,7 +27,7 @@ pub struct Record {
     /// Information about ORPHA diseases for a gene.
     pub orpha: Option<orpha::Record>,
     /// Information about PanelApp entries for a gene.
-    pub panelapp: Vec<panelapp::Gene>,
+    pub panelapp: Vec<panelapp::Record>,
     /// Information from rCNV (Collins et al., 2022).
     pub rcnv: Option<rcnv::Record>,
     /// Information from sHet (Weghorn et al., 2019).
@@ -1583,6 +1581,152 @@ pub mod omim {
     }
 }
 
+/// Code for reading relevant parts of the PanelApp gene data.
+pub mod panelapp {
+    use serde::{Deserialize, Serialize};
+
+    /// Gene identity information.
+    ///
+    /// We only keep the minimal information as we already have everything in HGNC.
+    #[derive(Debug, Clone, Serialize, Deserialize)]
+    pub struct GeneData {
+        /// HGNC gene ID.
+        pub hgnc_id: String,
+        /// HGNC gene symbol.
+        pub hgnc_symbol: String,
+    }
+
+    /// Enumeration for entity types.
+    #[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash, Serialize, Deserialize)]
+    pub enum EntityType {
+        /// Gene
+        #[serde(rename = "gene")]
+        Gene,
+        /// Short Tandem Repeat
+        #[serde(rename = "str")]
+        Str,
+        /// Region
+        #[serde(rename = "region")]
+        Region,
+    }
+
+    /// Enumeration for confidence levels.
+    #[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash, Serialize, Deserialize)]
+    pub enum ConfidenceLevel {
+        /// 0 - lowest level, when expert review was removed
+        #[serde(rename = "0")]
+        None,
+        /// 1 - red, low evidence
+        #[serde(rename = "1")]
+        Red,
+        /// 2 - amber, moderate evidence
+        #[serde(rename = "2")]
+        Amber,
+        /// 3 - green, high evidence
+        #[serde(rename = "3")]
+        Green,
+    }
+
+    /// Enumeration for penetrance.
+    #[derive(
+        Default, Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash, Serialize, Deserialize,
+    )]
+    pub enum Penetrance {
+        /// Penetrance is unknown.
+        #[default]
+        #[serde(rename = "unknown")]
+        Unknown,
+        /// Complete penetrance.
+        #[serde(rename = "Complete")]
+        Complete,
+        /// Incomplete penetrance.
+        #[serde(rename = "Incomplete")]
+        Incomplete,
+    }
+
+    /// Panel statistics.
+    #[derive(Debug, Clone, Serialize, Deserialize)]
+    pub struct PanelStats {
+        /// Number of genes.
+        pub number_of_genes: u32,
+        /// Number of STRs.
+        pub number_of_strs: u32,
+        /// Number of regions.
+        pub number_of_regions: u32,
+    }
+
+    /// Panel type.
+    #[derive(Debug, Clone, Serialize, Deserialize)]
+    pub struct PanelType {
+        /// Panel type ID.
+        pub name: String,
+        /// Panel type slug.
+        pub slug: String,
+        /// Panel type description.
+        pub description: String,
+    }
+
+    /// Representation of a panel.
+    #[derive(Debug, Clone, Serialize, Deserialize)]
+    pub struct Panel {
+        /// Panel ID.
+        pub id: u32,
+        /// Panel hash ID.
+        pub hash_id: String,
+        /// The panel name.
+        pub name: String,
+        /// The disease group.
+        pub disease_group: String,
+        /// The disease sub group.
+        pub disease_sub_group: String,
+        /// The panel version.
+        pub version: String,
+        /// The panel version created.
+        pub version_created: String,
+        /// The panel relevant disorders.
+        pub relevant_disorders: Vec<String>,
+        /// The panel stats.
+        pub stats: PanelStats,
+        /// The panel types.
+        pub types: Vec<PanelType>,
+    }
+
+    /// Representation of one gene record.
+    #[derive(Debug, Clone, Serialize, Deserialize)]
+    pub struct Record {
+        /// Gene identity information.
+        pub gene_data: Option<GeneData>,
+        /// Entity type.
+        pub entity_type: EntityType,
+        /// Entity name.
+        pub entity_name: String,
+        /// Confidence level.
+        pub confidence_level: ConfidenceLevel,
+        /// Penetrance.
+        #[serde(deserialize_with = "deserialize_null_default")]
+        pub penetrance: Penetrance,
+        /// Publications.
+        pub publications: Vec<String>,
+        /// Evidence.
+        pub evidence: Vec<String>,
+        /// Phenotypes.
+        pub phenotypes: Vec<String>,
+        /// Mode of inheritance.
+        pub mode_of_inheritance: String,
+        /// Information about the panel of this assessment.
+        pub panel: Panel,
+    }
+
+    fn deserialize_null_default<'de, D, T>(deserializer: D) -> Result<T, D::Error>
+    where
+        T: Default + Deserialize<'de>,
+        D: serde::Deserializer<'de>,
+    {
+        let opt = Option::deserialize(deserializer)?;
+        Ok(opt.unwrap_or_default())
+    }
+}
+
 /// Code for reading gene to ORPHA disease associations.
 pub mod orpha {
     use serde::{Deserialize, Serialize};
@@ -2210,7 +2354,7 @@ mod tests {
         let str_jsonl = std::fs::read_to_string(path_jsonl)?;
         let records = str_jsonl
             .lines()
-            .map(|s| serde_json::from_str::<panelapp::Gene>(s).unwrap())
+            .map(|s| serde_json::from_str::<panelapp::Record>(s).unwrap())
             .collect::<Vec<_>>();
 
         insta::assert_yaml_snapshot!(records);

@@ -1,36 +1,14 @@
 ---
-source: src/genes/cli/data/mod.rs
+source: src/genes/cli/data.rs
 expression: records
 ---
 - gene_data:
-    alias:
-      - RNF163
-      - ZCCHC22
-      - CNBP1
-    biotype: protein_coding
     hgnc_id: "HGNC:13164"
-    gene_name: CCHC-type zinc finger nucleic acid binding protein
-    omim_gene:
-      - "116955"
-    alias_name: ~
-    gene_symbol: CNBP
     hgnc_symbol: CNBP
-    hgnc_release: 2017-11-03
-    ensembl_genes:
-      GRch37:
-        "82":
-          location: "3:128888327-128902765"
-          ensembl_id: ENSG00000169714
-      GRch38:
-        "90":
-          location: "3:129169484-129183922"
-          ensembl_id: ENSG00000169714
-    hgnc_date_symbol_changed: 2006-06-29
   entity_type: str
   entity_name: CNBP_CCTG
   confidence_level: "1"
-  penetrance: ~
-  mode_of_pathogenicity: ~
+  penetrance: unknown
   publications: []
   evidence:
     - NHS GMS
@@ -40,16 +18,12 @@ expression: records
     - "Myotonic dystrophy 2, OMIM:602668"
     - "Myotonic dystrophy type 2, MONDO:0011266"
   mode_of_inheritance: "MONOALLELIC, autosomal or pseudoautosomal, NOT imprinted"
-  tags:
-    - STR
-    - NGS Not Validated
   panel:
     id: 229
     hash_id: 55c4a3ed22c1fc0fe5e416e9
     name: Skeletal Muscle Channelopathies
     disease_group: Neurology and neurodevelopmental disorders
     disease_sub_group: Channelopathies
-    status: public
     version: "1.45"
     version_created: "2022-03-10T17:10:13.493246Z"
     relevant_disorders: []
@@ -61,42 +35,13 @@ expression: records
       - name: Rare Disease 100K
         slug: rare-disease-100k
         description: Rare Disease 100K
-  transcript: ~
 - gene_data:
-    alias:
-      - DMK
-      - DM1PK
-      - MDPK
-      - MT-PK
-    biotype: protein_coding
     hgnc_id: "HGNC:2933"
-    gene_name: DM1 protein kinase
-    omim_gene:
-      - "605377"
-    alias_name:
-      - dystrophia myotonica 1
-      - DM protein kinase
-      - myotonin protein kinase A
-      - myotonic dystrophy associated protein kinase
-      - thymopoietin homolog
-    gene_symbol: DMPK
     hgnc_symbol: DMPK
-    hgnc_release: 2017-11-03
-    ensembl_genes:
-      GRch37:
-        "82":
-          location: "19:46272975-46285810"
-          ensembl_id: ENSG00000104936
-      GRch38:
-        "90":
-          location: "19:45769717-45782552"
-          ensembl_id: ENSG00000104936
-    hgnc_date_symbol_changed: 1997-10-10
   entity_type: str
   entity_name: DMPK_CTG
   confidence_level: "3"
-  penetrance: ~
-  mode_of_pathogenicity: ~
+  penetrance: unknown
   publications: []
   evidence:
     - Expert Review Green
@@ -105,15 +50,12 @@ expression: records
   phenotypes:
     - "Myotonic dystrophy 1, OMIM:160900"
   mode_of_inheritance: "MONOALLELIC, autosomal or pseudoautosomal, NOT imprinted"
-  tags:
-    - STR
   panel:
     id: 229
     hash_id: 55c4a3ed22c1fc0fe5e416e9
     name: Skeletal Muscle Channelopathies
     disease_group: Neurology and neurodevelopmental disorders
     disease_sub_group: Channelopathies
-    status: public
     version: "1.45"
     version_created: "2022-03-10T17:10:13.493246Z"
     relevant_disorders: []
@@ -125,42 +67,13 @@ expression: records
       - name: Rare Disease 100K
         slug: rare-disease-100k
         description: Rare Disease 100K
-  transcript: ~
 - gene_data:
-    alias:
-      - DMK
-      - DM1PK
-      - MDPK
-      - MT-PK
-    biotype: protein_coding
     hgnc_id: "HGNC:2933"
-    gene_name: DM1 protein kinase
-    omim_gene:
-      - "605377"
-    alias_name:
-      - dystrophia myotonica 1
-      - DM protein kinase
-      - myotonin protein kinase A
-      - myotonic dystrophy associated protein kinase
-      - thymopoietin homolog
-    gene_symbol: DMPK
     hgnc_symbol: DMPK
-    hgnc_release: 2017-11-03
-    ensembl_genes:
-      GRch37:
-        "82":
-          location: "19:46272975-46285810"
-          ensembl_id: ENSG00000104936
-      GRch38:
-        "90":
-          location: "19:45769717-45782552"
-          ensembl_id: ENSG00000104936
-    hgnc_date_symbol_changed: 1997-10-10
   entity_type: str
   entity_name: DMPK_CTG
   confidence_level: "1"
-  penetrance: ~
-  mode_of_pathogenicity: ~
+  penetrance: unknown
   publications: []
   evidence:
     - NHS GMS
@@ -169,15 +82,12 @@ expression: records
   phenotypes:
     - "Myotonic dystrophy 1, OMIM:160900"
   mode_of_inheritance: "MONOALLELIC, autosomal or pseudoautosomal, NOT imprinted"
-  tags:
-    - STR
   panel:
     id: 144
     hash_id: 5763f4868f620350a199604f
     name: Fetal hydrops
     disease_group: Dysmorphic and congenital abnormality syndromes
     disease_sub_group: Fetal disorders
-    status: public
     version: "1.61"
     version_created: "2023-07-26T10:19:26.703341Z"
     relevant_disorders: []
@@ -189,39 +99,13 @@ expression: records
       - name: Rare Disease 100K
         slug: rare-disease-100k
         description: Rare Disease 100K
-  transcript: ~
 - gene_data:
-    alias:
-      - AIS
-      - NR3C4
-      - SMAX1
-      - HUMARA
-    biotype: protein_coding
     hgnc_id: "HGNC:644"
-    gene_name: androgen receptor
-    omim_gene:
-      - "313700"
-    alias_name:
-      - testicular feminization
-      - Kennedy disease
-    gene_symbol: AR
     hgnc_symbol: AR
-    hgnc_release: 2017-11-03
-    ensembl_genes:
-      GRch37:
-        "82":
-          location: "X:66764465-66950461"
-          ensembl_id: ENSG00000169083
-      GRch38:
-        "90":
-          location: "X:67544032-67730619"
-          ensembl_id: ENSG00000169083
-    hgnc_date_symbol_changed: 1986-01-01
   entity_type: str
   entity_name: AR_CAG
   confidence_level: "3"
-  penetrance: ~
-  mode_of_pathogenicity: ~
+  penetrance: unknown
   publications: []
   evidence:
     - Expert Review Green
@@ -230,15 +114,12 @@ expression: records
   phenotypes:
     - "Spinal and bulbar muscular atrophy of Kennedy, OMIM:313200"
   mode_of_inheritance: "X-LINKED: hemizygous mutation in males, monoallelic mutations in females may cause disease (may be less severe, later onset than males)"
-  tags:
-    - STR
   panel:
     id: 235
     hash_id: 55b7a0bb22c1fc05fd2345d1
     name: Distal myopathies
     disease_group: Neurology and neurodevelopmental disorders
     disease_sub_group: Neuromuscular disorders
-    status: public
     version: "3.16"
     version_created: "2023-10-25T21:25:56.162797Z"
     relevant_disorders: []
@@ -256,36 +137,13 @@ expression: records
       - name: GMS signed-off
         slug: gms-signed-off
         description: This panel has undergone review by a NHSE GMS disease specialist group and processes to be signed-off for use within the GMS.
-  transcript: ~
 - gene_data:
-    alias:
-      - RNF163
-      - ZCCHC22
-      - CNBP1
-    biotype: protein_coding
     hgnc_id: "HGNC:13164"
-    gene_name: CCHC-type zinc finger nucleic acid binding protein
-    omim_gene:
-      - "116955"
-    alias_name: ~
-    gene_symbol: CNBP
     hgnc_symbol: CNBP
-    hgnc_release: 2017-11-03
-    ensembl_genes:
-      GRch37:
-        "82":
-          location: "3:128888327-128902765"
-          ensembl_id: ENSG00000169714
-      GRch38:
-        "90":
-          location: "3:129169484-129183922"
-          ensembl_id: ENSG00000169714
-    hgnc_date_symbol_changed: 2006-06-29
   entity_type: str
   entity_name: CNBP_CCTG
   confidence_level: "1"
-  penetrance: ~
-  mode_of_pathogenicity: ~
+  penetrance: unknown
   publications: []
   evidence:
     - NHS GMS
@@ -295,16 +153,12 @@ expression: records
     - "Myotonic dystrophy 2, OMIM:602668"
     - "Myotonic dystrophy type 2, MONDO:0011266"
   mode_of_inheritance: "MONOALLELIC, autosomal or pseudoautosomal, NOT imprinted"
-  tags:
-    - STR
-    - NGS Not Validated
   panel:
     id: 235
     hash_id: 55b7a0bb22c1fc05fd2345d1
     name: Distal myopathies
     disease_group: Neurology and neurodevelopmental disorders
     disease_sub_group: Neuromuscular disorders
-    status: public
     version: "3.16"
     version_created: "2023-10-25T21:25:56.162797Z"
     relevant_disorders: []
@@ -322,5 +176,4 @@ expression: records
       - name: GMS signed-off
         slug: gms-signed-off
         description: This panel has undergone review by a NHSE GMS disease specialist group and processes to be signed-off for use within the GMS.
-  transcript: ~
 

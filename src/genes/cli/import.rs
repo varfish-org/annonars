@@ -330,22 +330,19 @@ fn load_orpha(path: &str) -> Result<HashMap<String, orpha::Record>, anyhow::Erro
 /// # Result
 ///
 /// A map from HGNC ID to PanelApp gene record.
-fn load_panelapp(path: &str) -> Result<HashMap<String, Vec<panelapp::Gene>>, anyhow::Error> {
+fn load_panelapp(path: &str) -> Result<HashMap<String, Vec<panelapp::Record>>, anyhow::Error> {
     info!("  loading PanelApp information from {}", path);
-    let mut result: HashMap<String, Vec<panelapp::Gene>> = HashMap::new();
+    let mut result: HashMap<String, Vec<panelapp::Record>> = HashMap::new();
 
     let reader = std::fs::File::open(path).map(std::io::BufReader::new)?;
     for line in reader.lines() {
         let line = line?;
-        let record = serde_json::from_str::<panelapp::Gene>(&line)?;
-        if let Some(gene_data) = record.gene_data() {
-            if let Some(gene_data) = gene_data.as_object() {
-                if let Some(Some(hgnc_id)) =
-                    gene_data.get("hgnc_id").map(|hgnc_id| hgnc_id.as_str())
-                {
-                    result.entry(hgnc_id.to_string()).or_default().push(record);
-                }
-            }
+        let record = serde_json::from_str::<panelapp::Record>(&line)?;
+        if let Some(gene_data) = record.gene_data.as_ref() {
+            result
+                .entry(gene_data.hgnc_id.clone())
+                .or_default()
+                .push(record);
         }
     }
 
@@ -967,10 +964,7 @@ fn convert_record(record: data::Record) -> pbs::genes::base::Record {
         }
     });
 
-    let panelapp = panelapp
-        .into_iter()
-        .map(|panelapp| todo!())
-        .collect::<Vec<_>>();
+    let panelapp = panelapp.into_iter().map(|gene| todo!()).collect::<Vec<_>>();
 
     let rcnv = rcnv.map(|rcnv| {
         let rcnv::Record {
@@ -1057,7 +1051,7 @@ fn write_rocksdb(
     ncbi_by_ncbi_id: HashMap<String, ncbi::Record>,
     omim_by_hgnc_id: HashMap<String, omim::Record>,
     orpha_by_hgnc_id: HashMap<String, orpha::Record>,
-    panelapp_by_hgnc_id: HashMap<String, Vec<panelapp::Gene>>,
+    panelapp_by_hgnc_id: HashMap<String, Vec<panelapp::Record>>,
     rcnv_by_hgnc_id: HashMap<String, rcnv::Record>,
     shet_by_hgnc_id: HashMap<String, shet::Record>,
     gtex_by_hgnc_id: HashMap<String, gtex::Record>,
