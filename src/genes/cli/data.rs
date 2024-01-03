@@ -26,6 +26,8 @@ pub struct Record {
     pub omim: Option<omim::Record>,
     /// Information about ORPHA diseases for a gene.
     pub orpha: Option<orpha::Record>,
+    /// Information about PanelApp entries for a gene.
+    pub panelapp: Vec<panelapp::Record>,
     /// Information from rCNV (Collins et al., 2022).
     pub rcnv: Option<rcnv::Record>,
     /// Information from sHet (Weghorn et al., 2019).
@@ -1579,6 +1581,293 @@ pub mod omim {
     }
 }
 
+/// Code for reading relevant parts of the PanelApp gene data.
+pub mod panelapp {
+    use serde::{Deserialize, Serialize};
+
+    use crate::pbs::genes::base::panel_app_record;
+
+    /// Gene identity information.
+    ///
+    /// We only keep the minimal information as we already have everything in HGNC.
+    ///
+    /// Note that the HGNC ID/symbol can be empty for genes but then gene_symbol is set.
+    ///
+    /// For regions, all can be null.
+    #[derive(Debug, Clone, Serialize, Deserialize)]
+    pub struct GeneData {
+        /// HGNC gene ID.
+        pub hgnc_id: Option<String>,
+        /// HGNC gene symbol.
+        pub hgnc_symbol: Option<String>,
+        /// Gene symbol.
+        pub gene_symbol: Option<String>,
+    }
+
+    impl From<GeneData> for panel_app_record::GeneData {
+        fn from(val: GeneData) -> Self {
+            let GeneData {
+                hgnc_id,
+                hgnc_symbol,
+                gene_symbol,
+            } = val;
+            panel_app_record::GeneData {
+                hgnc_id,
+                hgnc_symbol,
+                gene_symbol,
+            }
+        }
+    }
+
+    /// Enumeration for entity types.
+    #[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash, Serialize, Deserialize)]
+    pub enum EntityType {
+        /// Gene
+        #[serde(rename = "gene")]
+        Gene,
+        /// Short Tandem Repeat
+        #[serde(rename = "str")]
+        Str,
+        /// Region
+        #[serde(rename = "region")]
+        Region,
+    }
+
+    impl From<EntityType> for panel_app_record::EntityType {
+        fn from(val: EntityType) -> Self {
+            match val {
+                EntityType::Gene => panel_app_record::EntityType::Gene,
+                EntityType::Str => panel_app_record::EntityType::Str,
+                EntityType::Region => panel_app_record::EntityType::Region,
+            }
+        }
+    }
+
+    /// Enumeration for confidence levels.
+    #[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash, Serialize, Deserialize)]
+    pub enum ConfidenceLevel {
+        /// 0 - lowest level, when expert review was removed
+        #[serde(rename = "0")]
+        None,
+        /// 1 - red, low evidence
+        #[serde(rename = "1")]
+        Red,
+        /// 2 - amber, moderate evidence
+        #[serde(rename = "2")]
+        Amber,
+        /// 3 - green, high evidence
+        #[serde(rename = "3")]
+        Green,
+    }
+
+    impl From<ConfidenceLevel> for panel_app_record::ConfidenceLevel {
+        fn from(val: ConfidenceLevel) -> Self {
+            match val {
+                ConfidenceLevel::None => panel_app_record::ConfidenceLevel::None,
+                ConfidenceLevel::Red => panel_app_record::ConfidenceLevel::Red,
+                ConfidenceLevel::Amber => panel_app_record::ConfidenceLevel::Amber,
+                ConfidenceLevel::Green => panel_app_record::ConfidenceLevel::Green,
+            }
+        }
+    }
+
+    /// Enumeration for penetrance.
+    #[derive(
+        Default, Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash, Serialize, Deserialize,
+    )]
+    pub enum Penetrance {
+        /// Penetrance is unknown.
+        #[default]
+        #[serde(rename = "unknown")]
+        Unknown,
+        /// Complete penetrance.
+        #[serde(rename = "Complete")]
+        Complete,
+        /// Incomplete penetrance.
+        #[serde(rename = "Incomplete")]
+        Incomplete,
+    }
+
+    impl From<Penetrance> for panel_app_record::Penetrance {
+        fn from(val: Penetrance) -> Self {
+            match val {
+                Penetrance::Unknown => panel_app_record::Penetrance::Unknown,
+                Penetrance::Complete => panel_app_record::Penetrance::Complete,
+                Penetrance::Incomplete => panel_app_record::Penetrance::Incomplete,
+            }
+        }
+    }
+
+    /// Panel statistics.
+    #[derive(Debug, Clone, Serialize, Deserialize)]
+    pub struct PanelStats {
+        /// Number of genes.
+        pub number_of_genes: u32,
+        /// Number of STRs.
+        pub number_of_strs: u32,
+        /// Number of regions.
+        pub number_of_regions: u32,
+    }
+
+    impl From<PanelStats> for panel_app_record::PanelStats {
+        fn from(val: PanelStats) -> Self {
+            panel_app_record::PanelStats {
+                number_of_genes: val.number_of_genes,
+                number_of_strs: val.number_of_strs,
+                number_of_regions: val.number_of_regions,
+            }
+        }
+    }
+
+    /// Panel type.
+    #[derive(Debug, Clone, Serialize, Deserialize)]
+    pub struct PanelType {
+        /// Panel type ID.
+        pub name: String,
+        /// Panel type slug.
+        pub slug: String,
+        /// Panel type description.
+        pub description: String,
+    }
+
+    impl From<PanelType> for panel_app_record::PanelType {
+        fn from(val: PanelType) -> Self {
+            let PanelType {
+                name,
+                slug,
+                description,
+            } = val;
+            panel_app_record::PanelType {
+                name,
+                slug,
+                description,
+            }
+        }
+    }
+
+    /// Representation of a panel.
+    #[derive(Debug, Clone, Serialize, Deserialize)]
+    pub struct Panel {
+        /// Panel ID.
+        pub id: u32,
+        /// Panel hash ID.
+        pub hash_id: Option<String>,
+        /// The panel name.
+        pub name: String,
+        /// The disease group.
+        pub disease_group: String,
+        /// The disease sub group.
+        pub disease_sub_group: String,
+        /// The panel version.
+        pub version: String,
+        /// The panel version created.
+        pub version_created: String,
+        /// The panel relevant disorders.
+        pub relevant_disorders: Vec<String>,
+        /// The panel stats.
+        pub stats: PanelStats,
+        /// The panel types.
+        pub types: Vec<PanelType>,
+    }
+
+    impl From<Panel> for panel_app_record::Panel {
+        fn from(val: Panel) -> Self {
+            let Panel {
+                id,
+                hash_id,
+                name,
+                disease_group,
+                disease_sub_group,
+                version,
+                version_created,
+                relevant_disorders,
+                stats,
+                types,
+            } = val;
+            panel_app_record::Panel {
+                id,
+                hash_id,
+                name,
+                disease_group,
+                disease_sub_group,
+                version,
+                version_created,
+                relevant_disorders,
+                stats: Some(Into::<panel_app_record::PanelStats>::into(stats)),
+                types: types
+                    .into_iter()
+                    .map(Into::<panel_app_record::PanelType>::into)
+                    .collect(),
+            }
+        }
+    }
+
+    /// Representation of one gene record.
+    #[derive(Debug, Clone, Serialize, Deserialize)]
+    pub struct Record {
+        /// Gene identity information.
+        pub gene_data: Option<GeneData>,
+        /// Entity type.
+        pub entity_type: EntityType,
+        /// Entity name.
+        pub entity_name: String,
+        /// Confidence level.
+        pub confidence_level: ConfidenceLevel,
+        /// Penetrance.
+        #[serde(deserialize_with = "deserialize_null_default")]
+        pub penetrance: Penetrance,
+        /// Publications.
+        pub publications: Vec<String>,
+        /// Evidence.
+        pub evidence: Vec<String>,
+        /// Phenotypes.
+        pub phenotypes: Vec<String>,
+        /// Mode of inheritance.
+        pub mode_of_inheritance: String,
+        /// Information about the panel of this assessment.
+        pub panel: Panel,
+    }
+
+    impl From<Record> for crate::pbs::genes::base::PanelAppRecord {
+        fn from(val: Record) -> Self {
+            let Record {
+                gene_data,
+                entity_type,
+                entity_name,
+                confidence_level,
+                penetrance,
+                publications,
+                evidence,
+                phenotypes,
+                mode_of_inheritance,
+                panel,
+            } = val;
+            crate::pbs::genes::base::PanelAppRecord {
+                gene_data: gene_data.map(Into::<panel_app_record::GeneData>::into),
+                entity_type: Into::<panel_app_record::EntityType>::into(entity_type) as i32,
+                entity_name,
+                confidence_level: Into::<panel_app_record::ConfidenceLevel>::into(confidence_level)
+                    as i32,
+                penetrance: Into::<panel_app_record::Penetrance>::into(penetrance) as i32,
+                publications,
+                evidence,
+                phenotypes,
+                mode_of_inheritance,
+                panel: Some(Into::<panel_app_record::Panel>::into(panel)),
+            }
+        }
+    }
+
+    fn deserialize_null_default<'de, D, T>(deserializer: D) -> Result<T, D::Error>
+    where
+        T: Default + Deserialize<'de>,
+        D: serde::Deserializer<'de>,
+    {
+        let opt = Option::deserialize(deserializer)?;
+        Ok(opt.unwrap_or_default())
+    }
+}
+
 /// Code for reading gene to ORPHA disease associations.
 pub mod orpha {
     use serde::{Deserialize, Serialize};
@@ -2195,6 +2484,27 @@ mod tests {
         let records = rdr
             .deserialize()
             .collect::<Result<Vec<omim::RawRecord>, csv::Error>>()?;
+        insta::assert_yaml_snapshot!(records);
+
+        Ok(())
+    }
+
+    #[test]
+    fn deserialize_panelapp_record() -> Result<(), anyhow::Error> {
+        let path_jsonl = "tests/genes/panelapp/panelapp.jsonl";
+        let str_jsonl = std::fs::read_to_string(path_jsonl)?;
+        let records = str_jsonl
+            .lines()
+            .map(|s| {
+                serde_json::from_str::<panelapp::Record>(s)
+                    .map_err(|e| {
+                        println!("{}", &s);
+                        e
+                    })
+                    .unwrap()
+            })
+            .collect::<Vec<_>>();
+
         insta::assert_yaml_snapshot!(records);
 
         Ok(())
