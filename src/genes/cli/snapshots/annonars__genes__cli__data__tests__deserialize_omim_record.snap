@@ -1,0 +1,32 @@
+---
+source: src/genes/cli/data.rs
+expression: records
+---
+- hgnc_id: "HGNC:20"
+  omim_id: "OMIM:613287"
+  disease_name: "Charcot-Marie-Tooth disease, axonal, type 2N"
+- hgnc_id: "HGNC:20"
+  omim_id: "OMIM:616339"
+  disease_name: "Epileptic encephalopathy, early infantile, 29"
+- hgnc_id: "HGNC:20"
+  omim_id: "OMIM:619661"
+  disease_name: "Leukoencephalopathy, hereditary diffuse, with spheroids 2"
+- hgnc_id: "HGNC:20"
+  omim_id: "OMIM:619691"
+  disease_name: "Trichothiodystrophy 8, nonphotosensitive"
+- hgnc_id: "HGNC:23"
+  omim_id: "OMIM:613163"
+  disease_name: GABA-transaminase deficiency
+- hgnc_id: "HGNC:29"
+  omim_id: "OMIM:205400"
+  disease_name: Tangier disease
+- hgnc_id: "HGNC:29"
+  omim_id: "OMIM:604091"
+  disease_name: "HDL deficiency, familial, 1"
+- hgnc_id: "HGNC:32"
+  omim_id: "OMIM:618808"
+  disease_name: Intellectual developmental disorder with poor growth and with or without seizures or ataxia
+- hgnc_id: "HGNC:33"
+  omim_id: "OMIM:610921"
+  disease_name: "Surfactant metabolism dysfunction, pulmonary, 3"
+

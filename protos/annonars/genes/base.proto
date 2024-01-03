@@ -2,8 +2,6 @@ syntax = "proto3";
 
 package annonars.genes.base;
 
-import "annonars/panelapp/models.proto";
-
 // Information from ACMG secondary findings list.
 message AcmgSecondaryFindingRecord {
     // The HGNC ID.
@@ -816,6 +814,120 @@ message GtexRecord {
     repeated GtexTissueRecord records = 4;
 }
 
+// Entry in PanelApp.
+message PanelAppRecord {
+    /// Gene identity information.
+    message GeneData {
+        // HGNC ID.
+        optional string hgnc_id = 1;
+        // HGNC gene symbol.
+        optional string hgnc_symbol = 2;
+        // Gene symbol.
+        optional string gene_symbol = 3;
+    }
+
+    // Enumeration for entity types.
+    enum EntityType {
+        // Unknown
+        ENTITY_TYPE_UNKNOWN = 0;
+        // Gene
+        ENTITY_TYPE_GENE = 1;
+        // Short Tandem Repeat
+        ENTITY_TYPE_STR = 2;
+        // Region
+        ENTITY_TYPE_REGION = 3;
+    }
+
+    // Enumeration for confidence levels.
+    enum ConfidenceLevel {
+        // Unknown
+        CONFIDENCE_LEVEL_UNKNOWN = 0;
+        // None
+        CONFIDENCE_LEVEL_NONE = 1;
+        // Red
+        CONFIDENCE_LEVEL_RED = 2;
+        // Amber
+        CONFIDENCE_LEVEL_AMBER = 3;
+        // Green
+        CONFIDENCE_LEVEL_GREEN = 4;
+    }
+
+    // Enumeration for penetrance.
+    enum Penetrance {
+        // Unknown
+        PENETRANCE_UNKNOWN = 0;
+        // Complete
+        PENETRANCE_COMPLETE = 1;
+        // Incomplete
+        PENETRANCE_INCOMPLETE = 2;
+    }
+
+    // Message for panel statistics.
+    message PanelStats {
+        // Number of genes.
+        uint32 number_of_genes = 1;
+        // Number of STRs.
+        uint32 number_of_strs = 2;
+        // Number of regions.
+        uint32 number_of_regions = 3;
+    }
+
+    // Message for panel types.
+    message PanelType {
+        // Type name.
+        string name = 1;
+        // Slug.
+        string slug = 2;
+        // Description.
+        string description = 3;
+    }
+
+    // Message for panel information.
+    message Panel {
+        // Panel ID.
+        uint32 id = 1;
+        // Panel hash ID.
+        optional string hash_id = 2;
+        // Panel name.
+        string name = 3;
+        // Disease group.
+        string disease_group = 4;
+        // Disease subgroup.
+        string disease_sub_group = 5;
+        // Version
+        string version = 6;
+        // Creation date of version.
+        string version_created = 7;
+        // Relevant disorders.
+        repeated string relevant_disorders = 8;
+        // Stats.
+        PanelStats stats = 9;
+        // Panel types.
+        repeated PanelType types = 10;
+    }
+
+    // Gene identity information.
+    GeneData gene_data = 1;
+    // Entity type.
+    EntityType entity_type = 2;
+    // Entity name.
+    string entity_name = 3;
+    // Confidence level.
+    ConfidenceLevel confidence_level = 4;
+    // Penetrance.
+    Penetrance penetrance = 5;
+    // Publications.
+    repeated string publications = 6;
+    // Evidence.
+    repeated string evidence = 7;
+    // Phenotypes.
+    repeated string phenotypes = 8;
+    // Mode of inheritance.
+    string mode_of_inheritance = 9;
+    // Panel.
+    Panel panel = 10;
+}
+
 // Entry in the genes RocksDB database.
 message Record {
     // Information from the ACMG secondary finding list.
@@ -845,5 +957,5 @@ message Record {
     // DECIPHER HI score.
     DecipherHiRecord decipher_hi = 13;
     // GenomicsEngland PanelApp gene information.
-    repeated annonars.panelapp.Gene panelapp = 14;
+    repeated PanelAppRecord panelapp = 14;
 }

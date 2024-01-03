@@ -13,7 +13,7 @@ use tracing::info;
 
 use crate::{
     common::{self, version},
-    pbs,
+    pbs::{self, genes::base::PanelAppRecord},
 };
 
 use super::data::{
@@ -330,7 +330,16 @@ fn load_orpha(path: &str) -> Result<HashMap<String, orpha::Record>, anyhow::Erro
 /// # Result
 ///
 /// A map from HGNC ID to PanelApp gene record.
-fn load_panelapp(path: &str) -> Result<HashMap<String, Vec<panelapp::Record>>, anyhow::Error> {
+fn load_panelapp(
+    path: &str,
+    hgnc: &HashMap<String, hgnc::Record>,
+) -> Result<HashMap<String, Vec<panelapp::Record>>, anyhow::Error> {
+    // Build map from HGNC gene symbol to HGNC id.
+    let hgnc_symbol_to_id = hgnc
+        .iter()
+        .map(|(hgnc_id, record)| (record.symbol.clone(), hgnc_id))
+        .collect::<HashMap<_, _>>();
+
     info!("  loading PanelApp information from {}", path);
     let mut result: HashMap<String, Vec<panelapp::Record>> = HashMap::new();
 
@@ -339,10 +348,13 @@ fn load_panelapp(path: &str) -> Result<HashMap<String, Vec<panelapp::Record>>, a
         let line = line?;
         let record = serde_json::from_str::<panelapp::Record>(&line)?;
         if let Some(gene_data) = record.gene_data.as_ref() {
-            result
-                .entry(gene_data.hgnc_id.clone())
-                .or_default()
-                .push(record);
+            if let Some(hgnc_id) = gene_data.hgnc_id.as_ref() {
+                result.entry(hgnc_id.clone()).or_default().push(record);
+            } else if let Some(gene_symbol) = gene_data.gene_symbol.as_ref() {
+                if let Some(hgnc_id) = hgnc_symbol_to_id.get(gene_symbol) {
+                    result.entry((*hgnc_id).clone()).or_default().push(record);
+                }
+            }
         }
     }
 
@@ -964,7 +976,10 @@ fn convert_record(record: data::Record) -> pbs::genes::base::Record {
         }
     });
 
-    let panelapp = panelapp.into_iter().map(|gene| todo!()).collect::<Vec<_>>();
+    let panelapp = panelapp
+        .into_iter()
+        .map(|gene| Into::<PanelAppRecord>::into(gene))
+        .collect::<Vec<_>>();
 
     let rcnv = rcnv.map(|rcnv| {
         let rcnv::Record {
@@ -1139,7 +1154,7 @@ pub fn run(common_args: &common::cli::Args, args: &Args) -> Result<(), anyhow::E
     let ncbi_by_ncbi_id = load_ncbi(&args.path_in_ncbi)?;
     let omim_by_hgnc_id = load_omim(&args.path_in_omim)?;
     let orpha_by_hgnc_id = load_orpha(&args.path_in_orpha)?;
-    let panelapp_by_hgnc_id = load_panelapp(&args.path_in_panelapp)?;
+    let panelapp_by_hgnc_id = load_panelapp(&args.path_in_panelapp, &hgnc)?;
     let rcnv_by_hgnc_id = load_rcnv(&args.path_in_rcnv)?;
     let shet_by_hgnc_id = load_shet(&args.path_in_shet)?;
     let gtex_by_hgnc_id = load_gtex(&args.path_in_gtex)?;

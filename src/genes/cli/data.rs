@@ -1585,15 +1585,38 @@ pub mod omim {
 pub mod panelapp {
     use serde::{Deserialize, Serialize};
 
+    use crate::pbs::genes::base::panel_app_record;
+
     /// Gene identity information.
     ///
     /// We only keep the minimal information as we already have everything in HGNC.
+    ///
+    /// Note that the HGNC ID/symbol can be empty for genes but then gene_symbol is set.
+    ///
+    /// For regions, all can be null.
     #[derive(Debug, Clone, Serialize, Deserialize)]
     pub struct GeneData {
         /// HGNC gene ID.
-        pub hgnc_id: String,
+        pub hgnc_id: Option<String>,
         /// HGNC gene symbol.
-        pub hgnc_symbol: String,
+        pub hgnc_symbol: Option<String>,
+        /// Gene symbol.
+        pub gene_symbol: Option<String>,
+    }
+
+    impl Into<panel_app_record::GeneData> for GeneData {
+        fn into(self) -> panel_app_record::GeneData {
+            let GeneData {
+                hgnc_id,
+                hgnc_symbol,
+                gene_symbol,
+            } = self;
+            panel_app_record::GeneData {
+                hgnc_id,
+                hgnc_symbol,
+                gene_symbol,
+            }
+        }
     }
 
     /// Enumeration for entity types.
@@ -1608,6 +1631,16 @@ pub mod panelapp {
         /// Region
         #[serde(rename = "region")]
         Region,
+    }
+
+    impl Into<panel_app_record::EntityType> for EntityType {
+        fn into(self) -> panel_app_record::EntityType {
+            match self {
+                EntityType::Gene => panel_app_record::EntityType::Gene,
+                EntityType::Str => panel_app_record::EntityType::Str,
+                EntityType::Region => panel_app_record::EntityType::Region,
+            }
+        }
     }
 
     /// Enumeration for confidence levels.
@@ -1627,6 +1660,17 @@ pub mod panelapp {
         Green,
     }
 
+    impl Into<panel_app_record::ConfidenceLevel> for ConfidenceLevel {
+        fn into(self) -> panel_app_record::ConfidenceLevel {
+            match self {
+                ConfidenceLevel::None => panel_app_record::ConfidenceLevel::None,
+                ConfidenceLevel::Red => panel_app_record::ConfidenceLevel::Red,
+                ConfidenceLevel::Amber => panel_app_record::ConfidenceLevel::Amber,
+                ConfidenceLevel::Green => panel_app_record::ConfidenceLevel::Green,
+            }
+        }
+    }
+
     /// Enumeration for penetrance.
     #[derive(
         Default, Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash, Serialize, Deserialize,
@@ -1644,6 +1688,16 @@ pub mod panelapp {
         Incomplete,
     }
 
+    impl Into<panel_app_record::Penetrance> for Penetrance {
+        fn into(self) -> panel_app_record::Penetrance {
+            match self {
+                Penetrance::Unknown => panel_app_record::Penetrance::Unknown,
+                Penetrance::Complete => panel_app_record::Penetrance::Complete,
+                Penetrance::Incomplete => panel_app_record::Penetrance::Incomplete,
+            }
+        }
+    }
+
     /// Panel statistics.
     #[derive(Debug, Clone, Serialize, Deserialize)]
     pub struct PanelStats {
@@ -1653,6 +1707,16 @@ pub mod panelapp {
         pub number_of_strs: u32,
         /// Number of regions.
         pub number_of_regions: u32,
+    }
+
+    impl Into<panel_app_record::PanelStats> for PanelStats {
+        fn into(self) -> panel_app_record::PanelStats {
+            panel_app_record::PanelStats {
+                number_of_genes: self.number_of_genes,
+                number_of_strs: self.number_of_strs,
+                number_of_regions: self.number_of_regions,
+            }
+        }
     }
 
     /// Panel type.
@@ -1666,13 +1730,28 @@ pub mod panelapp {
         pub description: String,
     }
 
+    impl Into<panel_app_record::PanelType> for PanelType {
+        fn into(self) -> panel_app_record::PanelType {
+            let PanelType {
+                name,
+                slug,
+                description,
+            } = self;
+            panel_app_record::PanelType {
+                name,
+                slug,
+                description,
+            }
+        }
+    }
+
     /// Representation of a panel.
     #[derive(Debug, Clone, Serialize, Deserialize)]
     pub struct Panel {
         /// Panel ID.
         pub id: u32,
         /// Panel hash ID.
-        pub hash_id: String,
+        pub hash_id: Option<String>,
         /// The panel name.
         pub name: String,
         /// The disease group.
@@ -1689,6 +1768,38 @@ pub mod panelapp {
         pub stats: PanelStats,
         /// The panel types.
         pub types: Vec<PanelType>,
+    }
+
+    impl Into<panel_app_record::Panel> for Panel {
+        fn into(self) -> panel_app_record::Panel {
+            let Panel {
+                id,
+                hash_id,
+                name,
+                disease_group,
+                disease_sub_group,
+                version,
+                version_created,
+                relevant_disorders,
+                stats,
+                types,
+            } = self;
+            panel_app_record::Panel {
+                id,
+                hash_id,
+                name,
+                disease_group,
+                disease_sub_group,
+                version,
+                version_created,
+                relevant_disorders,
+                stats: Some(Into::<panel_app_record::PanelStats>::into(stats)),
+                types: types
+                    .into_iter()
+                    .map(|t| Into::<panel_app_record::PanelType>::into(t))
+                    .collect(),
+            }
+        }
     }
 
     /// Representation of one gene record.
@@ -1715,6 +1826,36 @@ pub mod panelapp {
         pub mode_of_inheritance: String,
         /// Information about the panel of this assessment.
         pub panel: Panel,
+    }
+
+    impl Into<crate::pbs::genes::base::PanelAppRecord> for Record {
+        fn into(self) -> crate::pbs::genes::base::PanelAppRecord {
+            let Record {
+                gene_data,
+                entity_type,
+                entity_name,
+                confidence_level,
+                penetrance,
+                publications,
+                evidence,
+                phenotypes,
+                mode_of_inheritance,
+                panel,
+            } = self;
+            crate::pbs::genes::base::PanelAppRecord {
+                gene_data: gene_data.map(|g| Into::<panel_app_record::GeneData>::into(g)),
+                entity_type: Into::<panel_app_record::EntityType>::into(entity_type) as i32,
+                entity_name,
+                confidence_level: Into::<panel_app_record::ConfidenceLevel>::into(confidence_level)
+                    as i32,
+                penetrance: Into::<panel_app_record::Penetrance>::into(penetrance) as i32,
+                publications,
+                evidence,
+                phenotypes,
+                mode_of_inheritance,
+                panel: Some(Into::<panel_app_record::Panel>::into(panel)),
+            }
+        }
     }
 
     fn deserialize_null_default<'de, D, T>(deserializer: D) -> Result<T, D::Error>
@@ -2354,7 +2495,14 @@ mod tests {
         let str_jsonl = std::fs::read_to_string(path_jsonl)?;
         let records = str_jsonl
             .lines()
-            .map(|s| serde_json::from_str::<panelapp::Record>(s).unwrap())
+            .map(|s| {
+                serde_json::from_str::<panelapp::Record>(s)
+                    .map_err(|e| {
+                        println!("{}", &s);
+                        e
+                    })
+                    .unwrap()
+            })
             .collect::<Vec<_>>();
 
         insta::assert_yaml_snapshot!(records);

@@ -5,6 +5,7 @@ expression: records
 - gene_data:
     hgnc_id: "HGNC:13164"
     hgnc_symbol: CNBP
+    gene_symbol: CNBP
   entity_type: str
   entity_name: CNBP_CCTG
   confidence_level: "1"
@@ -38,6 +39,7 @@ expression: records
 - gene_data:
     hgnc_id: "HGNC:2933"
     hgnc_symbol: DMPK
+    gene_symbol: DMPK
   entity_type: str
   entity_name: DMPK_CTG
   confidence_level: "3"
@@ -70,6 +72,7 @@ expression: records
 - gene_data:
     hgnc_id: "HGNC:2933"
     hgnc_symbol: DMPK
+    gene_symbol: DMPK
   entity_type: str
   entity_name: DMPK_CTG
   confidence_level: "1"
@@ -102,6 +105,7 @@ expression: records
 - gene_data:
     hgnc_id: "HGNC:644"
     hgnc_symbol: AR
+    gene_symbol: AR
   entity_type: str
   entity_name: AR_CAG
   confidence_level: "3"
@@ -140,6 +144,7 @@ expression: records
 - gene_data:
     hgnc_id: "HGNC:13164"
     hgnc_symbol: CNBP
+    gene_symbol: CNBP
   entity_type: str
   entity_name: CNBP_CCTG
   confidence_level: "1"
