@@ -1604,13 +1604,13 @@ pub mod panelapp {
         pub gene_symbol: Option<String>,
     }
 
-    impl Into<panel_app_record::GeneData> for GeneData {
-        fn into(self) -> panel_app_record::GeneData {
+    impl From<GeneData> for panel_app_record::GeneData {
+        fn from(val: GeneData) -> Self {
             let GeneData {
                 hgnc_id,
                 hgnc_symbol,
                 gene_symbol,
-            } = self;
+            } = val;
             panel_app_record::GeneData {
                 hgnc_id,
                 hgnc_symbol,
@@ -1633,9 +1633,9 @@ pub mod panelapp {
         Region,
     }
 
-    impl Into<panel_app_record::EntityType> for EntityType {
-        fn into(self) -> panel_app_record::EntityType {
-            match self {
+    impl From<EntityType> for panel_app_record::EntityType {
+        fn from(val: EntityType) -> Self {
+            match val {
                 EntityType::Gene => panel_app_record::EntityType::Gene,
                 EntityType::Str => panel_app_record::EntityType::Str,
                 EntityType::Region => panel_app_record::EntityType::Region,
@@ -1660,9 +1660,9 @@ pub mod panelapp {
         Green,
     }
 
-    impl Into<panel_app_record::ConfidenceLevel> for ConfidenceLevel {
-        fn into(self) -> panel_app_record::ConfidenceLevel {
-            match self {
+    impl From<ConfidenceLevel> for panel_app_record::ConfidenceLevel {
+        fn from(val: ConfidenceLevel) -> Self {
+            match val {
                 ConfidenceLevel::None => panel_app_record::ConfidenceLevel::None,
                 ConfidenceLevel::Red => panel_app_record::ConfidenceLevel::Red,
                 ConfidenceLevel::Amber => panel_app_record::ConfidenceLevel::Amber,
@@ -1688,9 +1688,9 @@ pub mod panelapp {
         Incomplete,
     }
 
-    impl Into<panel_app_record::Penetrance> for Penetrance {
-        fn into(self) -> panel_app_record::Penetrance {
-            match self {
+    impl From<Penetrance> for panel_app_record::Penetrance {
+        fn from(val: Penetrance) -> Self {
+            match val {
                 Penetrance::Unknown => panel_app_record::Penetrance::Unknown,
                 Penetrance::Complete => panel_app_record::Penetrance::Complete,
                 Penetrance::Incomplete => panel_app_record::Penetrance::Incomplete,
@@ -1709,12 +1709,12 @@ pub mod panelapp {
         pub number_of_regions: u32,
     }
 
-    impl Into<panel_app_record::PanelStats> for PanelStats {
-        fn into(self) -> panel_app_record::PanelStats {
+    impl From<PanelStats> for panel_app_record::PanelStats {
+        fn from(val: PanelStats) -> Self {
             panel_app_record::PanelStats {
-                number_of_genes: self.number_of_genes,
-                number_of_strs: self.number_of_strs,
-                number_of_regions: self.number_of_regions,
+                number_of_genes: val.number_of_genes,
+                number_of_strs: val.number_of_strs,
+                number_of_regions: val.number_of_regions,
             }
         }
     }
@@ -1730,13 +1730,13 @@ pub mod panelapp {
         pub description: String,
     }
 
-    impl Into<panel_app_record::PanelType> for PanelType {
-        fn into(self) -> panel_app_record::PanelType {
+    impl From<PanelType> for panel_app_record::PanelType {
+        fn from(val: PanelType) -> Self {
             let PanelType {
                 name,
                 slug,
                 description,
-            } = self;
+            } = val;
             panel_app_record::PanelType {
                 name,
                 slug,
@@ -1770,8 +1770,8 @@ pub mod panelapp {
         pub types: Vec<PanelType>,
     }
 
-    impl Into<panel_app_record::Panel> for Panel {
-        fn into(self) -> panel_app_record::Panel {
+    impl From<Panel> for panel_app_record::Panel {
+        fn from(val: Panel) -> Self {
             let Panel {
                 id,
                 hash_id,
@@ -1783,7 +1783,7 @@ pub mod panelapp {
                 relevant_disorders,
                 stats,
                 types,
-            } = self;
+            } = val;
             panel_app_record::Panel {
                 id,
                 hash_id,
@@ -1796,7 +1796,7 @@ pub mod panelapp {
                 stats: Some(Into::<panel_app_record::PanelStats>::into(stats)),
                 types: types
                     .into_iter()
-                    .map(|t| Into::<panel_app_record::PanelType>::into(t))
+                    .map(Into::<panel_app_record::PanelType>::into)
                     .collect(),
             }
         }
@@ -1828,8 +1828,8 @@ pub mod panelapp {
         pub panel: Panel,
     }
 
-    impl Into<crate::pbs::genes::base::PanelAppRecord> for Record {
-        fn into(self) -> crate::pbs::genes::base::PanelAppRecord {
+    impl From<Record> for crate::pbs::genes::base::PanelAppRecord {
+        fn from(val: Record) -> Self {
             let Record {
                 gene_data,
                 entity_type,
@@ -1841,9 +1841,9 @@ pub mod panelapp {
                 phenotypes,
                 mode_of_inheritance,
                 panel,
-            } = self;
+            } = val;
             crate::pbs::genes::base::PanelAppRecord {
-                gene_data: gene_data.map(|g| Into::<panel_app_record::GeneData>::into(g)),
+                gene_data: gene_data.map(Into::<panel_app_record::GeneData>::into),
                 entity_type: Into::<panel_app_record::EntityType>::into(entity_type) as i32,
                 entity_name,
                 confidence_level: Into::<panel_app_record::ConfidenceLevel>::into(confidence_level)

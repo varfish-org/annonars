@@ -978,7 +978,7 @@ fn convert_record(record: data::Record) -> pbs::genes::base::Record {
 
     let panelapp = panelapp
         .into_iter()
-        .map(|gene| Into::<PanelAppRecord>::into(gene))
+        .map(Into::<PanelAppRecord>::into)
         .collect::<Vec<_>>();
 
     let rcnv = rcnv.map(|rcnv| {
