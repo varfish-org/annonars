@@ -18,7 +18,7 @@ use crate::{
 
 use super::data::{
     self, acmg_sf, clingen_gene, dbnsfp_gene, decipher_hi, domino, gnomad_constraints, gtex, hgnc,
-    ncbi, omim, orpha, rcnv, shet,
+    ncbi, omim, orpha, panelapp, rcnv, shet,
 };
 
 /// Command line arguments for `genes import` sub command.
@@ -52,6 +52,9 @@ pub struct Args {
     /// Path to the TSV file with ORPHA disease information.
     #[arg(long, required = true)]
     pub path_in_orpha: String,
+    /// Path to the JSONL file with PanelApp disease information.
+    #[arg(long, required = true)]
+    pub path_in_panelapp: String,
     /// Path to the TSV file with rCNV information.
     #[arg(long, required = true)]
     pub path_in_rcnv: String,
@@ -322,6 +325,33 @@ fn load_orpha(path: &str) -> Result<HashMap<String, orpha::Record>, anyhow::Erro
     Ok(result)
 }
 
+/// Load PanelApp gene mapping.
+///
+/// # Result
+///
+/// A map from HGNC ID to PanelApp gene record.
+fn load_panelapp(path: &str) -> Result<HashMap<String, Vec<panelapp::Gene>>, anyhow::Error> {
+    info!("  loading PanelApp information from {}", path);
+    let mut result: HashMap<String, Vec<panelapp::Gene>> = HashMap::new();
+
+    let reader = std::fs::File::open(path).map(std::io::BufReader::new)?;
+    for line in reader.lines() {
+        let line = line?;
+        let record = serde_json::from_str::<panelapp::Gene>(&line)?;
+        if let Some(gene_data) = record.gene_data() {
+            if let Some(gene_data) = gene_data.as_object() {
+                if let Some(Some(hgnc_id)) =
+                    gene_data.get("hgnc_id").map(|hgnc_id| hgnc_id.as_str())
+                {
+                    result.entry(hgnc_id.to_string()).or_default().push(record);
+                }
+            }
+        }
+    }
+
+    Ok(result)
+}
+
 /// Load rCNV (Collins et al., 2022) information.
 ///
 /// # Result
@@ -419,6 +449,7 @@ fn convert_record(record: data::Record) -> pbs::genes::base::Record {
         ncbi,
         omim,
         orpha,
+        panelapp,
         rcnv,
         shet,
         gtex,
@@ -936,6 +967,11 @@ fn convert_record(record: data::Record) -> pbs::genes::base::Record {
         }
     });
 
+    let panelapp = panelapp
+        .into_iter()
+        .map(|panelapp| todo!())
+        .collect::<Vec<_>>();
+
     let rcnv = rcnv.map(|rcnv| {
         let rcnv::Record {
             hgnc_id,
@@ -1004,6 +1040,7 @@ fn convert_record(record: data::Record) -> pbs::genes::base::Record {
         shet,
         gtex,
         domino,
+        panelapp,
         decipher_hi,
     }
 }
@@ -1020,6 +1057,7 @@ fn write_rocksdb(
     ncbi_by_ncbi_id: HashMap<String, ncbi::Record>,
     omim_by_hgnc_id: HashMap<String, omim::Record>,
     orpha_by_hgnc_id: HashMap<String, orpha::Record>,
+    panelapp_by_hgnc_id: HashMap<String, Vec<panelapp::Gene>>,
     rcnv_by_hgnc_id: HashMap<String, rcnv::Record>,
     shet_by_hgnc_id: HashMap<String, shet::Record>,
     gtex_by_hgnc_id: HashMap<String, gtex::Record>,
@@ -1064,6 +1102,10 @@ fn write_rocksdb(
             hgnc: hgnc_record.clone(),
             omim: omim_by_hgnc_id.get(&hgnc_id).cloned(),
             orpha: orpha_by_hgnc_id.get(&hgnc_id).cloned(),
+            panelapp: panelapp_by_hgnc_id
+                .get(&hgnc_id)
+                .cloned()
+                .unwrap_or_default(),
             ncbi: hgnc_record
                 .entrez_id
                 .as_ref()
@@ -1103,6 +1145,7 @@ pub fn run(common_args: &common::cli::Args, args: &Args) -> Result<(), anyhow::E
     let ncbi_by_ncbi_id = load_ncbi(&args.path_in_ncbi)?;
     let omim_by_hgnc_id = load_omim(&args.path_in_omim)?;
     let orpha_by_hgnc_id = load_orpha(&args.path_in_orpha)?;
+    let panelapp_by_hgnc_id = load_panelapp(&args.path_in_panelapp)?;
     let rcnv_by_hgnc_id = load_rcnv(&args.path_in_rcnv)?;
     let shet_by_hgnc_id = load_shet(&args.path_in_shet)?;
     let gtex_by_hgnc_id = load_gtex(&args.path_in_gtex)?;
@@ -1125,6 +1168,7 @@ pub fn run(common_args: &common::cli::Args, args: &Args) -> Result<(), anyhow::E
         ncbi_by_ncbi_id,
         omim_by_hgnc_id,
         orpha_by_hgnc_id,
+        panelapp_by_hgnc_id,
         rcnv_by_hgnc_id,
         shet_by_hgnc_id,
         gtex_by_hgnc_id,
@@ -1172,6 +1216,7 @@ pub mod test {
             path_in_ncbi: String::from("tests/genes/ncbi/gene_info.jsonl"),
             path_in_omim: String::from("tests/genes/omim/omim_diseases.tsv"),
             path_in_orpha: String::from("tests/genes/orphanet/orphanet_diseases.tsv"),
+            path_in_panelapp: String::from("tests/genes/panelapp/panelapp.jsonl"),
             path_in_rcnv: String::from("tests/genes/rcnv/rcnv.tsv"),
             path_in_shet: String::from("tests/genes/shet/shet.tsv"),
             path_in_gtex: String::from("tests/genes/gtex/genes_tpm.jsonl"),

@@ -28,6 +28,8 @@ pub struct Record {
     pub omim: Option<omim::Record>,
     /// Information about ORPHA diseases for a gene.
     pub orpha: Option<orpha::Record>,
+    /// Information about PanelApp entries for a gene.
+    pub panelapp: Vec<panelapp::Gene>,
     /// Information from rCNV (Collins et al., 2022).
     pub rcnv: Option<rcnv::Record>,
     /// Information from sHet (Weghorn et al., 2019).

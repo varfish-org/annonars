@@ -7,4 +7,5 @@ pub mod functional;
 pub mod genes;
 pub mod gnomad;
 pub mod helixmtdb;
+pub mod panelapp;
 pub mod regions;

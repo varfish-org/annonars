@@ -2,6 +2,8 @@ syntax = "proto3";
 
 package annonars.genes.base;
 
+import "annonars/panelapp/models.proto";
+
 // Information from ACMG secondary findings list.
 message AcmgSecondaryFindingRecord {
     // The HGNC ID.
@@ -842,4 +844,6 @@ message Record {
     DominoRecord domino = 12;
     // DECIPHER HI score.
     DecipherHiRecord decipher_hi = 13;
+    // GenomicsEngland PanelApp gene information.
+    repeated annonars.panelapp.Gene panelapp = 14;
 }
