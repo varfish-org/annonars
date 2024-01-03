@@ -1,4 +1,6 @@
 #![allow(missing_docs)]
+#![allow(clippy::too_many_arguments)]
+#![allow(clippy::new_without_default)]
 //! Code generated with `swagger-codegen` from:
 //!
 //! - https://panelapp.genomicsengland.co.uk/api/docs/?format=openapi
