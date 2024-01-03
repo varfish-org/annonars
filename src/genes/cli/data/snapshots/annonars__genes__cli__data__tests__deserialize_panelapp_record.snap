@@ -1,6 +1,5 @@
 ---
 source: src/genes/cli/data/mod.rs
-assertion_line: 2214
 expression: records
 ---
 - gene_data:
@@ -62,6 +61,7 @@ expression: records
       - name: Rare Disease 100K
         slug: rare-disease-100k
         description: Rare Disease 100K
+  transcript: ~
 - gene_data:
     alias:
       - DMK
@@ -125,6 +125,7 @@ expression: records
       - name: Rare Disease 100K
         slug: rare-disease-100k
         description: Rare Disease 100K
+  transcript: ~
 - gene_data:
     alias:
       - DMK
@@ -188,6 +189,7 @@ expression: records
       - name: Rare Disease 100K
         slug: rare-disease-100k
         description: Rare Disease 100K
+  transcript: ~
 - gene_data:
     alias:
       - AIS
@@ -254,6 +256,7 @@ expression: records
       - name: GMS signed-off
         slug: gms-signed-off
         description: This panel has undergone review by a NHSE GMS disease specialist group and processes to be signed-off for use within the GMS.
+  transcript: ~
 - gene_data:
     alias:
       - RNF163
@@ -319,4 +322,5 @@ expression: records
       - name: GMS signed-off
         slug: gms-signed-off
         description: This panel has undergone review by a NHSE GMS disease specialist group and processes to be signed-off for use within the GMS.
+  transcript: ~
 

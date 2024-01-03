@@ -38,9 +38,7 @@ pub struct Gene {
     #[serde(rename = "panel")]
     panel: Option<crate::genes::cli::data::panelapp::Panel>,
     #[serde(rename = "transcript")]
-    #[serde(skip_serializing_if = "Vec::is_empty")]
-    #[serde(default)]
-    transcript: Vec<String>,
+    transcript: Option<Vec<String>>,
 }
 
 impl Gene {
@@ -52,7 +50,7 @@ impl Gene {
         evidence: Vec<String>,
         phenotypes: Vec<String>,
         mode_of_inheritance: String,
-        transcript: Vec<String>,
+        transcript: Option<Vec<String>>,
     ) -> Gene {
         Gene {
             gene_data: None,
@@ -247,16 +245,16 @@ impl Gene {
         self.panel = None;
     }
 
-    pub fn set_transcript(&mut self, transcript: Vec<String>) {
+    pub fn set_transcript(&mut self, transcript: Option<Vec<String>>) {
         self.transcript = transcript;
     }
 
-    pub fn with_transcript(mut self, transcript: Vec<String>) -> Gene {
+    pub fn with_transcript(mut self, transcript: Option<Vec<String>>) -> Gene {
         self.transcript = transcript;
         self
     }
 
-    pub fn transcript(&self) -> &Vec<String> {
+    pub fn transcript(&self) -> &Option<Vec<String>> {
         &self.transcript
     }
 }
