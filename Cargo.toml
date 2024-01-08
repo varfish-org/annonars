@@ -57,7 +57,7 @@ tracing = "0.1"
 tracing-subscriber = "0.3"
 rustc-hash = "1.1.0"
 noodles-gff = "0.25.0"
-erased-serde = "0.4.1"
+erased-serde = "0.4.2"
 
 [build-dependencies]
 prost-build = "0.12"
