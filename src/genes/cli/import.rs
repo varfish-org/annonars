@@ -13,7 +13,8 @@ use tracing::info;
 
 use crate::{
     common::{self, version},
-    pbs::{self, genes::base::PanelAppRecord},
+    genes::cli::data::conditions,
+    pbs::{self, genes::base::ConditionsRecord, genes::base::PanelAppRecord},
 };
 
 use super::data::{
@@ -70,6 +71,9 @@ pub struct Args {
     /// Path to the DECIPHER HI file.
     #[arg(long, required = true)]
     pub path_in_decipher_hi: String,
+    /// Path to the conditions HGNC file.
+    #[arg(long, required = true)]
+    pub path_in_conditions: String,
 
     /// Path to output RocksDB.
     #[arg(long, required = true)]
@@ -446,6 +450,25 @@ fn load_domino(path: &str) -> Result<HashMap<String, domino::Record>, anyhow::Er
     Ok(result)
 }
 
+/// Load conditions information.
+///
+/// # Result
+///
+/// A map from HGNC ID to conditions record.
+fn load_conditions(path: &str) -> Result<HashMap<String, conditions::Record>, anyhow::Error> {
+    info!("  loading conditions information from {}", path);
+    let mut result = HashMap::new();
+
+    let reader = std::fs::File::open(path).map(std::io::BufReader::new)?;
+    for line in reader.lines() {
+        let line = line?;
+        let record = serde_json::from_str::<conditions::Record>(&line)?;
+        result.insert(record.hgnc_id.clone(), record);
+    }
+
+    Ok(result)
+}
+
 /// Convert from `data::*` records to protobuf records.
 fn convert_record(record: data::Record) -> pbs::genes::base::Record {
     let data::Record {
@@ -464,6 +487,7 @@ fn convert_record(record: data::Record) -> pbs::genes::base::Record {
         gtex,
         domino,
         decipher_hi,
+        conditions,
     } = record;
 
     let acmg_sf = acmg_sf.map(|acmg_sf| {
@@ -1036,6 +1060,8 @@ fn convert_record(record: data::Record) -> pbs::genes::base::Record {
         pbs::genes::base::DominoRecord { gene_symbol, score }
     });
 
+    let conditions = conditions.map(Into::<ConditionsRecord>::into);
+
     pbs::genes::base::Record {
         acmg_sf,
         clingen,
@@ -1051,6 +1077,7 @@ fn convert_record(record: data::Record) -> pbs::genes::base::Record {
         domino,
         panelapp,
         decipher_hi,
+        conditions,
     }
 }
 
@@ -1072,6 +1099,7 @@ fn write_rocksdb(
     gtex_by_hgnc_id: HashMap<String, gtex::Record>,
     domino_by_symbol: HashMap<String, domino::Record>,
     decipher_hi_by_hgnc_id: HashMap<String, decipher_hi::Record>,
+    conditions_by_hgnc_id: HashMap<String, conditions::Record>,
     args: &&Args,
 ) -> Result<(), anyhow::Error> {
     // Construct RocksDB options and open file for writing.
@@ -1125,6 +1153,7 @@ fn write_rocksdb(
             gtex: gtex_by_hgnc_id.get(&hgnc_id).cloned(),
             domino: domino_by_symbol.get(&hgnc_record.symbol).cloned(),
             decipher_hi: decipher_hi_by_hgnc_id.get(&hgnc_id).cloned(),
+            conditions: conditions_by_hgnc_id.get(&hgnc_id).cloned(),
         });
         tracing::debug!("writing {:?} -> {:?}", &hgnc, &record);
         db.put_cf(&cf_genes, hgnc_id, &record.encode_to_vec())?;
@@ -1160,6 +1189,7 @@ pub fn run(common_args: &common::cli::Args, args: &Args) -> Result<(), anyhow::E
     let gtex_by_hgnc_id = load_gtex(&args.path_in_gtex)?;
     let domino_by_symbol = load_domino(&args.path_in_domino)?;
     let decipher_hi_by_hgnc_id = load_decipher_hi(&args.path_in_decipher_hi)?;
+    let conditions_by_hgnc_id = load_conditions(&args.path_in_conditions)?;
     info!(
         "... done loadin genes data files in {:?}",
         before_loading.elapsed()
@@ -1183,6 +1213,7 @@ pub fn run(common_args: &common::cli::Args, args: &Args) -> Result<(), anyhow::E
         gtex_by_hgnc_id,
         domino_by_symbol,
         decipher_hi_by_hgnc_id,
+        conditions_by_hgnc_id,
         &args,
     )?;
     info!(
@@ -1230,12 +1261,13 @@ pub mod test {
             path_in_shet: String::from("tests/genes/shet/shet.tsv"),
             path_in_gtex: String::from("tests/genes/gtex/genes_tpm.jsonl"),
             path_in_domino: String::from("tests/genes/domino/domino.tsv"),
+            path_in_decipher_hi: String::from("tests/genes/decipher/decipher_hi_prediction.tsv"),
+            path_in_conditions: String::from("tests/genes/conditions/conditions.jsonl"),
             path_out_rocksdb: tmp_dir
                 .to_path_buf()
                 .into_os_string()
                 .into_string()
                 .unwrap(),
-            path_in_decipher_hi: String::from("tests/genes/decipher/decipher_hi_prediction.tsv"),
         };
 
         run(&common_args, &args)?;
