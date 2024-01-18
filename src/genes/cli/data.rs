@@ -2369,6 +2369,144 @@ pub mod domino {
     }
 }
 
+/// Code for importing the integrated conditions data.
+pub mod conditions {
+    use serde::{Deserialize, Serialize};
+
+    /// Enumeration for sources.
+    #[derive(Debug, Clone, Serialize, Deserialize, PartialEq, Eq, PartialOrd, Ord, Hash)]
+    pub enum GeneDiseaseAssociationSource {
+        /// OMIM
+        #[serde(rename = "OMIM")]
+        Omim,
+        /// Orphanet
+        #[serde(rename = "ORPHANET")]
+        Orphanet,
+        /// PanelApp
+        #[serde(rename = "PANELAPP")]
+        Panelapp,
+    }
+
+    /// Enumeration for confidence levels.
+    #[derive(Debug, Clone, Serialize, Deserialize, PartialEq, Eq, PartialOrd, Ord, Hash)]
+    pub enum ConfidenceLevel {
+        /// High confidence.
+        #[serde(rename = "HIGH")]
+        High,
+        /// Medium confidence.
+        #[serde(rename = "MEDIUM")]
+        Medium,
+        /// Low confidence.
+        #[serde(rename = "LOW")]
+        Low,
+    }
+
+    /// A gene-disease association entry.
+    #[derive(Debug, Clone, Serialize, Deserialize)]
+    pub struct GeneDiseaseAssociationEntry {
+        /// The gene-disease association source.
+        source: GeneDiseaseAssociationSource,
+        /// The gene-disease association confidence level.
+        confidence: ConfidenceLevel,
+    }
+
+    /// A labeled disorder.
+    #[derive(Debug, Clone, Serialize, Deserialize)]
+    pub struct LabeledDisorder {
+        /// The disorder ID.
+        term_id: String,
+        /// The disorder name.
+        title: Option<String>,
+    }
+
+    /// A gene-disease association.
+    #[derive(Debug, Clone, Serialize, Deserialize)]
+    pub struct GeneDiseaseAssociation {
+        /// The HGNC ID.
+        hgnc_id: String,
+        /// The gene-disease association entries.
+        labeled_disorders: Vec<LabeledDisorder>,
+        /// Overall disease name.
+        disease_name: Option<String>,
+        /// Disease definition.
+        disease_definition: Option<String>,
+        /// The gene-disease association sources.
+        sources: Vec<GeneDiseaseAssociationSource>,
+        /// Overall disease-gene association confidence level.
+        confidence: ConfidenceLevel,
+    }
+
+    /// Enumeration for PanelApp confidence level.
+    #[derive(Debug, Clone, Serialize, Deserialize, PartialEq, Eq, PartialOrd, Ord, Hash)]
+    pub enum PanelappConfidence {
+        /// PanelApp green confidence.
+        #[serde(rename = "GREEN")]
+        Green,
+        /// PanelApp amber confidence.
+        #[serde(rename = "AMBER")]
+        Amber,
+        /// PanelApp red confidence.
+        #[serde(rename = "RED")]
+        Red,
+        /// PanelApp none confidence (when removed after expert review).
+        #[serde(rename = "NONE")]
+        None,
+    }
+
+    /// Enumeration for entity type.
+    #[derive(Debug, Clone, Serialize, Deserialize, PartialEq, Eq, PartialOrd, Ord, Hash)]
+    pub enum PanelappEntityType {
+        /// PanelApp gene entity type.
+        #[serde(rename = "GENE")]
+        Gene,
+        /// PanelApp region entity type.
+        #[serde(rename = "REGION")]
+        REGION,
+        /// PanelApp shor tandem repeat entity type.
+        #[serde(rename = "STR")]
+        STR,
+    }
+
+    /// A panel from PanelApp.
+    #[derive(Debug, Clone, Serialize, Deserialize)]
+    pub struct PanelappPanel {
+        /// PanelApp panel ID.
+        id: i32,
+        /// PanelApp panel name.
+        name: String,
+        /// PanelApp panel version.
+        version: String,
+    }
+
+    /// An association of a gene by HGNC with a panel from PanelApp.
+    #[derive(Debug, Clone, Serialize, Deserialize)]
+    pub struct PanelappAssociation {
+        /// The HGNC ID.
+        hgnc_id: String,
+        /// The PanelApp confidence level.
+        confidence_level: PanelappConfidence,
+        /// The PanelApp entity type.
+        entity_type: PanelappEntityType,
+        /// The PanelApp entity name.
+        mode_of_inheritance: Option<String>,
+        /// The PanelApp publications.
+        phenotypes: Vec<String>,
+        /// The PanelApp panel.
+        panel: PanelappPanel,
+    }
+
+    /// A record from the conditions JSONL file.
+    #[derive(Debug, Clone, Serialize, Deserialize)]
+    pub struct Record {
+        /// The HGNC ID.
+        hgnc_id: String,
+        /// The gene-disease associations.
+        disease_associations: Vec<GeneDiseaseAssociation>,
+        /// The PanelApp associations.
+        panelapp_associations: Vec<PanelappAssociation>,
+    }
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -2583,6 +2721,20 @@ mod tests {
         let records = rdr
             .deserialize()
             .collect::<Result<Vec<domino::Record>, csv::Error>>()?;
+        insta::assert_yaml_snapshot!(records);
+
+        Ok(())
+    }
+
+    #[test]
+    fn deserialize_conditions_record() -> Result<(), anyhow::Error> {
+        let path_jsonl = "tests/genes/conditions/conditions.jsonl";
+        let str_jsonl = std::fs::read_to_string(path_jsonl)?;
+        let records = str_jsonl
+            .lines()
+            .map(|s| serde_json::from_str::<conditions::Record>(s).unwrap())
+            .collect::<Vec<_>>();
+
         insta::assert_yaml_snapshot!(records);
 
         Ok(())
