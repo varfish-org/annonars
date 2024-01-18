@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.34.0](https://github.com/bihealth/annonars/compare/v0.33.0...v0.34.0) (2024-01-18)
+
+
+### Features
+
+* integration of new gene-wise conditions ([#385](https://github.com/bihealth/annonars/issues/385)) ([#386](https://github.com/bihealth/annonars/issues/386)) ([6cf726c](https://github.com/bihealth/annonars/commit/6cf726c0defc452489aa59dc97d06b00d06b735e))
+
 ## [0.33.0](https://github.com/bihealth/annonars/compare/v0.32.0...v0.33.0) (2024-01-03)
 
 
