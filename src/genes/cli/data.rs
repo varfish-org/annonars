@@ -38,6 +38,8 @@ pub struct Record {
     pub domino: Option<domino::Record>,
     /// DECIPHER HI predictions.
     pub decipher_hi: Option<decipher_hi::Record>,
+    /// Integrated conditions record.
+    pub conditions: Option<conditions::Record>,
 }
 
 /// Code for data from the ACMG secondary findings list.
@@ -2371,6 +2373,10 @@ pub mod domino {
 
 /// Code for importing the integrated conditions data.
 pub mod conditions {
+    use crate::pbs::genes::base::{
+        conditions_record::{self, gene_disease_association_entry, panelapp_association},
+        ConditionsRecord,
+    };
     use serde::{Deserialize, Serialize};
 
     /// Enumeration for sources.
@@ -2387,6 +2393,24 @@ pub mod conditions {
         Panelapp,
     }
 
+    impl From<GeneDiseaseAssociationSource>
+        for gene_disease_association_entry::GeneDiseaseAssociationSource
+    {
+        fn from(val: GeneDiseaseAssociationSource) -> Self {
+            match val {
+                GeneDiseaseAssociationSource::Omim => {
+                    gene_disease_association_entry::GeneDiseaseAssociationSource::Omim
+                }
+                GeneDiseaseAssociationSource::Orphanet => {
+                    gene_disease_association_entry::GeneDiseaseAssociationSource::Orphanet
+                }
+                GeneDiseaseAssociationSource::Panelapp => {
+                    gene_disease_association_entry::GeneDiseaseAssociationSource::Panelapp
+                }
+            }
+        }
+    }
+
     /// Enumeration for confidence levels.
     #[derive(Debug, Clone, Serialize, Deserialize, PartialEq, Eq, PartialOrd, Ord, Hash)]
     pub enum ConfidenceLevel {
@@ -2401,39 +2425,103 @@ pub mod conditions {
         Low,
     }
 
+    impl From<ConfidenceLevel> for gene_disease_association_entry::ConfidenceLevel {
+        fn from(val: ConfidenceLevel) -> Self {
+            match val {
+                ConfidenceLevel::High => gene_disease_association_entry::ConfidenceLevel::High,
+                ConfidenceLevel::Medium => gene_disease_association_entry::ConfidenceLevel::Medium,
+                ConfidenceLevel::Low => gene_disease_association_entry::ConfidenceLevel::Low,
+            }
+        }
+    }
+
     /// A gene-disease association entry.
     #[derive(Debug, Clone, Serialize, Deserialize)]
     pub struct GeneDiseaseAssociationEntry {
         /// The gene-disease association source.
-        source: GeneDiseaseAssociationSource,
+        pub source: GeneDiseaseAssociationSource,
         /// The gene-disease association confidence level.
-        confidence: ConfidenceLevel,
+        pub confidence: ConfidenceLevel,
+    }
+
+    impl From<GeneDiseaseAssociationEntry> for conditions_record::GeneDiseaseAssociationEntry {
+        fn from(val: GeneDiseaseAssociationEntry) -> Self {
+            let GeneDiseaseAssociationEntry { source, confidence } = val;
+            conditions_record::GeneDiseaseAssociationEntry {
+                source: Into::<gene_disease_association_entry::GeneDiseaseAssociationSource>::into(
+                    source,
+                ) as i32,
+                confidence: Into::<gene_disease_association_entry::ConfidenceLevel>::into(
+                    confidence,
+                ) as i32,
+            }
+        }
     }
 
     /// A labeled disorder.
     #[derive(Debug, Clone, Serialize, Deserialize)]
     pub struct LabeledDisorder {
         /// The disorder ID.
-        term_id: String,
+        pub term_id: String,
         /// The disorder name.
-        title: Option<String>,
+        pub title: Option<String>,
+    }
+
+    impl From<LabeledDisorder> for conditions_record::LabeledDisorder {
+        fn from(val: LabeledDisorder) -> Self {
+            let LabeledDisorder { term_id, title } = val;
+            conditions_record::LabeledDisorder { term_id, title }
+        }
     }
 
     /// A gene-disease association.
     #[derive(Debug, Clone, Serialize, Deserialize)]
     pub struct GeneDiseaseAssociation {
         /// The HGNC ID.
-        hgnc_id: String,
+        pub hgnc_id: String,
         /// The gene-disease association entries.
-        labeled_disorders: Vec<LabeledDisorder>,
+        pub labeled_disorders: Vec<LabeledDisorder>,
         /// Overall disease name.
-        disease_name: Option<String>,
+        pub disease_name: Option<String>,
         /// Disease definition.
-        disease_definition: Option<String>,
+        pub disease_definition: Option<String>,
         /// The gene-disease association sources.
-        sources: Vec<GeneDiseaseAssociationSource>,
+        pub sources: Vec<GeneDiseaseAssociationSource>,
         /// Overall disease-gene association confidence level.
-        confidence: ConfidenceLevel,
+        pub confidence: ConfidenceLevel,
+    }
+
+    impl From<GeneDiseaseAssociation> for conditions_record::GeneDiseaseAssociation {
+        fn from(val: GeneDiseaseAssociation) -> Self {
+            let GeneDiseaseAssociation {
+                hgnc_id,
+                labeled_disorders,
+                disease_name,
+                disease_definition,
+                sources,
+                confidence,
+            } = val;
+            conditions_record::GeneDiseaseAssociation {
+                hgnc_id,
+                labeled_disorders: labeled_disorders
+                    .into_iter()
+                    .map(Into::<conditions_record::LabeledDisorder>::into)
+                    .collect(),
+                disease_name,
+                disease_definition,
+                sources: sources
+                    .into_iter()
+                    .map(|v| {
+                        Into::<gene_disease_association_entry::GeneDiseaseAssociationSource>::into(
+                            v,
+                        ) as i32
+                    })
+                    .collect(),
+                confidence: Into::<gene_disease_association_entry::ConfidenceLevel>::into(
+                    confidence,
+                ) as i32,
+            }
+        }
     }
 
     /// Enumeration for PanelApp confidence level.
@@ -2453,6 +2541,17 @@ pub mod conditions {
         None,
     }
 
+    impl From<PanelappConfidence> for panelapp_association::PanelappConfidence {
+        fn from(val: PanelappConfidence) -> Self {
+            match val {
+                PanelappConfidence::Green => panelapp_association::PanelappConfidence::Green,
+                PanelappConfidence::Amber => panelapp_association::PanelappConfidence::Amber,
+                PanelappConfidence::Red => panelapp_association::PanelappConfidence::Red,
+                PanelappConfidence::None => panelapp_association::PanelappConfidence::None,
+            }
+        }
+    }
+
     /// Enumeration for entity type.
     #[derive(Debug, Clone, Serialize, Deserialize, PartialEq, Eq, PartialOrd, Ord, Hash)]
     pub enum PanelappEntityType {
@@ -2461,49 +2560,111 @@ pub mod conditions {
         Gene,
         /// PanelApp region entity type.
         #[serde(rename = "REGION")]
-        REGION,
+        Region,
         /// PanelApp shor tandem repeat entity type.
         #[serde(rename = "STR")]
-        STR,
+        Str,
+    }
+
+    impl From<PanelappEntityType> for panelapp_association::PanelappEntityType {
+        fn from(val: PanelappEntityType) -> Self {
+            match val {
+                PanelappEntityType::Gene => panelapp_association::PanelappEntityType::Gene,
+                PanelappEntityType::Region => panelapp_association::PanelappEntityType::Region,
+                PanelappEntityType::Str => panelapp_association::PanelappEntityType::Str,
+            }
+        }
     }
 
     /// A panel from PanelApp.
     #[derive(Debug, Clone, Serialize, Deserialize)]
     pub struct PanelappPanel {
         /// PanelApp panel ID.
-        id: i32,
+        pub id: i32,
         /// PanelApp panel name.
-        name: String,
+        pub name: String,
         /// PanelApp panel version.
-        version: String,
+        pub version: String,
+    }
+
+    impl From<PanelappPanel> for conditions_record::PanelappPanel {
+        fn from(val: PanelappPanel) -> Self {
+            let PanelappPanel { id, name, version } = val;
+            conditions_record::PanelappPanel { id, name, version }
+        }
     }
 
     /// An association of a gene by HGNC with a panel from PanelApp.
     #[derive(Debug, Clone, Serialize, Deserialize)]
     pub struct PanelappAssociation {
         /// The HGNC ID.
-        hgnc_id: String,
+        pub hgnc_id: String,
         /// The PanelApp confidence level.
-        confidence_level: PanelappConfidence,
+        pub confidence_level: PanelappConfidence,
         /// The PanelApp entity type.
-        entity_type: PanelappEntityType,
+        pub entity_type: PanelappEntityType,
         /// The PanelApp entity name.
-        mode_of_inheritance: Option<String>,
+        pub mode_of_inheritance: Option<String>,
         /// The PanelApp publications.
-        phenotypes: Vec<String>,
+        pub phenotypes: Vec<String>,
         /// The PanelApp panel.
-        panel: PanelappPanel,
+        pub panel: PanelappPanel,
+    }
+
+    impl From<PanelappAssociation> for conditions_record::PanelappAssociation {
+        fn from(val: PanelappAssociation) -> Self {
+            let PanelappAssociation {
+                hgnc_id,
+                confidence_level,
+                entity_type,
+                mode_of_inheritance,
+                phenotypes,
+                panel,
+            } = val;
+            conditions_record::PanelappAssociation {
+                hgnc_id,
+                confidence_level: Into::<panelapp_association::PanelappConfidence>::into(
+                    confidence_level,
+                ) as i32,
+                entity_type: Into::<panelapp_association::PanelappEntityType>::into(entity_type)
+                    as i32,
+                mode_of_inheritance,
+                phenotypes,
+                panel: Some(Into::<conditions_record::PanelappPanel>::into(panel)),
+            }
+        }
     }
 
     /// A record from the conditions JSONL file.
     #[derive(Debug, Clone, Serialize, Deserialize)]
     pub struct Record {
         /// The HGNC ID.
-        hgnc_id: String,
+        pub hgnc_id: String,
         /// The gene-disease associations.
-        disease_associations: Vec<GeneDiseaseAssociation>,
+        pub disease_associations: Vec<GeneDiseaseAssociation>,
         /// The PanelApp associations.
-        panelapp_associations: Vec<PanelappAssociation>,
+        pub panelapp_associations: Vec<PanelappAssociation>,
+    }
+
+    impl From<Record> for ConditionsRecord {
+        fn from(val: Record) -> Self {
+            let Record {
+                hgnc_id,
+                disease_associations,
+                panelapp_associations,
+            } = val;
+            ConditionsRecord {
+                hgnc_id,
+                disease_associations: disease_associations
+                    .into_iter()
+                    .map(Into::<conditions_record::GeneDiseaseAssociation>::into)
+                    .collect(),
+                panelapp_associations: panelapp_associations
+                    .into_iter()
+                    .map(Into::<conditions_record::PanelappAssociation>::into)
+                    .collect(),
+            }
+        }
     }
 }
 

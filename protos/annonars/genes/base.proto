@@ -928,6 +928,124 @@ message PanelAppRecord {
     Panel panel = 10;
 }
 
+// Record from the integrated conditions computation.
+message ConditionsRecord {
+    // A gene-disease association entry.
+    message GeneDiseaseAssociationEntry {
+        // Enumeration for sources.
+        enum GeneDiseaseAssociationSource {
+            // nil
+            GENE_DISEASE_ASSOCIATION_SOURCE_UNKNOWN = 0;
+            // OMIM
+            GENE_DISEASE_ASSOCIATION_SOURCE_OMIM = 1;
+            // Orphanet
+            GENE_DISEASE_ASSOCIATION_SOURCE_ORPHANET = 2;
+            // PanelApp
+            GENE_DISEASE_ASSOCIATION_SOURCE_PANELAPP = 3;
+        }
+
+        // Enumeration for confidence levels.
+        enum ConfidenceLevel {
+            // nil
+            CONFIDENCE_LEVEL_UNKNOWN = 0;
+            // High confidence.
+            CONFIDENCE_LEVEL_HIGH = 1;
+            // Medium confidence.
+            CONFIDENCE_LEVEL_MEDIUM = 2;
+            // Low confidence.
+            CONFIDENCE_LEVEL_LOW = 3;
+        }
+
+        // The gene-disease association source.
+        GeneDiseaseAssociationSource source = 1;
+        // The gene-disease association confidence level.
+        ConfidenceLevel confidence = 2;
+    }
+
+    // A labeled disorder.
+    message LabeledDisorder {
+        // The disorder ID.
+        string term_id = 1;
+        // The disorder name.
+        optional string title = 2;
+    }
+
+    // A gene-disease association.
+    message GeneDiseaseAssociation {
+        // The HGNC ID.
+        string hgnc_id = 1;
+        // The gene-disease association entries.
+        repeated LabeledDisorder labeled_disorders = 2;
+        // Overall disease name.
+        optional string disease_name = 3;
+        // Disease definition.
+        optional string disease_definition = 4;
+        // The gene-disease association sources.
+        repeated GeneDiseaseAssociationEntry.GeneDiseaseAssociationSource sources = 5;
+        // Overall disease-gene association confidence level.
+        GeneDiseaseAssociationEntry.ConfidenceLevel confidence = 6;
+    }
+
+    // A panel from PanelApp.
+    message PanelappPanel {
+        // PanelApp panel ID.
+        int32 id = 1;
+        // PanelApp panel name.
+        string name = 2;
+        // PanelApp panel version.
+        string version = 3;
+    }
+
+    // An association of a gene by HGNC with a panel from PanelApp.
+    message PanelappAssociation {
+        // Enumeration for PanelApp confidence level.
+        enum PanelappConfidence {
+            // nil
+            PANELAPP_CONFIDENCE_UNKNOWN = 0;
+            // PanelApp green confidence.
+            PANELAPP_CONFIDENCE_GREEN = 1;
+            // PanelApp amber confidence.
+            PANELAPP_CONFIDENCE_AMBER = 2;
+            // PanelApp red confidence.
+            PANELAPP_CONFIDENCE_RED = 3;
+            // PanelApp none confidence (when removed after expert review).
+            PANELAPP_CONFIDENCE_NONE = 4;
+        }
+
+        // Enumeration for entity type.
+        enum PanelappEntityType {
+            // nil
+            PANELAPP_ENTITY_TYPE_UNKNOWN = 0;
+            // PanelApp gene entity type.
+            PANELAPP_ENTITY_TYPE_GENE = 1;
+            // PanelApp region entity type.
+            PANELAPP_ENTITY_TYPE_REGION = 2;
+            // PanelApp short tandem repeat entity type.
+            PANELAPP_ENTITY_TYPE_STR = 3;
+        }
+
+        // The HGNC ID.
+        string hgnc_id = 1;
+        // The PanelApp confidence level.
+        PanelappConfidence confidence_level = 2;
+        // The PanelApp entity type.
+        PanelappEntityType entity_type = 3;
+        // The PanelApp entity name.
+        optional string mode_of_inheritance = 4;
+        // The PanelApp publications.
+        repeated string phenotypes = 5;
+        // The PanelApp panel.
+        PanelappPanel panel = 6;
+    }
+
+    // The HGNC ID.
+    string hgnc_id = 1;
+    // The gene-disease associations.
+    repeated GeneDiseaseAssociation disease_associations = 2;
+    // The PanelApp associations.
+    repeated PanelappAssociation panelapp_associations = 3;
+}
+
 // Entry in the genes RocksDB database.
 message Record {
     // Information from the ACMG secondary finding list.
@@ -958,4 +1076,6 @@ message Record {
     DecipherHiRecord decipher_hi = 13;
     // GenomicsEngland PanelApp gene information.
     repeated PanelAppRecord panelapp = 14;
+    // Conditions record.
+    ConditionsRecord conditions = 15;
 }
