@@ -50,7 +50,7 @@ rocksdb-utils-lookup = "0.3"
 rocksdb = { version = "0.21", features = ["multi-threaded-cf"] }
 serde_json = { version = "1.0", features=["preserve_order"] }
 serde = { version = "1.0", features = ["derive"] }
-serde_with = { version = "3.3", features=["alloc", "macros", "indexmap_2"], default-features = false }
+serde_with = { version = "3.5", features=["alloc", "macros", "indexmap_2"], default-features = false }
 strum = { version = "0.25", features = ["strum_macros", "derive"] }
 thiserror = "1.0"
 tracing = "0.1"
