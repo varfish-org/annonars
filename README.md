@@ -110,7 +110,7 @@ Examples:
 ## Managing GitHub Project with Terraform
 
 ```
-# export GITHUB_OWNER=varfish-org
+# export GITHUB_OWNER=bihealth
 # export GITHUB_TOKEN=ghp_<thetoken>
 # terraform import github_repository.annonars annonars
 
