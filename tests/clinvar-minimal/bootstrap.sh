@@ -6,7 +6,7 @@ set -x
 export TMPDIR=$(mktemp -d)
 trap "rm -rf $TMPDIR" EXIT
 
-base=https://github.com/bihealth/clinvar-data-jsonl/releases/download/clinvar-weekly-20231015
+base=https://github.com/varfish-org/clinvar-data-jsonl/releases/download/clinvar-weekly-20231015
 wget -O $TMPDIR/clinvar-data-extract-vars-20231015+0.12.0.tar.gz \
     $base/clinvar-data-extract-vars-20231015+0.12.0.tar.gz
 tar -C $TMPDIR -xf $TMPDIR/clinvar-data-extract-vars-20231015+0.12.0.tar.gz
