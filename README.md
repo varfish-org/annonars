@@ -107,20 +107,6 @@ Examples:
 # tsv query --path-rocksdb tests/tsv/example/data.tsv.gz.db --range GRCh37:1:1000:1001
 ```
 
-## Managing GitHub Project with Terraform
-
-```
-# export GITHUB_OWNER=bihealth
-# export GITHUB_TOKEN=ghp_<thetoken>
-# terraform import github_repository.annonars annonars
-
-# cd utils/terraform
-# terraform validate
-# terraform fmt
-# terraform plan
-# terraform apply
-```
-
 ## Developer Notes
 
 The `v1` token in the protobuf schema refers to the **internal** version of the protocol buffer and not the version of, e.g., gnomAD.
