@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.34.1](https://github.com/varfish-org/annonars/compare/v0.34.0...v0.34.1) (2024-02-01)
+
+
+### Miscellaneous Chores
+
+* applying changed org bihealth =&gt; varfish-org ([#396](https://github.com/varfish-org/annonars/issues/396)) ([36aaf6a](https://github.com/varfish-org/annonars/commit/36aaf6adeb04fa6153add034d1e4b7c15ea46f9d))
+
 ## [0.34.0](https://github.com/varfish-org/annonars/compare/v0.33.0...v0.34.0) (2024-01-18)
 
 
