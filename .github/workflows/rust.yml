@@ -97,7 +97,7 @@ jobs:
           command: build
           args: --examples
 
-      - name: Codecov
+      - name: Codecov submission
         uses: codecov/codecov-action@v4
         with:
           verbose: true
