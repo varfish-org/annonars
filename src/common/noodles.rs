@@ -11,7 +11,7 @@ pub fn get_string(record: &noodles_vcf::Record, name: &str) -> Result<String, an
     } else if let Some(Some(field::Value::Array(field::value::Array::String(vs)))) =
         record.info().get(&field::Key::from_str(name)?)
     {
-        Ok(vs.get(0).unwrap().as_ref().unwrap().to_string())
+        Ok(vs.first().unwrap().as_ref().unwrap().to_string())
     } else {
         anyhow::bail!("missing INFO/{} in gnomAD record", name)
     }
@@ -32,7 +32,7 @@ pub fn get_i32(record: &noodles_vcf::Record, name: &str) -> Result<i32, anyhow::
     } else if let Some(Some(field::Value::Array(field::value::Array::Integer(vs)))) =
         record.info().get(&field::Key::from_str(name)?)
     {
-        Ok(vs.get(0).unwrap().unwrap())
+        Ok(vs.first().unwrap().unwrap())
     } else {
         anyhow::bail!("missing INFO/{} in gnomAD record", name)
     }
@@ -45,7 +45,7 @@ pub fn get_f32(record: &noodles_vcf::Record, name: &str) -> Result<f32, anyhow::
     } else if let Some(Some(field::Value::Array(field::value::Array::Float(vs)))) =
         record.info().get(&field::Key::from_str(name)?)
     {
-        Ok(vs.get(0).unwrap().unwrap())
+        Ok(vs.first().unwrap().unwrap())
     } else {
         anyhow::bail!("missing INFO/{} in gnomAD record", name)
     }

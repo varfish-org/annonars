@@ -403,13 +403,13 @@ pub fn run(common: &common::cli::Args, args: &Args) -> Result<(), anyhow::Error>
     )?;
     db.put_cf(&cf_meta, "gnomad-version", &args.gnomad_version)?;
     if let Some(vep_version) = vep_version {
-        db.put_cf(&cf_meta, "gnomad-vep-version", &vep_version)?;
+        db.put_cf(&cf_meta, "gnomad-vep-version", vep_version)?;
     }
     if let Some(dbsnp_version) = dbsnp_version {
-        db.put_cf(&cf_meta, "gnomad-dbsnp-version", &dbsnp_version)?;
+        db.put_cf(&cf_meta, "gnomad-dbsnp-version", dbsnp_version)?;
     }
     if let Some(age_distributions) = age_distributions {
-        db.put_cf(&cf_meta, "gnomad-age-distributions", &age_distributions)?;
+        db.put_cf(&cf_meta, "gnomad-age-distributions", age_distributions)?;
     }
     // Write additional metadata fields (v4).
     for (header_field, val) in more_header_values {
