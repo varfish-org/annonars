@@ -180,7 +180,7 @@ pub fn run(common: &common::cli::Args, args: &Args) -> Result<(), anyhow::Error>
     db.put_cf(
         &cf_meta,
         "genome-release",
-        &format!("{}", args.genome_release),
+        format!("{}", args.genome_release),
     )?;
     db.put_cf(&cf_meta, "db-name", &args.db_name)?;
     db.put_cf(&cf_meta, "db-version", &args.db_version)?;

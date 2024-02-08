@@ -6,6 +6,7 @@ use biocommons_bioutils::assemblies::Assembly;
 use byteorder::ByteOrder as _;
 use clap::Parser;
 use indicatif::ParallelProgressIterator;
+use noodles_csi::BinningIndex as _;
 use noodles_vcf::header::record;
 use prost::Message;
 use rayon::prelude::{IntoParallelRefIterator, ParallelIterator};

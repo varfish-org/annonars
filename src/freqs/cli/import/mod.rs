@@ -9,6 +9,7 @@ use std::{collections::HashMap, sync::Arc};
 
 use clap::Parser;
 use indicatif::ParallelProgressIterator;
+use noodles_csi::BinningIndex as _;
 use rayon::prelude::*;
 
 use crate::{common, freqs};
@@ -255,7 +256,7 @@ pub fn run(common: &common::cli::Args, args: &Args) -> Result<(), anyhow::Error>
             .map(|(chrom, begin, end)| {
                 let start = noodles_core::position::Position::try_from(begin + 1)?;
                 let stop = noodles_core::position::Position::try_from(*end)?;
-                let region = noodles_core::region::Region::new(chrom, start..=stop);
+                let region = noodles_core::region::Region::new(chrom.as_bytes(), start..=stop);
                 auto::import_region(&db, path_genome, path_exome, &region)
             })
             .collect::<Result<Vec<_>, _>>()?;
@@ -290,7 +291,7 @@ pub fn run(common: &common::cli::Args, args: &Args) -> Result<(), anyhow::Error>
             .map(|(chrom, begin, end)| {
                 let start = noodles_core::position::Position::try_from(begin + 1)?;
                 let stop = noodles_core::position::Position::try_from(*end)?;
-                let region = noodles_core::region::Region::new(chrom, start..=stop);
+                let region = noodles_core::region::Region::new(chrom.as_bytes(), start..=stop);
                 xy::import_region(&db, path_genome, path_exome, &region)
             })
             .collect::<Result<Vec<_>, _>>()?;
@@ -325,7 +326,7 @@ pub fn run(common: &common::cli::Args, args: &Args) -> Result<(), anyhow::Error>
         .map(|(chrom, begin, end)| {
             let start = noodles_core::position::Position::try_from(begin + 1)?;
             let stop = noodles_core::position::Position::try_from(*end)?;
-            let region = noodles_core::region::Region::new(chrom, start..=stop);
+            let region = noodles_core::region::Region::new(chrom.as_bytes(), start..=stop);
             mt::import_region(&db, path_gnomad, path_helix, &region)
         })
         .collect::<Result<Vec<_>, _>>()?;
