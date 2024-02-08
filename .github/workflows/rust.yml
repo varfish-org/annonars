@@ -97,8 +97,8 @@ jobs:
           command: build
           args: --examples
 
-      - name: Codecov
-        uses: codecov/codecov-action@v3
+      - name: Codecov submission
+        uses: codecov/codecov-action@v4
         with:
           verbose: true
           fail_ci_if_error: true
