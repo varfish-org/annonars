@@ -3,6 +3,7 @@
 use std::io::BufRead;
 
 use indicatif::ParallelProgressIterator;
+use noodles_csi::BinningIndex as _;
 use rayon::prelude::*;
 
 use crate::{common, tsv};
@@ -11,12 +12,15 @@ use super::Args;
 
 /// Helper function to resolve regions.
 fn resolve_region(
-    header: &noodles_csi::index::Header,
+    header: &noodles_csi::binning_index::index::Header,
     region: &noodles_core::Region,
 ) -> std::io::Result<usize> {
     header
         .reference_sequence_names()
-        .get_index_of(region.name())
+        .get_index_of(
+            std::str::from_utf8(region.name())
+                .map_err(|e| std::io::Error::new(std::io::ErrorKind::InvalidData, e))?,
+        )
         .ok_or_else(|| {
             std::io::Error::new(
                 std::io::ErrorKind::InvalidInput,
@@ -28,17 +32,17 @@ fn resolve_region(
 /// Helper function for parsing start positions.
 pub fn parse_start_position(
     s: &str,
-    coordinate_system: noodles_csi::index::header::format::CoordinateSystem,
+    coordinate_system: noodles_csi::binning_index::index::header::format::CoordinateSystem,
 ) -> std::io::Result<noodles_core::Position> {
     fn invalid_position<E>(_: E) -> std::io::Error {
         std::io::Error::new(std::io::ErrorKind::InvalidData, "invalid position")
     }
 
     match coordinate_system {
-        noodles_csi::index::header::format::CoordinateSystem::Gff => {
+        noodles_csi::binning_index::index::header::format::CoordinateSystem::Gff => {
             s.parse().map_err(invalid_position)
         }
-        noodles_csi::index::header::format::CoordinateSystem::Bed => s
+        noodles_csi::binning_index::index::header::format::CoordinateSystem::Bed => s
             .parse::<usize>()
             .map_err(invalid_position)
             .and_then(|n| noodles_core::Position::try_from(n + 1).map_err(invalid_position)),
@@ -47,7 +51,7 @@ pub fn parse_start_position(
 
 /// Helper function for region intersection.
 pub fn intersects(
-    header: &noodles_csi::index::Header,
+    header: &noodles_csi::binning_index::index::Header,
     line: &str,
     region: &noodles_core::region::Region,
 ) -> Result<bool, anyhow::Error> {
@@ -69,7 +73,8 @@ pub fn intersects(
 
     let interval = noodles_core::region::Interval::from(start..=end);
 
-    Ok(reference_sequence_name == region.name() && interval.intersects(region.interval()))
+    Ok(reference_sequence_name.as_bytes() == region.name()
+        && interval.intersects(region.interval()))
 }
 
 /// Perform the import of a single region.

@@ -4,6 +4,7 @@ use std::{str::FromStr, sync::Arc};
 
 use clap::Parser;
 use indicatif::ParallelProgressIterator;
+use noodles_csi::BinningIndex as _;
 use noodles_vcf::header::record;
 use prost::Message;
 use rayon::prelude::{IntoParallelRefIterator, ParallelIterator};
