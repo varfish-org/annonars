@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.35.0](https://github.com/varfish-org/annonars/compare/v0.34.1...v0.35.0) (2024-02-08)
+
+
+### Miscellaneous Chores
+
+* bump all dependencies ([#407](https://github.com/varfish-org/annonars/issues/407)) ([922848a](https://github.com/varfish-org/annonars/commit/922848a6bbbcc0c9e23d87f162f7cc78717082c4))
+
 ## [0.34.1](https://github.com/varfish-org/annonars/compare/v0.34.0...v0.34.1) (2024-02-01)
 
 
