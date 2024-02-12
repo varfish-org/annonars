@@ -28,7 +28,7 @@ boolvec = "0.2"
 byteorder = "1.4"
 chrono = { version = "0.4", features = ["serde"] }
 clap-verbosity-flag = "2.1"
-clap = { version = "4.4", features = ["derive", "env"] }
+clap = { version = "4.5", features = ["derive", "env"] }
 csv = "1.2"
 enum-map = { version = "2.7.3", features = ["serde"] }
 env_logger = "0.11"
