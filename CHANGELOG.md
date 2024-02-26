@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.36.0](https://github.com/varfish-org/annonars/compare/v0.35.0...v0.36.0) (2024-02-26)
+
+
+### Features
+
+* allow skipping cf contents in "db-utils copy" ([#420](https://github.com/varfish-org/annonars/issues/420)) ([de5339c](https://github.com/varfish-org/annonars/commit/de5339ce07bffd7a60995591b9e8f101002a9b86))
+
 ## [0.35.0](https://github.com/varfish-org/annonars/compare/v0.34.1...v0.35.0) (2024-02-08)
 
 
