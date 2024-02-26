@@ -23,6 +23,9 @@ pub struct Args {
     /// Range to query for (or all).
     #[command(flatten)]
     pub query: ArgsQuery,
+    /// Names of column families to skip contents for.
+    #[arg(long)]
+    pub skip_cfs: Vec<String>,
 
     /// Optional path to RocksDB WAL directory.
     #[arg(long)]
@@ -196,6 +199,11 @@ pub fn run(common: &common::cli::Args, args: &Args) -> Result<(), anyhow::Error>
     // Perform the main work of copying over data.
     tracing::info!("Copying data");
     for cf_name in &cf_names {
+        if args.skip_cfs.contains(&cf_name) {
+            tracing::info!("  skipping column family contents {}", cf_name);
+            continue;
+        }
+
         tracing::info!("  copying data from column family {}", cf_name);
         if cf_name == "meta" || cf_name.contains("_by_") {
             tracing::info!("  ignoring query for column family {}", &cf_name);
@@ -266,6 +274,7 @@ mod test {
                 all: true,
             },
             path_wal_dir: None,
+            skip_cfs: Vec::new(),
         };
 
         run(&common, &args)
@@ -287,6 +296,7 @@ mod test {
                 all: false,
             },
             path_wal_dir: None,
+            skip_cfs: Vec::new(),
         };
 
         run(&common, &args)
@@ -308,6 +318,7 @@ mod test {
                 all: false,
             },
             path_wal_dir: None,
+            skip_cfs: Vec::new(),
         };
 
         run(&common, &args)
