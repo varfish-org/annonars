@@ -14,5 +14,5 @@ jobs:
         uses: actions/add-to-project@v0.5.0
         with:
           project-url: https://github.com/orgs/varfish-org/projects/2
-          github-token: ${{ secrets.BOT_TOKEN }}
           labeled: needs-review
+          github-token: ${{ secrets.BOT_TOKEN }}
