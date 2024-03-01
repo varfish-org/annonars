@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.36.1](https://github.com/varfish-org/annonars/compare/v0.36.0...v0.36.1) (2024-03-01)
+
+
+### Bug Fixes
+
+* don't require queried for HGNC IDs to be present ([#418](https://github.com/varfish-org/annonars/issues/418)) ([#422](https://github.com/varfish-org/annonars/issues/422)) ([6fc4063](https://github.com/varfish-org/annonars/commit/6fc4063ce319229a715cfcb686581f52450d78c9))
+
 ## [0.36.0](https://github.com/varfish-org/annonars/compare/v0.35.0...v0.36.0) (2024-02-26)
 
 
