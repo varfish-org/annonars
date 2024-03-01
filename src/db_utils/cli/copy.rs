@@ -198,7 +198,7 @@ pub fn run(common: &common::cli::Args, args: &Args) -> Result<(), anyhow::Error>
 
     // Perform the main work of copying over data.
     tracing::info!("Copying data");
-    for cf_name in &cf_names {
+    for cf_name in cf_names {
         if args.skip_cfs.contains(&cf_name) {
             tracing::info!("  skipping column family contents {}", cf_name);
             continue;

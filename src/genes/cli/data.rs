@@ -369,7 +369,7 @@ pub mod dbnsfp_gene {
     }
 
     /// Serialize `Vec<String>`, counterpart to `deserialize_vec`.
-    fn serialize_vec<S>(x: &Vec<String>, s: S) -> Result<S::Ok, S::Error>
+    fn serialize_vec<S>(x: &[String], s: S) -> Result<S::Ok, S::Error>
     where
         S: Serializer,
     {
