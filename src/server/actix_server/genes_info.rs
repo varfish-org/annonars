@@ -50,14 +50,17 @@ async fn handle(
     let mut genes = indexmap::IndexMap::new();
     if let Some(hgnc_id) = query.hgnc_id.as_ref() {
         for hgnc_id in hgnc_id {
-            let raw_buf = genes_db
-                .db
-                .get_cf(&cf_genes, hgnc_id)
-                .map_err(|e| CustomError::new(anyhow::anyhow!("problem querying database: {}", e)))?
-                .ok_or_else(|| CustomError::new(anyhow::anyhow!("no such gene: {}", hgnc_id)))?;
-            let record = genes::base::Record::decode(std::io::Cursor::new(raw_buf))
-                .map_err(|e| CustomError::new(anyhow::anyhow!("problem decoding value: {}", e)))?;
-            genes.insert(hgnc_id.to_string(), record);
+            if let Some(raw_buf) = genes_db.db.get_cf(&cf_genes, hgnc_id).map_err(|e| {
+                CustomError::new(anyhow::anyhow!("problem querying database: {}", e))
+            })? {
+                let record =
+                    genes::base::Record::decode(std::io::Cursor::new(raw_buf)).map_err(|e| {
+                        CustomError::new(anyhow::anyhow!("problem decoding value: {}", e))
+                    })?;
+                genes.insert(hgnc_id.to_string(), record);
+            } else {
+                tracing::debug!("no such gene: {}", hgnc_id);
+            }
         }
     }
 
