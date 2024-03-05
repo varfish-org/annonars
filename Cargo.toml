@@ -65,7 +65,7 @@ pbjson-build = "0.6"
 anyhow = "1.0"
 
 [dev-dependencies]
-insta = { version = "1.33", features = ["yaml"] }
+insta = { version = "1.36", features = ["yaml"] }
 log = "0.4"
 pretty_assertions = "1.4"
 rstest = "0.18.2"
