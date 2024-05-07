@@ -7,8 +7,8 @@ fn write_record(
     db: &rocksdb::DBWithThreadMode<rocksdb::MultiThreaded>,
     cf: &std::sync::Arc<rocksdb::BoundColumnFamily>,
     record_key: &common::keys::Var,
-    record_gnomad: &mut Option<noodles_vcf::Record>,
-    record_helix: &mut Option<noodles_vcf::Record>,
+    record_gnomad: &mut Option<noodles_vcf::variant::RecordBuf>,
+    record_helix: &mut Option<noodles_vcf::variant::RecordBuf>,
 ) -> Result<(), anyhow::Error> {
     if record_gnomad.is_none() && record_helix.is_none() {
         // Early exit, nothing to write out.
@@ -59,12 +59,15 @@ pub fn import_region(
     if let Some(path_gnomad) = path_gnomad {
         is_gnomad.push(true);
         paths.push(path_gnomad);
-        readers.push(noodles_vcf::indexed_reader::Builder::default().build_from_path(path_gnomad)?);
+        readers.push(
+            noodles_vcf::io::indexed_reader::Builder::default().build_from_path(path_gnomad)?,
+        );
     }
     if let Some(path_helix) = path_helix {
         is_gnomad.push(false);
         paths.push(path_helix);
-        readers.push(noodles_vcf::indexed_reader::Builder::default().build_from_path(path_helix)?);
+        readers
+            .push(noodles_vcf::io::indexed_reader::Builder::default().build_from_path(path_helix)?);
     }
     // Read headers.
     let headers: Vec<_> = readers
@@ -92,7 +95,7 @@ pub fn import_region(
         })
         .collect::<Result<_, _>>()?;
     // Construct the `MultiQuery`.
-    let multi_query = super::reading::MultiQuery::new(queries)?;
+    let multi_query = super::reading::MultiQuery::new(queries, &headers)?;
 
     // Now iterate over the `MultiQuery` and write to the database.
     //

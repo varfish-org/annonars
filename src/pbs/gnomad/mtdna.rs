@@ -1,8 +1,9 @@
 //! Code generate for protobufs by `prost-build`.
 
+use noodles_vcf::variant::record::AlternateBases;
 use std::str::FromStr;
 
-use noodles_vcf::record::info::field;
+use noodles_vcf::variant::record_buf::info::field;
 
 use super::vep_gnomad3::Vep;
 use crate::common;
@@ -68,21 +69,25 @@ impl DetailsOptions {
 impl Record {
     /// Creates a new `Record` from a VCF record and allele number.
     pub fn from_vcf_allele(
-        record: &noodles_vcf::record::Record,
+        record: &noodles_vcf::variant::RecordBuf,
         allele_no: usize,
         options: &DetailsOptions,
     ) -> Result<Self, anyhow::Error> {
         assert!(allele_no == 0, "only allele 0 is supported");
 
         // Extract mandatory fields.
-        let chrom = record.chromosome().to_string();
-        let pos: usize = record.position().into();
+        let chrom = record.reference_sequence_name().to_string();
+        let pos: usize = record
+            .variant_start()
+            .expect("Telomeric breakends not supported")
+            .get();
         let pos = pos as i32;
         let ref_allele = record.reference_bases().to_string();
         let alt_allele = record
             .alternate_bases()
-            .get(allele_no)
-            .ok_or_else(|| anyhow::anyhow!("no such allele: {}", allele_no))?
+            .iter()
+            .nth(allele_no)
+            .ok_or_else(|| anyhow::anyhow!("no such allele: {}", allele_no))??
             .to_string();
         let variant_collapsed = common::noodles::get_string(record, "variant_collapsed")?;
         let excluded_ac = common::noodles::get_i32(record, "excluded_AC")?;
@@ -164,9 +169,9 @@ impl Record {
     }
 
     /// Extract the "vep" field.
-    fn extract_vep(record: &noodles_vcf::Record) -> Result<Vec<Vep>, anyhow::Error> {
+    fn extract_vep(record: &noodles_vcf::variant::RecordBuf) -> Result<Vec<Vep>, anyhow::Error> {
         if let Some(Some(field::Value::Array(field::value::Array::String(v)))) =
-            record.info().get(&field::Key::from_str("vep")?)
+            record.info().get("vep")
         {
             v.iter()
                 .flat_map(|v| v.as_ref().map(|s| Vep::from_str(s)))
@@ -178,7 +183,7 @@ impl Record {
 
     /// Extract the heteroplasmy-related fields from the VCF record.
     fn extract_heteroplasmy(
-        record: &noodles_vcf::record::Record,
+        record: &noodles_vcf::variant::RecordBuf,
     ) -> Result<HeteroplasmyInfo, anyhow::Error> {
         Ok(HeteroplasmyInfo {
             heteroplasmy_below_min_het_threshold_hist: common::noodles::get_vec::<i32>(
@@ -193,7 +198,7 @@ impl Record {
 
     /// Extract the filter histogram related fields form the VCF record.
     fn extract_filter_histograms(
-        record: &noodles_vcf::record::Record,
+        record: &noodles_vcf::variant::RecordBuf,
     ) -> Result<FilterHistograms, anyhow::Error> {
         Ok(FilterHistograms {
             base_qual_hist: common::noodles::get_vec::<i32>(record, "base_qual_hist")
@@ -211,7 +216,7 @@ impl Record {
 
     /// Extract the population related fields from the VCF record.
     fn extract_population(
-        record: &noodles_vcf::record::Record,
+        record: &noodles_vcf::variant::RecordBuf,
     ) -> Result<PopulationInfo, anyhow::Error> {
         Ok(PopulationInfo {
             pop_an: common::noodles::get_vec::<i32>(record, "pop_AN")?,
@@ -226,7 +231,7 @@ impl Record {
 
     /// Extract the haplogroup related fields from the VCF record.
     fn extract_haplogroup(
-        record: &noodles_vcf::record::Record,
+        record: &noodles_vcf::variant::RecordBuf,
     ) -> Result<HaplogroupInfo, anyhow::Error> {
         Ok(HaplogroupInfo {
             hap_defining_variant: common::noodles::get_flag(record, "hap_defining_variant")?,
@@ -245,7 +250,7 @@ impl Record {
     }
 
     /// Extract the age related fields from the VCF record.
-    fn extract_age(record: &noodles_vcf::record::Record) -> Result<AgeInfo, anyhow::Error> {
+    fn extract_age(record: &noodles_vcf::variant::RecordBuf) -> Result<AgeInfo, anyhow::Error> {
         Ok(AgeInfo {
             age_hist_hom_bin_freq: common::noodles::get_vec::<i32>(record, "age_hist_hom_bin_freq")
                 .unwrap_or_default(),
@@ -259,7 +264,7 @@ impl Record {
     }
 
     /// Extract the depth related fields from the VCF record.
-    fn extract_depth(record: &noodles_vcf::record::Record) -> Result<DepthInfo, anyhow::Error> {
+    fn extract_depth(record: &noodles_vcf::variant::RecordBuf) -> Result<DepthInfo, anyhow::Error> {
         Ok(DepthInfo {
             dp_hist_all_n_larger: common::noodles::get_i32(record, "dp_hist_all_n_larger").ok(),
             dp_hist_alt_n_larger: common::noodles::get_i32(record, "dp_hist_alt_n_larger").ok(),
@@ -271,7 +276,9 @@ impl Record {
     }
 
     /// Extract the quality-related fields from the VCF record.
-    fn extract_quality(record: &noodles_vcf::record::Record) -> Result<QualityInfo, anyhow::Error> {
+    fn extract_quality(
+        record: &noodles_vcf::variant::RecordBuf,
+    ) -> Result<QualityInfo, anyhow::Error> {
         Ok(QualityInfo {
             dp_mean: common::noodles::get_f32(record, "dp_mean").ok(),
             mq_mean: common::noodles::get_f32(record, "mq_mean").ok(),
@@ -280,10 +287,12 @@ impl Record {
     }
 
     /// Extract the filters fields.
-    fn extract_filters(record: &noodles_vcf::Record) -> Result<Vec<i32>, anyhow::Error> {
+    fn extract_filters(
+        record: &noodles_vcf::variant::RecordBuf,
+    ) -> Result<Vec<i32>, anyhow::Error> {
         Ok(
             if let Some(Some(field::Value::Array(field::value::Array::String(value)))) =
-                record.info().get(&field::Key::from_str("filters")?)
+                record.info().get("filters")
             {
                 value
                     .iter()
@@ -309,11 +318,12 @@ mod test {
     #[test]
     fn test_record_from_vcf_allele() -> Result<(), anyhow::Error> {
         let path_vcf = "tests/gnomad-mtdna/example/gnomad-mtdna.vcf";
-        let mut reader_vcf = noodles_vcf::reader::Builder::default().build_from_path(path_vcf)?;
+        let mut reader_vcf =
+            noodles_vcf::io::reader::Builder::default().build_from_path(path_vcf)?;
         let header = reader_vcf.read_header()?;
 
         let mut records = Vec::new();
-        for row in reader_vcf.records(&header) {
+        for row in reader_vcf.record_bufs(&header) {
             let vcf_record = row?;
             let record =
                 Record::from_vcf_allele(&vcf_record, 0, &DetailsOptions::with_all_enabled())?;

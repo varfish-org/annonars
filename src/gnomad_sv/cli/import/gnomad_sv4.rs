@@ -5,6 +5,11 @@
 
 use std::{str::FromStr, sync::Arc};
 
+use indicatif::ParallelProgressIterator as _;
+use noodles_vcf::variant::record::Ids;
+use prost::Message as _;
+use rayon::iter::{IntoParallelRefIterator as _, ParallelIterator as _};
+
 use crate::{
     common::{
         self,
@@ -16,10 +21,6 @@ use crate::{
         PopulationAlleleCounts, Record, SvType,
     },
 };
-
-use indicatif::ParallelProgressIterator as _;
-use prost::Message as _;
-use rayon::iter::{IntoParallelRefIterator as _, ParallelIterator as _};
 
 impl FromStr for Filter {
     type Err = anyhow::Error;
@@ -120,10 +121,15 @@ impl Record {
     /// # Errors
     ///
     /// * Any error encountered during the creation.
-    pub fn from_vcf_record(record: &noodles_vcf::Record) -> Result<Self, anyhow::Error> {
-        let chrom = record.chromosome().to_string();
-        let pos: usize = record.position().into();
-        let pos = pos as i32;
+    pub fn from_vcf_record(
+        record: &noodles_vcf::variant::RecordBuf,
+    ) -> Result<Self, anyhow::Error> {
+        let chrom = record.reference_sequence_name().to_string();
+        let pos: usize = record
+            .variant_start()
+            .expect("Telomeric breakends not supported")
+            .get();
+        let pos = i32::try_from(pos)?;
         let end = get_i32(record, "END").ok();
         let chrom2 = get_string(record, "CHROM2").ok();
         let end2 = get_i32(record, "END2").ok();
@@ -133,25 +139,20 @@ impl Record {
             .next()
             .map(|s| s.to_string())
             .ok_or_else(|| anyhow::anyhow!("no ID found in VCF record"))?;
-        let filters = record
-            .filters()
-            .map(|f| -> Result<_, anyhow::Error> {
-                use noodles_vcf::record::Filters::*;
-                Ok(match f {
-                    Pass => vec![Filter::Pass as i32],
-                    Fail(f) => {
-                        let mut result = f
-                            .iter()
-                            .map(|s| s.parse::<Filter>().map(|f| f as i32))
-                            .collect::<Result<Vec<_>, _>>()
-                            .map_err(|e| anyhow::anyhow!("problem parsing FILTER: {}", e))?;
-                        result.sort();
-                        result
-                    }
-                })
-            })
-            .transpose()?
-            .unwrap_or_else(|| vec![Filter::Pass as i32]);
+        let filters = if record.filters().is_pass() {
+            vec![Filter::Pass as i32]
+        } else {
+            let mut result = record
+                .filters()
+                .as_ref()
+                .iter()
+                .map(|s| s.parse::<Filter>().map(|f| f as i32))
+                .collect::<Result<Vec<_>, _>>()
+                .map_err(|e| anyhow::anyhow!("problem parsing FILTER: {}", e))?;
+            result.sort();
+            result
+        };
+
         let sv_type = get_string(record, "SVTYPE")?
             .parse::<SvType>()
             .map(|x| x as i32)?;
@@ -180,7 +181,7 @@ impl Record {
 
     /// Extract allele counts from VCF record.
     fn allele_counts_from_vcf_record(
-        record: &noodles_vcf::Record,
+        record: &noodles_vcf::variant::RecordBuf,
         cohort_name: &str,
     ) -> Result<CohortAlleleCounts, anyhow::Error> {
         let cohort = if cohort_name == "all" {
@@ -225,7 +226,7 @@ impl Record {
 
     /// Extract poulation allele counts.
     fn extract_population_allele_counts(
-        record: &noodles_vcf::Record,
+        record: &noodles_vcf::variant::RecordBuf,
         population: Population,
     ) -> Result<PopulationAlleleCounts, anyhow::Error> {
         let pop_str = population.to_string();
@@ -247,7 +248,7 @@ impl Record {
 
     /// Extract allele counts for a given population from VCF record.
     fn extract_allele_counts(
-        record: &noodles_vcf::Record,
+        record: &noodles_vcf::variant::RecordBuf,
         prefix: &str,
         population: &str,
     ) -> Result<AlleleCounts, anyhow::Error> {
@@ -317,13 +318,15 @@ fn import_file(
     cf_data_name: &str,
     path_in_vcf: &str,
 ) -> Result<(), anyhow::Error> {
-    let mut reader = noodles_vcf::reader::Builder::default().build_from_path(path_in_vcf)?;
+    let mut reader = noodles_vcf::io::reader::Builder::default().build_from_path(path_in_vcf)?;
     let header = reader.read_header()?;
     let cf_data = db.cf_handle(cf_data_name).unwrap();
 
-    for result in reader.records(&header) {
+    for result in reader.record_bufs(&header) {
         let vcf_record = result?;
-        let key = format!("{}", vcf_record.ids()).into_bytes();
+        // TODO check if this key is the same as before
+        use itertools::Itertools;
+        let key = vcf_record.ids().as_ref().iter().join(",").into_bytes();
 
         // Build record for VCF record.
         let record = Record::from_vcf_record(&vcf_record)

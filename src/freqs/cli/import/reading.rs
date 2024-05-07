@@ -3,6 +3,9 @@
 use std::collections::{BTreeMap, HashMap};
 
 use biocommons_bioutils::assemblies::{Assembly, Sequence, ASSEMBLY_INFOS};
+use noodles_vcf::variant::record::AlternateBases;
+use noodles_vcf::variant::RecordBuf;
+use noodles_vcf::Header;
 
 use crate::common::cli::CANONICAL;
 
@@ -42,14 +45,8 @@ impl ContigMap {
     }
 
     /// Map chromosome to index.
-    pub fn chrom_to_idx(
-        &self,
-        chrom: &noodles_vcf::record::Chromosome,
-    ) -> Result<usize, ContigMapError> {
-        match chrom {
-            noodles_vcf::record::Chromosome::Name(s)
-            | noodles_vcf::record::Chromosome::Symbol(s) => self.chrom_name_to_idx(s),
-        }
+    pub fn chrom_to_idx(&self, chrom: &str) -> Result<usize, ContigMapError> {
+        self.chrom_name_to_idx(chrom)
     }
 
     /// Map chromosome name to index.
@@ -72,7 +69,7 @@ struct Key {
     /// Chromosome.
     chrom: String,
     /// Noodles position.
-    pos: noodles_vcf::record::Position,
+    pos: noodles_core::Position,
     /// Reference allele.
     reference: String,
     /// First (and only) alternate allelele.
@@ -82,14 +79,18 @@ struct Key {
 }
 
 /// Build a key from a VCF record.
-fn build_key(record: &noodles_vcf::Record, i: usize) -> Key {
+fn build_key(record: &RecordBuf, i: usize) -> Key {
     Key {
-        chrom: record.chromosome().to_string(),
-        pos: record.position(),
+        chrom: record.reference_sequence_name().to_string(),
+        pos: record
+            .variant_start()
+            .expect("Telomeric breakends not supported"),
         reference: record.reference_bases().to_string(),
         alternative: record
             .alternate_bases()
-            .first()
+            .iter()
+            .next()
+            .expect("must have alternate allele")
             .expect("must have alternate allele")
             .to_string(),
         idx: i,
@@ -99,27 +100,33 @@ fn build_key(record: &noodles_vcf::Record, i: usize) -> Key {
 /// Read through multiple `noodles_vcf::vcf::reader::Query`s at once.
 pub struct MultiQuery<'r, 'h, R>
 where
-    R: std::io::Read + std::io::Seek,
+    R: std::io::Read + noodles_bgzf::io::Seek,
 {
     /// One query for each input file.
-    queries: Vec<noodles_vcf::reader::Query<'r, 'h, R>>,
+    queries: Vec<noodles_vcf::io::reader::Query<'r, 'h, R>>,
+
+    /// One header for each input file. (Not accessible from Query)
+    headers: Vec<Header>,
+
     /// The current smallest-by-coordinate records.
-    records: BTreeMap<Key, noodles_vcf::Record>,
+    records: BTreeMap<Key, RecordBuf>,
 }
 
 impl<'r, 'h, R> MultiQuery<'r, 'h, R>
 where
-    R: std::io::Read + std::io::Seek,
+    R: noodles_bgzf::io::BufRead + noodles_bgzf::io::Seek,
 {
     /// Construct a new `MultiQuery`.
     pub fn new(
-        mut record_iters: Vec<noodles_vcf::reader::Query<'r, 'h, R>>,
+        mut record_iters: Vec<noodles_vcf::io::reader::Query<'r, 'h, R>>,
+        headers: &[Header],
     ) -> std::io::Result<Self> {
         let mut records = BTreeMap::new();
 
-        for (i, iter) in record_iters.iter_mut().enumerate() {
+        for (i, (iter, header)) in record_iters.iter_mut().zip(headers).enumerate() {
             if let Some(result) = iter.next() {
                 let record = result?;
+                let record = RecordBuf::try_from_variant_record(header, &record)?;
                 let key = build_key(&record, i);
                 records.insert(key, record);
             }
@@ -127,6 +134,7 @@ where
 
         Ok(Self {
             queries: record_iters,
+            headers: headers.to_vec(),
             records,
         })
     }
@@ -134,9 +142,9 @@ where
 
 impl<'r, 'h, R> Iterator for MultiQuery<'r, 'h, R>
 where
-    R: std::io::Read + std::io::Seek,
+    R: noodles_bgzf::io::BufRead + noodles_bgzf::io::Seek,
 {
-    type Item = std::io::Result<(usize, noodles_vcf::Record)>;
+    type Item = std::io::Result<(usize, RecordBuf)>;
 
     /// Return next item if any.
     fn next(&mut self) -> Option<Self::Item> {
@@ -145,6 +153,8 @@ where
         if let Some(result) = self.queries[idx].next() {
             match result {
                 Ok(record) => {
+                    let record =
+                        RecordBuf::try_from_variant_record(&self.headers[idx], &record).ok()?;
                     let key = build_key(&record, idx);
                     self.records.insert(key, record);
                 }
@@ -193,7 +203,7 @@ pub fn guess_assembly(
         let mut compatible = 0;
         for (name, data) in vcf_header.contigs() {
             if let Some(length) = data.length() {
-                let idx = contig_map.name_map.get(name.as_ref());
+                let idx = contig_map.name_map.get(name);
                 if let Some(idx) = idx {
                     let name = &info.sequences[*idx].name;
                     if CANONICAL.contains(&name.as_ref()) {
@@ -260,7 +270,7 @@ mod test {
     #[test]
     fn guess_assembly_helix_chrmt_ambiguous_ok_initial_none() -> Result<(), anyhow::Error> {
         let path = "tests/freqs/grch37/v2.1/reading/helix.chrM.vcf";
-        let mut reader = noodles_vcf::reader::Builder::default().build_from_path(path)?;
+        let mut reader = noodles_vcf::io::reader::Builder::default().build_from_path(path)?;
         let header = reader.read_header()?;
 
         let actual = guess_assembly(&header, true, None)?;
@@ -272,7 +282,7 @@ mod test {
     #[test]
     fn guess_assembly_helix_chrmt_ambiguous_ok_initial_override() -> Result<(), anyhow::Error> {
         let path = "tests/freqs/grch37/v2.1/reading/helix.chrM.vcf";
-        let mut reader = noodles_vcf::reader::Builder::default().build_from_path(path)?;
+        let mut reader = noodles_vcf::io::reader::Builder::default().build_from_path(path)?;
         let header = reader.read_header()?;
 
         let actual = guess_assembly(&header, true, Some(Assembly::Grch37p10))?;
@@ -285,7 +295,7 @@ mod test {
     fn guess_assembly_helix_chrmt_ambiguous_ok_initial_override_fails() -> Result<(), anyhow::Error>
     {
         let path = "tests/freqs/grch37/v2.1/reading/helix.chrM.vcf";
-        let mut reader = noodles_vcf::reader::Builder::default().build_from_path(path)?;
+        let mut reader = noodles_vcf::io::reader::Builder::default().build_from_path(path)?;
         let header = reader.read_header()?;
 
         assert!(guess_assembly(&header, false, Some(Assembly::Grch37)).is_err());
@@ -296,7 +306,7 @@ mod test {
     #[test]
     fn guess_assembly_helix_chrmt_ambiguous_fail() -> Result<(), anyhow::Error> {
         let path = "tests/freqs/grch37/v2.1/reading/helix.chrM.vcf";
-        let mut reader = noodles_vcf::reader::Builder::default().build_from_path(path)?;
+        let mut reader = noodles_vcf::io::reader::Builder::default().build_from_path(path)?;
         let header = reader.read_header()?;
 
         assert!(guess_assembly(&header, false, None).is_err());
@@ -313,9 +323,9 @@ mod test {
     #[test]
     fn test_multiquery() -> Result<(), anyhow::Error> {
         let mut readers = vec![
-            noodles_vcf::indexed_reader::Builder::default()
+            noodles_vcf::io::indexed_reader::Builder::default()
                 .build_from_path("tests/freqs/grch37/v2.1/reading/gnomad.chrM.vcf.bgz")?,
-            noodles_vcf::indexed_reader::Builder::default()
+            noodles_vcf::io::indexed_reader::Builder::default()
                 .build_from_path("tests/freqs/grch37/v2.1/reading/helix.chrM.vcf.bgz")?,
         ];
 
@@ -334,7 +344,7 @@ mod test {
             .map(|(reader, header)| reader.query(header, &region))
             .collect::<Result<_, _>>()?;
 
-        let multi_query = MultiQuery::new(queries)?;
+        let multi_query = MultiQuery::new(queries, &headers)?;
 
         let mut records = Vec::new();
         for result in multi_query {

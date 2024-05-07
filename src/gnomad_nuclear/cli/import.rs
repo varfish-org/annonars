@@ -6,6 +6,8 @@ use clap::Parser;
 use indicatif::ParallelProgressIterator;
 use noodles_csi::BinningIndex as _;
 use noodles_vcf::header::record;
+use noodles_vcf::variant::record::AlternateBases;
+use noodles_vcf::variant::RecordBuf;
 use prost::Message;
 use rayon::prelude::{IntoParallelRefIterator, ParallelIterator};
 
@@ -174,7 +176,7 @@ fn process_window(
 ) -> Result<(), anyhow::Error> {
     let cf_gnomad = db.cf_handle(&args.cf_name).unwrap();
     let mut reader =
-        noodles_vcf::indexed_reader::Builder::default().build_from_path(path_in_vcf)?;
+        noodles_vcf::io::indexed_reader::Builder::default().build_from_path(path_in_vcf)?;
     let header = reader.read_header()?;
 
     let raw_region = format!("{}:{}-{}", chrom, begin + 1, end);
@@ -201,6 +203,7 @@ fn process_window(
     if let Some(query) = query {
         for result in query {
             let vcf_record = result?;
+            let vcf_record = RecordBuf::try_from_variant_record(&header, &vcf_record)?;
 
             // Process each alternate allele into one record.
             for allele_no in 0..vcf_record.alternate_bases().len() {
@@ -328,7 +331,7 @@ pub fn run(common: &common::cli::Args, args: &Args) -> Result<(), anyhow::Error>
     tracing::info!("Opening gnomAD-nuclear VCF file...");
     let before_loading = std::time::Instant::now();
     let mut reader_vcf =
-        noodles_vcf::reader::Builder::default().build_from_path(&args.path_in_vcf[0])?;
+        noodles_vcf::io::reader::Builder::default().build_from_path(&args.path_in_vcf[0])?;
     let header = reader_vcf.read_header()?;
 
     let vep_version = if let Some(record::value::Collection::Unstructured(values)) = header

@@ -2,14 +2,17 @@
 
 use std::str::FromStr;
 
-use noodles_vcf::record::info::field;
+use noodles_vcf::variant::record_buf::info::field;
 
 /// Extract a `String` field from a record.
-pub fn get_string(record: &noodles_vcf::Record, name: &str) -> Result<String, anyhow::Error> {
-    if let Some(Some(field::Value::String(v))) = record.info().get(&field::Key::from_str(name)?) {
+pub fn get_string(
+    record: &noodles_vcf::variant::RecordBuf,
+    name: &str,
+) -> Result<String, anyhow::Error> {
+    if let Some(Some(field::Value::String(v))) = record.info().get(name) {
         Ok(v.to_string())
     } else if let Some(Some(field::Value::Array(field::value::Array::String(vs)))) =
-        record.info().get(&field::Key::from_str(name)?)
+        record.info().get(name)
     {
         Ok(vs.first().unwrap().as_ref().unwrap().to_string())
     } else {
@@ -18,19 +21,22 @@ pub fn get_string(record: &noodles_vcf::Record, name: &str) -> Result<String, an
 }
 
 /// Extract a flag field from a record.
-pub fn get_flag(record: &noodles_vcf::Record, name: &str) -> Result<bool, anyhow::Error> {
+pub fn get_flag(
+    record: &noodles_vcf::variant::RecordBuf,
+    name: &str,
+) -> Result<bool, anyhow::Error> {
     Ok(matches!(
-        record.info().get(&field::Key::from_str(name)?),
+        record.info().get(name),
         Some(Some(field::Value::Flag))
     ))
 }
 
 /// Extract an `i32` field from a record.
-pub fn get_i32(record: &noodles_vcf::Record, name: &str) -> Result<i32, anyhow::Error> {
-    if let Some(Some(field::Value::Integer(v))) = record.info().get(&field::Key::from_str(name)?) {
+pub fn get_i32(record: &noodles_vcf::variant::RecordBuf, name: &str) -> Result<i32, anyhow::Error> {
+    if let Some(Some(field::Value::Integer(v))) = record.info().get(name) {
         Ok(*v)
     } else if let Some(Some(field::Value::Array(field::value::Array::Integer(vs)))) =
-        record.info().get(&field::Key::from_str(name)?)
+        record.info().get(name)
     {
         Ok(vs.first().unwrap().unwrap())
     } else {
@@ -39,11 +45,11 @@ pub fn get_i32(record: &noodles_vcf::Record, name: &str) -> Result<i32, anyhow::
 }
 
 /// Extract an `f32` field from a record.
-pub fn get_f32(record: &noodles_vcf::Record, name: &str) -> Result<f32, anyhow::Error> {
-    if let Some(Some(field::Value::Float(v))) = record.info().get(&field::Key::from_str(name)?) {
+pub fn get_f32(record: &noodles_vcf::variant::RecordBuf, name: &str) -> Result<f32, anyhow::Error> {
+    if let Some(Some(field::Value::Float(v))) = record.info().get(name) {
         Ok(*v)
     } else if let Some(Some(field::Value::Array(field::value::Array::Float(vs)))) =
-        record.info().get(&field::Key::from_str(name)?)
+        record.info().get(name)
     {
         Ok(vs.first().unwrap().unwrap())
     } else {
@@ -54,9 +60,12 @@ pub fn get_f32(record: &noodles_vcf::Record, name: &str) -> Result<f32, anyhow::
 /// Extract an `Vec<String>` field from record with an array field.
 ///
 /// This is different than parsing the histograms from pipe-separated strings.
-pub fn get_vec_str(record: &noodles_vcf::Record, name: &str) -> Result<Vec<String>, anyhow::Error> {
+pub fn get_vec_str(
+    record: &noodles_vcf::variant::RecordBuf,
+    name: &str,
+) -> Result<Vec<String>, anyhow::Error> {
     if let Some(Some(field::Value::Array(field::value::Array::String(vs)))) =
-        record.info().get(&field::Key::from_str(name)?)
+        record.info().get(name)
     {
         Ok(vs.iter().flatten().cloned().collect())
     } else {
@@ -67,9 +76,12 @@ pub fn get_vec_str(record: &noodles_vcf::Record, name: &str) -> Result<Vec<Strin
 /// Extract an `Vec<i32>` field from record with an array field.
 ///
 /// This is different than parsing the histograms from pipe-separated strings.
-pub fn get_vec_i32(record: &noodles_vcf::Record, name: &str) -> Result<Vec<i32>, anyhow::Error> {
+pub fn get_vec_i32(
+    record: &noodles_vcf::variant::RecordBuf,
+    name: &str,
+) -> Result<Vec<i32>, anyhow::Error> {
     if let Some(Some(field::Value::Array(field::value::Array::Integer(vs)))) =
-        record.info().get(&field::Key::from_str(name)?)
+        record.info().get(name)
     {
         Ok(vs.iter().flatten().cloned().collect())
     } else {
@@ -78,11 +90,14 @@ pub fn get_vec_i32(record: &noodles_vcf::Record, name: &str) -> Result<Vec<i32>,
 }
 
 /// Extract an `Vec<FromStr>` field from a record encoded as a pipe symbol separated string.
-pub fn get_vec<T>(record: &noodles_vcf::Record, name: &str) -> Result<Vec<T>, anyhow::Error>
+pub fn get_vec<T>(
+    record: &noodles_vcf::variant::RecordBuf,
+    name: &str,
+) -> Result<Vec<T>, anyhow::Error>
 where
     T: FromStr,
 {
-    if let Some(Some(field::Value::String(v))) = record.info().get(&field::Key::from_str(name)?) {
+    if let Some(Some(field::Value::String(v))) = record.info().get(name) {
         v.split('|')
             .map(|s| s.parse())
             .collect::<Result<Vec<_>, _>>()
@@ -94,12 +109,15 @@ where
 
 /// Extract an `Vec<Vec<FromStr>>` field from a record encoded as a list of pipe symbol
 /// separated string.
-pub fn get_vec_vec<T>(record: &noodles_vcf::Record, name: &str) -> Result<Vec<T>, anyhow::Error>
+pub fn get_vec_vec<T>(
+    record: &noodles_vcf::variant::RecordBuf,
+    name: &str,
+) -> Result<Vec<T>, anyhow::Error>
 where
     T: FromStr,
 {
     if let Some(Some(field::Value::Array(field::value::Array::String(value)))) =
-        record.info().get(&field::Key::from_str(name)?)
+        record.info().get(name)
     {
         Ok(value
             .iter()
