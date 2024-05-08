@@ -8,6 +8,7 @@ use clap::Parser;
 use indicatif::ParallelProgressIterator;
 use noodles_csi::BinningIndex as _;
 use noodles_vcf::header::record;
+use noodles_vcf::variant::RecordBuf;
 use prost::Message;
 use rayon::prelude::{IntoParallelRefIterator, ParallelIterator};
 
@@ -105,7 +106,7 @@ fn process_window(
     let cf_dbsnp = db.cf_handle(&args.cf_name).unwrap();
     let cf_dbsnp_by_rsid = db.cf_handle(&args.cf_name_by_rsid).unwrap();
     let mut reader =
-        noodles_vcf::indexed_reader::Builder::default().build_from_path(&args.path_in_vcf)?;
+        noodles_vcf::io::indexed_reader::Builder::default().build_from_path(&args.path_in_vcf)?;
     let header = reader.read_header()?;
 
     let raw_region = format!("{}:{}-{}", chrom, begin + 1, end);
@@ -130,10 +131,10 @@ fn process_window(
     // exist).
     if let Some(query) = query {
         for result in query {
-            let vcf_record = result?;
+            let vcf_record = RecordBuf::try_from_variant_record(&header, &result?)?;
 
             // Process each alternate allele into one record.
-            for allele_no in 0..vcf_record.alternate_bases().len() {
+            for allele_no in 0..vcf_record.alternate_bases().as_ref().len() {
                 let key_buf: Vec<u8> =
                     common::keys::Var::from_vcf_allele(&vcf_record, allele_no).into();
                 let record = dbsnp::pbs::Record::from_vcf_allele(&vcf_record, allele_no)?;
@@ -158,7 +159,7 @@ pub fn run(common: &common::cli::Args, args: &Args) -> Result<(), anyhow::Error>
     tracing::info!("Opening dbSNP VCF file...");
     let before_loading = std::time::Instant::now();
     let mut reader_vcf =
-        noodles_vcf::indexed_reader::Builder::default().build_from_path(&args.path_in_vcf)?;
+        noodles_vcf::io::indexed_reader::Builder::default().build_from_path(&args.path_in_vcf)?;
     let header = reader_vcf.read_header()?;
     let dbsnp_reference = if let record::value::Collection::Unstructured(values) = header
         .other_records()

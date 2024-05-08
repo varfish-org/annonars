@@ -7,8 +7,8 @@ fn write_record(
     db: &rocksdb::DBWithThreadMode<rocksdb::MultiThreaded>,
     cf: &std::sync::Arc<rocksdb::BoundColumnFamily>,
     record_key: &common::keys::Var,
-    record_genome: &mut Option<noodles_vcf::Record>,
-    record_exome: &mut Option<noodles_vcf::Record>,
+    record_genome: &mut Option<noodles_vcf::variant::RecordBuf>,
+    record_exome: &mut Option<noodles_vcf::variant::RecordBuf>,
 ) -> Result<(), anyhow::Error> {
     if record_genome.is_none() && record_exome.is_none() {
         // Early exit, nothing to write out.
@@ -56,11 +56,14 @@ pub fn import_region(
     let mut readers = Vec::new();
     if let Some(path_genome) = path_genome {
         is_genome.push(true);
-        readers.push(noodles_vcf::indexed_reader::Builder::default().build_from_path(path_genome)?);
+        readers.push(
+            noodles_vcf::io::indexed_reader::Builder::default().build_from_path(path_genome)?,
+        );
     }
     if let Some(path_exome) = path_exome {
         is_genome.push(false);
-        readers.push(noodles_vcf::indexed_reader::Builder::default().build_from_path(path_exome)?);
+        readers
+            .push(noodles_vcf::io::indexed_reader::Builder::default().build_from_path(path_exome)?);
     }
     // Read headers.
     let headers: Vec<_> = readers
@@ -75,7 +78,7 @@ pub fn import_region(
         .map(|(reader, header)| reader.query(header, region))
         .collect::<Result<_, _>>()?;
     // Construct the `MultiQuery`.
-    let multi_query = super::reading::MultiQuery::new(queries)?;
+    let multi_query = super::reading::MultiQuery::new(queries, &headers)?;
 
     // Now iterate over the `MultiQuery` and write to the database.
     //

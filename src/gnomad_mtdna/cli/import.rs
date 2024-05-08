@@ -5,6 +5,8 @@ use std::sync::Arc;
 use clap::Parser;
 use indicatif::ParallelProgressIterator as _;
 use noodles_csi::BinningIndex as _;
+use noodles_vcf::variant::record::AlternateBases;
+use noodles_vcf::variant::RecordBuf;
 use prost::Message as _;
 use rayon::prelude::{IntoParallelRefIterator, ParallelIterator};
 
@@ -109,7 +111,7 @@ fn process_window(
 ) -> Result<(), anyhow::Error> {
     let cf_gnomad = db.cf_handle(&args.cf_name).unwrap();
     let mut reader =
-        noodles_vcf::indexed_reader::Builder::default().build_from_path(&args.path_in_vcf)?;
+        noodles_vcf::io::indexed_reader::Builder::default().build_from_path(&args.path_in_vcf)?;
     let header = reader.read_header()?;
 
     let raw_region = format!("{}:{}-{}", chrom, begin + 1, end);
@@ -136,6 +138,7 @@ fn process_window(
     if let Some(query) = query {
         for result in query {
             let vcf_record = result?;
+            let vcf_record = RecordBuf::try_from_variant_record(&header, &vcf_record)?;
 
             // Process each alternate allele into one record.
             let details_options = serde_json::from_str(

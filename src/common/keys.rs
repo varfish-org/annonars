@@ -92,19 +92,19 @@ impl Var {
     }
 
     /// Create for all alternate alleles from the given VCF record.
-    pub fn from_vcf_allele(value: &noodles_vcf::Record, allele_no: usize) -> Self {
-        let chrom = match value.chromosome() {
-            noodles_vcf::record::Chromosome::Name(name)
-            | noodles_vcf::record::Chromosome::Symbol(name) => name.to_owned(),
-        };
-        let pos: usize = value.position().into();
-        let pos = pos as i32;
+    pub fn from_vcf_allele(value: &noodles_vcf::variant::RecordBuf, allele_no: usize) -> Self {
+        let chrom = value.reference_sequence_name().to_string();
+        let pos: usize = value
+            .variant_start()
+            .expect("Telomeric breakends not supported")
+            .get();
+        let pos = i32::try_from(pos).unwrap();
         let reference = value.reference_bases().to_string();
         Var {
             chrom,
             pos,
             reference,
-            alternative: value.alternate_bases()[allele_no].to_string(),
+            alternative: value.alternate_bases().as_ref()[allele_no].to_string(),
         }
     }
 }

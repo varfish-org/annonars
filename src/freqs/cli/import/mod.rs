@@ -76,21 +76,24 @@ fn assign_to_chrom(
     let mut res = HashMap::new();
 
     for path in paths {
-        let mut reader = noodles_vcf::indexed_reader::Builder::default().build_from_path(path)?;
+        let mut reader =
+            noodles_vcf::io::indexed_reader::Builder::default().build_from_path(path)?;
         let header = Box::new(reader.read_header()?);
         freqs::cli::import::reading::guess_assembly(header.as_ref(), true, Some(assembly))?;
         let record = reader
-            .records(header.as_ref())
+            .record_bufs(header.as_ref())
             .next()
             .transpose()?
             .ok_or(anyhow::anyhow!("No records in VCF file {}", path))?;
-        let k = contig_map.chrom_to_idx(record.chromosome()).map_err(|e| {
-            anyhow::anyhow!(
-                "Error mapping chromosome {} to index: {}",
-                record.chromosome(),
-                e
-            )
-        })?;
+        let k = contig_map
+            .chrom_to_idx(record.reference_sequence_name())
+            .map_err(|e| {
+                anyhow::anyhow!(
+                    "Error mapping chromosome {} to index: {}",
+                    record.reference_sequence_name(),
+                    e
+                )
+            })?;
         let v = path.clone();
         res.insert(k, v);
     }

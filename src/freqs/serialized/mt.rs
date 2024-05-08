@@ -1,6 +1,7 @@
 //! Mitochondrial counts.
 
 use byteorder::{ByteOrder, LittleEndian};
+use noodles_vcf::variant::record::AlternateBases;
 
 use crate::common::noodles;
 // use noodles_vcf::{
@@ -22,7 +23,7 @@ pub struct Counts {
 
 impl Counts {
     /// Create from the given VCF record.
-    pub fn from_vcf_allele(value: &noodles_vcf::Record, _allele_no: usize) -> Self {
+    pub fn from_vcf_allele(value: &noodles_vcf::variant::RecordBuf, _allele_no: usize) -> Self {
         assert_eq!(
             value.alternate_bases().len(),
             1,
