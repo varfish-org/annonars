@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.36.2](https://github.com/varfish-org/annonars/compare/v0.36.1...v0.36.2) (2024-05-08)
+
+
+### Bug Fixes
+
+* update noodles group ([#447](https://github.com/varfish-org/annonars/issues/447)) ([683c84d](https://github.com/varfish-org/annonars/commit/683c84d0dcc17cae659bebb14120f23f7bf2ff4d))
+
 ## [0.36.1](https://github.com/varfish-org/annonars/compare/v0.36.0...v0.36.1) (2024-03-01)
 
 
