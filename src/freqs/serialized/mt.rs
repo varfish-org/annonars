@@ -1,14 +1,9 @@
 //! Mitochondrial counts.
 
 use byteorder::{ByteOrder, LittleEndian};
-use noodles_vcf::variant::record::AlternateBases;
+use noodles::vcf::variant::record::AlternateBases;
 
-use crate::common::noodles;
-// use noodles_vcf::{
-//     self,
-//     header::info::{key::Other as InfoOther, key::Standard as InfoStandard, Key as InfoKey},
-//     Record as VcfRecord,
-// };
+use crate::common::noodles_utils;
 
 /// Record type for storing AN, AC_hom, AC_het counts for chrMT.
 #[derive(Default, Debug, PartialEq, Eq, Clone, serde::Serialize, serde::Deserialize)]
@@ -23,15 +18,15 @@ pub struct Counts {
 
 impl Counts {
     /// Create from the given VCF record.
-    pub fn from_vcf_allele(value: &noodles_vcf::variant::RecordBuf, _allele_no: usize) -> Self {
+    pub fn from_vcf_allele(value: &noodles::vcf::variant::RecordBuf, _allele_no: usize) -> Self {
         assert_eq!(
             value.alternate_bases().len(),
             1,
             "only one alternate allele is supported",
         );
-        let ac_hom = noodles::get_i32(value, "AC_hom").unwrap() as u32;
-        let ac_het = noodles::get_i32(value, "AC_het").unwrap() as u32;
-        let an = noodles::get_i32(value, "AN").unwrap() as u32;
+        let ac_hom = noodles_utils::get_i32(value, "AC_hom").unwrap() as u32;
+        let ac_het = noodles_utils::get_i32(value, "AC_het").unwrap() as u32;
+        let an = noodles_utils::get_i32(value, "AN").unwrap() as u32;
 
         Counts { ac_hom, ac_het, an }
     }

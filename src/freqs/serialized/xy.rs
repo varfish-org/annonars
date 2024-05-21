@@ -1,9 +1,9 @@
 //! gonosomal counts.
 
 use byteorder::{ByteOrder, LittleEndian};
-use noodles_vcf::variant::record::AlternateBases;
+use noodles::vcf::variant::record::AlternateBases;
 
-use crate::common::noodles;
+use crate::common::noodles_utils;
 
 /// Record type for storing AN, AC_hom, AC_het, AC_hemi counts for chrX/chrY.
 #[derive(Default, Debug, PartialEq, Eq, Clone, serde::Serialize, serde::Deserialize)]
@@ -20,7 +20,7 @@ pub struct Counts {
 
 impl Counts {
     /// Create from the given VCF record.
-    pub fn from_vcf_allele(value: &noodles_vcf::variant::RecordBuf, _allele_no: usize) -> Self {
+    pub fn from_vcf_allele(value: &noodles::vcf::variant::RecordBuf, _allele_no: usize) -> Self {
         assert_eq!(
             value.alternate_bases().len(),
             1,
@@ -28,24 +28,24 @@ impl Counts {
         );
         tracing::trace!("@ {:?}", &value);
 
-        let an = noodles::get_i32(value, "AN").unwrap() as u32;
+        let an = noodles_utils::get_i32(value, "AN").unwrap() as u32;
 
-        let ac_hom_xx = noodles::get_i32(value, "nhomalt_female")
-            .or_else(|_| noodles::get_i32(value, "nhomalt_XX"))
+        let ac_hom_xx = noodles_utils::get_i32(value, "nhomalt_female")
+            .or_else(|_| noodles_utils::get_i32(value, "nhomalt_XX"))
             .unwrap_or_default() as u32;
-        let ac_xx = noodles::get_i32(value, "AC_female")
-            .or_else(|_| noodles::get_i32(value, "AC_XX"))
+        let ac_xx = noodles_utils::get_i32(value, "AC_female")
+            .or_else(|_| noodles_utils::get_i32(value, "AC_XX"))
             .unwrap_or_default() as u32;
 
-        let ac_hom_xy = noodles::get_i32(value, "nhomalt_male")
-            .or_else(|_| noodles::get_i32(value, "nhomalt_XY"))
+        let ac_hom_xy = noodles_utils::get_i32(value, "nhomalt_male")
+            .or_else(|_| noodles_utils::get_i32(value, "nhomalt_XY"))
             .expect("neither found: nhomalt_male, nhomalt_XY") as u32;
-        let ac_xy = noodles::get_i32(value, "AC_male")
-            .or_else(|_| noodles::get_i32(value, "AC_XY"))
+        let ac_xy = noodles_utils::get_i32(value, "AC_male")
+            .or_else(|_| noodles_utils::get_i32(value, "AC_XY"))
             .expect("neither found: AC_male, AC_XY") as u32;
 
-        let nonpar = noodles::get_flag(value, "nonpar").unwrap_or(false)
-            || noodles::get_flag(value, "non_par").unwrap_or(false);
+        let nonpar = noodles_utils::get_flag(value, "nonpar").unwrap_or(false)
+            || noodles_utils::get_flag(value, "non_par").unwrap_or(false);
 
         if nonpar {
             // not in PAR

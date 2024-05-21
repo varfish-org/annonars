@@ -3,7 +3,7 @@
 use std::io::BufRead;
 
 use indicatif::ParallelProgressIterator;
-use noodles_csi::BinningIndex as _;
+use noodles::csi::BinningIndex as _;
 use rayon::prelude::*;
 
 use crate::{common, tsv};
@@ -12,8 +12,8 @@ use super::Args;
 
 /// Helper function to resolve regions.
 fn resolve_region(
-    header: &noodles_csi::binning_index::index::Header,
-    region: &noodles_core::Region,
+    header: &noodles::csi::binning_index::index::Header,
+    region: &noodles::core::Region,
 ) -> std::io::Result<usize> {
     header
         .reference_sequence_names()
@@ -32,28 +32,28 @@ fn resolve_region(
 /// Helper function for parsing start positions.
 pub fn parse_start_position(
     s: &str,
-    coordinate_system: noodles_csi::binning_index::index::header::format::CoordinateSystem,
-) -> std::io::Result<noodles_core::Position> {
+    coordinate_system: noodles::csi::binning_index::index::header::format::CoordinateSystem,
+) -> std::io::Result<noodles::core::Position> {
     fn invalid_position<E>(_: E) -> std::io::Error {
         std::io::Error::new(std::io::ErrorKind::InvalidData, "invalid position")
     }
 
     match coordinate_system {
-        noodles_csi::binning_index::index::header::format::CoordinateSystem::Gff => {
+        noodles::csi::binning_index::index::header::format::CoordinateSystem::Gff => {
             s.parse().map_err(invalid_position)
         }
-        noodles_csi::binning_index::index::header::format::CoordinateSystem::Bed => s
+        noodles::csi::binning_index::index::header::format::CoordinateSystem::Bed => s
             .parse::<usize>()
             .map_err(invalid_position)
-            .and_then(|n| noodles_core::Position::try_from(n + 1).map_err(invalid_position)),
+            .and_then(|n| noodles::core::Position::try_from(n + 1).map_err(invalid_position)),
     }
 }
 
 /// Helper function for region intersection.
 pub fn intersects(
-    header: &noodles_csi::binning_index::index::Header,
+    header: &noodles::csi::binning_index::index::Header,
     line: &str,
-    region: &noodles_core::region::Region,
+    region: &noodles::core::region::Region,
 ) -> Result<bool, anyhow::Error> {
     const DELIMITER: char = '\t';
 
@@ -71,7 +71,7 @@ pub fn intersects(
         start.checked_add(1).expect("attempt to add with overflow")
     };
 
-    let interval = noodles_core::region::Interval::from(start..=end);
+    let interval = noodles::core::region::Interval::from(start..=end);
 
     Ok(reference_sequence_name.as_bytes() == region.name()
         && interval.intersects(region.interval()))
@@ -84,23 +84,23 @@ pub fn tsv_import_window(
     config: &tsv::schema::infer::Config,
     schema: &tsv::schema::FileSchema,
     path_in_tsv: &str,
-    window: &(usize, noodles_core::Region),
+    window: &(usize, noodles::core::Region),
 ) -> Result<(), anyhow::Error> {
     // Get column family handle.
     let cf_data = db.cf_handle(&args.cf_name).unwrap();
 
     // Read tabix index.
     let tabix_src = format!("{}.tbi", path_in_tsv);
-    let index = noodles_tabix::read(tabix_src)?;
+    let index = noodles::tabix::read(tabix_src)?;
     let header = index.header().ok_or_else(|| {
         std::io::Error::new(std::io::ErrorKind::InvalidInput, "missing tabix header")
     })?;
-    let mut reader = std::fs::File::open(path_in_tsv).map(noodles_bgzf::Reader::new)?;
+    let mut reader = std::fs::File::open(path_in_tsv).map(noodles::bgzf::Reader::new)?;
 
     // Query TBI for chunks.
     let (ref_id, region) = window;
     let chunks = index.query(*ref_id, region.interval())?;
-    let query = noodles_csi::io::Query::new(&mut reader, chunks);
+    let query = noodles::csi::io::Query::new(&mut reader, chunks);
 
     // Read through the overlapping lines.
     let ctx = tsv::coding::Context::new(config.clone(), schema.clone());
@@ -125,7 +125,7 @@ pub fn tsv_import(
 ) -> Result<(), anyhow::Error> {
     // Load tabix header and create BGZF reader with tabix index.
     let tabix_src = format!("{}.tbi", path_in_tsv);
-    let index = noodles_tabix::read(tabix_src)?;
+    let index = noodles::tabix::read(tabix_src)?;
     let header = index.header().ok_or_else(|| {
         std::io::Error::new(std::io::ErrorKind::InvalidInput, "missing tabix header")
     })?;
@@ -141,11 +141,11 @@ pub fn tsv_import(
                     .is_some()
             })
             .map(|(chrom, begin, end)| {
-                let start = noodles_core::Position::try_from(begin + 1)
+                let start = noodles::core::Position::try_from(begin + 1)
                     .expect("could not convert to position");
-                let stop = noodles_core::Position::try_from(std::cmp::max(begin + 1, end))
+                let stop = noodles::core::Position::try_from(std::cmp::max(begin + 1, end))
                     .expect("could not convert to position");
-                let region = noodles_core::Region::new(chrom, start..=stop);
+                let region = noodles::core::Region::new(chrom, start..=stop);
                 let tid = resolve_region(header, &region)
                     .unwrap_or_else(|e| panic!("could not resolve region {:?}: {}", region, e));
                 (tid, region)

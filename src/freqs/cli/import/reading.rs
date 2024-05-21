@@ -2,10 +2,10 @@
 
 use std::collections::{BTreeMap, HashMap};
 
+use ::noodles::vcf::variant::record::AlternateBases;
+use ::noodles::vcf::variant::RecordBuf;
+use ::noodles::vcf::Header;
 use biocommons_bioutils::assemblies::{Assembly, Sequence, ASSEMBLY_INFOS};
-use noodles_vcf::variant::record::AlternateBases;
-use noodles_vcf::variant::RecordBuf;
-use noodles_vcf::Header;
 
 use crate::common::cli::CANONICAL;
 
@@ -69,7 +69,7 @@ struct Key {
     /// Chromosome.
     chrom: String,
     /// Noodles position.
-    pos: noodles_core::Position,
+    pos: noodles::core::Position,
     /// Reference allele.
     reference: String,
     /// First (and only) alternate allelele.
@@ -97,13 +97,13 @@ fn build_key(record: &RecordBuf, i: usize) -> Key {
     }
 }
 
-/// Read through multiple `noodles_vcf::vcf::reader::Query`s at once.
+/// Read through multiple `noodles::vcf::vcf::reader::Query`s at once.
 pub struct MultiQuery<'r, 'h, R>
 where
-    R: std::io::Read + noodles_bgzf::io::Seek,
+    R: std::io::Read + noodles::bgzf::io::Seek,
 {
     /// One query for each input file.
-    queries: Vec<noodles_vcf::io::reader::Query<'r, 'h, R>>,
+    queries: Vec<noodles::vcf::io::reader::Query<'r, 'h, R>>,
 
     /// One header for each input file. (Not accessible from Query)
     headers: Vec<Header>,
@@ -114,11 +114,11 @@ where
 
 impl<'r, 'h, R> MultiQuery<'r, 'h, R>
 where
-    R: noodles_bgzf::io::BufRead + noodles_bgzf::io::Seek,
+    R: noodles::bgzf::io::BufRead + noodles::bgzf::io::Seek,
 {
     /// Construct a new `MultiQuery`.
     pub fn new(
-        mut record_iters: Vec<noodles_vcf::io::reader::Query<'r, 'h, R>>,
+        mut record_iters: Vec<noodles::vcf::io::reader::Query<'r, 'h, R>>,
         headers: &[Header],
     ) -> std::io::Result<Self> {
         let mut records = BTreeMap::new();
@@ -142,7 +142,7 @@ where
 
 impl<'r, 'h, R> Iterator for MultiQuery<'r, 'h, R>
 where
-    R: noodles_bgzf::io::BufRead + noodles_bgzf::io::Seek,
+    R: noodles::bgzf::io::BufRead + noodles::bgzf::io::Seek,
 {
     type Item = std::io::Result<(usize, RecordBuf)>;
 
@@ -173,7 +173,7 @@ where
 /// issues.  If the result is incompatible with the `initial_assembly` then an error will
 /// be returned.
 pub fn guess_assembly(
-    vcf_header: &noodles_vcf::Header,
+    vcf_header: &noodles::vcf::Header,
     ambiguous_ok: bool,
     initial_assembly: Option<Assembly>,
 ) -> Result<Assembly, anyhow::Error> {
@@ -270,7 +270,7 @@ mod test {
     #[test]
     fn guess_assembly_helix_chrmt_ambiguous_ok_initial_none() -> Result<(), anyhow::Error> {
         let path = "tests/freqs/grch37/v2.1/reading/helix.chrM.vcf";
-        let mut reader = noodles_vcf::io::reader::Builder::default().build_from_path(path)?;
+        let mut reader = noodles::vcf::io::reader::Builder::default().build_from_path(path)?;
         let header = reader.read_header()?;
 
         let actual = guess_assembly(&header, true, None)?;
@@ -282,7 +282,7 @@ mod test {
     #[test]
     fn guess_assembly_helix_chrmt_ambiguous_ok_initial_override() -> Result<(), anyhow::Error> {
         let path = "tests/freqs/grch37/v2.1/reading/helix.chrM.vcf";
-        let mut reader = noodles_vcf::io::reader::Builder::default().build_from_path(path)?;
+        let mut reader = noodles::vcf::io::reader::Builder::default().build_from_path(path)?;
         let header = reader.read_header()?;
 
         let actual = guess_assembly(&header, true, Some(Assembly::Grch37p10))?;
@@ -295,7 +295,7 @@ mod test {
     fn guess_assembly_helix_chrmt_ambiguous_ok_initial_override_fails() -> Result<(), anyhow::Error>
     {
         let path = "tests/freqs/grch37/v2.1/reading/helix.chrM.vcf";
-        let mut reader = noodles_vcf::io::reader::Builder::default().build_from_path(path)?;
+        let mut reader = noodles::vcf::io::reader::Builder::default().build_from_path(path)?;
         let header = reader.read_header()?;
 
         assert!(guess_assembly(&header, false, Some(Assembly::Grch37)).is_err());
@@ -306,7 +306,7 @@ mod test {
     #[test]
     fn guess_assembly_helix_chrmt_ambiguous_fail() -> Result<(), anyhow::Error> {
         let path = "tests/freqs/grch37/v2.1/reading/helix.chrM.vcf";
-        let mut reader = noodles_vcf::io::reader::Builder::default().build_from_path(path)?;
+        let mut reader = noodles::vcf::io::reader::Builder::default().build_from_path(path)?;
         let header = reader.read_header()?;
 
         assert!(guess_assembly(&header, false, None).is_err());
@@ -323,9 +323,9 @@ mod test {
     #[test]
     fn test_multiquery() -> Result<(), anyhow::Error> {
         let mut readers = vec![
-            noodles_vcf::io::indexed_reader::Builder::default()
+            noodles::vcf::io::indexed_reader::Builder::default()
                 .build_from_path("tests/freqs/grch37/v2.1/reading/gnomad.chrM.vcf.bgz")?,
-            noodles_vcf::io::indexed_reader::Builder::default()
+            noodles::vcf::io::indexed_reader::Builder::default()
                 .build_from_path("tests/freqs/grch37/v2.1/reading/helix.chrM.vcf.bgz")?,
         ];
 
@@ -334,9 +334,9 @@ mod test {
             .map(|reader| reader.read_header())
             .collect::<Result<_, _>>()?;
 
-        let start = noodles_core::position::Position::try_from(1)?;
-        let stop = noodles_core::position::Position::try_from(16569)?;
-        let region = noodles_core::region::Region::new("chrM", start..=stop);
+        let start = noodles::core::position::Position::try_from(1)?;
+        let stop = noodles::core::position::Position::try_from(16569)?;
+        let region = noodles::core::region::Region::new("chrM", start..=stop);
 
         let queries: Vec<_> = readers
             .iter_mut()

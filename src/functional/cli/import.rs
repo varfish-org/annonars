@@ -3,7 +3,7 @@
 use std::{str::FromStr, sync::Arc};
 
 use clap::Parser;
-use noodles_gff as gff;
+use noodles::gff;
 use prost::Message;
 
 use crate::pbs::functional::refseq::{

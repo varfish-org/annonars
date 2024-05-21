@@ -4,7 +4,7 @@ use std::path::{Path, PathBuf};
 
 pub mod cli;
 pub mod keys;
-pub mod noodles;
+pub mod noodles_utils;
 pub mod spdi;
 
 /// The version of `annonars` package.

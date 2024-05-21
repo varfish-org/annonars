@@ -9,7 +9,7 @@ use std::{collections::HashMap, sync::Arc};
 
 use clap::Parser;
 use indicatif::ParallelProgressIterator;
-use noodles_csi::BinningIndex as _;
+use noodles::csi::BinningIndex as _;
 use rayon::prelude::*;
 
 use crate::{common, freqs};
@@ -77,7 +77,7 @@ fn assign_to_chrom(
 
     for path in paths {
         let mut reader =
-            noodles_vcf::io::indexed_reader::Builder::default().build_from_path(path)?;
+            noodles::vcf::io::indexed_reader::Builder::default().build_from_path(path)?;
         let header = Box::new(reader.read_header()?);
         freqs::cli::import::reading::guess_assembly(header.as_ref(), true, Some(assembly))?;
         let record = reader
@@ -112,7 +112,7 @@ pub fn build_windows(
     for path in paths.iter() {
         // Load tabix header and create BGZF reader with tabix index.
         let tabix_src = format!("{}.tbi", path);
-        let index = noodles_tabix::read(tabix_src)?;
+        let index = noodles::tabix::read(tabix_src)?;
         let header = index.header().ok_or_else(|| {
             std::io::Error::new(std::io::ErrorKind::InvalidInput, "missing tabix header")
         })?;
@@ -257,9 +257,9 @@ pub fn run(common: &common::cli::Args, args: &Args) -> Result<(), anyhow::Error>
             .par_iter()
             .progress_with(common::cli::progress_bar(windows.len()))
             .map(|(chrom, begin, end)| {
-                let start = noodles_core::position::Position::try_from(begin + 1)?;
-                let stop = noodles_core::position::Position::try_from(*end)?;
-                let region = noodles_core::region::Region::new(chrom.as_bytes(), start..=stop);
+                let start = noodles::core::position::Position::try_from(begin + 1)?;
+                let stop = noodles::core::position::Position::try_from(*end)?;
+                let region = noodles::core::region::Region::new(chrom.as_bytes(), start..=stop);
                 auto::import_region(&db, path_genome, path_exome, &region)
             })
             .collect::<Result<Vec<_>, _>>()?;
@@ -292,9 +292,9 @@ pub fn run(common: &common::cli::Args, args: &Args) -> Result<(), anyhow::Error>
             .par_iter()
             .progress_with(common::cli::progress_bar(windows.len()))
             .map(|(chrom, begin, end)| {
-                let start = noodles_core::position::Position::try_from(begin + 1)?;
-                let stop = noodles_core::position::Position::try_from(*end)?;
-                let region = noodles_core::region::Region::new(chrom.as_bytes(), start..=stop);
+                let start = noodles::core::position::Position::try_from(begin + 1)?;
+                let stop = noodles::core::position::Position::try_from(*end)?;
+                let region = noodles::core::region::Region::new(chrom.as_bytes(), start..=stop);
                 xy::import_region(&db, path_genome, path_exome, &region)
             })
             .collect::<Result<Vec<_>, _>>()?;
@@ -327,9 +327,9 @@ pub fn run(common: &common::cli::Args, args: &Args) -> Result<(), anyhow::Error>
         .par_iter()
         .progress_with(common::cli::progress_bar(windows.len()))
         .map(|(chrom, begin, end)| {
-            let start = noodles_core::position::Position::try_from(begin + 1)?;
-            let stop = noodles_core::position::Position::try_from(*end)?;
-            let region = noodles_core::region::Region::new(chrom.as_bytes(), start..=stop);
+            let start = noodles::core::position::Position::try_from(begin + 1)?;
+            let stop = noodles::core::position::Position::try_from(*end)?;
+            let region = noodles::core::region::Region::new(chrom.as_bytes(), start..=stop);
             mt::import_region(&db, path_gnomad, path_helix, &region)
         })
         .collect::<Result<Vec<_>, _>>()?;

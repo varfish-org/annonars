@@ -1,9 +1,9 @@
 //! Code generate for protobufs by `prost-build`.
 
-use noodles_vcf::variant::record::AlternateBases;
+use noodles::vcf::variant::record::AlternateBases;
 use std::str::FromStr;
 
-use noodles_vcf::variant::record_buf::info::field;
+use noodles::vcf::variant::record_buf::info::field;
 
 use crate::common;
 
@@ -86,7 +86,7 @@ impl DetailsOptions {
 impl Record {
     /// Creates a new `Record` from a VCF record and allele number.
     pub fn from_vcf_allele(
-        record: &noodles_vcf::variant::RecordBuf,
+        record: &noodles::vcf::variant::RecordBuf,
         allele_no: usize,
         options: &DetailsOptions,
     ) -> Result<Self, anyhow::Error> {
@@ -110,7 +110,7 @@ impl Record {
             .to_string();
         let filters = Self::extract_filters(record)?;
         let allele_counts = Self::extract_cohorts_allele_counts(record, options)?;
-        let nonpar = common::noodles::get_flag(record, "nonpar")?;
+        let nonpar = common::noodles_utils::get_flag(record, "nonpar")?;
 
         // Extract optional fields.
         let vep = options
@@ -164,7 +164,7 @@ impl Record {
 
     /// Extract the "vep" field into gnomAD v2 `Vep` records.
     fn extract_vep(
-        record: &noodles_vcf::variant::RecordBuf,
+        record: &noodles::vcf::variant::RecordBuf,
     ) -> Result<Vec<super::vep_gnomad2::Vep>, anyhow::Error> {
         if let Some(Some(field::Value::Array(field::value::Array::String(v)))) =
             record.info().get("vep")
@@ -189,18 +189,18 @@ impl Record {
 
     /// Extract the liftover related fields into gnomAD v2 `Vep` records.
     fn extract_liftover(
-        record: &noodles_vcf::variant::RecordBuf,
+        record: &noodles::vcf::variant::RecordBuf,
     ) -> Result<Option<LiftoverInfo>, anyhow::Error> {
         let tmp = LiftoverInfo {
-            reverse_complemented_alleles: common::noodles::get_flag(
+            reverse_complemented_alleles: common::noodles_utils::get_flag(
                 record,
                 "ReverseComplementedAlleles",
             )?,
-            swapped_alleles: common::noodles::get_flag(record, "SwappedAlleles")?,
-            original_alleles: common::noodles::get_vec_str(record, "OriginalAlleles")
+            swapped_alleles: common::noodles_utils::get_flag(record, "SwappedAlleles")?,
+            original_alleles: common::noodles_utils::get_vec_str(record, "OriginalAlleles")
                 .unwrap_or_default(),
-            original_contig: common::noodles::get_string(record, "OriginalContig").ok(),
-            original_start: common::noodles::get_string(record, "OriginalStart").ok(),
+            original_contig: common::noodles_utils::get_string(record, "OriginalContig").ok(),
+            original_start: common::noodles_utils::get_string(record, "OriginalStart").ok(),
         };
         if tmp.reverse_complemented_alleles
             || tmp.swapped_alleles
@@ -216,33 +216,33 @@ impl Record {
 
     /// Extract the details on the random forest.
     fn extract_rf_info(
-        record: &noodles_vcf::variant::RecordBuf,
+        record: &noodles::vcf::variant::RecordBuf,
     ) -> Result<RandomForestInfo, anyhow::Error> {
         Ok(RandomForestInfo {
-            rf_tp_probability: common::noodles::get_f32(record, "rf_tp_probability")?,
-            rf_positive_label: common::noodles::get_flag(record, "rf_positive_label")?,
-            rf_negative_label: common::noodles::get_flag(record, "rf_negative_label")?,
-            rf_label: common::noodles::get_string(record, "rf_label").ok(),
-            rf_train: common::noodles::get_flag(record, "rf_train")?,
+            rf_tp_probability: common::noodles_utils::get_f32(record, "rf_tp_probability")?,
+            rf_positive_label: common::noodles_utils::get_flag(record, "rf_positive_label")?,
+            rf_negative_label: common::noodles_utils::get_flag(record, "rf_negative_label")?,
+            rf_label: common::noodles_utils::get_string(record, "rf_label").ok(),
+            rf_train: common::noodles_utils::get_flag(record, "rf_train")?,
         })
     }
 
     /// Extract the details on the variant.
     fn extract_variant_info(
-        record: &noodles_vcf::variant::RecordBuf,
+        record: &noodles::vcf::variant::RecordBuf,
     ) -> Result<VariantInfo, anyhow::Error> {
         Ok(VariantInfo {
-            variant_type: common::noodles::get_string(record, "variant_type")?,
-            allele_type: common::noodles::get_string(record, "allele_type")?,
-            n_alt_alleles: common::noodles::get_i32(record, "n_alt_alleles")?,
-            was_mixed: common::noodles::get_flag(record, "was_mixed")?,
-            has_star: common::noodles::get_flag(record, "has_star")?,
+            variant_type: common::noodles_utils::get_string(record, "variant_type")?,
+            allele_type: common::noodles_utils::get_string(record, "allele_type")?,
+            n_alt_alleles: common::noodles_utils::get_i32(record, "n_alt_alleles")?,
+            was_mixed: common::noodles_utils::get_flag(record, "was_mixed")?,
+            has_star: common::noodles_utils::get_flag(record, "has_star")?,
         })
     }
 
     /// Extract the filters fields.
     fn extract_filters(
-        record: &noodles_vcf::variant::RecordBuf,
+        record: &noodles::vcf::variant::RecordBuf,
     ) -> Result<Vec<i32>, anyhow::Error> {
         Ok(
             if let Some(Some(field::Value::Array(field::value::Array::String(value)))) =
@@ -266,67 +266,96 @@ impl Record {
     }
 
     /// Extract the age related fields from the VCF record.
-    fn extract_age(record: &noodles_vcf::variant::RecordBuf) -> Result<AgeInfo, anyhow::Error> {
+    fn extract_age(record: &noodles::vcf::variant::RecordBuf) -> Result<AgeInfo, anyhow::Error> {
         Ok(AgeInfo {
-            age_hist_hom_bin_freq: common::noodles::get_vec::<i32>(record, "age_hist_hom_bin_freq")
-                .unwrap_or_default(),
-            age_hist_hom_n_smaller: common::noodles::get_i32(record, "age_hist_hom_n_smaller").ok(),
-            age_hist_hom_n_larger: common::noodles::get_i32(record, "age_hist_hom_n_larger").ok(),
-            age_hist_het_bin_freq: common::noodles::get_vec::<i32>(record, "age_hist_het_bin_freq")
-                .unwrap_or_default(),
-            age_hist_het_n_smaller: common::noodles::get_i32(record, "age_hist_het_n_smaller").ok(),
-            age_hist_het_n_larger: common::noodles::get_i32(record, "age_hist_het_n_larger").ok(),
+            age_hist_hom_bin_freq: common::noodles_utils::get_vec::<i32>(
+                record,
+                "age_hist_hom_bin_freq",
+            )
+            .unwrap_or_default(),
+            age_hist_hom_n_smaller: common::noodles_utils::get_i32(
+                record,
+                "age_hist_hom_n_smaller",
+            )
+            .ok(),
+            age_hist_hom_n_larger: common::noodles_utils::get_i32(record, "age_hist_hom_n_larger")
+                .ok(),
+            age_hist_het_bin_freq: common::noodles_utils::get_vec::<i32>(
+                record,
+                "age_hist_het_bin_freq",
+            )
+            .unwrap_or_default(),
+            age_hist_het_n_smaller: common::noodles_utils::get_i32(
+                record,
+                "age_hist_het_n_smaller",
+            )
+            .ok(),
+            age_hist_het_n_larger: common::noodles_utils::get_i32(record, "age_hist_het_n_larger")
+                .ok(),
         })
     }
 
     /// Extract the depth related fields from the VCF record.
-    fn extract_depth(record: &noodles_vcf::variant::RecordBuf) -> Result<DepthInfo, anyhow::Error> {
+    fn extract_depth(
+        record: &noodles::vcf::variant::RecordBuf,
+    ) -> Result<DepthInfo, anyhow::Error> {
         Ok(DepthInfo {
-            dp_hist_all_n_larger: common::noodles::get_i32(record, "dp_hist_all_n_larger").ok(),
-            dp_hist_alt_n_larger: common::noodles::get_i32(record, "dp_hist_alt_n_larger").ok(),
-            dp_hist_all_bin_freq: common::noodles::get_vec::<i32>(record, "dp_hist_all_bin_freq")
-                .unwrap_or_default(),
-            dp_hist_alt_bin_freq: common::noodles::get_vec::<i32>(record, "dp_hist_alt_bin_freq")
-                .unwrap_or_default(),
+            dp_hist_all_n_larger: common::noodles_utils::get_i32(record, "dp_hist_all_n_larger")
+                .ok(),
+            dp_hist_alt_n_larger: common::noodles_utils::get_i32(record, "dp_hist_alt_n_larger")
+                .ok(),
+            dp_hist_all_bin_freq: common::noodles_utils::get_vec::<i32>(
+                record,
+                "dp_hist_all_bin_freq",
+            )
+            .unwrap_or_default(),
+            dp_hist_alt_bin_freq: common::noodles_utils::get_vec::<i32>(
+                record,
+                "dp_hist_alt_bin_freq",
+            )
+            .unwrap_or_default(),
         })
     }
 
     /// Extract the quality-related fields from the VCF record.
     fn extract_quality(
-        record: &noodles_vcf::variant::RecordBuf,
+        record: &noodles::vcf::variant::RecordBuf,
     ) -> Result<QualityInfo, anyhow::Error> {
         Ok(QualityInfo {
-            fs: common::noodles::get_f32(record, "FS").ok(),
-            inbreeding_coeff: common::noodles::get_f32(record, "InbreedingCoeff").ok(),
-            mq: common::noodles::get_f32(record, "MQ").ok(),
-            mq_rank_sum: common::noodles::get_f32(record, "MQRankSum").ok(),
-            qd: common::noodles::get_f32(record, "QD").ok(),
-            read_pos_rank_sum: common::noodles::get_f32(record, "ReadPosRankSum").ok(),
-            sor: common::noodles::get_f32(record, "SOR").ok(),
-            vqsr_positive_train_site: common::noodles::get_flag(
+            fs: common::noodles_utils::get_f32(record, "FS").ok(),
+            inbreeding_coeff: common::noodles_utils::get_f32(record, "InbreedingCoeff").ok(),
+            mq: common::noodles_utils::get_f32(record, "MQ").ok(),
+            mq_rank_sum: common::noodles_utils::get_f32(record, "MQRankSum").ok(),
+            qd: common::noodles_utils::get_f32(record, "QD").ok(),
+            read_pos_rank_sum: common::noodles_utils::get_f32(record, "ReadPosRankSum").ok(),
+            sor: common::noodles_utils::get_f32(record, "SOR").ok(),
+            vqsr_positive_train_site: common::noodles_utils::get_flag(
                 record,
                 "VQSR_POSITIVE_TRAIN_SITE",
             )?,
-            vqsr_negative_train_site: common::noodles::get_flag(
+            vqsr_negative_train_site: common::noodles_utils::get_flag(
                 record,
                 "VQSR_NEGATIVE_TRAIN_SITE",
             )?,
-            base_q_rank_sum: common::noodles::get_f32(record, "BaseQRankSum").ok(),
-            clipping_rank_sum: common::noodles::get_f32(record, "ClippingRankSum").ok(),
-            dp: common::noodles::get_i32(record, "DP").ok(),
-            vqslod: common::noodles::get_f32(record, "VQSLOD").ok(),
-            vqsr_culprit: common::noodles::get_string(record, "VQSR_culprit").ok(),
-            segdup: common::noodles::get_flag(record, "segdup")?,
-            lcr: common::noodles::get_flag(record, "lcr")?,
-            decoy: common::noodles::get_flag(record, "decoy")?,
-            transmitted_singleton: common::noodles::get_flag(record, "transmitted_singleton")?,
-            pab_max: common::noodles::get_f32(record, "pab_max").ok(),
+            base_q_rank_sum: common::noodles_utils::get_f32(record, "BaseQRankSum").ok(),
+            clipping_rank_sum: common::noodles_utils::get_f32(record, "ClippingRankSum").ok(),
+            dp: common::noodles_utils::get_i32(record, "DP").ok(),
+            vqslod: common::noodles_utils::get_f32(record, "VQSLOD").ok(),
+            vqsr_culprit: common::noodles_utils::get_string(record, "VQSR_culprit").ok(),
+            segdup: common::noodles_utils::get_flag(record, "segdup")?,
+            lcr: common::noodles_utils::get_flag(record, "lcr")?,
+            decoy: common::noodles_utils::get_flag(record, "decoy")?,
+            transmitted_singleton: common::noodles_utils::get_flag(
+                record,
+                "transmitted_singleton",
+            )?,
+            pab_max: common::noodles_utils::get_f32(record, "pab_max").ok(),
         })
     }
 
     /// Extract the allele counts from the `record` as configured in `options`.
     fn extract_cohorts_allele_counts(
-        record: &noodles_vcf::variant::RecordBuf,
+        record: &noodles::vcf::variant::RecordBuf,
         options: &DetailsOptions,
     ) -> Result<Vec<CohortAlleleCounts>, anyhow::Error> {
         // Initialize global cohort.  We will always extract the non-population specific
@@ -339,11 +368,11 @@ impl Record {
                 xy: Self::extract_allele_counts(record, "", "_male")?,
             }),
             raw: Self::extract_allele_counts(record, "", "_raw")?,
-            popmax: common::noodles::get_string(record, "popmax").ok(),
-            af_popmax: common::noodles::get_f32(record, "AF_popmax").ok(),
-            ac_popmax: common::noodles::get_i32(record, "AC_popmax").ok(),
-            an_popmax: common::noodles::get_i32(record, "AN_popmax").ok(),
-            nhomalt_popmax: common::noodles::get_i32(record, "nhomalt_popmax").ok(),
+            popmax: common::noodles_utils::get_string(record, "popmax").ok(),
+            af_popmax: common::noodles_utils::get_f32(record, "AF_popmax").ok(),
+            ac_popmax: common::noodles_utils::get_i32(record, "AC_popmax").ok(),
+            an_popmax: common::noodles_utils::get_i32(record, "AN_popmax").ok(),
+            nhomalt_popmax: common::noodles_utils::get_i32(record, "nhomalt_popmax").ok(),
             by_population: Vec::new(), // maybe filled below
         };
 
@@ -369,14 +398,27 @@ impl Record {
                         xy: Self::extract_allele_counts(record, &prefix, "_male")?,
                     }),
                     raw: Self::extract_allele_counts(record, &prefix, "_raw")?,
-                    popmax: common::noodles::get_string(record, &format!("{}_popmax", cohort)).ok(),
-                    af_popmax: common::noodles::get_f32(record, &format!("{}_AF_popmax", cohort))
-                        .ok(),
-                    ac_popmax: common::noodles::get_i32(record, &format!("{}_AC_popmax", cohort))
-                        .ok(),
-                    an_popmax: common::noodles::get_i32(record, &format!("{}_AN_popmax", cohort))
-                        .ok(),
-                    nhomalt_popmax: common::noodles::get_i32(
+                    popmax: common::noodles_utils::get_string(
+                        record,
+                        &format!("{}_popmax", cohort),
+                    )
+                    .ok(),
+                    af_popmax: common::noodles_utils::get_f32(
+                        record,
+                        &format!("{}_AF_popmax", cohort),
+                    )
+                    .ok(),
+                    ac_popmax: common::noodles_utils::get_i32(
+                        record,
+                        &format!("{}_AC_popmax", cohort),
+                    )
+                    .ok(),
+                    an_popmax: common::noodles_utils::get_i32(
+                        record,
+                        &format!("{}_AN_popmax", cohort),
+                    )
+                    .ok(),
+                    nhomalt_popmax: common::noodles_utils::get_i32(
                         record,
                         &format!("{}_nhomalt_popmax", cohort),
                     )
@@ -401,7 +443,7 @@ impl Record {
 
     /// Extrac the population allele counts from the `record`.
     fn extract_population_allele_counts(
-        record: &noodles_vcf::variant::RecordBuf,
+        record: &noodles::vcf::variant::RecordBuf,
         prefix: &str,
         pop: &str,
     ) -> Result<PopulationAlleleCounts, anyhow::Error> {
@@ -414,30 +456,34 @@ impl Record {
             }),
             // The faf95 and faf99 value is not present for all populations.  We use a blanket
             // "ok()" here so things don't blow up randomly.
-            faf95: common::noodles::get_f32(record, &format!("faf95_{}", pop)).ok(),
-            faf99: common::noodles::get_f32(record, &format!("faf99_{}", pop)).ok(),
+            faf95: common::noodles_utils::get_f32(record, &format!("faf95_{}", pop)).ok(),
+            faf99: common::noodles_utils::get_f32(record, &format!("faf99_{}", pop)).ok(),
         })
     }
 
     /// Extract the allele counts from the `record` with the given prefix and suffix.
     fn extract_allele_counts(
-        record: &noodles_vcf::variant::RecordBuf,
+        record: &noodles::vcf::variant::RecordBuf,
         prefix: &str,
         suffix: &str,
     ) -> Result<Option<AlleleCounts>, anyhow::Error> {
-        if common::noodles::get_i32(record, &format!("{}AN{}", prefix, suffix)).unwrap_or_default()
+        if common::noodles_utils::get_i32(record, &format!("{}AN{}", prefix, suffix))
+            .unwrap_or_default()
             == 0
         {
             Ok(None)
         } else {
             Ok(Some(AlleleCounts {
-                ac: common::noodles::get_i32(record, &format!("{}AC{}", prefix, suffix))
+                ac: common::noodles_utils::get_i32(record, &format!("{}AC{}", prefix, suffix))
                     .unwrap_or_default(),
-                an: common::noodles::get_i32(record, &format!("{}AN{}", prefix, suffix))
+                an: common::noodles_utils::get_i32(record, &format!("{}AN{}", prefix, suffix))
                     .unwrap_or_default(),
-                nhomalt: common::noodles::get_i32(record, &format!("{}nhomalt{}", prefix, suffix))
-                    .unwrap_or_default(),
-                af: common::noodles::get_f32(record, &format!("{}AF{}", prefix, suffix))
+                nhomalt: common::noodles_utils::get_i32(
+                    record,
+                    &format!("{}nhomalt{}", prefix, suffix),
+                )
+                .unwrap_or_default(),
+                af: common::noodles_utils::get_f32(record, &format!("{}AF{}", prefix, suffix))
                     .unwrap_or_default(),
             }))
         }
@@ -452,7 +498,7 @@ mod test {
     fn test_record_from_vcf_allele_gnomad_exomes_grch37() -> Result<(), anyhow::Error> {
         let path_vcf = "tests/gnomad-nuclear/example-exomes-grch37/v2.1/gnomad-exomes.vcf";
         let mut reader_vcf =
-            noodles_vcf::io::reader::Builder::default().build_from_path(path_vcf)?;
+            noodles::vcf::io::reader::Builder::default().build_from_path(path_vcf)?;
         let header = reader_vcf.read_header()?;
 
         let mut records = Vec::new();
@@ -472,7 +518,7 @@ mod test {
     fn test_record_from_vcf_allele_gnomad_genomes_grch37() -> Result<(), anyhow::Error> {
         let path_vcf = "tests/gnomad-nuclear/example-genomes-grch37/v2.1/gnomad-genomes.vcf";
         let mut reader_vcf =
-            noodles_vcf::io::reader::Builder::default().build_from_path(path_vcf)?;
+            noodles::vcf::io::reader::Builder::default().build_from_path(path_vcf)?;
         let header = reader_vcf.read_header()?;
 
         let mut records = Vec::new();
@@ -492,7 +538,7 @@ mod test {
     fn test_record_from_vcf_allele_gnomad_exomes_grch38() -> Result<(), anyhow::Error> {
         let path_vcf = "tests/gnomad-nuclear/example-exomes-grch38/v2.1/gnomad-exomes.vcf";
         let mut reader_vcf =
-            noodles_vcf::io::reader::Builder::default().build_from_path(path_vcf)?;
+            noodles::vcf::io::reader::Builder::default().build_from_path(path_vcf)?;
         let header = reader_vcf.read_header()?;
 
         let mut records = Vec::new();

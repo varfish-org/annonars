@@ -1,9 +1,9 @@
 //! Code generate for protobufs by `prost-build`.
 
-use noodles_vcf::variant::record::AlternateBases;
+use noodles::vcf::variant::record::AlternateBases;
 use std::str::FromStr;
 
-use noodles_vcf::variant::record_buf::info::field;
+use noodles::vcf::variant::record_buf::info::field;
 
 use super::gnomad3;
 use crate::common;
@@ -59,7 +59,7 @@ impl Record {
     ///
     /// The `Record` or an error if the record could not be extracted.
     pub fn from_vcf_allele(
-        record: &noodles_vcf::variant::RecordBuf,
+        record: &noodles::vcf::variant::RecordBuf,
         allele_no: usize,
         options: &gnomad3::DetailsOptions,
         record_type: RecordType,
@@ -84,14 +84,16 @@ impl Record {
             .to_string();
         let filters = gnomad3::Record::extract_filters(record)?;
         let allele_counts = Self::extract_cohorts_allele_counts(record, record_type)?;
-        let nonpar = common::noodles::get_flag(record, "non_par").unwrap_or_default();
+        let nonpar = common::noodles_utils::get_flag(record, "non_par").unwrap_or_default();
         let outside_broad_capture_region =
-            common::noodles::get_flag(record, "outside_broad_capture_region").unwrap_or_default();
+            common::noodles_utils::get_flag(record, "outside_broad_capture_region")
+                .unwrap_or_default();
         let outside_ukb_capture_region =
-            common::noodles::get_flag(record, "outside_ukb_capture_region").unwrap_or_default();
+            common::noodles_utils::get_flag(record, "outside_ukb_capture_region")
+                .unwrap_or_default();
         let sibling_singleton =
-            common::noodles::get_flag(record, "sibling_singleton").unwrap_or_default();
-        let only_het = common::noodles::get_flag(record, "only_het").unwrap_or_default();
+            common::noodles_utils::get_flag(record, "sibling_singleton").unwrap_or_default();
+        let only_het = common::noodles_utils::get_flag(record, "only_het").unwrap_or_default();
 
         // Extract optional fields.
         let vep = options
@@ -148,7 +150,7 @@ impl Record {
 
     /// Extract the "vep" field into gnomAD v3 `Vep` records.
     fn extract_vep(
-        record: &noodles_vcf::variant::RecordBuf,
+        record: &noodles::vcf::variant::RecordBuf,
     ) -> Result<Vec<super::vep_gnomad4::Vep>, anyhow::Error> {
         if let Some(Some(field::Value::Array(field::value::Array::String(v)))) =
             record.info().get("vep")
@@ -173,35 +175,36 @@ impl Record {
 
     /// Extract the VRS infos.
     fn extract_vrs_info(
-        record: &noodles_vcf::variant::RecordBuf,
+        record: &noodles::vcf::variant::RecordBuf,
     ) -> Result<VrsInfo, anyhow::Error> {
         Ok(VrsInfo {
-            allele_ids: common::noodles::get_vec_str(record, "VRS_Allele_IDs").unwrap_or_default(),
-            ends: common::noodles::get_vec_i32(record, "VRS_Ends").unwrap_or_default(),
-            starts: common::noodles::get_vec_i32(record, "VRS_Starts").unwrap_or_default(),
-            states: common::noodles::get_vec_str(record, "VRS_States").unwrap_or_default(),
+            allele_ids: common::noodles_utils::get_vec_str(record, "VRS_Allele_IDs")
+                .unwrap_or_default(),
+            ends: common::noodles_utils::get_vec_i32(record, "VRS_Ends").unwrap_or_default(),
+            starts: common::noodles_utils::get_vec_i32(record, "VRS_Starts").unwrap_or_default(),
+            states: common::noodles_utils::get_vec_str(record, "VRS_States").unwrap_or_default(),
         })
     }
 
     /// Extract details on the variant effects.
     fn extract_effect_info(
-        record: &noodles_vcf::variant::RecordBuf,
+        record: &noodles::vcf::variant::RecordBuf,
     ) -> Result<EffectInfo, anyhow::Error> {
         Ok(EffectInfo {
-            pangolin_largest_ds: common::noodles::get_f32(record, "pangolin_largest_ds").ok(),
-            phylop: common::noodles::get_f32(record, "phylop").ok(),
-            polyphen_max: common::noodles::get_f32(record, "polyphen_max").ok(),
-            revel_max: common::noodles::get_f32(record, "revel_max").ok(),
-            sift_max: common::noodles::get_f32(record, "sift_max").ok(),
-            spliceai_ds_max: common::noodles::get_f32(record, "spliceai_ds_max").ok(),
-            cadd_raw: common::noodles::get_f32(record, "cadd_raw").ok(),
-            cadd_phred: common::noodles::get_f32(record, "cadd_phred").ok(),
+            pangolin_largest_ds: common::noodles_utils::get_f32(record, "pangolin_largest_ds").ok(),
+            phylop: common::noodles_utils::get_f32(record, "phylop").ok(),
+            polyphen_max: common::noodles_utils::get_f32(record, "polyphen_max").ok(),
+            revel_max: common::noodles_utils::get_f32(record, "revel_max").ok(),
+            sift_max: common::noodles_utils::get_f32(record, "sift_max").ok(),
+            spliceai_ds_max: common::noodles_utils::get_f32(record, "spliceai_ds_max").ok(),
+            cadd_raw: common::noodles_utils::get_f32(record, "cadd_raw").ok(),
+            cadd_phred: common::noodles_utils::get_f32(record, "cadd_phred").ok(),
         })
     }
 
     /// Extract the allele counts from the `record` as configured in `options`.
     fn extract_cohorts_allele_counts(
-        record: &noodles_vcf::variant::RecordBuf,
+        record: &noodles::vcf::variant::RecordBuf,
         record_type: RecordType,
     ) -> Result<Vec<CohortAlleleCounts>, anyhow::Error> {
         // Initialize global cohort.
@@ -213,11 +216,11 @@ impl Record {
                 xy: Some(Self::extract_allele_counts(record, "", "_XY")?),
             }),
             raw: Some(Self::extract_allele_counts(record, "", "_raw")?),
-            grpmax: common::noodles::get_string(record, "grpmax").ok(),
-            af_grpmax: common::noodles::get_f32(record, "AF_grpmax").ok(),
-            ac_grpmax: common::noodles::get_i32(record, "AC_grpmax").ok(),
-            an_grpmax: common::noodles::get_i32(record, "AN_grpmax").ok(),
-            nhomalt_grpmax: common::noodles::get_i32(record, "nhomalt_grpmax").ok(),
+            grpmax: common::noodles_utils::get_string(record, "grpmax").ok(),
+            af_grpmax: common::noodles_utils::get_f32(record, "AF_grpmax").ok(),
+            ac_grpmax: common::noodles_utils::get_i32(record, "AC_grpmax").ok(),
+            an_grpmax: common::noodles_utils::get_i32(record, "AN_grpmax").ok(),
+            nhomalt_grpmax: common::noodles_utils::get_i32(record, "nhomalt_grpmax").ok(),
             by_ancestry_group: Vec::new(), // to be filled below
         };
 
@@ -244,11 +247,15 @@ impl Record {
                     xy: Some(Self::extract_allele_counts(record, &infix, "_XY")?),
                 }),
                 raw: Some(Self::extract_allele_counts(record, &infix, "_raw")?),
-                grpmax: common::noodles::get_string(record, &format!("grpmax_{}", cohort)).ok(),
-                af_grpmax: common::noodles::get_f32(record, &format!("AF_grpmax_{}", cohort)).ok(),
-                ac_grpmax: common::noodles::get_i32(record, &format!("AC_grpmax_{}", cohort)).ok(),
-                an_grpmax: common::noodles::get_i32(record, &format!("AN_grpmax_{}", cohort)).ok(),
-                nhomalt_grpmax: common::noodles::get_i32(
+                grpmax: common::noodles_utils::get_string(record, &format!("grpmax_{}", cohort))
+                    .ok(),
+                af_grpmax: common::noodles_utils::get_f32(record, &format!("AF_grpmax_{}", cohort))
+                    .ok(),
+                ac_grpmax: common::noodles_utils::get_i32(record, &format!("AC_grpmax_{}", cohort))
+                    .ok(),
+                an_grpmax: common::noodles_utils::get_i32(record, &format!("AN_grpmax_{}", cohort))
+                    .ok(),
+                nhomalt_grpmax: common::noodles_utils::get_i32(
                     record,
                     &format!("nhomalt_grpmax_{}", cohort),
                 )
@@ -279,7 +286,7 @@ impl Record {
 
     /// Extrac the ancestry group allele counts from the `record`.
     fn extract_ancestry_group_allele_counts(
-        record: &noodles_vcf::variant::RecordBuf,
+        record: &noodles::vcf::variant::RecordBuf,
         infix: &str,
         grp: &str,
     ) -> Result<AncestryGroupAlleleCounts, anyhow::Error> {
@@ -304,29 +311,29 @@ impl Record {
             }),
             // The faf95 and faf99 value is not present for all ancestry groups.  We use a blanket
             // "ok()" here so things don't blow up randomly.
-            faf95: common::noodles::get_f32(record, &format!("faf95_{}", grp)).ok(),
-            faf99: common::noodles::get_f32(record, &format!("faf99_{}", grp)).ok(),
-            faf95_xx: common::noodles::get_f32(record, &format!("faf95_{}_XX", grp)).ok(),
-            faf99_xx: common::noodles::get_f32(record, &format!("faf99_{}_XX", grp)).ok(),
-            faf95_xy: common::noodles::get_f32(record, &format!("faf95_{}_XY", grp)).ok(),
-            faf99_xy: common::noodles::get_f32(record, &format!("faf99_{}_XY", grp)).ok(),
+            faf95: common::noodles_utils::get_f32(record, &format!("faf95_{}", grp)).ok(),
+            faf99: common::noodles_utils::get_f32(record, &format!("faf99_{}", grp)).ok(),
+            faf95_xx: common::noodles_utils::get_f32(record, &format!("faf95_{}_XX", grp)).ok(),
+            faf99_xx: common::noodles_utils::get_f32(record, &format!("faf99_{}_XX", grp)).ok(),
+            faf95_xy: common::noodles_utils::get_f32(record, &format!("faf95_{}_XY", grp)).ok(),
+            faf99_xy: common::noodles_utils::get_f32(record, &format!("faf99_{}_XY", grp)).ok(),
         })
     }
 
     /// Extract the allele counts from the `record` with the given infix and suffix.
     fn extract_allele_counts(
-        record: &noodles_vcf::variant::RecordBuf,
+        record: &noodles::vcf::variant::RecordBuf,
         infix: &str,
         suffix: &str,
     ) -> Result<gnomad3::AlleleCounts, anyhow::Error> {
         Ok(gnomad3::AlleleCounts {
-            ac: common::noodles::get_i32(record, &format!("AC{}{}", infix, suffix))
+            ac: common::noodles_utils::get_i32(record, &format!("AC{}{}", infix, suffix))
                 .unwrap_or_default(),
-            an: common::noodles::get_i32(record, &format!("AN{}{}", infix, suffix))
+            an: common::noodles_utils::get_i32(record, &format!("AN{}{}", infix, suffix))
                 .unwrap_or_default(),
-            nhomalt: common::noodles::get_i32(record, &format!("nhomalt{}{}", infix, suffix))
+            nhomalt: common::noodles_utils::get_i32(record, &format!("nhomalt{}{}", infix, suffix))
                 .unwrap_or_default(),
-            af: common::noodles::get_f32(record, &format!("AF{}{}", infix, suffix))
+            af: common::noodles_utils::get_f32(record, &format!("AF{}{}", infix, suffix))
                 .unwrap_or_default(),
         })
     }
@@ -340,7 +347,7 @@ mod test {
     fn test_record_from_vcf_allele_gnomad_genomes_grch38() -> Result<(), anyhow::Error> {
         let path_vcf = "tests/gnomad-nuclear/example-genomes-grch38/v4.0/gnomad-genomes.vcf";
         let mut reader_vcf =
-            noodles_vcf::io::reader::Builder::default().build_from_path(path_vcf)?;
+            noodles::vcf::io::reader::Builder::default().build_from_path(path_vcf)?;
         let header = reader_vcf.read_header()?;
 
         let mut records = Vec::new();
@@ -364,7 +371,7 @@ mod test {
     fn test_record_from_vcf_allele_gnomad_exomess_grch38() -> Result<(), anyhow::Error> {
         let path_vcf = "tests/gnomad-nuclear/example-exomes-grch38/v4.0/gnomad-exomes.vcf";
         let mut reader_vcf =
-            noodles_vcf::io::reader::Builder::default().build_from_path(path_vcf)?;
+            noodles::vcf::io::reader::Builder::default().build_from_path(path_vcf)?;
         let header = reader_vcf.read_header()?;
 
         let mut records = Vec::new();

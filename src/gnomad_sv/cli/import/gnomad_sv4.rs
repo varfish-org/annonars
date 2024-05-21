@@ -6,14 +6,14 @@
 use std::{str::FromStr, sync::Arc};
 
 use indicatif::ParallelProgressIterator as _;
-use noodles_vcf::variant::record::Ids;
+use noodles::vcf::variant::record::Ids;
 use prost::Message as _;
 use rayon::iter::{IntoParallelRefIterator as _, ParallelIterator as _};
 
 use crate::{
     common::{
         self,
-        noodles::{get_f32, get_i32, get_string},
+        noodles_utils::{get_f32, get_i32, get_string},
     },
     pbs::gnomad::gnomad_sv2::CpxType,
     pbs::gnomad::gnomad_sv4::{
@@ -122,7 +122,7 @@ impl Record {
     ///
     /// * Any error encountered during the creation.
     pub fn from_vcf_record(
-        record: &noodles_vcf::variant::RecordBuf,
+        record: &noodles::vcf::variant::RecordBuf,
     ) -> Result<Self, anyhow::Error> {
         let chrom = record.reference_sequence_name().to_string();
         let pos: usize = record
@@ -181,7 +181,7 @@ impl Record {
 
     /// Extract allele counts from VCF record.
     fn allele_counts_from_vcf_record(
-        record: &noodles_vcf::variant::RecordBuf,
+        record: &noodles::vcf::variant::RecordBuf,
         cohort_name: &str,
     ) -> Result<CohortAlleleCounts, anyhow::Error> {
         let cohort = if cohort_name == "all" {
@@ -226,7 +226,7 @@ impl Record {
 
     /// Extract poulation allele counts.
     fn extract_population_allele_counts(
-        record: &noodles_vcf::variant::RecordBuf,
+        record: &noodles::vcf::variant::RecordBuf,
         population: Population,
     ) -> Result<PopulationAlleleCounts, anyhow::Error> {
         let pop_str = population.to_string();
@@ -248,7 +248,7 @@ impl Record {
 
     /// Extract allele counts for a given population from VCF record.
     fn extract_allele_counts(
-        record: &noodles_vcf::variant::RecordBuf,
+        record: &noodles::vcf::variant::RecordBuf,
         prefix: &str,
         population: &str,
     ) -> Result<AlleleCounts, anyhow::Error> {
@@ -318,7 +318,7 @@ fn import_file(
     cf_data_name: &str,
     path_in_vcf: &str,
 ) -> Result<(), anyhow::Error> {
-    let mut reader = noodles_vcf::io::reader::Builder::default().build_from_path(path_in_vcf)?;
+    let mut reader = noodles::vcf::io::reader::Builder::default().build_from_path(path_in_vcf)?;
     let header = reader.read_header()?;
     let cf_data = db.cf_handle(cf_data_name).unwrap();
 
