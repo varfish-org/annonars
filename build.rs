@@ -27,6 +27,11 @@ fn main() -> Result<(), anyhow::Error> {
         "annonars/gnomad/vep_gnomad4.proto",
         "annonars/helixmtdb/base.proto",
         "annonars/regions/clingen.proto",
+        "clinvar_data/class_by_freq.proto",
+        "clinvar_data/clinvar_public.proto",
+        "clinvar_data/extracted_vars.proto",
+        "clinvar_data/gene_impact.proto",
+        "clinvar_data/phenotype_link.proto",
     ]
     .iter()
     .map(|f| root.join(f))
@@ -51,7 +56,7 @@ fn main() -> Result<(), anyhow::Error> {
     let descriptor_set = std::fs::read(descriptor_path).unwrap();
     pbjson_build::Builder::new()
         .register_descriptors(&descriptor_set)?
-        .build(&[".annonars"])?;
+        .build(&[".annonars", ".clinvar_data"])?;
 
     Ok(())
 }

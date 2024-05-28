@@ -1,5 +1,14 @@
 //! Code generate for protobufs by `prost-build`.
 
+/// Code generated for protobufs by `prost-build`.
+pub mod clinvar_pupblic {
+    include!(concat!(env!("OUT_DIR"), "/clinvar_data.clinvar_public.rs"));
+    include!(concat!(
+        env!("OUT_DIR"),
+        "/clinvar_data.clinvar_public.serde.rs"
+    ));
+}
+
 /// Code generate for protobufs by `prost-build`.
 pub mod minimal {
     include!(concat!(env!("OUT_DIR"), "/annonars.clinvar.minimal.rs"));
