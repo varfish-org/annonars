@@ -2,7 +2,7 @@
 
 use itertools::Itertools;
 use noodles_vcf::variant::record::Ids;
-use std::{str::FromStr, sync::Arc};
+use std::{fmt, str::FromStr, sync::Arc};
 
 use crate::{
     common::noodles::{get_f32, get_i32, get_string, get_vec_str},
@@ -45,17 +45,17 @@ impl FromStr for Population {
     }
 }
 
-impl ToString for Population {
-    fn to_string(&self) -> String {
+impl fmt::Display for Population {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         match self {
-            Population::Afr => "AFR".to_string(),
-            Population::Amr => "AMR".to_string(),
-            Population::Asj => "ASJ".to_string(),
-            Population::Eas => "EAS".to_string(),
-            Population::Fin => "FIN".to_string(),
-            Population::Mid => "MID".to_string(),
-            Population::Nfe => "NFE".to_string(),
-            Population::Sas => "SAS".to_string(),
+            Population::Afr => write!(f, "AFR"),
+            Population::Amr => write!(f, "AMR"),
+            Population::Asj => write!(f, "ASJ"),
+            Population::Eas => write!(f, "EAS"),
+            Population::Fin => write!(f, "FIN"),
+            Population::Mid => write!(f, "MID"),
+            Population::Nfe => write!(f, "NFE"),
+            Population::Sas => write!(f, "SAS"),
             _ => unreachable!("unknown population: {:?}", self),
         }
     }

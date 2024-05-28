@@ -3,7 +3,7 @@
 //! Note that gnomAD v2 did not have distinction between different cohorts within
 //! one file.  Rather, there is one file for each cohort (all, controls, non-neuro).
 
-use std::{str::FromStr, sync::Arc};
+use std::{fmt, str::FromStr, sync::Arc};
 
 use indicatif::ParallelProgressIterator as _;
 use noodles_vcf::variant::record::Ids;
@@ -63,22 +63,21 @@ impl FromStr for Population {
     }
 }
 
-impl ToString for Population {
-    fn to_string(&self) -> String {
+impl fmt::Display for Population {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         match self {
-            Population::Afr => "AFR",
-            Population::Ami => "AMI",
-            Population::Amr => "AMR",
-            Population::Asj => "ASJ",
-            Population::Eas => "EAS",
-            Population::Fin => "FIN",
-            Population::Mid => "MID",
-            Population::Nfe => "NFE",
-            Population::Sas => "SAS",
-            Population::Other => "OTH",
+            Population::Afr => write!(f, "AFR"),
+            Population::Ami => write!(f, "AMI"),
+            Population::Amr => write!(f, "AMR"),
+            Population::Asj => write!(f, "ASJ"),
+            Population::Eas => write!(f, "EAS"),
+            Population::Fin => write!(f, "FIN"),
+            Population::Mid => write!(f, "MID"),
+            Population::Nfe => write!(f, "NFE"),
+            Population::Sas => write!(f, "SAS"),
+            Population::Other => write!(f, "OTH"),
             _ => unreachable!("unknown population: {:?}", self),
         }
-        .to_string()
     }
 }
 
