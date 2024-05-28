@@ -5,14 +5,14 @@ use std::{collections::HashSet, io::BufRead, sync::Arc};
 use clap::Parser;
 use prost::Message;
 
+use crate::pbs::clinvar::class_by_freq::GeneCoarseClinsigFrequencyCounts;
+use crate::pbs::clinvar::extracted_vars::ExtractedVcvRecord;
+use crate::pbs::clinvar::gene_impact::GeneImpactCounts;
 use crate::pbs::clinvar::minimal::{
     ClinicalSignificance, Record, ReferenceAssertion, ReviewStatus,
 };
-use crate::pbs::clinvar::per_gene::{
-    ClinvarPerGeneRecord, CoarseClinicalSignificance, GeneFreqRecordCounts, GeneImpactRecordCounts,
-    GeneVariantsForRelease, Impact,
-};
-use crate::{clinvar_genes, clinvar_minimal, common};
+use crate::pbs::clinvar::per_gene::{ClinvarPerGeneRecord, GeneVariantsForRelease};
+use crate::{clinvar_minimal, common};
 
 /// Command line arguments for `tsv import` sub command.
 #[derive(Parser, Debug, Clone)]
@@ -42,7 +42,7 @@ pub struct Args {
 /// Load per-impact JSONL file.
 fn load_per_impact_jsonl(
     path_per_impact_jsonl: &str,
-) -> Result<indexmap::IndexMap<String, Vec<GeneImpactRecordCounts>>, anyhow::Error> {
+) -> Result<indexmap::IndexMap<String, GeneImpactCounts>, anyhow::Error> {
     // Open reader, possibly decompressing gziped files.
     let reader: Box<dyn std::io::Read> = if path_per_impact_jsonl.ends_with(".gz") {
         Box::new(flate2::read::GzDecoder::new(std::fs::File::open(
@@ -57,18 +57,8 @@ fn load_per_impact_jsonl(
     let reader = std::io::BufReader::new(reader);
     for line in reader.lines() {
         let line = line?;
-        let record =
-            serde_json::from_str::<clinvar_genes::cli::reading::gene_impact::Record>(&line)?;
-
-        let mut count_out = Vec::new();
-        for (impact, counts) in record.counts {
-            let impact: Impact = impact.into();
-            count_out.push(GeneImpactRecordCounts {
-                impact: impact as i32,
-                counts,
-            });
-        }
-        result.insert(record.hgnc.clone(), count_out);
+        let record = serde_json::from_str::<GeneImpactCounts>(&line)?;
+        result.insert(record.hgnc_id.clone(), record);
     }
 
     Ok(result)
@@ -77,7 +67,7 @@ fn load_per_impact_jsonl(
 /// Load per-frequency JSONL file.
 fn load_per_frequency_jsonl(
     path_per_impact_jsonl: &str,
-) -> Result<indexmap::IndexMap<String, Vec<GeneFreqRecordCounts>>, anyhow::Error> {
+) -> Result<indexmap::IndexMap<String, GeneCoarseClinsigFrequencyCounts>, anyhow::Error> {
     // Open reader, possibly decompressing gziped files.
     let reader: Box<dyn std::io::Read> = if path_per_impact_jsonl.ends_with(".gz") {
         Box::new(flate2::read::GzDecoder::new(std::fs::File::open(
@@ -92,18 +82,8 @@ fn load_per_frequency_jsonl(
     let reader = std::io::BufReader::new(reader);
     for line in reader.lines() {
         let line = line?;
-        let record =
-            serde_json::from_str::<clinvar_genes::cli::reading::counts_by_freq::Record>(&line)?;
-
-        let mut count_out = Vec::new();
-        for (clinsig, counts) in record.counts {
-            let coarse_clinsig: CoarseClinicalSignificance = clinsig.into();
-            count_out.push(GeneFreqRecordCounts {
-                coarse_clinsig: coarse_clinsig as i32,
-                counts,
-            });
-        }
-        result.insert(record.hgnc.clone(), count_out);
+        let record = serde_json::from_str::<GeneCoarseClinsigFrequencyCounts>(&line)?;
+        result.insert(record.hgnc_id.clone(), record);
     }
 
     Ok(result)
@@ -132,23 +112,29 @@ fn load_variants_jsonl(
 
         for line in reader.lines() {
             let line = line?;
-            let input_record = serde_json::from_str::<clinvar_minimal::cli::reading::Record>(&line);
+            let input_record = serde_json::from_str::<ExtractedVcvRecord>(&line);
             match input_record {
                 Err(e) => {
                     tracing::warn!("skipping line because of error: {}", e);
                     continue;
                 }
                 Ok(input_record) => {
-                    let clinvar_minimal::cli::reading::Record {
-                        vcv,
-                        rcv,
-                        title,
-                        hgnc_ids,
-                        clinical_significance,
-                        review_status,
+                    let ExtractedVcvRecord {
+                        accession,
+                        rcvs,
+                        name,
+                        variation_type,
+                        classifications,
                         sequence_location,
-                        ..
+                        hgnc_ids
                     } = input_record;
+
+                    if let (Some(accession), Some(classifications)) = (accession, classifications) {
+
+                    } else {
+                        continue;
+                    }
+
                     let clinvar_minimal::cli::reading::SequenceLocation {
                         assembly,
                         chr,

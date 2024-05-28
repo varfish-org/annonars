@@ -7,7 +7,6 @@ fn main() -> Result<(), anyhow::Error> {
     let root = PathBuf::from(env!("CARGO_MANIFEST_DIR")).join("protos");
     let proto_files = vec![
         "annonars/clinvar/minimal.proto",
-        "annonars/clinvar/per_gene.proto",
         "annonars/clinvar/sv.proto",
         "annonars/cons/base.proto",
         "annonars/dbsnp/base.proto",
