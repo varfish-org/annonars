@@ -67,6 +67,7 @@ impl fmt::Display for Population {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         match self {
             Population::Afr => write!(f, "AFR"),
+            Population::Ami => write!(f, "AMI"),
             Population::Amr => write!(f, "AMR"),
             Population::Asj => write!(f, "ASJ"),
             Population::Eas => write!(f, "EAS"),
@@ -74,6 +75,7 @@ impl fmt::Display for Population {
             Population::Mid => write!(f, "MID"),
             Population::Nfe => write!(f, "NFE"),
             Population::Sas => write!(f, "SAS"),
+            Population::Other => write!(f, "OTH"),
             _ => unreachable!("unknown population: {:?}", self),
         }
     }
