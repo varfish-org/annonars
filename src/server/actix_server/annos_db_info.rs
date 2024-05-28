@@ -20,13 +20,6 @@ struct Request {
     pub genome_release: String,
 }
 
-/// Result for `handle`.
-#[derive(Serialize, Debug, Clone)]
-struct ResultEntry {
-    /// Information for each database.
-    pub db_info: indexmap::IndexMap<String, DbInfo>,
-}
-
 /// Query for annotations for one variant.
 #[get("/annos/db-info")]
 async fn handle(
