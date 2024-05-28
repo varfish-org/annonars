@@ -5,9 +5,7 @@ use actix_web::{
     web::{self, Data, Json, Path},
     Responder,
 };
-use serde::{Deserialize, Serialize};
-
-use crate::server::DbInfo;
+use serde::Deserialize;
 
 use super::{error::CustomError, WebServerData};
 

@@ -221,7 +221,7 @@ impl Context {
                     // skip if not lifted to this genome build
                     return Ok(None);
                 } else if let serde_json::Value::String(chrom) = val {
-                    res.chrom = chrom.clone();
+                    res.chrom.clone_from(chrom);
                 } else {
                     return Err(error::Error::InvalidType(
                         self.config.col_chrom.clone(),
@@ -248,7 +248,7 @@ impl Context {
                 }
             } else if col.name == self.config.col_ref {
                 if let serde_json::Value::String(reference) = val {
-                    res.reference = reference.clone();
+                    res.reference.clone_from(reference);
                 } else {
                     return Err(error::Error::InvalidType(
                         self.config.col_ref.clone(),
@@ -257,7 +257,7 @@ impl Context {
                 }
             } else if col.name == self.config.col_alt {
                 if let serde_json::Value::String(alternative) = val {
-                    res.alternative = alternative.clone();
+                    res.alternative.clone_from(alternative);
                 } else {
                     return Err(error::Error::InvalidType(
                         self.config.col_alt.clone(),
