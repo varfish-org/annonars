@@ -5,14 +5,11 @@ use std::{collections::HashSet, io::BufRead, sync::Arc};
 use clap::Parser;
 use prost::Message;
 
-use crate::pbs::clinvar::class_by_freq::GeneCoarseClinsigFrequencyCounts;
-use crate::pbs::clinvar::extracted_vars::ExtractedVcvRecord;
-use crate::pbs::clinvar::gene_impact::GeneImpactCounts;
-use crate::pbs::clinvar::minimal::{
-    ClinicalSignificance, Record, ReferenceAssertion, ReviewStatus,
-};
-use crate::pbs::clinvar::per_gene::{ClinvarPerGeneRecord, GeneVariantsForRelease};
-use crate::{clinvar_minimal, common};
+use crate::common;
+use crate::pbs::clinvar::per_gene::{ClinvarPerGeneRecord, ExtractedVariantsPerRelease};
+use crate::pbs::clinvar_data::class_by_freq::GeneCoarseClinsigFrequencyCounts;
+use crate::pbs::clinvar_data::extracted_vars::ExtractedVcvRecord;
+use crate::pbs::clinvar_data::gene_impact::GeneImpactCounts;
 
 /// Command line arguments for `tsv import` sub command.
 #[derive(Parser, Debug, Clone)]
@@ -89,16 +86,16 @@ fn load_per_frequency_jsonl(
     Ok(result)
 }
 
-type PerVcv = indexmap::IndexMap<String, Record>;
-type PerAssembly = indexmap::IndexMap<String, PerVcv>;
-type PerGene = indexmap::IndexMap<String, PerAssembly>;
+type PerRelease = indexmap::IndexMap<String, Vec<ExtractedVcvRecord>>;
+type PerGene = indexmap::IndexMap<String, PerRelease>;
 
 /// Load per-gene sequence variants.
 fn load_variants_jsonl(
     variant_jsonls: &[String],
-) -> Result<indexmap::IndexMap<String, Vec<GeneVariantsForRelease>>, anyhow::Error> {
+) -> Result<indexmap::IndexMap<String, Vec<ExtractedVariantsPerRelease>>, anyhow::Error> {
     // Build intermediate data structure using nested maps.
     let mut per_gene: PerGene = Default::default();
+
     for path_jsonl in variant_jsonls {
         let reader: Box<dyn std::io::Read> = if path_jsonl.ends_with(".gz") {
             Box::new(flate2::read::GzDecoder::new(std::fs::File::open(
@@ -119,64 +116,16 @@ fn load_variants_jsonl(
                     continue;
                 }
                 Ok(input_record) => {
-                    let ExtractedVcvRecord {
-                        accession,
-                        rcvs,
-                        name,
-                        variation_type,
-                        classifications,
-                        sequence_location,
-                        hgnc_ids
-                    } = input_record;
-
-                    if let (Some(accession), Some(classifications)) = (accession, classifications) {
-
-                    } else {
-                        continue;
-                    }
-
-                    let clinvar_minimal::cli::reading::SequenceLocation {
-                        assembly,
-                        chr,
-                        start,
-                        stop,
-                        reference_allele_vcf,
-                        alternate_allele_vcf,
-                        ..
-                    } = sequence_location;
-
-                    if let (
-                        Some(start),
-                        Some(stop),
-                        Some(reference_allele_vcf),
-                        Some(alternate_allele_vcf),
-                    ) = (start, stop, reference_allele_vcf, alternate_allele_vcf)
-                    {
-                        for hgnc_id in hgnc_ids {
-                            let per_release = per_gene.entry(hgnc_id).or_default();
-                            let per_vcv = per_release.entry(assembly.clone()).or_default();
-                            let seqvar = per_vcv.entry(vcv.clone()).or_insert_with(|| Record {
-                                release: assembly.clone(),
-                                start,
-                                stop,
-                                reference: reference_allele_vcf.clone(),
-                                alternative: alternate_allele_vcf.clone(),
-                                vcv: vcv.clone(),
-                                reference_assertions: vec![],
-                                chromosome: chr.clone(),
-                            });
-                            seqvar.reference_assertions.push(ReferenceAssertion {
-                                rcv: rcv.clone(),
-                                title: title.clone(),
-                                clinical_significance: Into::<ClinicalSignificance>::into(
-                                    clinical_significance,
-                                ) as i32,
-                                review_status: Into::<ReviewStatus>::into(review_status) as i32,
-                            });
-                            seqvar
-                                .reference_assertions
-                                .sort_by_key(|a| (a.clinical_significance, a.review_status));
-                        }
+                    for hgnc_id in &input_record.hgnc_ids {
+                        let per_gene_entry = per_gene.entry(hgnc_id.clone()).or_default();
+                        let release = input_record
+                            .sequence_location
+                            .as_ref()
+                            .expect("missing sequence_location")
+                            .assembly
+                            .clone();
+                        let per_release_entry = per_gene_entry.entry(release.clone()).or_default();
+                        per_release_entry.push(input_record.clone());
                     }
                 }
             }
@@ -185,12 +134,20 @@ fn load_variants_jsonl(
 
     // Convert into final data structure that uses lists of entry records rather than nested maps.
     let mut result = indexmap::IndexMap::new();
-    for (hgnc_id, per_gene) in per_gene {
+    for (hgnc_id, per_release) in per_gene {
         let mut per_gene_out = Vec::new();
-        for (genome_release, per_release) in per_gene {
-            per_gene_out.push(GeneVariantsForRelease {
-                genome_release,
-                variants: per_release.values().cloned().collect(),
+        for (release, extracted_vars) in per_release {
+            let mut variants = extracted_vars;
+            variants.sort_by(|a, b| {
+                a.accession
+                    .as_ref()
+                    .expect("no accession")
+                    .accession
+                    .cmp(&b.accession.as_ref().expect("no accession").accession)
+            });
+            per_gene_out.push(ExtractedVariantsPerRelease {
+                release: Some(release),
+                variants,
             });
         }
         result.insert(hgnc_id, per_gene_out);
@@ -242,10 +199,11 @@ fn jsonl_import(
 
     // Read through all records and insert each into the database.
     for hgnc_id in hgnc_ids.iter() {
+        let per_release_vars = vars_per_gene.get(hgnc_id).cloned().unwrap_or_default();
         let record = ClinvarPerGeneRecord {
-            per_impact_counts: counts_per_impact.get(hgnc_id).cloned().unwrap_or_default(),
-            per_freq_counts: counts_per_freq.get(hgnc_id).cloned().unwrap_or_default(),
-            variants: vars_per_gene.get(hgnc_id).cloned().unwrap_or_default(),
+            per_impact_counts: Some(counts_per_impact.get(hgnc_id).cloned().unwrap_or_default()),
+            per_freq_counts: Some(counts_per_freq.get(hgnc_id).cloned().unwrap_or_default()),
+            per_release_vars,
         };
         let buf = record.encode_to_vec();
 

@@ -2,7 +2,7 @@
 
 syntax = "proto3";
 
-package clinvar_data.class_by_freq;
+package annonars.clinvar_data.class_by_freq;
 
 // Enumeration for coarse-grain classification.
 enum CoarseClinicalSignificance {

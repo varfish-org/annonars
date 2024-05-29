@@ -5,16 +5,24 @@ syntax = "proto3";
 package annonars.clinvar.per_gene;
 
 import "annonars/clinvar/minimal.proto";
-import "clinvar_data/class_by_freq.proto";
-import "clinvar_data/extracted_vars.proto";
-import "clinvar_data/gene_impact.proto";
+import "annonars/clinvar_data/class_by_freq.proto";
+import "annonars/clinvar_data/extracted_vars.proto";
+import "annonars/clinvar_data/gene_impact.proto";
+
+// Extracted variants per release.
+message ExtractedVariantsPerRelease {
+    // Release version.
+    optional string release = 1;
+    // Variants per gene.
+    repeated clinvar_data.extracted_vars.ExtractedVcvRecord variants = 2;
+}
 
 // ClinVar detailed information per gene.
 message ClinvarPerGeneRecord {
     // Counts of variants per impact
-    optional clinvar_data.gene_impact GeneImpactCounts = 1;
+    optional clinvar_data.gene_impact.GeneImpactCounts per_impact_counts = 1;
     // Counts of variants per impact / frequency
     optional clinvar_data.class_by_freq.GeneCoarseClinsigFrequencyCounts per_freq_counts = 2;
     // Variants for the given gene.
-    repeated clinvar_data.extracted_vars.ExtractedVcvRecord variants = 3;
+    repeated ExtractedVariantsPerRelease per_release_vars = 3;
 }

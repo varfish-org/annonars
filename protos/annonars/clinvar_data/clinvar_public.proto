@@ -2,7 +2,7 @@
 
 syntax = "proto3";
 
-package clinvar_data.clinvar_public;
+package annonars.clinvar_data.clinvar_public;
 
 import "google/protobuf/timestamp.proto";
 

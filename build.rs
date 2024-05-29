@@ -6,7 +6,13 @@ use std::{env, path::PathBuf};
 fn main() -> Result<(), anyhow::Error> {
     let root = PathBuf::from(env!("CARGO_MANIFEST_DIR")).join("protos");
     let proto_files = vec![
+        "annonars/clinvar_data/class_by_freq.proto",
+        "annonars/clinvar_data/clinvar_public.proto",
+        "annonars/clinvar_data/extracted_vars.proto",
+        "annonars/clinvar_data/gene_impact.proto",
+        "annonars/clinvar_data/phenotype_link.proto",
         "annonars/clinvar/minimal.proto",
+        "annonars/clinvar/per_gene.proto",
         "annonars/clinvar/sv.proto",
         "annonars/cons/base.proto",
         "annonars/dbsnp/base.proto",
@@ -26,11 +32,6 @@ fn main() -> Result<(), anyhow::Error> {
         "annonars/gnomad/vep_gnomad4.proto",
         "annonars/helixmtdb/base.proto",
         "annonars/regions/clingen.proto",
-        "clinvar_data/class_by_freq.proto",
-        "clinvar_data/clinvar_public.proto",
-        "clinvar_data/extracted_vars.proto",
-        "clinvar_data/gene_impact.proto",
-        "clinvar_data/phenotype_link.proto",
     ]
     .iter()
     .map(|f| root.join(f))

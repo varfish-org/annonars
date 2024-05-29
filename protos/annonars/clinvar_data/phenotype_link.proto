@@ -2,17 +2,17 @@
 
 syntax = "proto3";
 
-package clinvar_data.phenotype_link;
+package annonars.clinvar_data.phenotype_link;
 
-import "clinvar_data/extracted_vars.proto";
+import "annonars/clinvar_data/extracted_vars.proto";
 
 
 // A record linking gene to phenotype.
 message GenePhenotypeRecord {
   // VCV
-  clinvar_data.extracted_vars.VersionedAccession vcv = 1;
+  annonars.clinvar_data.extracted_vars.VersionedAccession vcv = 1;
   // SCV
-  clinvar_data.extracted_vars.VersionedAccession scv = 2;
+  annonars.clinvar_data.extracted_vars.VersionedAccession scv = 2;
   // Clinical germline classification.
   string germline_classification = 3;
   // Submitter
