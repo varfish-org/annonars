@@ -6,6 +6,11 @@ use std::{env, path::PathBuf};
 fn main() -> Result<(), anyhow::Error> {
     let root = PathBuf::from(env!("CARGO_MANIFEST_DIR")).join("protos");
     let proto_files = vec![
+        "annonars/clinvar_data/class_by_freq.proto",
+        "annonars/clinvar_data/clinvar_public.proto",
+        "annonars/clinvar_data/extracted_vars.proto",
+        "annonars/clinvar_data/gene_impact.proto",
+        "annonars/clinvar_data/phenotype_link.proto",
         "annonars/clinvar/minimal.proto",
         "annonars/clinvar/per_gene.proto",
         "annonars/clinvar/sv.proto",
@@ -51,7 +56,7 @@ fn main() -> Result<(), anyhow::Error> {
     let descriptor_set = std::fs::read(descriptor_path).unwrap();
     pbjson_build::Builder::new()
         .register_descriptors(&descriptor_set)?
-        .build(&[".annonars"])?;
+        .build(&[".annonars", ".clinvar_data"])?;
 
     Ok(())
 }
