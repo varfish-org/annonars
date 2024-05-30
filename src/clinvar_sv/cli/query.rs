@@ -414,7 +414,7 @@ mod test {
             verbose: clap_verbosity_flag::Verbosity::new(1, 0),
         };
         let args = Args {
-            path_rocksdb: String::from("tests/clinvar-sv/clinvar-sv-grch37.tsv.db"),
+            path_rocksdb: String::from("tests/clinvar-sv/clinvar-sv-grch37.db"),
             cf_name: String::from("clinvar_sv"),
             cf_name_by_rcv: String::from("clinvar_sv_by_rcv"),
             out_file: temp.join("out").to_string_lossy().to_string(),
@@ -428,7 +428,7 @@ mod test {
     #[test]
     fn smoke_query_var_vcv() -> Result<(), anyhow::Error> {
         let (common, args, _temp) = args(ArgsQuery {
-            accession: Some("VCV000057688".into()),
+            accession: Some("VCV000057688.1".into()),
             ..Default::default()
         });
         run(&common, &args)?;
@@ -441,7 +441,7 @@ mod test {
     #[test]
     fn smoke_query_var_rcv() -> Result<(), anyhow::Error> {
         let (common, args, _temp) = args(ArgsQuery {
-            accession: Some("RCV000051426".into()),
+            accession: Some("RCV000051426.5".into()),
             ..Default::default()
         });
         run(&common, &args)?;

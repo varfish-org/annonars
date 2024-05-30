@@ -283,7 +283,7 @@ mod test {
             verbose: clap_verbosity_flag::Verbosity::new(1, 0),
         };
         let args = Args {
-            path_rocksdb: String::from("tests/clinvar-minimal/clinvar-seqvars-grch37-tgds.tsv.db"),
+            path_rocksdb: String::from("tests/clinvar-minimal/clinvar-seqvars-grch37-tgds.db"),
             cf_name: String::from("clinvar"),
             cf_name_by_accession: String::from("clinvar_by_accession"),
             out_file: temp.join("out").to_string_lossy().to_string(),
@@ -375,7 +375,7 @@ mod test {
     #[test]
     fn smoke_query_range_find_none_smaller() -> Result<(), anyhow::Error> {
         let (common, args, _temp) = args(ArgsQuery {
-            range: Some(spdi::Range::from_str("GRCh37:13:1:95227054")?),
+            range: Some(spdi::Range::from_str("GRCh37:13:1:95227038")?),
             ..Default::default()
         });
         run(&common, &args)?;
@@ -400,8 +400,8 @@ mod test {
 
     #[rstest::rstest]
     #[test]
-    #[case("RCV001679107")]
-    #[case("VCV001307216")]
+    #[case("RCV001679107.1")]
+    #[case("VCV001307216.2")]
     fn smoke_query_by_accession(#[case] accession: &str) -> Result<(), anyhow::Error> {
         crate::common::set_snapshot_suffix!("{}", &accession);
 
