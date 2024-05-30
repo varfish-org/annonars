@@ -5,15 +5,11 @@ use std::{io::BufRead, sync::Arc};
 use clap::Parser;
 use prost::Message;
 
-use crate::{
-    clinvar_minimal,
-    common::{self, keys},
-    pbs::clinvar::minimal::ReferenceAssertion,
-};
+use crate::common::{self, keys};
 
 /// Command line arguments for `clinvar-minimal import` sub command.
 #[derive(Parser, Debug, Clone)]
-#[command(about = "import minimal ClinVar data into RocksDB", long_about = None)]
+#[command(about = "import extracted seqvars ClinVar data into RocksDB", long_about = None)]
 pub struct Args {
     /// Genome build to use in the build.
     #[arg(long, value_enum)]
@@ -57,7 +53,10 @@ fn jsonl_import(
 
     for line in reader.lines() {
         let line = line?;
-        let record = match serde_json::from_str::<clinvar_minimal::cli::reading::Record>(&line) {
+        let vcv_record = match serde_json::from_str::<
+            crate::pbs::clinvar_data::extracted_vars::ExtractedVcvRecord,
+        >(&line)
+        {
             Ok(record) => record,
             Err(e) => {
                 tracing::warn!("skipping line because of error: {}", e);
@@ -65,32 +64,31 @@ fn jsonl_import(
             }
         };
 
-        let clinvar_minimal::cli::reading::Record {
-            rcv,
-            vcv,
-            title,
-            clinical_significance,
-            review_status,
+        let crate::pbs::clinvar_data::extracted_vars::ExtractedVcvRecord {
+            accession,
+            rcvs: rcv_records,
             sequence_location,
             ..
-        } = record;
-        let clinical_significance: crate::pbs::clinvar::minimal::ClinicalSignificance =
-            clinical_significance.into();
-        let review_status: crate::pbs::clinvar::minimal::ReviewStatus = review_status.into();
-        let clinvar_minimal::cli::reading::SequenceLocation {
-            assembly,
+        } = vcv_record.clone();
+        let accession = accession.expect("accession is required");
+        let vcv = format!("{}.{}", accession.accession, accession.version);
+        let sequence_location = sequence_location.expect("sequence_location is required");
+        let crate::pbs::clinvar_data::clinvar_public::location::SequenceLocation {
             chr,
             start,
-            stop,
             reference_allele_vcf,
             alternate_allele_vcf,
             ..
         } = sequence_location;
-        if let (Some(start), Some(stop), Some(reference_allele_vcf), Some(alternate_allele_vcf)) =
-            (start, stop, reference_allele_vcf, alternate_allele_vcf)
+        let chr_pb =
+            crate::pbs::clinvar_data::clinvar_public::Chromosome::try_from(chr).map_err(|e| {
+                anyhow::anyhow!("problem converting chromosome {} to Chromosome: {}", chr, e)
+            })?;
+        if let (Some(start), Some(reference_allele_vcf), Some(alternate_allele_vcf)) =
+            (start, reference_allele_vcf, alternate_allele_vcf)
         {
             let var = keys::Var::from(
-                &chr,
+                &chr_pb.as_chr_name(),
                 start as i32,
                 &reference_allele_vcf,
                 &alternate_allele_vcf,
@@ -106,41 +104,36 @@ fn jsonl_import(
                     continue;
                 }
                 Ok(data) => {
-                    db.put_cf(&cf_by_accession, rcv.as_bytes(), &key)?;
                     db.put_cf(&cf_by_accession, vcv.as_bytes(), &key)?;
+                    for rcv_record in &rcv_records {
+                        let accession = rcv_record
+                            .accession
+                            .as_ref()
+                            .expect("rcv.accession is required");
+                        let rcv = format!("{}.{}", accession.accession, accession.version);
+                        db.put_cf(&cf_by_accession, rcv.as_bytes(), &key)?;
+                    }
 
-                    let record = if let Some(data) = data {
-                        let mut record = crate::pbs::clinvar::minimal::Record::decode(&data[..])?;
-                        record.reference_assertions.push(
-                            crate::pbs::clinvar::minimal::ReferenceAssertion {
-                                rcv,
-                                title,
-                                clinical_significance: clinical_significance.into(),
-                                review_status: review_status.into(),
-                            },
-                        );
-                        record
-                            .reference_assertions
-                            .sort_by_key(|a| (a.clinical_significance, a.review_status));
+                    let new_record = if let Some(data) = data {
+                        let mut record =
+                            crate::pbs::clinvar::minimal::ExtractedVcvRecordList::decode(
+                                &data[..],
+                            )?;
+                        record.records.push(vcv_record);
+                        record.records.sort_by_key(|a| {
+                            a.accession
+                                .as_ref()
+                                .expect("accession is required")
+                                .accession
+                                .clone()
+                        });
                         record
                     } else {
-                        crate::pbs::clinvar::minimal::Record {
-                            release: assembly,
-                            chromosome: chr,
-                            start,
-                            stop,
-                            reference: reference_allele_vcf,
-                            alternative: alternate_allele_vcf,
-                            vcv,
-                            reference_assertions: vec![ReferenceAssertion {
-                                rcv,
-                                title,
-                                clinical_significance: clinical_significance.into(),
-                                review_status: review_status.into(),
-                            }],
+                        crate::pbs::clinvar::minimal::ExtractedVcvRecordList {
+                            records: vec![vcv_record],
                         }
                     };
-                    let buf = record.encode_to_vec();
+                    let buf = new_record.encode_to_vec();
                     db.put_cf(&cf_data, &key, &buf)?;
                 }
             }

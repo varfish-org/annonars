@@ -11,86 +11,12 @@ use crate::common::{cli::GenomeRelease, spdi};
 use super::error::CustomError;
 use serde_with::{formats::CommaSeparator, StringWithSeparator};
 
-use crate::pbs::clinvar::{
-    minimal::VariantType as PbVariantType,
-    sv::{PageInfo, ResponsePage, ResponseRecord},
-};
+use crate::pbs::clinvar_data::extracted_vars::VariationType;
 
 /// The default page size to use.
 const DEFAULT_PAGE_SIZE: u32 = 100;
 /// The default minimal overlap.
 const DEFAULT_MIN_OVERLAP: f64 = 0.5;
-
-/// Enumeration for `Request::variant_type`.
-///
-/// We use the prefixed `SCREAMING_SNAKE_CASE` for consistency with the JSON
-/// serialized protobufs.
-#[serde_with::serde_as]
-#[derive(
-    serde_with::SerializeDisplay,
-    serde_with::DeserializeFromStr,
-    Debug,
-    Clone,
-    Copy,
-    PartialEq,
-    Eq,
-    PartialOrd,
-    Ord,
-)]
-enum VariantType {
-    Unknown,
-    Deletion,
-    Duplication,
-    Indel,
-    Insertion,
-    Inversion,
-    Snv,
-}
-
-impl std::fmt::Display for VariantType {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        match self {
-            VariantType::Unknown => write!(f, "VARIANT_TYPE_UNKNOWN"),
-            VariantType::Deletion => write!(f, "VARIANT_TYPE_DELETION"),
-            VariantType::Duplication => write!(f, "VARIANT_TYPE_DUPLICATION"),
-            VariantType::Indel => write!(f, "VARIANT_TYPE_INDEL"),
-            VariantType::Insertion => write!(f, "VARIANT_TYPE_INSERTION"),
-            VariantType::Inversion => write!(f, "VARIANT_TYPE_INVERSION"),
-            VariantType::Snv => write!(f, "VARIANT_TYPE_SNV"),
-        }
-    }
-}
-
-impl std::str::FromStr for VariantType {
-    type Err = anyhow::Error;
-
-    fn from_str(s: &str) -> Result<Self, Self::Err> {
-        match s {
-            "VARIANT_TYPE_UNKNOWN" => Ok(VariantType::Unknown),
-            "VARIANT_TYPE_DELETION" => Ok(VariantType::Deletion),
-            "VARIANT_TYPE_DUPLICATION" => Ok(VariantType::Duplication),
-            "VARIANT_TYPE_INDEL" => Ok(VariantType::Indel),
-            "VARIANT_TYPE_INSERTION" => Ok(VariantType::Insertion),
-            "VARIANT_TYPE_INVERSION" => Ok(VariantType::Inversion),
-            "VARIANT_TYPE_SNV" => Ok(VariantType::Snv),
-            _ => Err(anyhow::anyhow!("unknown variant type: {}", s)),
-        }
-    }
-}
-
-impl From<VariantType> for PbVariantType {
-    fn from(val: VariantType) -> Self {
-        match val {
-            VariantType::Unknown => PbVariantType::Unknown,
-            VariantType::Deletion => PbVariantType::Deletion,
-            VariantType::Duplication => PbVariantType::Duplication,
-            VariantType::Indel => PbVariantType::Indel,
-            VariantType::Insertion => PbVariantType::Insertion,
-            VariantType::Inversion => PbVariantType::Inversion,
-            VariantType::Snv => PbVariantType::Snv,
-        }
-    }
-}
 
 /// Parameters for `handle()`.
 ///
@@ -111,8 +37,8 @@ struct Request {
     /// 1-based stop postion.
     pub stop: u32,
     /// Optionally, the variant types.
-    #[serde_as(as = "Option<StringWithSeparator::<CommaSeparator, VariantType>>")]
-    pub variant_type: Option<Vec<VariantType>>,
+    #[serde_as(as = "Option<StringWithSeparator::<CommaSeparator, VariationType>>")]
+    pub variation_types: Option<Vec<VariationType>>,
     /// Optionally, minimal overlap.
     pub min_overlap: Option<f64>,
     /// Optional 1-based page number.
@@ -134,7 +60,13 @@ where
     let len_lhs = lhs.end - lhs.start;
     let len_rhs = rhs.end - rhs.start;
     let len_ovl = std::cmp::min(lhs.end, rhs.end) - std::cmp::max(lhs.start, rhs.start);
-    (Into::<f64>::into(len_ovl)) / Into::<f64>::into(len_lhs + len_rhs)
+    let res_lhs = Into::<f64>::into(len_ovl) / Into::<f64>::into(len_lhs);
+    let res_rhs = Into::<f64>::into(len_ovl) / Into::<f64>::into(len_rhs);
+    if res_lhs < res_rhs {
+        res_lhs
+    } else {
+        res_rhs
+    }
 }
 
 /// Query for annotations for one variant.
@@ -178,33 +110,52 @@ async fn handle(
         ))
     })?;
     // Filter the records.
-    let variant_types = query
-        .variant_type
+    let variation_types = query
+        .variation_types
         .as_ref()
-        .map(|vs| {
-            vs.iter()
-                .map(|v| PbVariantType::from(*v) as i32)
-                .collect::<Vec<_>>()
-        })
+        .map(|vs| vs.iter().map(|v| *v as i32).collect::<Vec<_>>())
         .unwrap_or_default();
     let records = {
         let mut records = records
             .into_iter()
-            .map(|record| {
-                let overlap = reciprocal_overlap(
-                    &((query.start - 1)..query.stop),
-                    &((record.start - 1)..record.stop),
-                );
-                ResponseRecord {
+            .filter_map(|record| {
+                let crate::pbs::clinvar_data::clinvar_public::location::SequenceLocation {
+                    start,
+                    stop,
+                    inner_start,
+                    inner_stop,
+                    outer_start,
+                    outer_stop,
+                    ..
+                } = record
+                    .sequence_location
+                    .clone()
+                    .expect("missing sequence_location");
+                let (start, stop) = if let (Some(start), Some(stop)) = (start, stop) {
+                    (start, stop)
+                } else if let (Some(inner_start), Some(inner_stop)) = (inner_start, inner_stop) {
+                    (inner_start, inner_stop)
+                } else if let (Some(outer_start), Some(outer_stop)) = (outer_start, outer_stop) {
+                    (outer_start, outer_stop)
+                } else {
+                    let accession = record.accession.clone().expect("missing accession");
+                    let vcv = format!("{}.{}", &accession.accession, &accession.version);
+                    tracing::warn!("skipping record because no start/stop: {}", &vcv);
+                    return None;
+                };
+
+                let overlap =
+                    reciprocal_overlap(&((query.start - 1)..query.stop), &((start - 1)..stop));
+                Some(crate::pbs::clinvar::sv::ResponseRecord {
                     record: Some(record),
                     overlap,
-                }
+                })
             })
             .filter(|record| {
                 // filter by variant type if specified
-                if !variant_types.is_empty() {
-                    return variant_types
-                        .contains(&record.record.as_ref().expect("no record").variant_type);
+                if !variation_types.is_empty() {
+                    return variation_types
+                        .contains(&record.record.as_ref().expect("no record").variation_type);
                 }
                 // filter by overlap if specified
                 let min_overlap = query.min_overlap.unwrap_or(DEFAULT_MIN_OVERLAP);
@@ -226,14 +177,14 @@ async fn handle(
     let end = std::cmp::min(begin as u32 + per_page, records.len() as u32) as usize;
     let records = records[begin..end].to_vec();
 
-    let page_info = PageInfo {
+    let page_info = crate::pbs::clinvar::sv::PageInfo {
         total: records.len() as u32,
         per_page,
         current_page,
         total_pages,
     };
 
-    Ok(Json(ResponsePage {
+    Ok(Json(crate::pbs::clinvar::sv::ResponsePage {
         records,
         page_info: Some(page_info),
     }))

@@ -22,6 +22,13 @@ pub mod clinvar_public {
         env!("OUT_DIR"),
         "/annonars.clinvar_data.clinvar_public.serde.rs"
     ));
+
+    impl Chromosome {
+        /// Return the chromosome name, e.g., "1", ..., "22", "X", "Y", "MT", "PAR", "Un".
+        pub fn as_chr_name(&self) -> String {
+            self.as_str_name().replace("CHROMOSOME_", "")
+        }
+    }
 }
 
 /// Code generated for protobufs by `prost-build`.
@@ -34,6 +41,25 @@ pub mod extracted_vars {
         env!("OUT_DIR"),
         "/annonars.clinvar_data.extracted_vars.serde.rs"
     ));
+
+    impl std::fmt::Display for VariationType {
+        fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+            write!(
+                f,
+                "{}",
+                serde_json::to_string(&self).map_err(|_| std::fmt::Error)?
+            )
+        }
+    }
+
+    impl std::str::FromStr for VariationType {
+        type Err = anyhow::Error;
+
+        fn from_str(s: &str) -> Result<Self, Self::Err> {
+            serde_json::from_str(s)
+                .map_err(|e| anyhow::anyhow!("problem parsing VariationType: {}", e))
+        }
+    }
 }
 
 /// Code generated for protobufs by `prost-build`.

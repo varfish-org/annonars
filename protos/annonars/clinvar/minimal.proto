@@ -4,92 +4,10 @@ syntax = "proto3";
 
 package annonars.clinvar.minimal;
 
-// Enumeration for variant type.
-enum VariantType {
-    // unknown
-    VARIANT_TYPE_UNKNOWN = 0;
-    // deletion
-    VARIANT_TYPE_DELETION = 1;
-    // duplication
-    VARIANT_TYPE_DUPLICATION = 2;
-    // indel
-    VARIANT_TYPE_INDEL = 3;
-    // insertion
-    VARIANT_TYPE_INSERTION = 4;
-    // inversion
-    VARIANT_TYPE_INVERSION = 5;
-    // single nucleotide variant
-    VARIANT_TYPE_SNV = 6;
-}
+import "annonars/clinvar_data/extracted_vars.proto";
 
-// Enumeration for ClinVar pathogenicity.
-enum ClinicalSignificance {
-    // unknown
-    CLINICAL_SIGNIFICANCE_UNKNOWN = 0;
-    // Pathogenic.
-    CLINICAL_SIGNIFICANCE_PATHOGENIC = 1;
-    // Likely pathogenic.
-    CLINICAL_SIGNIFICANCE_LIKELY_PATHOGENIC = 2;
-    // Uncertain significance.
-    CLINICAL_SIGNIFICANCE_UNCERTAIN_SIGNIFICANCE = 3;
-    // Likely benign.
-    CLINICAL_SIGNIFICANCE_LIKELY_BENIGN = 4;
-    // Benign.
-    CLINICAL_SIGNIFICANCE_BENIGN = 5;
-}
-
-/// Enumeration for ClinVar review status.
-enum ReviewStatus {
-    // unknown
-    REVIEW_STATUS_PRACTICE_UNKNOWN = 0;
-    // "practice guideline"
-    REVIEW_STATUS_PRACTICE_GUIDELINE = 1;
-    // "reviewed by expert panel"
-    REVIEW_STATUS_REVIEWED_BY_EXPERT_PANEL = 2;
-    // "criteria provided, multiple submitters, no conflicts"
-    REVIEW_STATUS_CRITERIA_PROVIDED_MULTIPLE_SUBMITTERS_NO_CONFLICTS = 3;
-    // "criteria provided, single submitter"
-    REVIEW_STATUS_CRITERIA_PROVIDED_SINGLE_SUBMITTER = 4;
-    // "criteria provided, conflicting interpretations"
-    REVIEW_STATUS_CRITERIA_PROVIDED_CONFLICTING_INTERPRETATIONS = 5;
-    // "no assertion criteria provided"
-    REVIEW_STATUS_NO_ASSERTION_CRITERIA_PROVIDED = 6;
-    // "no assertion provided"
-    REVIEW_STATUS_NO_ASSERTION_PROVIDED = 7;
-    // "flagged submission"
-    REVIEW_STATUS_FLAGGED_SUBMISSION = 8;
-    // "no classifications from unflagged records"
-    REVIEW_STATUS_NO_CLASSIFICATIONS_FROM_UNFLAGGED_RECORDS = 9;
-}
-
-// Record for storing information about a reference clinvar assertion.
-message ReferenceAssertion {
-    // RCV accession identifier.
-    string rcv = 1;
-    // Title of the reference assertion, includes phenotype / disease.
-    string title = 2;
-    // Clinical significance for variant.
-    ClinicalSignificance clinical_significance = 3;
-    // Review status.
-    ReviewStatus review_status = 4;
-}
-
-// Record for storing minimal information on ClinVar for Mehari.
-message Record {
-    // Genome release.
-    string release = 1;
-    // Chromosome name.
-    string chromosome = 2;
-    // 1-based start position.
-    uint32 start = 3;
-    // 1-based end position.
-    uint32 stop = 4;
-    // Reference allele bases in VCF notation.
-    string reference = 5;
-    // Alternative allele bases in VCF notation.
-    string alternative = 6;
-    // VCV accession identifier.
-    string vcv = 7;
-    // The reference assertions, sorted by (ClinicalSignificance, ReviewStatus).
-    repeated ReferenceAssertion reference_assertions = 8;
+// Record with overlap information.
+message ExtractedVcvRecordList {
+    // The list of VCV records that may share a global variant.
+    repeated clinvar_data.extracted_vars.ExtractedVcvRecord records = 1;
 }
