@@ -11,10 +11,7 @@ use crate::common::{cli::GenomeRelease, spdi};
 use super::error::CustomError;
 use serde_with::{formats::CommaSeparator, StringWithSeparator};
 
-use crate::pbs::clinvar::{
-    minimal::VariantType as PbVariantType,
-    sv::{PageInfo, ResponsePage, ResponseRecord},
-};
+use crate::pbs::clinvar::sv::{PageInfo, ResponsePage, ResponseRecord};
 
 /// The default page size to use.
 const DEFAULT_PAGE_SIZE: u32 = 100;
@@ -78,19 +75,19 @@ impl std::str::FromStr for VariantType {
     }
 }
 
-impl From<VariantType> for PbVariantType {
-    fn from(val: VariantType) -> Self {
-        match val {
-            VariantType::Unknown => PbVariantType::Unknown,
-            VariantType::Deletion => PbVariantType::Deletion,
-            VariantType::Duplication => PbVariantType::Duplication,
-            VariantType::Indel => PbVariantType::Indel,
-            VariantType::Insertion => PbVariantType::Insertion,
-            VariantType::Inversion => PbVariantType::Inversion,
-            VariantType::Snv => PbVariantType::Snv,
-        }
-    }
-}
+// impl From<VariantType> for PbVariantType {
+//     fn from(val: VariantType) -> Self {
+//         match val {
+//             VariantType::Unknown => PbVariantType::Unknown,
+//             VariantType::Deletion => PbVariantType::Deletion,
+//             VariantType::Duplication => PbVariantType::Duplication,
+//             VariantType::Indel => PbVariantType::Indel,
+//             VariantType::Insertion => PbVariantType::Insertion,
+//             VariantType::Inversion => PbVariantType::Inversion,
+//             VariantType::Snv => PbVariantType::Snv,
+//         }
+//     }
+// }
 
 /// Parameters for `handle()`.
 ///
@@ -178,46 +175,46 @@ async fn handle(
         ))
     })?;
     // Filter the records.
-    let variant_types = query
-        .variant_type
-        .as_ref()
-        .map(|vs| {
-            vs.iter()
-                .map(|v| PbVariantType::from(*v) as i32)
-                .collect::<Vec<_>>()
-        })
-        .unwrap_or_default();
-    let records = {
-        let mut records = records
-            .into_iter()
-            .map(|record| {
-                let overlap = reciprocal_overlap(
-                    &((query.start - 1)..query.stop),
-                    &((record.start - 1)..record.stop),
-                );
-                ResponseRecord {
-                    record: Some(record),
-                    overlap,
-                }
-            })
-            .filter(|record| {
-                // filter by variant type if specified
-                if !variant_types.is_empty() {
-                    return variant_types
-                        .contains(&record.record.as_ref().expect("no record").variant_type);
-                }
-                // filter by overlap if specified
-                let min_overlap = query.min_overlap.unwrap_or(DEFAULT_MIN_OVERLAP);
-                if record.overlap < min_overlap {
-                    return false;
-                }
+    // let variant_types = query
+    //     .variant_type
+    //     .as_ref()
+    //     .map(|vs| {
+    //         vs.iter()
+    //             .map(|v| PbVariantType::from(*v) as i32)
+    //             .collect::<Vec<_>>()
+    //     })
+    //     .unwrap_or_default();
+    // let records = {
+    //     let mut records = records
+    //         .into_iter()
+    //         .map(|record| {
+    //             let overlap = reciprocal_overlap(
+    //                 &((query.start - 1)..query.stop),
+    //                 &((record.start - 1)..record.stop),
+    //             );
+    //             ResponseRecord {
+    //                 record: Some(record),
+    //                 overlap,
+    //             }
+    //         })
+    //         .filter(|record| {
+    //             // filter by variant type if specified
+    //             if !variant_types.is_empty() {
+    //                 return variant_types
+    //                     .contains(&record.record.as_ref().expect("no record").variant_type);
+    //             }
+    //             // filter by overlap if specified
+    //             let min_overlap = query.min_overlap.unwrap_or(DEFAULT_MIN_OVERLAP);
+    //             if record.overlap < min_overlap {
+    //                 return false;
+    //             }
 
-                true
-            })
-            .collect::<Vec<_>>();
-        records.sort_by(|a, b| b.overlap.partial_cmp(&a.overlap).unwrap());
-        records
-    };
+    //             true
+    //         })
+    //         .collect::<Vec<_>>();
+    //     records.sort_by(|a, b| b.overlap.partial_cmp(&a.overlap).unwrap());
+    //     records
+    // };
     // Compute pagination information.
     let per_page = query.page_size.unwrap_or(DEFAULT_PAGE_SIZE);
     let total_pages = (records.len() as u32 + 1) / per_page;
@@ -234,7 +231,8 @@ async fn handle(
     };
 
     Ok(Json(ResponsePage {
-        records,
+        // records,
+        records: Default::default(),
         page_info: Some(page_info),
     }))
 }

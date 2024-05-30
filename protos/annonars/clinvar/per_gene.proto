@@ -4,7 +4,6 @@ syntax = "proto3";
 
 package annonars.clinvar.per_gene;
 
-import "annonars/clinvar/minimal.proto";
 import "annonars/clinvar_data/class_by_freq.proto";
 import "annonars/clinvar_data/extracted_vars.proto";
 import "annonars/clinvar_data/gene_impact.proto";

@@ -4,46 +4,12 @@ syntax = "proto3";
 
 package annonars.clinvar.sv;
 
-import "annonars/clinvar/minimal.proto";
-
-// Record for storing minimal information on ClinVar for Mehari.
-message Record {
-    // Genome release.
-    string release = 1;
-    // Chromosome name.
-    string chromosome = 2;
-    // 1-based start position.
-    uint32 start = 3;
-    // 1-based end position.
-    uint32 stop = 4;
-
-    // Reference allele bases in VCF notation; optional.
-    optional string reference = 5;
-    // Alternative allele bases in VCF notation; optional.
-    optional string alternative = 6;
-
-    // 1-based inner start position.
-    optional uint32 inner_start = 7;
-    // 1-based inner stop position.
-    optional uint32 inner_stop = 8;
-    // 1-based outer start position.
-    optional uint32 outer_start = 9;
-    // 1-based outer stop position.
-    optional uint32 outer_stop = 10;
-
-    // The variant type.
-    annonars.clinvar.minimal.VariantType variant_type = 11;
-
-    // VCV accession identifier.
-    string vcv = 12;
-    // The reference assertions, sorted by (ClinicalSignificance, ReviewStatus).
-    repeated annonars.clinvar.minimal.ReferenceAssertion reference_assertions = 13;
-}
+import "annonars/clinvar_data/extracted_vars.proto";
 
 // Record with overlap information.
 message ResponseRecord {
     // The record.
-    Record record = 1;
+    clinvar_data.extracted_vars.ExtractedVcvRecord record = 1;
     // The reciprocal overlap with the query.
     double overlap = 2;
 }

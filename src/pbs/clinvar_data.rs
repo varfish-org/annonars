@@ -22,6 +22,13 @@ pub mod clinvar_public {
         env!("OUT_DIR"),
         "/annonars.clinvar_data.clinvar_public.serde.rs"
     ));
+
+    impl Chromosome {
+        // Return the chromosome name, e.g., "1", ..., "22", "X", "Y", "MT", "PAR", "Un".
+        pub fn as_chr_name(&self) -> String {
+            self.as_str_name().replace("CHROMOSOME_", "")
+        }
+    }
 }
 
 /// Code generated for protobufs by `prost-build`.
