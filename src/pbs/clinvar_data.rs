@@ -24,7 +24,7 @@ pub mod clinvar_public {
     ));
 
     impl Chromosome {
-        // Return the chromosome name, e.g., "1", ..., "22", "X", "Y", "MT", "PAR", "Un".
+        /// Return the chromosome name, e.g., "1", ..., "22", "X", "Y", "MT", "PAR", "Un".
         pub fn as_chr_name(&self) -> String {
             self.as_str_name().replace("CHROMOSOME_", "")
         }

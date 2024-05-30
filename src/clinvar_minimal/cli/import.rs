@@ -5,11 +5,7 @@ use std::{io::BufRead, sync::Arc};
 use clap::Parser;
 use prost::Message;
 
-use crate::pbs::clinvar_data::extracted_vars::ExtractedVcvRecord;
-use crate::{
-    common::{self, keys},
-    pbs::clinvar_data::clinvar_public::{location::SequenceLocation, Chromosome},
-};
+use crate::common::{self, keys};
 
 /// Command line arguments for `clinvar-minimal import` sub command.
 #[derive(Parser, Debug, Clone)]
@@ -57,7 +53,10 @@ fn jsonl_import(
 
     for line in reader.lines() {
         let line = line?;
-        let vcv_record = match serde_json::from_str::<ExtractedVcvRecord>(&line) {
+        let vcv_record = match serde_json::from_str::<
+            crate::pbs::clinvar_data::extracted_vars::ExtractedVcvRecord,
+        >(&line)
+        {
             Ok(record) => record,
             Err(e) => {
                 tracing::warn!("skipping line because of error: {}", e);
@@ -65,27 +64,29 @@ fn jsonl_import(
             }
         };
 
-        let ExtractedVcvRecord {
+        let crate::pbs::clinvar_data::extracted_vars::ExtractedVcvRecord {
             accession,
             rcvs: rcv_records,
             sequence_location,
             ..
         } = vcv_record.clone();
         let accession = accession.expect("accession is required");
+        let vcv = format!("{}.{}", accession.accession, accession.version);
         let sequence_location = sequence_location.expect("sequence_location is required");
-        let SequenceLocation {
+        let crate::pbs::clinvar_data::clinvar_public::location::SequenceLocation {
             chr,
             start,
             reference_allele_vcf,
             alternate_allele_vcf,
             ..
         } = sequence_location;
+        let chr_pb =
+            crate::pbs::clinvar_data::clinvar_public::Chromosome::try_from(chr).map_err(|e| {
+                anyhow::anyhow!("problem converting chromosome {} to Chromosome: {}", chr, e)
+            })?;
         if let (Some(start), Some(reference_allele_vcf), Some(alternate_allele_vcf)) =
             (start, reference_allele_vcf, alternate_allele_vcf)
         {
-            let chr_pb = Chromosome::try_from(chr).map_err(|e| {
-                anyhow::anyhow!("problem converting chromosome {} to Chromosome: {}", chr, e)
-            })?;
             let var = keys::Var::from(
                 &chr_pb.as_chr_name(),
                 start as i32,
@@ -103,7 +104,6 @@ fn jsonl_import(
                     continue;
                 }
                 Ok(data) => {
-                    let vcv = format!("{}.{}", accession.accession, accession.version);
                     db.put_cf(&cf_by_accession, vcv.as_bytes(), &key)?;
                     for rcv_record in &rcv_records {
                         let accession = rcv_record

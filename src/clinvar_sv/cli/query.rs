@@ -109,7 +109,7 @@ pub fn open_rocksdb_from_args(
 fn print_record(
     out_writer: &mut Box<dyn std::io::Write>,
     output_format: common::cli::OutputFormat,
-    value: &crate::pbs::clinvar::minimal::ExtractedVcvRecordList,
+    value: &crate::pbs::clinvar_data::extracted_vars::ExtractedVcvRecord,
 ) -> Result<(), anyhow::Error> {
     match output_format {
         common::cli::OutputFormat::Jsonl => {
@@ -126,7 +126,7 @@ pub fn query_for_accession(
     db: &rocksdb::DBWithThreadMode<rocksdb::MultiThreaded>,
     cf_data: &Arc<rocksdb::BoundColumnFamily>,
     cf_by_rcv: &Arc<rocksdb::BoundColumnFamily>,
-) -> Result<Option<crate::pbs::clinvar::minimal::ExtractedVcvRecordList>, anyhow::Error> {
+) -> Result<Option<crate::pbs::clinvar_data::extracted_vars::ExtractedVcvRecord>, anyhow::Error> {
     // Execute query.
     tracing::debug!("accession = {:?}", &accession);
     let vcv = if accession.starts_with("VCV") {
@@ -145,9 +145,9 @@ pub fn query_for_accession(
     raw_value
         .map(|raw_value| {
             // Decode via prost.
-            crate::pbs::clinvar::minimal::ExtractedVcvRecordList::decode(&mut std::io::Cursor::new(
-                &raw_value,
-            ))
+            crate::pbs::clinvar_data::extracted_vars::ExtractedVcvRecord::decode(
+                &mut std::io::Cursor::new(&raw_value),
+            )
             .map_err(|e| anyhow::anyhow!("failed to decode record: {}", e))
         })
         .transpose()
@@ -166,7 +166,7 @@ fn print_all(
     iter.seek(b"");
     while iter.valid() {
         if let Some(raw_value) = iter.value() {
-            let record = crate::pbs::clinvar::minimal::ExtractedVcvRecordList::decode(
+            let record = crate::pbs::clinvar_data::extracted_vars::ExtractedVcvRecord::decode(
                 &mut std::io::Cursor::new(&raw_value),
             )
             .map_err(|e| anyhow::anyhow!("failed to decode record: {}", e))?;
@@ -242,29 +242,69 @@ impl IntervalTrees {
         iter.seek(b"");
         while iter.valid() {
             if let Some(raw_value) = iter.value() {
-                let record = crate::pbs::clinvar::minimal::ExtractedVcvRecordList::decode(
+                let record = crate::pbs::clinvar_data::extracted_vars::ExtractedVcvRecord::decode(
                     &mut std::io::Cursor::new(&raw_value),
                 )
                 .map_err(|e| anyhow::anyhow!("failed to decode record: {}", e))?;
                 tracing::trace!("iterator at {:?} => {:?}", &iter.key(), &record);
 
-                // let crate::pbs::clinvar::minimal::ExtractedVcvRecordList {
-                //     chromosome,
-                //     start,
-                //     stop,
-                //     vcv,
-                //     ..
-                // } = record;
+                let crate::pbs::clinvar_data::extracted_vars::ExtractedVcvRecord {
+                    accession,
+                    sequence_location,
+                    ..
+                } = record;
+                let accession = accession.expect("accession is required");
+                let vcv = format!("{}.{}", accession.accession, accession.version);
+                let sequence_location = sequence_location.expect("sequence_location is required");
+                let crate::pbs::clinvar_data::clinvar_public::location::SequenceLocation {
+                    chr,
+                    start,
+                    stop,
+                    inner_start,
+                    inner_stop,
+                    outer_start,
+                    outer_stop,
+                    ..
+                } = sequence_location.clone();
+                let chr_pb = crate::pbs::clinvar_data::clinvar_public::Chromosome::try_from(chr)
+                    .map_err(|e| {
+                        anyhow::anyhow!(
+                            "problem converting chromosome {} to Chromosome: {}",
+                            chr,
+                            e
+                        )
+                    })?;
 
-                // let interval = (start as u64 - 1)..(stop as u64);
-                // tracing::trace!("contig = {} / {:?} / {}", &chromosome, &interval, &vcv);
-                // result
-                //     .entry(chromosome.clone())
-                //     .or_default()
-                //     .insert(interval, vcv);
-                // assert!(result.contains_key(&chromosome));
+                let (start, stop) = if let (Some(start), Some(stop)) = (start, stop) {
+                    (start, stop)
+                } else if let (Some(inner_start), Some(inner_stop)) = (inner_start, inner_stop) {
+                    (inner_start, inner_stop)
+                } else if let (Some(outer_start), Some(outer_stop)) = (outer_start, outer_stop) {
+                    (outer_start, outer_stop)
+                } else {
+                    tracing::warn!(
+                        "skipping record without start/stop: {:?}, {:?}",
+                        &vcv,
+                        &sequence_location
+                    );
+                    iter.next();
+                    continue;
+                };
 
-                // iter.next();
+                let interval = (start as u64 - 1)..(stop as u64);
+                tracing::trace!(
+                    "contig = {} / {:?} / {}",
+                    &chr_pb.as_chr_name(),
+                    &interval,
+                    &vcv
+                );
+                result
+                    .entry(chr_pb.as_chr_name())
+                    .or_default()
+                    .insert(interval, vcv);
+                assert!(result.contains_key(&chr_pb.as_chr_name()));
+
+                iter.next();
             } else {
                 break;
             }
@@ -279,7 +319,8 @@ impl IntervalTrees {
     pub fn query(
         &self,
         range: &spdi::Range,
-    ) -> Result<Vec<crate::pbs::clinvar::minimal::ExtractedVcvRecordList>, anyhow::Error> {
+    ) -> Result<Vec<crate::pbs::clinvar_data::extracted_vars::ExtractedVcvRecord>, anyhow::Error>
+    {
         let contig = extract_chrom::from_range(range, Some(&self.meta.genome_release))?;
         let cf_data = self.db.cf_handle(&self.cf_data_name).ok_or_else(|| {
             anyhow::anyhow!("no column family with name {:?} found", &self.cf_data_name)
@@ -289,10 +330,11 @@ impl IntervalTrees {
         if let Some(tree) = self.trees.get(&contig) {
             for entry in tree.find(&interval) {
                 if let Some(raw_value) = self.db.get_cf(&cf_data, entry.data().as_bytes())? {
-                    let record = crate::pbs::clinvar::minimal::ExtractedVcvRecordList::decode(
-                        &mut std::io::Cursor::new(&raw_value),
-                    )
-                    .map_err(|e| anyhow::anyhow!("failed to decode record: {}", e))?;
+                    let record =
+                        crate::pbs::clinvar_data::extracted_vars::ExtractedVcvRecord::decode(
+                            &mut std::io::Cursor::new(&raw_value),
+                        )
+                        .map_err(|e| anyhow::anyhow!("failed to decode record: {}", e))?;
                     result.push(record);
                 }
             }
