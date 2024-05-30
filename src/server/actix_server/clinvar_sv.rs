@@ -11,7 +11,7 @@ use crate::common::{cli::GenomeRelease, spdi};
 use super::error::CustomError;
 use serde_with::{formats::CommaSeparator, StringWithSeparator};
 
-use crate::pbs::clinvar::sv::{PageInfo, ResponsePage, ResponseRecord};
+use crate::pbs::clinvar::sv::{PageInfo, ResponsePage};
 
 /// The default page size to use.
 const DEFAULT_PAGE_SIZE: u32 = 100;
