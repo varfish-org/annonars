@@ -3,7 +3,7 @@
 use byteorder::{ByteOrder, LittleEndian};
 use noodles::vcf::variant::record::AlternateBases;
 
-use crate::common::noodles;
+use crate::common;
 
 /// Record type for storing AN, AC_hom, AC_het, AC_hemi counts for chrX/chrY.
 #[derive(Default, Debug, PartialEq, Eq, Clone, serde::Serialize, serde::Deserialize)]
