@@ -3,9 +3,9 @@
 use std::{io::BufRead, sync::Arc};
 
 use clap::Parser;
-use prost::Message;
+use prost::Message as _;
 
-use crate::{clinvar_minimal, common};
+use crate::common;
 
 /// Command line arguments for `clinvar-sv import` sub command.
 #[derive(Parser, Debug, Clone)]
@@ -57,7 +57,10 @@ fn jsonl_import(
 
     for line in reader.lines() {
         let line = line?;
-        let record = match serde_json::from_str::<clinvar_minimal::cli::reading::Record>(&line) {
+        let vcv_record = match serde_json::from_str::<
+            crate::pbs::clinvar_data::extracted_vars::ExtractedVcvRecord,
+        >(&line)
+        {
             Ok(record) => record,
             Err(e) => {
                 tracing::warn!("skipping line because of error: {}", e);
@@ -65,22 +68,16 @@ fn jsonl_import(
             }
         };
 
-        let clinvar_minimal::cli::reading::Record {
-            rcv,
-            vcv,
-            title,
-            clinical_significance,
-            review_status,
+        let crate::pbs::clinvar_data::extracted_vars::ExtractedVcvRecord {
+            accession,
+            rcvs: rcv_records,
             sequence_location,
-            variant_type,
             ..
-        } = record;
-        let clinical_significance: crate::pbs::clinvar::minimal::ClinicalSignificance =
-            clinical_significance.into();
-        let review_status: crate::pbs::clinvar::minimal::ReviewStatus = review_status.into();
-        let clinvar_minimal::cli::reading::SequenceLocation {
-            assembly,
-            chr,
+        } = vcv_record.clone();
+        let accession = accession.expect("accession is required");
+        let vcv = format!("{}.{}", accession.accession, accession.version);
+        let sequence_location = sequence_location.expect("sequence_location is required");
+        let crate::pbs::clinvar_data::clinvar_public::location::SequenceLocation {
             start,
             stop,
             reference_allele_vcf,
@@ -89,8 +86,8 @@ fn jsonl_import(
             inner_stop,
             outer_start,
             outer_stop,
+            ..
         } = sequence_location;
-
         if let (Some(reference_allele_vcf), Some(alternate_allee_vcf)) =
             (reference_allele_vcf.as_ref(), alternate_allele_vcf.as_ref())
         {
@@ -98,9 +95,8 @@ fn jsonl_import(
                 && alternate_allee_vcf.len() < args.min_var_size as usize
             {
                 tracing::debug!(
-                    "skipping line because of short REF/ALT: {}/{}: {}>{}",
+                    "skipping line because of short REF/ALT: {}: {}>{}",
                     &vcv,
-                    &rcv,
                     reference_allele_vcf,
                     alternate_allee_vcf,
                 );
@@ -108,97 +104,26 @@ fn jsonl_import(
             }
         }
 
-        let (start, stop, inner_start, inner_stop, outer_start, outer_stop) =
-            if let (Some(start), Some(stop)) = (start, stop) {
-                (
-                    start,
-                    stop,
-                    inner_start,
-                    outer_start,
-                    inner_stop,
-                    outer_stop,
-                )
-            } else if let (Some(inner_start_), Some(inner_stop_)) = (inner_start, inner_stop) {
-                (
-                    inner_start_,
-                    inner_stop_,
-                    inner_start,
-                    outer_start,
-                    inner_stop,
-                    outer_stop,
-                )
-            } else if let (Some(outer_start_), Some(outer_stop_)) = (outer_start, outer_stop) {
-                (
-                    outer_start_,
-                    outer_stop_,
-                    inner_start,
-                    outer_start,
-                    inner_stop,
-                    outer_stop,
-                )
-            } else {
-                tracing::warn!("skipping line because no start/stop: {}/{}", &vcv, &rcv,);
-                continue;
-            };
+        if (start.is_none() || stop.is_none())
+            && (inner_start.is_none() || inner_stop.is_none())
+            && (outer_start.is_none() || outer_stop.is_none())
+        {
+            tracing::warn!("skipping line because no start/stop: {}", &vcv,);
+            continue;
+        };
 
         let key: Vec<u8> = vcv.clone().into();
 
-        let data = db
-            .get_cf(&cf_data, key.clone())
-            .map_err(|e| anyhow::anyhow!("problem querying database: {}", e));
-        match data {
-            Err(e) => {
-                tracing::warn!("skipping line because of error: {}", e);
-                continue;
-            }
-            Ok(data) => {
-                let record = if let Some(data) = data {
-                    let mut record = crate::pbs::clinvar::sv::Record::decode(&data[..])?;
-                    record.reference_assertions.push(
-                        crate::pbs::clinvar::minimal::ReferenceAssertion {
-                            rcv: rcv.clone(),
-                            title,
-                            clinical_significance: clinical_significance.into(),
-                            review_status: review_status.into(),
-                        },
-                    );
-                    record
-                        .reference_assertions
-                        .sort_by_key(|a| (a.clinical_significance, a.review_status));
-                    record
-                } else {
-                    crate::pbs::clinvar::sv::Record {
-                        release: assembly,
-                        chromosome: chr,
-                        start,
-                        stop,
-                        reference: reference_allele_vcf,
-                        alternative: alternate_allele_vcf,
-                        vcv: vcv.clone(),
-                        reference_assertions: vec![
-                            crate::pbs::clinvar::minimal::ReferenceAssertion {
-                                rcv: rcv.clone(),
-                                title,
-                                clinical_significance: clinical_significance.into(),
-                                review_status: review_status.into(),
-                            },
-                        ],
-                        inner_start,
-                        inner_stop,
-                        outer_start,
-                        outer_stop,
-                        variant_type: crate::pbs::clinvar::minimal::VariantType::from(variant_type)
-                            as i32,
-                    }
-                };
-                let buf = record.encode_to_vec();
-                db.put_cf(&cf_data, key, buf)?;
-                db.put_cf(
-                    &cf_by_rcv,
-                    rcv.clone().into_bytes(),
-                    vcv.clone().into_bytes(),
-                )?;
-            }
+        let buf = vcv_record.encode_to_vec();
+        db.put_cf(&cf_data, &key, &buf)?;
+
+        for rcv_record in &rcv_records {
+            let accession = rcv_record
+                .accession
+                .as_ref()
+                .expect("rcv.accession is required");
+            let rcv = format!("{}.{}", accession.accession, accession.version);
+            db.put_cf(&cf_by_rcv, rcv.as_bytes(), &key)?;
         }
     }
 

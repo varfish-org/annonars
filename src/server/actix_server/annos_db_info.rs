@@ -5,9 +5,7 @@ use actix_web::{
     web::{self, Data, Json, Path},
     Responder,
 };
-use serde::{Deserialize, Serialize};
-
-use crate::server::DbInfo;
+use serde::Deserialize;
 
 use super::{error::CustomError, WebServerData};
 
@@ -18,13 +16,6 @@ use super::{error::CustomError, WebServerData};
 #[serde(rename_all = "snake_case")]
 struct Request {
     pub genome_release: String,
-}
-
-/// Result for `handle`.
-#[derive(Serialize, Debug, Clone)]
-struct ResultEntry {
-    /// Information for each database.
-    pub db_info: indexmap::IndexMap<String, DbInfo>,
 }
 
 /// Query for annotations for one variant.

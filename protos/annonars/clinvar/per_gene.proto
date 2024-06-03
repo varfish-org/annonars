@@ -4,88 +4,24 @@ syntax = "proto3";
 
 package annonars.clinvar.per_gene;
 
-import "annonars/clinvar/minimal.proto";
+import "annonars/clinvar_data/class_by_freq.proto";
+import "annonars/clinvar_data/extracted_vars.proto";
+import "annonars/clinvar_data/gene_impact.proto";
 
-// Impact on gene in ClinVar.
-enum Impact {
-    // unknown
-    IMPACT_UNKNOWN = 0;
-    // 3' UTR variant
-    IMPACT_THREE_PRIME_UTR_VARIANT = 1;
-    // 5' UTR variant
-    IMPACT_FIVE_PRIME_UTR_VARIANT = 2;
-    // downstream gene variant
-    IMPACT_DOWNSTREAM_TRANSCRIPT_VARIANT = 3;
-    // frameshift variant
-    IMPACT_FRAMESHIFT_VARIANT = 4;
-    // inframe indel
-    IMPACT_INFRAME_INDEL = 5;
-    // start lost
-    IMPACT_START_LOST = 6;
-    // intron variant
-    IMPACT_INTRON_VARIANT = 7;
-    // missense variant
-    IMPACT_MISSENSE_VARIANT = 8;
-    // non-coding transcript variant
-    IMPACT_NON_CODING_TRANSCRIPT_VARIANT = 9;
-    // stop gained
-    IMPACT_STOP_GAINED = 10;
-    // no sequence alteration
-    IMPACT_NO_SEQUENCE_ALTERATION = 11;
-    // splice acceptor variant
-    IMPACT_SPLICE_ACCEPTOR_VARIANT = 12;
-    // splice donor variant
-    IMPACT_SPLICE_DONOR_VARIANT = 13;
-    // stop lost
-    IMPACT_STOP_LOST = 14;
-    // synonymous variant
-    IMPACT_SYNONYMOUS_VARIANT = 15;
-    // upstream gene variant
-    IMPACT_UPSTREAM_TRANSCRIPT_VARIANT = 16;
-}
-
-// Counts of variants by impact.
-message GeneImpactRecordCounts {
-    // Impact
-    Impact impact = 1;
-    // Counts for ACMG1..5
-    repeated uint32 counts = 2;
-}
-
-// Coarsened clinical significance
-enum CoarseClinicalSignificance {
-    // unknown
-    COARSE_CLINICAL_SIGNIFICANCE_UNKNOWN = 0;
-    // benign / likely benign
-    COARSE_CLINICAL_SIGNIFICANCE_BENIGN = 1;
-    // uncertain signifiance
-    COARSE_CLINICAL_SIGNIFICANCE_UNCERTAIN = 2;
-    // pathogenic / likely pathogenic
-    COARSE_CLINICAL_SIGNIFICANCE_PATHOGENIC = 3;
-}
-
-// Counts per frequency and impact.
-message GeneFreqRecordCounts {
-    // Frequency
-    CoarseClinicalSignificance coarse_clinsig = 1;
-    // Counts for ACMG1..5
-    repeated uint32 counts = 2;
-}
-
-// Variants for a given genome release / assembly.
-message GeneVariantsForRelease {
-    // Genome release / assembly
-    string genome_release = 1;
-    // Variants
-    repeated annonars.clinvar.minimal.Record variants = 2;
+// Extracted variants per release.
+message ExtractedVariantsPerRelease {
+    // Release version.
+    optional string release = 1;
+    // Variants per gene.
+    repeated clinvar_data.extracted_vars.ExtractedVcvRecord variants = 2;
 }
 
 // ClinVar detailed information per gene.
 message ClinvarPerGeneRecord {
     // Counts of variants per impact
-    repeated GeneImpactRecordCounts per_impact_counts = 1;
+    optional clinvar_data.gene_impact.GeneImpactCounts per_impact_counts = 1;
     // Counts of variants per impact / frequency
-    repeated GeneFreqRecordCounts per_freq_counts = 2;
+    optional clinvar_data.class_by_freq.GeneCoarseClinsigFrequencyCounts per_freq_counts = 2;
     // Variants for the given gene.
-    repeated GeneVariantsForRelease variants = 3;
+    repeated ExtractedVariantsPerRelease per_release_vars = 3;
 }

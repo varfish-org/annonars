@@ -1,11 +1,11 @@
 [package]
 name = "annonars"
-version = "0.36.2"
+version = "0.37.0"
 edition = "2021"
 authors = ["Manuel Holtgrewe <manuel.holtgrewe@bih-charite.de>"]
 description = "Rust template repository"
 license = "Apache-2.0"
-homepage = "https://github.com/varfish-org/annonars"
+repository = "https://github.com/varfish-org/annonars"
 readme = "README.md"
 autobins = false
 exclude = ["/tests"]
@@ -27,24 +27,27 @@ biocommons-bioutils = "0.1.0"
 boolvec = "0.2"
 byteorder = "1.4"
 chrono = { version = "0.4", features = ["serde"] }
-clap-verbosity-flag = "2.1"
 clap = { version = "4.5", features = ["derive", "env"] }
+clap-verbosity-flag = "2.2"
 csv = "1.2"
 enum-map = { version = "2.7.3", features = ["serde"] }
 env_logger = "0.11"
+erased-serde = "0.4.2"
 flate2 = "1.0"
 indexmap = { version = "2.2", features = ["serde"] }
 indicatif = { version = "0.17", features = ["rayon"] }
+itertools = "0.13.0"
 log = "0.4"
 pbjson = "0.6"
 pbjson-types = "0.6"
 prost = "0.12"
 rayon = "1.8"
-rocksdb-utils-lookup = "0.3"
-rocksdb = { version = "0.21", features = ["multi-threaded-cf"] }
-serde_json = { version = "1.0", features = ["preserve_order"] }
+rocksdb = { version = "0.22", features = ["multi-threaded-cf"] }
+rocksdb-utils-lookup = "0.4"
+rustc-hash = "1.1.0"
 serde = { version = "1.0", features = ["derive"] }
-serde_with = { version = "3.6", features = ["alloc", "macros", "indexmap_2"], default-features = false }
+serde_json = { version = "1.0", features=["preserve_order"] }
+serde_with = { version = "3.6", features=["alloc", "macros", "indexmap_2"], default-features = false }
 strum = { version = "0.26", features = ["strum_macros", "derive"] }
 thiserror = "1.0"
 tracing = "0.1"
@@ -58,15 +61,15 @@ version = "0.75.0"
 features = ["bed", "bgzf", "core", "csi", "gff", "tabix", "vcf"]
 
 [build-dependencies]
-prost-build = "0.12"
-pbjson-build = "0.6"
 anyhow = "1.0"
+pbjson-build = "0.6"
+prost-build = "0.12"
 
 [dev-dependencies]
 insta = { version = "1.36", features = ["yaml"] }
 log = "0.4"
 pretty_assertions = "1.4"
-rstest = "0.18.2"
+rstest = "0.19.0"
 temp_testdir = "0.2"
 test-log = "0.2"
 tracing-subscriber = "0.3"

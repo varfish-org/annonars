@@ -1,6 +1,7 @@
 //! Code generate for protobufs by `prost-build`.
 
 pub mod clinvar;
+pub mod clinvar_data;
 pub mod cons;
 pub mod dbsnp;
 pub mod functional;

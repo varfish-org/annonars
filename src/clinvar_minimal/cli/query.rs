@@ -93,11 +93,13 @@ pub fn open_rocksdb_from_args(
 fn print_record(
     out_writer: &mut Box<dyn std::io::Write>,
     output_format: common::cli::OutputFormat,
-    value: &crate::pbs::clinvar::minimal::Record,
+    value: &crate::pbs::clinvar::minimal::ExtractedVcvRecordList,
 ) -> Result<(), anyhow::Error> {
-    match output_format {
-        common::cli::OutputFormat::Jsonl => {
-            writeln!(out_writer, "{}", serde_json::to_string(value)?)?;
+    for record in &value.records {
+        match output_format {
+            common::cli::OutputFormat::Jsonl => {
+                writeln!(out_writer, "{}", serde_json::to_string(record)?)?;
+            }
         }
     }
 
@@ -110,7 +112,7 @@ pub fn query_for_variant(
     meta: &Meta,
     db: &rocksdb::DBWithThreadMode<rocksdb::MultiThreaded>,
     cf_data: &Arc<rocksdb::BoundColumnFamily>,
-) -> Result<Option<crate::pbs::clinvar::minimal::Record>, anyhow::Error> {
+) -> Result<Option<crate::pbs::clinvar::minimal::ExtractedVcvRecordList>, anyhow::Error> {
     // Split off the genome release (checked) and convert to key as used in database.
     let query = spdi::Var {
         sequence: extract_chrom::from_var(variant, Some(&meta.genome_release))?,
@@ -126,8 +128,10 @@ pub fn query_for_variant(
     raw_value
         .map(|raw_value| {
             // Decode via prost.
-            crate::pbs::clinvar::minimal::Record::decode(&mut std::io::Cursor::new(&raw_value))
-                .map_err(|e| anyhow::anyhow!("failed to decode record: {}", e))
+            crate::pbs::clinvar::minimal::ExtractedVcvRecordList::decode(&mut std::io::Cursor::new(
+                &raw_value,
+            ))
+            .map_err(|e| anyhow::anyhow!("failed to decode record: {}", e))
         })
         .transpose()
 }
@@ -138,7 +142,7 @@ pub fn query_for_accession(
     db: &rocksdb::DBWithThreadMode<rocksdb::MultiThreaded>,
     cf_data: &Arc<rocksdb::BoundColumnFamily>,
     cf_data_by_rsid: &Arc<rocksdb::BoundColumnFamily>,
-) -> Result<Option<crate::pbs::clinvar::minimal::Record>, anyhow::Error> {
+) -> Result<Option<crate::pbs::clinvar::minimal::ExtractedVcvRecordList>, anyhow::Error> {
     let accession = accession.to_uppercase(); // VCV*, RCV*
 
     // First, lookup accession.
@@ -154,8 +158,10 @@ pub fn query_for_accession(
     raw_value
         .map(|raw_value| {
             // Decode via prost.
-            crate::pbs::clinvar::minimal::Record::decode(&mut std::io::Cursor::new(&raw_value))
-                .map_err(|e| anyhow::anyhow!("failed to decode record: {}", e))
+            crate::pbs::clinvar::minimal::ExtractedVcvRecordList::decode(&mut std::io::Cursor::new(
+                &raw_value,
+            ))
+            .map_err(|e| anyhow::anyhow!("failed to decode record: {}", e))
         })
         .transpose()
 }
@@ -246,7 +252,7 @@ pub fn run(common: &common::cli::Args, args: &Args) -> Result<(), anyhow::Error>
                     }
                 }
 
-                let record = crate::pbs::clinvar::minimal::Record::decode(
+                let record = crate::pbs::clinvar::minimal::ExtractedVcvRecordList::decode(
                     &mut std::io::Cursor::new(&raw_value),
                 )
                 .map_err(|e| anyhow::anyhow!("failed to decode record: {}", e))?;
@@ -277,7 +283,7 @@ mod test {
             verbose: clap_verbosity_flag::Verbosity::new(1, 0),
         };
         let args = Args {
-            path_rocksdb: String::from("tests/clinvar-minimal/clinvar-seqvars-grch37-tgds.tsv.db"),
+            path_rocksdb: String::from("tests/clinvar-minimal/clinvar-seqvars-grch37-tgds.db"),
             cf_name: String::from("clinvar"),
             cf_name_by_accession: String::from("clinvar_by_accession"),
             out_file: temp.join("out").to_string_lossy().to_string(),
@@ -369,7 +375,7 @@ mod test {
     #[test]
     fn smoke_query_range_find_none_smaller() -> Result<(), anyhow::Error> {
         let (common, args, _temp) = args(ArgsQuery {
-            range: Some(spdi::Range::from_str("GRCh37:13:1:95227054")?),
+            range: Some(spdi::Range::from_str("GRCh37:13:1:95227038")?),
             ..Default::default()
         });
         run(&common, &args)?;
@@ -394,8 +400,8 @@ mod test {
 
     #[rstest::rstest]
     #[test]
-    #[case("RCV001679107")]
-    #[case("VCV001307216")]
+    #[case("RCV001679107.1")]
+    #[case("VCV001307216.2")]
     fn smoke_query_by_accession(#[case] accession: &str) -> Result<(), anyhow::Error> {
         crate::common::set_snapshot_suffix!("{}", &accession);
 

@@ -1,5 +1,18 @@
 # Changelog
 
+## [0.37.0](https://github.com/varfish-org/annonars/compare/v0.36.2...v0.37.0) (2024-05-30)
+
+
+### ⚠ BREAKING CHANGES
+
+* extending clinvar-this v0.15 support to clinvar-minimal and clinvar-sv ([#456](https://github.com/varfish-org/annonars/issues/456))
+* adding support for JSONL from v0.15 clinvar-this ([#454](https://github.com/varfish-org/annonars/issues/454))
+
+### Features
+
+* adding support for JSONL from v0.15 clinvar-this ([#454](https://github.com/varfish-org/annonars/issues/454)) ([a792d9b](https://github.com/varfish-org/annonars/commit/a792d9b41d7358520f105109e6ac48329988f567))
+* extending clinvar-this v0.15 support to clinvar-minimal and clinvar-sv ([#456](https://github.com/varfish-org/annonars/issues/456)) ([b37514a](https://github.com/varfish-org/annonars/commit/b37514ac30373d7090687cbefc2a2b25556a2066))
+
 ## [0.36.2](https://github.com/varfish-org/annonars/compare/v0.36.1...v0.36.2) (2024-05-08)
 
 
