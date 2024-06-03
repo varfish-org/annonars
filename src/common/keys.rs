@@ -92,7 +92,7 @@ impl Var {
     }
 
     /// Create for all alternate alleles from the given VCF record.
-    pub fn from_vcf_allele(value: &noodles_vcf::variant::RecordBuf, allele_no: usize) -> Self {
+    pub fn from_vcf_allele(value: &noodles::vcf::variant::RecordBuf, allele_no: usize) -> Self {
         let chrom = value.reference_sequence_name().to_string();
         let pos: usize = value
             .variant_start()

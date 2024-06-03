@@ -7,8 +7,8 @@ fn write_record(
     db: &rocksdb::DBWithThreadMode<rocksdb::MultiThreaded>,
     cf: &std::sync::Arc<rocksdb::BoundColumnFamily>,
     record_key: &common::keys::Var,
-    record_genome: &mut Option<noodles_vcf::variant::RecordBuf>,
-    record_exome: &mut Option<noodles_vcf::variant::RecordBuf>,
+    record_genome: &mut Option<noodles::vcf::variant::RecordBuf>,
+    record_exome: &mut Option<noodles::vcf::variant::RecordBuf>,
 ) -> Result<(), anyhow::Error> {
     if record_genome.is_none() && record_exome.is_none() {
         // Early exit, nothing to write out.
@@ -47,7 +47,7 @@ pub fn import_region(
     db: &rocksdb::DBWithThreadMode<rocksdb::MultiThreaded>,
     path_genome: Option<&String>,
     path_exome: Option<&String>,
-    region: &noodles_core::region::Region,
+    region: &noodles::core::region::Region,
 ) -> Result<(), anyhow::Error> {
     // Get handle to "gonosomal" column family.
     let cf_gono = db.cf_handle("gonosomal").unwrap();
@@ -57,13 +57,14 @@ pub fn import_region(
     if let Some(path_genome) = path_genome {
         is_genome.push(true);
         readers.push(
-            noodles_vcf::io::indexed_reader::Builder::default().build_from_path(path_genome)?,
+            noodles::vcf::io::indexed_reader::Builder::default().build_from_path(path_genome)?,
         );
     }
     if let Some(path_exome) = path_exome {
         is_genome.push(false);
-        readers
-            .push(noodles_vcf::io::indexed_reader::Builder::default().build_from_path(path_exome)?);
+        readers.push(
+            noodles::vcf::io::indexed_reader::Builder::default().build_from_path(path_exome)?,
+        );
     }
     // Read headers.
     let headers: Vec<_> = readers

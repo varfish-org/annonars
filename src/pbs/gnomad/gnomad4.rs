@@ -1,9 +1,9 @@
 //! Code generate for protobufs by `prost-build`.
 
-use noodles_vcf::variant::record::AlternateBases;
+use noodles::vcf::variant::record::AlternateBases;
 use std::str::FromStr;
 
-use noodles_vcf::variant::record_buf::info::field;
+use noodles::vcf::variant::record_buf::info::field;
 
 use super::gnomad3;
 use crate::common;
@@ -59,7 +59,7 @@ impl Record {
     ///
     /// The `Record` or an error if the record could not be extracted.
     pub fn from_vcf_allele(
-        record: &noodles_vcf::variant::RecordBuf,
+        record: &noodles::vcf::variant::RecordBuf,
         allele_no: usize,
         options: &gnomad3::DetailsOptions,
         record_type: RecordType,
@@ -148,7 +148,7 @@ impl Record {
 
     /// Extract the "vep" field into gnomAD v3 `Vep` records.
     fn extract_vep(
-        record: &noodles_vcf::variant::RecordBuf,
+        record: &noodles::vcf::variant::RecordBuf,
     ) -> Result<Vec<super::vep_gnomad4::Vep>, anyhow::Error> {
         if let Some(Some(field::Value::Array(field::value::Array::String(v)))) =
             record.info().get("vep")
@@ -173,7 +173,7 @@ impl Record {
 
     /// Extract the VRS infos.
     fn extract_vrs_info(
-        record: &noodles_vcf::variant::RecordBuf,
+        record: &noodles::vcf::variant::RecordBuf,
     ) -> Result<VrsInfo, anyhow::Error> {
         Ok(VrsInfo {
             allele_ids: common::noodles::get_vec_str(record, "VRS_Allele_IDs").unwrap_or_default(),
@@ -185,7 +185,7 @@ impl Record {
 
     /// Extract details on the variant effects.
     fn extract_effect_info(
-        record: &noodles_vcf::variant::RecordBuf,
+        record: &noodles::vcf::variant::RecordBuf,
     ) -> Result<EffectInfo, anyhow::Error> {
         Ok(EffectInfo {
             pangolin_largest_ds: common::noodles::get_f32(record, "pangolin_largest_ds").ok(),
@@ -201,7 +201,7 @@ impl Record {
 
     /// Extract the allele counts from the `record` as configured in `options`.
     fn extract_cohorts_allele_counts(
-        record: &noodles_vcf::variant::RecordBuf,
+        record: &noodles::vcf::variant::RecordBuf,
         record_type: RecordType,
     ) -> Result<Vec<CohortAlleleCounts>, anyhow::Error> {
         // Initialize global cohort.
@@ -279,7 +279,7 @@ impl Record {
 
     /// Extrac the ancestry group allele counts from the `record`.
     fn extract_ancestry_group_allele_counts(
-        record: &noodles_vcf::variant::RecordBuf,
+        record: &noodles::vcf::variant::RecordBuf,
         infix: &str,
         grp: &str,
     ) -> Result<AncestryGroupAlleleCounts, anyhow::Error> {
@@ -315,7 +315,7 @@ impl Record {
 
     /// Extract the allele counts from the `record` with the given infix and suffix.
     fn extract_allele_counts(
-        record: &noodles_vcf::variant::RecordBuf,
+        record: &noodles::vcf::variant::RecordBuf,
         infix: &str,
         suffix: &str,
     ) -> Result<gnomad3::AlleleCounts, anyhow::Error> {
@@ -340,7 +340,7 @@ mod test {
     fn test_record_from_vcf_allele_gnomad_genomes_grch38() -> Result<(), anyhow::Error> {
         let path_vcf = "tests/gnomad-nuclear/example-genomes-grch38/v4.0/gnomad-genomes.vcf";
         let mut reader_vcf =
-            noodles_vcf::io::reader::Builder::default().build_from_path(path_vcf)?;
+            noodles::vcf::io::reader::Builder::default().build_from_path(path_vcf)?;
         let header = reader_vcf.read_header()?;
 
         let mut records = Vec::new();
@@ -364,7 +364,7 @@ mod test {
     fn test_record_from_vcf_allele_gnomad_exomess_grch38() -> Result<(), anyhow::Error> {
         let path_vcf = "tests/gnomad-nuclear/example-exomes-grch38/v4.0/gnomad-exomes.vcf";
         let mut reader_vcf =
-            noodles_vcf::io::reader::Builder::default().build_from_path(path_vcf)?;
+            noodles::vcf::io::reader::Builder::default().build_from_path(path_vcf)?;
         let header = reader_vcf.read_header()?;
 
         let mut records = Vec::new();

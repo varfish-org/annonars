@@ -1,9 +1,9 @@
 //! Code generate for protobufs by `prost-build`.
 
-use noodles_vcf::variant::record::AlternateBases;
+use noodles::vcf::variant::record::AlternateBases;
 use std::str::FromStr;
 
-use noodles_vcf::variant::record_buf::info::field;
+use noodles::vcf::variant::record_buf::info::field;
 
 use crate::common;
 
@@ -86,7 +86,7 @@ impl DetailsOptions {
 impl Record {
     /// Creates a new `Record` from a VCF record and allele number.
     pub fn from_vcf_allele(
-        record: &noodles_vcf::variant::RecordBuf,
+        record: &noodles::vcf::variant::RecordBuf,
         allele_no: usize,
         options: &DetailsOptions,
     ) -> Result<Self, anyhow::Error> {
@@ -164,7 +164,7 @@ impl Record {
 
     /// Extract the "vep" field into gnomAD v2 `Vep` records.
     fn extract_vep(
-        record: &noodles_vcf::variant::RecordBuf,
+        record: &noodles::vcf::variant::RecordBuf,
     ) -> Result<Vec<super::vep_gnomad2::Vep>, anyhow::Error> {
         if let Some(Some(field::Value::Array(field::value::Array::String(v)))) =
             record.info().get("vep")
@@ -189,7 +189,7 @@ impl Record {
 
     /// Extract the liftover related fields into gnomAD v2 `Vep` records.
     fn extract_liftover(
-        record: &noodles_vcf::variant::RecordBuf,
+        record: &noodles::vcf::variant::RecordBuf,
     ) -> Result<Option<LiftoverInfo>, anyhow::Error> {
         let tmp = LiftoverInfo {
             reverse_complemented_alleles: common::noodles::get_flag(
@@ -216,7 +216,7 @@ impl Record {
 
     /// Extract the details on the random forest.
     fn extract_rf_info(
-        record: &noodles_vcf::variant::RecordBuf,
+        record: &noodles::vcf::variant::RecordBuf,
     ) -> Result<RandomForestInfo, anyhow::Error> {
         Ok(RandomForestInfo {
             rf_tp_probability: common::noodles::get_f32(record, "rf_tp_probability")?,
@@ -229,7 +229,7 @@ impl Record {
 
     /// Extract the details on the variant.
     fn extract_variant_info(
-        record: &noodles_vcf::variant::RecordBuf,
+        record: &noodles::vcf::variant::RecordBuf,
     ) -> Result<VariantInfo, anyhow::Error> {
         Ok(VariantInfo {
             variant_type: common::noodles::get_string(record, "variant_type")?,
@@ -242,7 +242,7 @@ impl Record {
 
     /// Extract the filters fields.
     fn extract_filters(
-        record: &noodles_vcf::variant::RecordBuf,
+        record: &noodles::vcf::variant::RecordBuf,
     ) -> Result<Vec<i32>, anyhow::Error> {
         Ok(
             if let Some(Some(field::Value::Array(field::value::Array::String(value)))) =
@@ -266,7 +266,7 @@ impl Record {
     }
 
     /// Extract the age related fields from the VCF record.
-    fn extract_age(record: &noodles_vcf::variant::RecordBuf) -> Result<AgeInfo, anyhow::Error> {
+    fn extract_age(record: &noodles::vcf::variant::RecordBuf) -> Result<AgeInfo, anyhow::Error> {
         Ok(AgeInfo {
             age_hist_hom_bin_freq: common::noodles::get_vec::<i32>(record, "age_hist_hom_bin_freq")
                 .unwrap_or_default(),
@@ -280,7 +280,9 @@ impl Record {
     }
 
     /// Extract the depth related fields from the VCF record.
-    fn extract_depth(record: &noodles_vcf::variant::RecordBuf) -> Result<DepthInfo, anyhow::Error> {
+    fn extract_depth(
+        record: &noodles::vcf::variant::RecordBuf,
+    ) -> Result<DepthInfo, anyhow::Error> {
         Ok(DepthInfo {
             dp_hist_all_n_larger: common::noodles::get_i32(record, "dp_hist_all_n_larger").ok(),
             dp_hist_alt_n_larger: common::noodles::get_i32(record, "dp_hist_alt_n_larger").ok(),
@@ -293,7 +295,7 @@ impl Record {
 
     /// Extract the quality-related fields from the VCF record.
     fn extract_quality(
-        record: &noodles_vcf::variant::RecordBuf,
+        record: &noodles::vcf::variant::RecordBuf,
     ) -> Result<QualityInfo, anyhow::Error> {
         Ok(QualityInfo {
             fs: common::noodles::get_f32(record, "FS").ok(),
@@ -326,7 +328,7 @@ impl Record {
 
     /// Extract the allele counts from the `record` as configured in `options`.
     fn extract_cohorts_allele_counts(
-        record: &noodles_vcf::variant::RecordBuf,
+        record: &noodles::vcf::variant::RecordBuf,
         options: &DetailsOptions,
     ) -> Result<Vec<CohortAlleleCounts>, anyhow::Error> {
         // Initialize global cohort.  We will always extract the non-population specific
@@ -401,7 +403,7 @@ impl Record {
 
     /// Extrac the population allele counts from the `record`.
     fn extract_population_allele_counts(
-        record: &noodles_vcf::variant::RecordBuf,
+        record: &noodles::vcf::variant::RecordBuf,
         prefix: &str,
         pop: &str,
     ) -> Result<PopulationAlleleCounts, anyhow::Error> {
@@ -421,7 +423,7 @@ impl Record {
 
     /// Extract the allele counts from the `record` with the given prefix and suffix.
     fn extract_allele_counts(
-        record: &noodles_vcf::variant::RecordBuf,
+        record: &noodles::vcf::variant::RecordBuf,
         prefix: &str,
         suffix: &str,
     ) -> Result<Option<AlleleCounts>, anyhow::Error> {
@@ -452,7 +454,7 @@ mod test {
     fn test_record_from_vcf_allele_gnomad_exomes_grch37() -> Result<(), anyhow::Error> {
         let path_vcf = "tests/gnomad-nuclear/example-exomes-grch37/v2.1/gnomad-exomes.vcf";
         let mut reader_vcf =
-            noodles_vcf::io::reader::Builder::default().build_from_path(path_vcf)?;
+            noodles::vcf::io::reader::Builder::default().build_from_path(path_vcf)?;
         let header = reader_vcf.read_header()?;
 
         let mut records = Vec::new();
@@ -472,7 +474,7 @@ mod test {
     fn test_record_from_vcf_allele_gnomad_genomes_grch37() -> Result<(), anyhow::Error> {
         let path_vcf = "tests/gnomad-nuclear/example-genomes-grch37/v2.1/gnomad-genomes.vcf";
         let mut reader_vcf =
-            noodles_vcf::io::reader::Builder::default().build_from_path(path_vcf)?;
+            noodles::vcf::io::reader::Builder::default().build_from_path(path_vcf)?;
         let header = reader_vcf.read_header()?;
 
         let mut records = Vec::new();
@@ -492,7 +494,7 @@ mod test {
     fn test_record_from_vcf_allele_gnomad_exomes_grch38() -> Result<(), anyhow::Error> {
         let path_vcf = "tests/gnomad-nuclear/example-exomes-grch38/v2.1/gnomad-exomes.vcf";
         let mut reader_vcf =
-            noodles_vcf::io::reader::Builder::default().build_from_path(path_vcf)?;
+            noodles::vcf::io::reader::Builder::default().build_from_path(path_vcf)?;
         let header = reader_vcf.read_header()?;
 
         let mut records = Vec::new();

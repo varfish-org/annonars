@@ -1,7 +1,7 @@
 //! gnomAD CNV v4 import.
 
 use itertools::Itertools;
-use noodles_vcf::variant::record::Ids;
+use noodles::vcf::variant::record::Ids;
 use std::{fmt, str::FromStr, sync::Arc};
 
 use crate::{
@@ -77,7 +77,7 @@ impl Record {
     ///
     /// * Any error encountered during the creation.
     pub fn from_vcf_record(
-        record: &noodles_vcf::variant::RecordBuf,
+        record: &noodles::vcf::variant::RecordBuf,
         cohort_name: &str,
     ) -> Result<Self, anyhow::Error> {
         let chrom = record.reference_sequence_name().to_string();
@@ -152,7 +152,7 @@ impl Record {
 
     /// Extract allele counts from VCF record.
     fn carrier_counts_by_sex_from_vcf_record(
-        record: &noodles_vcf::variant::RecordBuf,
+        record: &noodles::vcf::variant::RecordBuf,
         population: Option<Population>,
     ) -> Result<CarrierCountsBySex, anyhow::Error> {
         let pop_prefix = population
@@ -168,7 +168,7 @@ impl Record {
 
     /// Extract allele counts for a given population from VCF record.
     fn extract_carrier_counts(
-        record: &noodles_vcf::variant::RecordBuf,
+        record: &noodles::vcf::variant::RecordBuf,
         prefix: &str,
     ) -> Result<CarrierCounts, anyhow::Error> {
         let sc = get_f32(record, &format!("{}SC", prefix)).unwrap_or_default() as i32;
@@ -222,7 +222,7 @@ pub fn import(
     };
     tracing::info!("importing gnomAD-CNV v4 {} cohort", cohort_name);
 
-    let mut reader = noodles_vcf::io::reader::Builder::default().build_from_path(path_in_vcf)?;
+    let mut reader = noodles::vcf::io::reader::Builder::default().build_from_path(path_in_vcf)?;
     let header = reader.read_header()?;
 
     for result in reader.record_bufs(&header) {

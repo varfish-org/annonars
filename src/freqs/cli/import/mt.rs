@@ -7,8 +7,8 @@ fn write_record(
     db: &rocksdb::DBWithThreadMode<rocksdb::MultiThreaded>,
     cf: &std::sync::Arc<rocksdb::BoundColumnFamily>,
     record_key: &common::keys::Var,
-    record_gnomad: &mut Option<noodles_vcf::variant::RecordBuf>,
-    record_helix: &mut Option<noodles_vcf::variant::RecordBuf>,
+    record_gnomad: &mut Option<noodles::vcf::variant::RecordBuf>,
+    record_helix: &mut Option<noodles::vcf::variant::RecordBuf>,
 ) -> Result<(), anyhow::Error> {
     if record_gnomad.is_none() && record_helix.is_none() {
         // Early exit, nothing to write out.
@@ -48,7 +48,7 @@ pub fn import_region(
     db: &rocksdb::DBWithThreadMode<rocksdb::MultiThreaded>,
     path_gnomad: Option<&String>,
     path_helix: Option<&String>,
-    region: &noodles_core::region::Region,
+    region: &noodles::core::region::Region,
 ) -> Result<(), anyhow::Error> {
     // Get handle to "mitochondrial" column family.
     let cf_mito = db.cf_handle("mitochondrial").unwrap();
@@ -60,14 +60,15 @@ pub fn import_region(
         is_gnomad.push(true);
         paths.push(path_gnomad);
         readers.push(
-            noodles_vcf::io::indexed_reader::Builder::default().build_from_path(path_gnomad)?,
+            noodles::vcf::io::indexed_reader::Builder::default().build_from_path(path_gnomad)?,
         );
     }
     if let Some(path_helix) = path_helix {
         is_gnomad.push(false);
         paths.push(path_helix);
-        readers
-            .push(noodles_vcf::io::indexed_reader::Builder::default().build_from_path(path_helix)?);
+        readers.push(
+            noodles::vcf::io::indexed_reader::Builder::default().build_from_path(path_helix)?,
+        );
     }
     // Read headers.
     let headers: Vec<_> = readers

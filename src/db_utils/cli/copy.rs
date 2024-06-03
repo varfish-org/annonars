@@ -59,12 +59,12 @@ fn copy_cf_bed(
 ) -> Result<(), anyhow::Error> {
     let mut reader = File::open(path_bed)
         .map(BufReader::new)
-        .map(noodles_bed::Reader::new)?;
+        .map(noodles::bed::Reader::new)?;
 
     tracing::info!("  reading BED records...");
     let bed_records = reader
         .records::<3>()
-        .collect::<Result<Vec<noodles_bed::Record<3>>, _>>()?;
+        .collect::<Result<Vec<noodles::bed::Record<3>>, _>>()?;
     tracing::info!(
         "  will process {} BED records in parallel...",
         bed_records.len()

@@ -4,9 +4,9 @@ use std::sync::Arc;
 
 use clap::Parser;
 use indicatif::ParallelProgressIterator as _;
-use noodles_csi::BinningIndex as _;
-use noodles_vcf::variant::record::AlternateBases;
-use noodles_vcf::variant::RecordBuf;
+use noodles::csi::BinningIndex as _;
+use noodles::vcf::variant::record::AlternateBases;
+use noodles::vcf::variant::RecordBuf;
 use prost::Message as _;
 use rayon::prelude::{IntoParallelRefIterator, ParallelIterator};
 
@@ -56,7 +56,7 @@ fn tsv_import(
 ) -> Result<(), anyhow::Error> {
     // Load tabix header and create BGZF reader with tabix index.
     let tabix_src = format!("{}.tbi", args.path_in_vcf);
-    let index = noodles_tabix::read(tabix_src)?;
+    let index = noodles::tabix::read(tabix_src)?;
     let header = index.header().ok_or_else(|| {
         std::io::Error::new(std::io::ErrorKind::InvalidInput, "missing tabix header")
     })?;
@@ -111,7 +111,7 @@ fn process_window(
 ) -> Result<(), anyhow::Error> {
     let cf_gnomad = db.cf_handle(&args.cf_name).unwrap();
     let mut reader =
-        noodles_vcf::io::indexed_reader::Builder::default().build_from_path(&args.path_in_vcf)?;
+        noodles::vcf::io::indexed_reader::Builder::default().build_from_path(&args.path_in_vcf)?;
     let header = reader.read_header()?;
 
     let raw_region = format!("{}:{}-{}", chrom, begin + 1, end);

@@ -1,9 +1,9 @@
 //! Autosomal counts.
 
 use byteorder::{ByteOrder, LittleEndian};
-use noodles_vcf::variant::record::AlternateBases;
+use noodles::vcf::variant::record::AlternateBases;
 
-use crate::common::noodles;
+use crate::common;
 
 /// Record type for storing AN, AC_hom, AC_het counts for autosomal chromosomes.
 #[derive(Default, Debug, PartialEq, Eq, Clone, serde::Serialize, serde::Deserialize)]
@@ -18,7 +18,7 @@ pub struct Counts {
 
 impl Counts {
     /// Create from the given VCF record.
-    pub fn from_vcf_allele(value: &noodles_vcf::variant::RecordBuf, _allele_no: usize) -> Self {
+    pub fn from_vcf_allele(value: &noodles::vcf::variant::RecordBuf, _allele_no: usize) -> Self {
         tracing::trace!("@ {:?}", &value);
         assert_eq!(
             value.alternate_bases().len(),
@@ -26,10 +26,10 @@ impl Counts {
             "only one alternate allele is supported",
         );
 
-        let ac = noodles::get_i32(value, "AC").expect("could not find: INFO/AC") as u32;
-        let ac_hom =
-            noodles::get_i32(value, "nhomalt").expect("could not find: INFO/nhomalt") as u32;
-        let an = noodles::get_i32(value, "AN").expect("could not find: INFO/AN") as u32;
+        let ac = common::noodles::get_i32(value, "AC").expect("could not find: INFO/AC") as u32;
+        let ac_hom = common::noodles::get_i32(value, "nhomalt")
+            .expect("could not find: INFO/nhomalt") as u32;
+        let an = common::noodles::get_i32(value, "AN").expect("could not find: INFO/AN") as u32;
 
         Counts {
             ac_hom,
