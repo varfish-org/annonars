@@ -109,7 +109,7 @@ impl Record {
             .to_string();
         let filters = Self::extract_filters(record)?;
         let allele_counts = Self::extract_cohorts_allele_counts(record, options)?;
-        let nonpar = common::noodles_utils::get_flag(record, "nonpar")?;
+        let nonpar = common::noodles::get_flag(record, "nonpar")?;
 
         // Extract optional fields.
         let vep = options
@@ -185,13 +185,13 @@ impl Record {
         record: &noodles::vcf::variant::RecordBuf,
     ) -> Result<VariantInfo, anyhow::Error> {
         Ok(VariantInfo {
-            variant_type: common::noodles_utils::get_string(record, "variant_type")?,
-            allele_type: common::noodles_utils::get_string(record, "allele_type")?,
-            n_alt_alleles: common::noodles_utils::get_i32(record, "n_alt_alleles")?,
-            was_mixed: common::noodles_utils::get_flag(record, "was_mixed")?,
-            monoallelic: common::noodles_utils::get_flag(record, "was_mixed")?,
-            var_dp: common::noodles_utils::get_i32(record, "n_alt_alleles")?,
-            as_vardp: common::noodles_utils::get_i32(record, "AS_VarDP").ok(),
+            variant_type: common::noodles::get_string(record, "variant_type")?,
+            allele_type: common::noodles::get_string(record, "allele_type")?,
+            n_alt_alleles: common::noodles::get_i32(record, "n_alt_alleles")?,
+            was_mixed: common::noodles::get_flag(record, "was_mixed")?,
+            monoallelic: common::noodles::get_flag(record, "was_mixed")?,
+            var_dp: common::noodles::get_i32(record, "n_alt_alleles")?,
+            as_vardp: common::noodles::get_i32(record, "AS_VarDP").ok(),
         })
     }
 
@@ -200,16 +200,13 @@ impl Record {
         record: &noodles::vcf::variant::RecordBuf,
     ) -> Result<EffectInfo, anyhow::Error> {
         Ok(EffectInfo {
-            primate_ai_score: common::noodles_utils::get_f32(record, "primate_ai_score").ok(),
-            revel_score: common::noodles_utils::get_f32(record, "revel_score").ok(),
-            splice_ai_max_ds: common::noodles_utils::get_f32(record, "splice_ai_max_ds").ok(),
-            splice_ai_consequence: common::noodles_utils::get_string(
-                record,
-                "splice_ai_consequence",
-            )
-            .ok(),
-            cadd_raw: common::noodles_utils::get_f32(record, "cadd_raw").ok(),
-            cadd_phred: common::noodles_utils::get_f32(record, "cadd_phred").ok(),
+            primate_ai_score: common::noodles::get_f32(record, "primate_ai_score").ok(),
+            revel_score: common::noodles::get_f32(record, "revel_score").ok(),
+            splice_ai_max_ds: common::noodles::get_f32(record, "splice_ai_max_ds").ok(),
+            splice_ai_consequence: common::noodles::get_string(record, "splice_ai_consequence")
+                .ok(),
+            cadd_raw: common::noodles::get_f32(record, "cadd_raw").ok(),
+            cadd_phred: common::noodles::get_f32(record, "cadd_phred").ok(),
         })
     }
 
@@ -245,30 +242,14 @@ impl Record {
         record: &noodles::vcf::variant::RecordBuf,
     ) -> Result<AgeInfo, anyhow::Error> {
         Ok(AgeInfo {
-            age_hist_hom_bin_freq: common::noodles_utils::get_vec::<i32>(
-                record,
-                "age_hist_hom_bin_freq",
-            )
-            .unwrap_or_default(),
-            age_hist_hom_n_smaller: common::noodles_utils::get_i32(
-                record,
-                "age_hist_hom_n_smaller",
-            )
-            .ok(),
-            age_hist_hom_n_larger: common::noodles_utils::get_i32(record, "age_hist_hom_n_larger")
-                .ok(),
-            age_hist_het_bin_freq: common::noodles_utils::get_vec::<i32>(
-                record,
-                "age_hist_het_bin_freq",
-            )
-            .unwrap_or_default(),
-            age_hist_het_n_smaller: common::noodles_utils::get_i32(
-                record,
-                "age_hist_het_n_smaller",
-            )
-            .ok(),
-            age_hist_het_n_larger: common::noodles_utils::get_i32(record, "age_hist_het_n_larger")
-                .ok(),
+            age_hist_hom_bin_freq: common::noodles::get_vec::<i32>(record, "age_hist_hom_bin_freq")
+                .unwrap_or_default(),
+            age_hist_hom_n_smaller: common::noodles::get_i32(record, "age_hist_hom_n_smaller").ok(),
+            age_hist_hom_n_larger: common::noodles::get_i32(record, "age_hist_hom_n_larger").ok(),
+            age_hist_het_bin_freq: common::noodles::get_vec::<i32>(record, "age_hist_het_bin_freq")
+                .unwrap_or_default(),
+            age_hist_het_n_smaller: common::noodles::get_i32(record, "age_hist_het_n_smaller").ok(),
+            age_hist_het_n_larger: common::noodles::get_i32(record, "age_hist_het_n_larger").ok(),
         })
     }
 
@@ -277,20 +258,12 @@ impl Record {
         record: &noodles::vcf::variant::RecordBuf,
     ) -> Result<DepthInfo, anyhow::Error> {
         Ok(DepthInfo {
-            dp_hist_all_n_larger: common::noodles_utils::get_i32(record, "dp_hist_all_n_larger")
-                .ok(),
-            dp_hist_alt_n_larger: common::noodles_utils::get_i32(record, "dp_hist_alt_n_larger")
-                .ok(),
-            dp_hist_all_bin_freq: common::noodles_utils::get_vec::<i32>(
-                record,
-                "dp_hist_all_bin_freq",
-            )
-            .unwrap_or_default(),
-            dp_hist_alt_bin_freq: common::noodles_utils::get_vec::<i32>(
-                record,
-                "dp_hist_alt_bin_freq",
-            )
-            .unwrap_or_default(),
+            dp_hist_all_n_larger: common::noodles::get_i32(record, "dp_hist_all_n_larger").ok(),
+            dp_hist_alt_n_larger: common::noodles::get_i32(record, "dp_hist_alt_n_larger").ok(),
+            dp_hist_all_bin_freq: common::noodles::get_vec::<i32>(record, "dp_hist_all_bin_freq")
+                .unwrap_or_default(),
+            dp_hist_alt_bin_freq: common::noodles::get_vec::<i32>(record, "dp_hist_alt_bin_freq")
+                .unwrap_or_default(),
         })
     }
 
@@ -299,31 +272,28 @@ impl Record {
         record: &noodles::vcf::variant::RecordBuf,
     ) -> Result<QualityInfo, anyhow::Error> {
         Ok(QualityInfo {
-            as_fs: common::noodles_utils::get_f32(record, "AS_FS").ok(),
-            inbreeding_coeff: common::noodles_utils::get_f32(record, "InbreedingCoeff").ok(),
-            as_mq: common::noodles_utils::get_f32(record, "AS_MQ").ok(),
-            mq_rank_sum: common::noodles_utils::get_f32(record, "MQRankSum").ok(),
-            as_mq_rank_sum: common::noodles_utils::get_f32(record, "AS_MQRankSum").ok(),
-            as_qd: common::noodles_utils::get_f32(record, "AS_QD").ok(),
-            read_pos_rank_sum: common::noodles_utils::get_f32(record, "ReadPosRankSum").ok(),
-            as_read_pos_rank_sum: common::noodles_utils::get_f32(record, "AS_ReadPosRankSum").ok(),
-            as_sor: common::noodles_utils::get_f32(record, "AS_SOR").ok(),
-            positive_train_site: common::noodles_utils::get_flag(record, "POSITIVE_TRAIN_SITE")? // < v4.0
-            || common::noodles_utils::get_flag(record, "positive_train_site")?, // >= v4.0
-            negative_train_site: common::noodles_utils::get_flag(record, "NEGATIVE_TRAIN_SITE")? // < v4.0
-            || common::noodles_utils::get_flag(record, "negative_train_site")?, // >= v4.0
-            as_vqslod: common::noodles_utils::get_f32(record, "AS_VQSLOD").ok(),
-            as_culprit: common::noodles_utils::get_string(record, "AS_culprit").ok(),
-            segdup: common::noodles_utils::get_flag(record, "seqdup")?,
-            lcr: common::noodles_utils::get_flag(record, "lcr")?,
-            transmitted_singleton: common::noodles_utils::get_flag(
-                record,
-                "transmitted_singleton",
-            )?,
-            as_pab_max: common::noodles_utils::get_f32(record, "AS_pab_max").ok(),
-            as_qual_approx: common::noodles_utils::get_i32(record, "AS_QUALapprox").ok(),
-            as_sb_table: common::noodles_utils::get_string(record, "AS_SB_TABLE").ok(),
-            sor: common::noodles_utils::get_f32(record, "SOR").ok(),
+            as_fs: common::noodles::get_f32(record, "AS_FS").ok(),
+            inbreeding_coeff: common::noodles::get_f32(record, "InbreedingCoeff").ok(),
+            as_mq: common::noodles::get_f32(record, "AS_MQ").ok(),
+            mq_rank_sum: common::noodles::get_f32(record, "MQRankSum").ok(),
+            as_mq_rank_sum: common::noodles::get_f32(record, "AS_MQRankSum").ok(),
+            as_qd: common::noodles::get_f32(record, "AS_QD").ok(),
+            read_pos_rank_sum: common::noodles::get_f32(record, "ReadPosRankSum").ok(),
+            as_read_pos_rank_sum: common::noodles::get_f32(record, "AS_ReadPosRankSum").ok(),
+            as_sor: common::noodles::get_f32(record, "AS_SOR").ok(),
+            positive_train_site: common::noodles::get_flag(record, "POSITIVE_TRAIN_SITE")? // < v4.0
+            || common::noodles::get_flag(record, "positive_train_site")?, // >= v4.0
+            negative_train_site: common::noodles::get_flag(record, "NEGATIVE_TRAIN_SITE")? // < v4.0
+            || common::noodles::get_flag(record, "negative_train_site")?, // >= v4.0
+            as_vqslod: common::noodles::get_f32(record, "AS_VQSLOD").ok(),
+            as_culprit: common::noodles::get_string(record, "AS_culprit").ok(),
+            segdup: common::noodles::get_flag(record, "seqdup")?,
+            lcr: common::noodles::get_flag(record, "lcr")?,
+            transmitted_singleton: common::noodles::get_flag(record, "transmitted_singleton")?,
+            as_pab_max: common::noodles::get_f32(record, "AS_pab_max").ok(),
+            as_qual_approx: common::noodles::get_i32(record, "AS_QUALapprox").ok(),
+            as_sb_table: common::noodles::get_string(record, "AS_SB_TABLE").ok(),
+            sor: common::noodles::get_f32(record, "SOR").ok(),
         })
     }
 
@@ -342,11 +312,11 @@ impl Record {
                 xy: Some(Self::extract_allele_counts(record, "", "_XY")?),
             }),
             raw: Some(Self::extract_allele_counts(record, "", "_raw")?),
-            popmax: common::noodles_utils::get_string(record, "popmax").ok(),
-            af_popmax: common::noodles_utils::get_f32(record, "AF_popmax").ok(),
-            ac_popmax: common::noodles_utils::get_i32(record, "AC_popmax").ok(),
-            an_popmax: common::noodles_utils::get_i32(record, "AN_popmax").ok(),
-            nhomalt_popmax: common::noodles_utils::get_i32(record, "nhomalt_popmax").ok(),
+            popmax: common::noodles::get_string(record, "popmax").ok(),
+            af_popmax: common::noodles::get_f32(record, "AF_popmax").ok(),
+            ac_popmax: common::noodles::get_i32(record, "AC_popmax").ok(),
+            an_popmax: common::noodles::get_i32(record, "AN_popmax").ok(),
+            nhomalt_popmax: common::noodles::get_i32(record, "nhomalt_popmax").ok(),
             by_population: Vec::new(), // maybe filled below
         };
 
@@ -372,27 +342,14 @@ impl Record {
                         xy: Some(Self::extract_allele_counts(record, &infix, "_XY")?),
                     }),
                     raw: Some(Self::extract_allele_counts(record, &infix, "_raw")?),
-                    popmax: common::noodles_utils::get_string(
-                        record,
-                        &format!("{}_popmax", cohort),
-                    )
-                    .ok(),
-                    af_popmax: common::noodles_utils::get_f32(
-                        record,
-                        &format!("AF_{}_popmax", cohort),
-                    )
-                    .ok(),
-                    ac_popmax: common::noodles_utils::get_i32(
-                        record,
-                        &format!("AC_{}_popmax", cohort),
-                    )
-                    .ok(),
-                    an_popmax: common::noodles_utils::get_i32(
-                        record,
-                        &format!("AN_{}_popmax", cohort),
-                    )
-                    .ok(),
-                    nhomalt_popmax: common::noodles_utils::get_i32(
+                    popmax: common::noodles::get_string(record, &format!("{}_popmax", cohort)).ok(),
+                    af_popmax: common::noodles::get_f32(record, &format!("AF_{}_popmax", cohort))
+                        .ok(),
+                    ac_popmax: common::noodles::get_i32(record, &format!("AC_{}_popmax", cohort))
+                        .ok(),
+                    an_popmax: common::noodles::get_i32(record, &format!("AN_{}_popmax", cohort))
+                        .ok(),
+                    nhomalt_popmax: common::noodles::get_i32(
                         record,
                         &format!("nhomalt_{}_popmax", cohort),
                     )
@@ -440,12 +397,12 @@ impl Record {
             }),
             // The faf95 and faf99 value is not present for all populations.  We use a blanket
             // "ok()" here so things don't blow up randomly.
-            faf95: common::noodles_utils::get_f32(record, &format!("faf95_{}", pop)).ok(),
-            faf99: common::noodles_utils::get_f32(record, &format!("faf99_{}", pop)).ok(),
-            faf95_xx: common::noodles_utils::get_f32(record, &format!("faf95_{}_XX", pop)).ok(),
-            faf99_xx: common::noodles_utils::get_f32(record, &format!("faf99_{}_XX", pop)).ok(),
-            faf95_xy: common::noodles_utils::get_f32(record, &format!("faf95_{}_XY", pop)).ok(),
-            faf99_xy: common::noodles_utils::get_f32(record, &format!("faf99_{}_XY", pop)).ok(),
+            faf95: common::noodles::get_f32(record, &format!("faf95_{}", pop)).ok(),
+            faf99: common::noodles::get_f32(record, &format!("faf99_{}", pop)).ok(),
+            faf95_xx: common::noodles::get_f32(record, &format!("faf95_{}_XX", pop)).ok(),
+            faf99_xx: common::noodles::get_f32(record, &format!("faf99_{}_XX", pop)).ok(),
+            faf95_xy: common::noodles::get_f32(record, &format!("faf95_{}_XY", pop)).ok(),
+            faf99_xy: common::noodles::get_f32(record, &format!("faf99_{}_XY", pop)).ok(),
         })
     }
 
@@ -456,13 +413,13 @@ impl Record {
         suffix: &str,
     ) -> Result<AlleleCounts, anyhow::Error> {
         Ok(AlleleCounts {
-            ac: common::noodles_utils::get_i32(record, &format!("AC{}{}", infix, suffix))
+            ac: common::noodles::get_i32(record, &format!("AC{}{}", infix, suffix))
                 .unwrap_or_default(),
-            an: common::noodles_utils::get_i32(record, &format!("AN{}{}", infix, suffix))
+            an: common::noodles::get_i32(record, &format!("AN{}{}", infix, suffix))
                 .unwrap_or_default(),
-            nhomalt: common::noodles_utils::get_i32(record, &format!("nhomalt{}{}", infix, suffix))
+            nhomalt: common::noodles::get_i32(record, &format!("nhomalt{}{}", infix, suffix))
                 .unwrap_or_default(),
-            af: common::noodles_utils::get_f32(record, &format!("AF{}{}", infix, suffix))
+            af: common::noodles::get_f32(record, &format!("AF{}{}", infix, suffix))
                 .unwrap_or_default(),
         })
     }

@@ -84,16 +84,14 @@ impl Record {
             .to_string();
         let filters = gnomad3::Record::extract_filters(record)?;
         let allele_counts = Self::extract_cohorts_allele_counts(record, record_type)?;
-        let nonpar = common::noodles_utils::get_flag(record, "non_par").unwrap_or_default();
+        let nonpar = common::noodles::get_flag(record, "non_par").unwrap_or_default();
         let outside_broad_capture_region =
-            common::noodles_utils::get_flag(record, "outside_broad_capture_region")
-                .unwrap_or_default();
+            common::noodles::get_flag(record, "outside_broad_capture_region").unwrap_or_default();
         let outside_ukb_capture_region =
-            common::noodles_utils::get_flag(record, "outside_ukb_capture_region")
-                .unwrap_or_default();
+            common::noodles::get_flag(record, "outside_ukb_capture_region").unwrap_or_default();
         let sibling_singleton =
-            common::noodles_utils::get_flag(record, "sibling_singleton").unwrap_or_default();
-        let only_het = common::noodles_utils::get_flag(record, "only_het").unwrap_or_default();
+            common::noodles::get_flag(record, "sibling_singleton").unwrap_or_default();
+        let only_het = common::noodles::get_flag(record, "only_het").unwrap_or_default();
 
         // Extract optional fields.
         let vep = options
@@ -178,11 +176,10 @@ impl Record {
         record: &noodles::vcf::variant::RecordBuf,
     ) -> Result<VrsInfo, anyhow::Error> {
         Ok(VrsInfo {
-            allele_ids: common::noodles_utils::get_vec_str(record, "VRS_Allele_IDs")
-                .unwrap_or_default(),
-            ends: common::noodles_utils::get_vec_i32(record, "VRS_Ends").unwrap_or_default(),
-            starts: common::noodles_utils::get_vec_i32(record, "VRS_Starts").unwrap_or_default(),
-            states: common::noodles_utils::get_vec_str(record, "VRS_States").unwrap_or_default(),
+            allele_ids: common::noodles::get_vec_str(record, "VRS_Allele_IDs").unwrap_or_default(),
+            ends: common::noodles::get_vec_i32(record, "VRS_Ends").unwrap_or_default(),
+            starts: common::noodles::get_vec_i32(record, "VRS_Starts").unwrap_or_default(),
+            states: common::noodles::get_vec_str(record, "VRS_States").unwrap_or_default(),
         })
     }
 
@@ -191,14 +188,14 @@ impl Record {
         record: &noodles::vcf::variant::RecordBuf,
     ) -> Result<EffectInfo, anyhow::Error> {
         Ok(EffectInfo {
-            pangolin_largest_ds: common::noodles_utils::get_f32(record, "pangolin_largest_ds").ok(),
-            phylop: common::noodles_utils::get_f32(record, "phylop").ok(),
-            polyphen_max: common::noodles_utils::get_f32(record, "polyphen_max").ok(),
-            revel_max: common::noodles_utils::get_f32(record, "revel_max").ok(),
-            sift_max: common::noodles_utils::get_f32(record, "sift_max").ok(),
-            spliceai_ds_max: common::noodles_utils::get_f32(record, "spliceai_ds_max").ok(),
-            cadd_raw: common::noodles_utils::get_f32(record, "cadd_raw").ok(),
-            cadd_phred: common::noodles_utils::get_f32(record, "cadd_phred").ok(),
+            pangolin_largest_ds: common::noodles::get_f32(record, "pangolin_largest_ds").ok(),
+            phylop: common::noodles::get_f32(record, "phylop").ok(),
+            polyphen_max: common::noodles::get_f32(record, "polyphen_max").ok(),
+            revel_max: common::noodles::get_f32(record, "revel_max").ok(),
+            sift_max: common::noodles::get_f32(record, "sift_max").ok(),
+            spliceai_ds_max: common::noodles::get_f32(record, "spliceai_ds_max").ok(),
+            cadd_raw: common::noodles::get_f32(record, "cadd_raw").ok(),
+            cadd_phred: common::noodles::get_f32(record, "cadd_phred").ok(),
         })
     }
 
@@ -216,11 +213,11 @@ impl Record {
                 xy: Some(Self::extract_allele_counts(record, "", "_XY")?),
             }),
             raw: Some(Self::extract_allele_counts(record, "", "_raw")?),
-            grpmax: common::noodles_utils::get_string(record, "grpmax").ok(),
-            af_grpmax: common::noodles_utils::get_f32(record, "AF_grpmax").ok(),
-            ac_grpmax: common::noodles_utils::get_i32(record, "AC_grpmax").ok(),
-            an_grpmax: common::noodles_utils::get_i32(record, "AN_grpmax").ok(),
-            nhomalt_grpmax: common::noodles_utils::get_i32(record, "nhomalt_grpmax").ok(),
+            grpmax: common::noodles::get_string(record, "grpmax").ok(),
+            af_grpmax: common::noodles::get_f32(record, "AF_grpmax").ok(),
+            ac_grpmax: common::noodles::get_i32(record, "AC_grpmax").ok(),
+            an_grpmax: common::noodles::get_i32(record, "AN_grpmax").ok(),
+            nhomalt_grpmax: common::noodles::get_i32(record, "nhomalt_grpmax").ok(),
             by_ancestry_group: Vec::new(), // to be filled below
         };
 
@@ -247,15 +244,11 @@ impl Record {
                     xy: Some(Self::extract_allele_counts(record, &infix, "_XY")?),
                 }),
                 raw: Some(Self::extract_allele_counts(record, &infix, "_raw")?),
-                grpmax: common::noodles_utils::get_string(record, &format!("grpmax_{}", cohort))
-                    .ok(),
-                af_grpmax: common::noodles_utils::get_f32(record, &format!("AF_grpmax_{}", cohort))
-                    .ok(),
-                ac_grpmax: common::noodles_utils::get_i32(record, &format!("AC_grpmax_{}", cohort))
-                    .ok(),
-                an_grpmax: common::noodles_utils::get_i32(record, &format!("AN_grpmax_{}", cohort))
-                    .ok(),
-                nhomalt_grpmax: common::noodles_utils::get_i32(
+                grpmax: common::noodles::get_string(record, &format!("grpmax_{}", cohort)).ok(),
+                af_grpmax: common::noodles::get_f32(record, &format!("AF_grpmax_{}", cohort)).ok(),
+                ac_grpmax: common::noodles::get_i32(record, &format!("AC_grpmax_{}", cohort)).ok(),
+                an_grpmax: common::noodles::get_i32(record, &format!("AN_grpmax_{}", cohort)).ok(),
+                nhomalt_grpmax: common::noodles::get_i32(
                     record,
                     &format!("nhomalt_grpmax_{}", cohort),
                 )
@@ -311,12 +304,12 @@ impl Record {
             }),
             // The faf95 and faf99 value is not present for all ancestry groups.  We use a blanket
             // "ok()" here so things don't blow up randomly.
-            faf95: common::noodles_utils::get_f32(record, &format!("faf95_{}", grp)).ok(),
-            faf99: common::noodles_utils::get_f32(record, &format!("faf99_{}", grp)).ok(),
-            faf95_xx: common::noodles_utils::get_f32(record, &format!("faf95_{}_XX", grp)).ok(),
-            faf99_xx: common::noodles_utils::get_f32(record, &format!("faf99_{}_XX", grp)).ok(),
-            faf95_xy: common::noodles_utils::get_f32(record, &format!("faf95_{}_XY", grp)).ok(),
-            faf99_xy: common::noodles_utils::get_f32(record, &format!("faf99_{}_XY", grp)).ok(),
+            faf95: common::noodles::get_f32(record, &format!("faf95_{}", grp)).ok(),
+            faf99: common::noodles::get_f32(record, &format!("faf99_{}", grp)).ok(),
+            faf95_xx: common::noodles::get_f32(record, &format!("faf95_{}_XX", grp)).ok(),
+            faf99_xx: common::noodles::get_f32(record, &format!("faf99_{}_XX", grp)).ok(),
+            faf95_xy: common::noodles::get_f32(record, &format!("faf95_{}_XY", grp)).ok(),
+            faf99_xy: common::noodles::get_f32(record, &format!("faf99_{}_XY", grp)).ok(),
         })
     }
 
@@ -327,13 +320,13 @@ impl Record {
         suffix: &str,
     ) -> Result<gnomad3::AlleleCounts, anyhow::Error> {
         Ok(gnomad3::AlleleCounts {
-            ac: common::noodles_utils::get_i32(record, &format!("AC{}{}", infix, suffix))
+            ac: common::noodles::get_i32(record, &format!("AC{}{}", infix, suffix))
                 .unwrap_or_default(),
-            an: common::noodles_utils::get_i32(record, &format!("AN{}{}", infix, suffix))
+            an: common::noodles::get_i32(record, &format!("AN{}{}", infix, suffix))
                 .unwrap_or_default(),
-            nhomalt: common::noodles_utils::get_i32(record, &format!("nhomalt{}{}", infix, suffix))
+            nhomalt: common::noodles::get_i32(record, &format!("nhomalt{}{}", infix, suffix))
                 .unwrap_or_default(),
-            af: common::noodles_utils::get_f32(record, &format!("AF{}{}", infix, suffix))
+            af: common::noodles::get_f32(record, &format!("AF{}{}", infix, suffix))
                 .unwrap_or_default(),
         })
     }

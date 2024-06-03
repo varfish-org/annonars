@@ -3,7 +3,7 @@
 use byteorder::{ByteOrder, LittleEndian};
 use noodles::vcf::variant::record::AlternateBases;
 
-use crate::common::noodles_utils;
+use crate::common::noodles;
 
 /// Record type for storing AN, AC_hom, AC_het, AC_hemi counts for chrX/chrY.
 #[derive(Default, Debug, PartialEq, Eq, Clone, serde::Serialize, serde::Deserialize)]
@@ -28,24 +28,24 @@ impl Counts {
         );
         tracing::trace!("@ {:?}", &value);
 
-        let an = noodles_utils::get_i32(value, "AN").unwrap() as u32;
+        let an = common::noodles::get_i32(value, "AN").unwrap() as u32;
 
-        let ac_hom_xx = noodles_utils::get_i32(value, "nhomalt_female")
-            .or_else(|_| noodles_utils::get_i32(value, "nhomalt_XX"))
+        let ac_hom_xx = common::noodles::get_i32(value, "nhomalt_female")
+            .or_else(|_| common::noodles::get_i32(value, "nhomalt_XX"))
             .unwrap_or_default() as u32;
-        let ac_xx = noodles_utils::get_i32(value, "AC_female")
-            .or_else(|_| noodles_utils::get_i32(value, "AC_XX"))
+        let ac_xx = common::noodles::get_i32(value, "AC_female")
+            .or_else(|_| common::noodles::get_i32(value, "AC_XX"))
             .unwrap_or_default() as u32;
 
-        let ac_hom_xy = noodles_utils::get_i32(value, "nhomalt_male")
-            .or_else(|_| noodles_utils::get_i32(value, "nhomalt_XY"))
+        let ac_hom_xy = common::noodles::get_i32(value, "nhomalt_male")
+            .or_else(|_| common::noodles::get_i32(value, "nhomalt_XY"))
             .expect("neither found: nhomalt_male, nhomalt_XY") as u32;
-        let ac_xy = noodles_utils::get_i32(value, "AC_male")
-            .or_else(|_| noodles_utils::get_i32(value, "AC_XY"))
+        let ac_xy = common::noodles::get_i32(value, "AC_male")
+            .or_else(|_| common::noodles::get_i32(value, "AC_XY"))
             .expect("neither found: AC_male, AC_XY") as u32;
 
-        let nonpar = noodles_utils::get_flag(value, "nonpar").unwrap_or(false)
-            || noodles_utils::get_flag(value, "non_par").unwrap_or(false);
+        let nonpar = common::noodles::get_flag(value, "nonpar").unwrap_or(false)
+            || common::noodles::get_flag(value, "non_par").unwrap_or(false);
 
         if nonpar {
             // not in PAR

@@ -13,7 +13,7 @@ use rayon::iter::{IntoParallelRefIterator as _, ParallelIterator as _};
 use crate::{
     common::{
         self,
-        noodles_utils::{get_f32, get_i32, get_string},
+        common::noodles::{get_f32, get_i32, get_string},
     },
     pbs::gnomad::gnomad_sv2::CpxType,
     pbs::gnomad::gnomad_sv4::{

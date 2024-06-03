@@ -3,7 +3,7 @@
 use byteorder::{ByteOrder, LittleEndian};
 use noodles::vcf::variant::record::AlternateBases;
 
-use crate::common::noodles_utils;
+use crate::common::noodles;
 
 /// Record type for storing AN, AC_hom, AC_het counts for chrMT.
 #[derive(Default, Debug, PartialEq, Eq, Clone, serde::Serialize, serde::Deserialize)]
@@ -24,9 +24,9 @@ impl Counts {
             1,
             "only one alternate allele is supported",
         );
-        let ac_hom = noodles_utils::get_i32(value, "AC_hom").unwrap() as u32;
-        let ac_het = noodles_utils::get_i32(value, "AC_het").unwrap() as u32;
-        let an = noodles_utils::get_i32(value, "AN").unwrap() as u32;
+        let ac_hom = common::noodles::get_i32(value, "AC_hom").unwrap() as u32;
+        let ac_het = common::noodles::get_i32(value, "AC_het").unwrap() as u32;
+        let an = common::noodles::get_i32(value, "AN").unwrap() as u32;
 
         Counts { ac_hom, ac_het, an }
     }

@@ -10,7 +10,7 @@ use noodles::vcf::variant::record::Ids;
 use prost::Message;
 
 use crate::{
-    common::noodles_utils::{get_f32, get_i32, get_string},
+    common::noodles::{get_f32, get_i32, get_string},
     pbs::gnomad::gnomad_sv2::{
         AlleleCounts, AlleleCountsBySex, CohortAlleleCounts, CpxType, Filter, Population,
         PopulationAlleleCounts, Record, SvType,

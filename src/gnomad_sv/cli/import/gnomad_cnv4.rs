@@ -5,7 +5,7 @@ use noodles::vcf::variant::record::Ids;
 use std::{str::FromStr, sync::Arc};
 
 use crate::{
-    common::noodles_utils::{get_f32, get_i32, get_string, get_vec_str},
+    common::noodles::{get_f32, get_i32, get_string, get_vec_str},
     pbs::gnomad::exac_cnv::CnvType,
     pbs::gnomad::gnomad_cnv4::{
         CarrierCounts, CarrierCountsBySex, CohortCarrierCounts, Population,
