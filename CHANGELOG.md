@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.38.0](https://github.com/varfish-org/annonars/compare/v0.37.0...v0.38.0) (2024-06-08)
+
+
+### Features
+
+* adjust to fixed ClinVar public data schema ([#461](https://github.com/varfish-org/annonars/issues/461)) ([92b84e9](https://github.com/varfish-org/annonars/commit/92b84e9e0f413d231f630dc7d6d40df15bb082a8))
+
 ## [0.37.0](https://github.com/varfish-org/annonars/compare/v0.36.2...v0.37.0) (2024-05-30)
 
 
