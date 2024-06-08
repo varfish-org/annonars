@@ -4,6 +4,8 @@ syntax = "proto3";
 
 package annonars.clinvar_data.gene_impact;
 
+import "annonars/clinvar_data/clinvar_public.proto";
+
 // Enumeration with the variant consequence.
 enum GeneImpact {
   // unspecified impact
