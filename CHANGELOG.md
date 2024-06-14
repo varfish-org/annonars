@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.38.0](https://github.com/varfish-org/annonars/compare/v0.38.0...v0.38.0) (2024-06-14)
+
+
+### Bug Fixes
+
+* bumping dependencies ([#468](https://github.com/varfish-org/annonars/issues/468)) ([821f033](https://github.com/varfish-org/annonars/commit/821f033c5644ce0954337407d32887dc4316760b))
+
 ## [0.38.0](https://github.com/varfish-org/annonars/compare/v0.37.0...v0.38.0) (2024-06-08)
 
 
