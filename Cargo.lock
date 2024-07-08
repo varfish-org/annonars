@@ -430,9 +430,9 @@ dependencies = [
 
 [[package]]
 name = "bio"
-version = "1.6.0"
+version = "2.0.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "7a72cb93babf08c85b375c2938ac678cc637936b3ebb72266d433cec2577f6c2"
+checksum = "77ffe04b598449a4486a45bc15884537a01cb2015d978ce66e51a47b2740ddbe"
 dependencies = [
  "anyhow",
  "approx",
@@ -445,10 +445,10 @@ dependencies = [
  "editdistancek",
  "enum-map",
  "fxhash",
- "itertools 0.11.0",
+ "itertools 0.13.0",
  "itertools-num",
  "lazy_static",
- "multimap 0.9.1",
+ "multimap",
  "ndarray",
  "newtype_derive",
  "num-integer",
@@ -461,7 +461,7 @@ dependencies = [
  "serde_derive",
  "statrs",
  "strum 0.25.0",
- "strum_macros 0.25.3",
+ "strum_macros 0.26.4",
  "thiserror",
  "triple_accel",
  "vec_map",
@@ -1758,18 +1758,12 @@ dependencies = [
 
 [[package]]
 name = "multimap"
-version = "0.9.1"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "e1a5d38b9b352dbd913288736af36af41c48d61b1a8cd34bcecd727561b7d511"
-dependencies = [
- "serde",
-]
-
-[[package]]
-name = "multimap"
 version = "0.10.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "defc4c55412d89136f966bbb339008b474350e5e6e78d2714439c386b3137a03"
+dependencies = [
+ "serde",
+]
 
 [[package]]
 name = "nalgebra"
@@ -2009,9 +2003,9 @@ checksum = "3fdb12b2476b595f9358c5161aa467c2438859caa136dec86c26fdd2efe17b92"
 
 [[package]]
 name = "ordered-float"
-version = "3.9.2"
+version = "4.2.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "f1e1c390732d15f1d48471625cd92d154e66db2c56645e29a9cd26f4699f72dc"
+checksum = "19ff2cf528c6c03d9ed653d6c4ce1dc0582dc4af309790ad92f07c1cd551b0be"
 dependencies = [
  "num-traits",
 ]
@@ -2198,7 +2192,7 @@ dependencies = [
  "heck 0.5.0",
  "itertools 0.12.1",
  "log",
- "multimap 0.10.0",
+ "multimap",
  "once_cell",
  "petgraph",
  "prettyplease",
