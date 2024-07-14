@@ -167,12 +167,33 @@ async fn handle(
                 data.annos[genome_release][anno_db]
                     .as_ref()
                     .map(|db| {
-                        fetch_pos_protobuf::<crate::pbs::gnomad::gnomad2::Record>(
-                            db,
-                            anno_db.cf_name(),
-                            query.start_pos(),
-                            query.stop_pos(),
-                        )
+                        let db_version = data.db_infos[genome_release][anno_db]
+                            .as_ref()
+                            .expect("must have db info here")
+                            .db_version
+                            .as_ref()
+                            .expect("gnomAD must have db version");
+
+                        if db_version.starts_with("2.") {
+                            fetch_pos_protobuf::<crate::pbs::gnomad::gnomad2::Record>(
+                                db,
+                                anno_db.cf_name(),
+                                query.start_pos(),
+                                query.stop_pos(),
+                            )
+                        } else if db_version.starts_with("4.") {
+                            fetch_pos_protobuf::<crate::pbs::gnomad::gnomad4::Record>(
+                                db,
+                                anno_db.cf_name(),
+                                query.start_pos(),
+                                query.stop_pos(),
+                            )
+                        } else {
+                            Err(CustomError::new(anyhow::anyhow!(
+                                "don't know how to handle gnomAD version {}",
+                                db_version
+                            )))
+                        }
                     })
                     .transpose()?
                     .map(|v| annotations.insert(anno_db, v));
@@ -201,9 +222,16 @@ async fn handle(
                                 query.start_pos(),
                                 query.stop_pos(),
                             )
+                        } else if db_version.starts_with("4.") {
+                            fetch_pos_protobuf::<crate::pbs::gnomad::gnomad4::Record>(
+                                db,
+                                anno_db.cf_name(),
+                                query.start_pos(),
+                                query.stop_pos(),
+                            )
                         } else {
                             Err(CustomError::new(anyhow::anyhow!(
-                                "don't know how to tread gnomAD version {}",
+                                "don't know how to handle gnomAD version {}",
                                 db_version
                             )))
                         }
