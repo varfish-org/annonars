@@ -8,7 +8,7 @@ use actix_web::{
     Responder,
 };
 
-use crate::server::GeneNames;
+use crate::server::run::GeneNames;
 
 use super::error::CustomError;
 use serde_with::{formats::CommaSeparator, StringWithSeparator};
@@ -81,7 +81,7 @@ struct Container {
 #[allow(clippy::option_map_unit_fn)]
 #[get("/genes/search")]
 async fn handle(
-    data: Data<crate::server::WebServerData>,
+    data: Data<crate::server::run::WebServerData>,
     _path: Path<()>,
     query: web::Query<Request>,
 ) -> actix_web::Result<impl Responder, CustomError> {

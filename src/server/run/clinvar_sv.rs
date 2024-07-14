@@ -73,7 +73,7 @@ where
 #[allow(clippy::option_map_unit_fn)]
 #[get("/clinvar-sv/query")]
 async fn handle(
-    data: Data<crate::server::WebServerData>,
+    data: Data<crate::server::run::WebServerData>,
     _path: Path<()>,
     query: web::Query<Request>,
 ) -> actix_web::Result<impl Responder, CustomError> {

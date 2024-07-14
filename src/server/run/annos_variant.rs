@@ -1,5 +1,4 @@
-//! Code for `/annos/range`.
-
+//! Code for `/annos/variant`.
 use actix_web::{
     get,
     web::{self, Data, Json, Path},
@@ -9,55 +8,50 @@ use strum::IntoEnumIterator;
 
 use crate::{
     common::{keys, version},
-    server::{
-        actix_server::fetch::{fetch_pos_protobuf, fetch_pos_tsv_json},
-        AnnoDb,
-    },
+    server::run::AnnoDb,
 };
 
-use super::{error::CustomError, WebServerData};
+use super::error::CustomError;
+use super::fetch::{fetch_pos_protobuf, fetch_var_protobuf, fetch_var_tsv_json};
 
 /// Parameters for `variant_annos::handle`.
+///
+/// Defines a variant in SPDI format with a genome release specification.
 #[serde_with::skip_serializing_none]
 #[serde_with::serde_as]
 #[derive(serde::Serialize, serde::Deserialize, Debug, Clone)]
 #[serde(rename_all = "snake_case")]
 struct Request {
-    /// Genome release version.
+    /// Genome release specification.
     pub genome_release: String,
     /// Chromosome name.
     pub chromosome: String,
-    /// 1-based start position.
-    pub start: u32,
-    /// 1-based stop position.
-    pub stop: u32,
+    /// 1-based position for SPDI.
+    pub pos: u32,
+    /// Reference allele bases.
+    pub reference: String,
+    /// Alterantive allele bases.
+    pub alternative: String,
 }
 
-impl Request {
-    /// Conver to start `keys::Pos`.
-    pub fn start_pos(&self) -> keys::Pos {
-        keys::Pos {
-            chrom: self.chromosome.clone(),
-            pos: self.start as i32,
-        }
-    }
-
-    /// Conver to stop `keys::Pos`.
-    pub fn stop_pos(&self) -> keys::Pos {
-        keys::Pos {
-            chrom: self.chromosome.clone(),
-            pos: self.stop as i32,
+impl From<Request> for keys::Var {
+    fn from(value: Request) -> Self {
+        keys::Var {
+            chrom: value.chromosome,
+            pos: value.pos as i32,
+            reference: value.reference,
+            alternative: value.alternative,
         }
     }
 }
 
-/// Result for `handle`.
-#[derive(serde::Serialize, serde::Deserialize, Debug, Clone)]
-struct Result {
-    /// Version of the server code.
-    pub server_version: String,
-    /// Version of the builder code.
-    pub builder_version: String,
+impl From<Request> for keys::Pos {
+    fn from(value: Request) -> Self {
+        keys::Pos {
+            chrom: value.chromosome,
+            pos: value.pos as i32,
+        }
+    }
 }
 
 /// Result for `handle`.
@@ -73,9 +67,10 @@ struct Container {
 }
 
 /// Query for annotations for one variant.
-#[get("/annos/range")]
+#[allow(clippy::option_map_unit_fn)]
+#[get("/annos/variant")]
 async fn handle(
-    data: Data<WebServerData>,
+    data: Data<crate::server::run::WebServerData>,
     _path: Path<()>,
     query: web::Query<Request>,
 ) -> actix_web::Result<impl Responder, CustomError> {
@@ -97,11 +92,10 @@ async fn handle(
                 data.annos[genome_release][anno_db]
                     .as_ref()
                     .map(|db| {
-                        fetch_pos_protobuf::<crate::pbs::clinvar::minimal::ExtractedVcvRecordList>(
+                        fetch_var_protobuf::<crate::pbs::clinvar::minimal::ExtractedVcvRecordList>(
                             db,
                             anno_db.cf_name(),
-                            query.start_pos(),
-                            query.stop_pos(),
+                            query.clone().into_inner().into(),
                         )
                     })
                     .transpose()?
@@ -111,12 +105,7 @@ async fn handle(
                 data.annos[genome_release][anno_db]
                     .as_ref()
                     .map(|db| {
-                        fetch_pos_tsv_json(
-                            db,
-                            anno_db.cf_name(),
-                            query.start_pos(),
-                            query.stop_pos(),
-                        )
+                        fetch_var_tsv_json(db, anno_db.cf_name(), query.clone().into_inner().into())
                     })
                     .transpose()?
                     .map(|v| annotations.insert(anno_db, v));
@@ -125,11 +114,10 @@ async fn handle(
                 data.annos[genome_release][anno_db]
                     .as_ref()
                     .map(|db| {
-                        fetch_pos_protobuf::<crate::dbsnp::pbs::Record>(
+                        fetch_var_protobuf::<crate::dbsnp::pbs::Record>(
                             db,
                             anno_db.cf_name(),
-                            query.start_pos(),
-                            query.stop_pos(),
+                            query.clone().into_inner().into(),
                         )
                     })
                     .transpose()?
@@ -139,11 +127,10 @@ async fn handle(
                 data.annos[genome_release][anno_db]
                     .as_ref()
                     .map(|db| {
-                        fetch_pos_protobuf::<crate::helixmtdb::pbs::Record>(
+                        fetch_var_protobuf::<crate::helixmtdb::pbs::Record>(
                             db,
                             anno_db.cf_name(),
-                            query.start_pos(),
-                            query.stop_pos(),
+                            query.clone().into_inner().into(),
                         )
                     })
                     .transpose()?
@@ -153,11 +140,10 @@ async fn handle(
                 data.annos[genome_release][anno_db]
                     .as_ref()
                     .map(|db| {
-                        fetch_pos_protobuf::<crate::pbs::gnomad::mtdna::Record>(
+                        fetch_var_protobuf::<crate::pbs::gnomad::mtdna::Record>(
                             db,
                             anno_db.cf_name(),
-                            query.start_pos(),
-                            query.stop_pos(),
+                            query.clone().into_inner().into(),
                         )
                     })
                     .transpose()?
@@ -175,18 +161,16 @@ async fn handle(
                             .expect("gnomAD must have db version");
 
                         if db_version.starts_with("2.") {
-                            fetch_pos_protobuf::<crate::pbs::gnomad::gnomad2::Record>(
+                            fetch_var_protobuf::<crate::pbs::gnomad::gnomad2::Record>(
                                 db,
                                 anno_db.cf_name(),
-                                query.start_pos(),
-                                query.stop_pos(),
+                                query.clone().into_inner().into(),
                             )
                         } else if db_version.starts_with("4.") {
-                            fetch_pos_protobuf::<crate::pbs::gnomad::gnomad4::Record>(
+                            fetch_var_protobuf::<crate::pbs::gnomad::gnomad4::Record>(
                                 db,
                                 anno_db.cf_name(),
-                                query.start_pos(),
-                                query.stop_pos(),
+                                query.clone().into_inner().into(),
                             )
                         } else {
                             Err(CustomError::new(anyhow::anyhow!(
@@ -209,25 +193,22 @@ async fn handle(
                             .as_ref()
                             .expect("gnomAD must have db version");
                         if db_version.starts_with("2.") {
-                            fetch_pos_protobuf::<crate::pbs::gnomad::gnomad2::Record>(
+                            fetch_var_protobuf::<crate::pbs::gnomad::gnomad2::Record>(
                                 db,
                                 anno_db.cf_name(),
-                                query.start_pos(),
-                                query.stop_pos(),
+                                query.clone().into_inner().into(),
                             )
                         } else if db_version.starts_with("3.") {
-                            fetch_pos_protobuf::<crate::pbs::gnomad::gnomad3::Record>(
+                            fetch_var_protobuf::<crate::pbs::gnomad::gnomad3::Record>(
                                 db,
                                 anno_db.cf_name(),
-                                query.start_pos(),
-                                query.stop_pos(),
+                                query.clone().into_inner().into(),
                             )
                         } else if db_version.starts_with("4.") {
-                            fetch_pos_protobuf::<crate::pbs::gnomad::gnomad4::Record>(
+                            fetch_var_protobuf::<crate::pbs::gnomad::gnomad4::Record>(
                                 db,
                                 anno_db.cf_name(),
-                                query.start_pos(),
-                                query.stop_pos(),
+                                query.clone().into_inner().into(),
                             )
                         } else {
                             Err(CustomError::new(anyhow::anyhow!(
@@ -243,11 +224,17 @@ async fn handle(
                 data.annos[genome_release][anno_db]
                     .as_ref()
                     .map(|db| {
+                        let start: keys::Pos = query.clone().into_inner().into();
+                        let start = keys::Pos {
+                            chrom: start.chrom,
+                            pos: start.pos - 2,
+                        };
+                        let stop = query.clone().into_inner().into();
                         fetch_pos_protobuf::<crate::pbs::cons::RecordList>(
                             db,
                             anno_db.cf_name(),
-                            query.start_pos(),
-                            query.stop_pos(),
+                            start,
+                            stop,
                         )
                     })
                     .transpose()?

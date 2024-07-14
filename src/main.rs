@@ -56,8 +56,8 @@ enum Commands {
     Regions(Regions),
     /// "db-utils" sub commands
     DbUtils(DbUtils),
-    /// "run-server" command.
-    RunServer(server::Args),
+    /// "server" sub command.
+    Server(Server),
 }
 
 /// Parsing of "gene" subcommand
@@ -315,6 +315,23 @@ enum DbUtilsCommands {
     DumpMeta(db_utils::cli::dump_meta::Args),
 }
 
+/// Parsing of "server" subcommands.
+#[derive(Debug, Args, Clone)]
+struct Server {
+    /// The sub command to run.
+    #[command(subcommand)]
+    command: ServerCommands,
+}
+
+/// Enum supporting the parsing of "server *" subcommands.
+#[derive(Debug, Subcommand, Clone)]
+enum ServerCommands {
+    /// "run" sub command.
+    Run(server::run::Args),
+    /// Dump the schema.
+    Schema(crate::server::schema::Args),
+}
+
 pub fn main() -> Result<(), anyhow::Error> {
     let cli = Cli::parse();
 
@@ -417,7 +434,12 @@ pub fn main() -> Result<(), anyhow::Error> {
                     db_utils::cli::dump_meta::run(&cli.common, args)?
                 }
             },
-            Commands::RunServer(args) => server::run(&cli.common, args)?,
+            Commands::Server(args) => match &args.command {
+                ServerCommands::Run(args) => server::run::run(&cli.common, args)?,
+                ServerCommands::Schema(args) => {
+                    server::schema::run(&cli.common, args)?;
+                }
+            },
         }
 
         Ok::<(), Error>(())
