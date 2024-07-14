@@ -174,7 +174,7 @@ async fn handle(
                             )
                         } else {
                             Err(CustomError::new(anyhow::anyhow!(
-                                "don't know how to tread gnomAD version {}",
+                                "don't know how to handle gnomAD version {}",
                                 db_version
                             )))
                         }
@@ -212,7 +212,7 @@ async fn handle(
                             )
                         } else {
                             Err(CustomError::new(anyhow::anyhow!(
-                                "don't know how to tread gnomAD version {}",
+                                "don't know how to handle gnomAD version {}",
                                 db_version
                             )))
                         }
