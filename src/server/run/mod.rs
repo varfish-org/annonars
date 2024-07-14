@@ -10,6 +10,7 @@ pub mod genes_clinvar;
 pub mod genes_info;
 pub mod genes_lookup;
 pub mod genes_search;
+pub mod versions;
 
 use std::{collections::HashMap, time::Instant};
 
@@ -52,6 +53,7 @@ pub async fn main(args: &Args, dbs: Data<WebServerData>) -> std::io::Result<()> 
             .service(genes_info::handle)
             .service(genes_search::handle)
             .service(genes_lookup::handle)
+            .service(versions::handle)
             .service(
                 utoipa_swagger_ui::SwaggerUi::new("/swagger-ui/{_:.*}")
                     .url("/api-docs/openapi.json", openapi.clone()),

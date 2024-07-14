@@ -27,8 +27,8 @@ biocommons-bioutils = "0.1.0"
 boolvec = "0.2"
 byteorder = "1.4"
 chrono = { version = "0.4", features = ["serde"] }
-clap = { version = "4.5", features = ["derive", "env"] }
 clap-verbosity-flag = "2.2"
+clap = { version = "4.5", features = ["derive", "env"] }
 csv = "1.2"
 enum-map = { version = "2.7.3", features = ["serde"] }
 env_logger = "0.11"
@@ -42,12 +42,13 @@ pbjson = "0.6"
 pbjson-types = "0.6"
 prost = "0.12"
 rayon = "1.8"
-rocksdb = { version = "0.22", features = ["multi-threaded-cf"] }
 rocksdb-utils-lookup = "0.4"
+rocksdb = { version = "0.22", features = ["multi-threaded-cf"] }
 rustc-hash = "2.0.0"
-serde = { version = "1.0", features = ["derive"] }
 serde_json = { version = "1.0", features = ["preserve_order"] }
+serde = { version = "1.0", features = ["derive"] }
 serde_with = { version = "3.8", features = ["alloc", "macros", "indexmap_2"], default-features = false }
+serde_yaml = "0.9"
 strum = { version = "0.26", features = ["strum_macros", "derive"] }
 thiserror = "1.0"
 tracing = "0.1"
