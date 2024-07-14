@@ -60,7 +60,7 @@ features = ["bed", "bgzf", "core", "csi", "gff", "tabix", "vcf"]
 [build-dependencies]
 anyhow = "1.0"
 pbjson-build = "0.7"
-prost-build = "0.12"
+prost-build = "0.13"
 
 [dev-dependencies]
 insta = { version = "1.36", features = ["yaml"] }
