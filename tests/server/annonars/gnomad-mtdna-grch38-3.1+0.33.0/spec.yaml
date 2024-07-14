@@ -1,0 +1,18 @@
+dc.identifier: annonars/seqvars/gnomad-mtdna:3.1+0.33.0-grch38
+dc.title: annonars gnomAD-mtDNA RocksDB Database
+dc.creator: gnomAD Team
+dc.contributor:
+  - VarFish Developer Teams
+dc.format: application/x-rocksdb
+dc.date: 20240105
+x-version: 3.1+0.33.0
+x-genome-release: grch38
+dc.description: |
+  RocksDB with the information from gnomAD mtDNA v3.1 converted with
+  annonars v0.33.0 in varfish-downloader v0.3.1.dev42+g3a332a0.d20240105.
+dc.source:
+  - PMID:32461654
+  - https://gnomad.broadinstitute.org/
+x-created-from:
+  - name: gnomAD-mtDNA
+    version: 3.1

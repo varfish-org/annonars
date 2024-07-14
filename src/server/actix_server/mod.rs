@@ -12,8 +12,14 @@ pub mod genes_lookup;
 pub mod genes_search;
 
 use actix_web::{middleware::Logger, web::Data, App, HttpServer};
+use utoipa::OpenApi as _;
 
 use super::{Args, WebServerData};
+
+/// Utoipa-based `OpenAPI` generation helper.
+#[derive(utoipa::OpenApi)]
+#[openapi(paths(), components(schemas()))]
+pub struct ApiDoc;
 
 /// Main entry point for the actix server.
 ///
@@ -22,6 +28,8 @@ use super::{Args, WebServerData};
 /// If the server cannot be started.
 #[actix_web::main]
 pub async fn main(args: &Args, dbs: Data<WebServerData>) -> std::io::Result<()> {
+    let openapi = ApiDoc::openapi();
+
     HttpServer::new(move || {
         let app = App::new()
             .app_data(dbs.clone())
@@ -32,7 +40,11 @@ pub async fn main(args: &Args, dbs: Data<WebServerData>) -> std::io::Result<()> 
             .service(genes_clinvar::handle)
             .service(genes_info::handle)
             .service(genes_search::handle)
-            .service(genes_lookup::handle);
+            .service(genes_lookup::handle)
+            .service(
+                utoipa_swagger_ui::SwaggerUi::new("/swagger-ui/{_:.*}")
+                    .url("/api-docs/openapi.json", openapi.clone()),
+            );
         app.wrap(Logger::default())
     })
     .bind((args.listen_host.as_str(), args.listen_port))?

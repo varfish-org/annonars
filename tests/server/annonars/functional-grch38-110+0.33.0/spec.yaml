@@ -1,0 +1,16 @@
+dc.identifier: annonars/functional:110+0.33.0-
+dc.title: annonars functional elements RocksDB
+dc.creator: VarFish Developer Teams
+dc.format: application/x-rocksdb
+dc.date: 20240105
+x-version: 110+0.33.0
+x-genome-release: 
+dc.description: |
+  RocksDB built from RefSeq Functional Elements (and other sources in
+  the future).
+dc.source:
+  - PMID:34876495
+  - https://www.ncbi.nlm.nih.gov/refseq/
+x-created-from:
+  - name: RefSeq Functional Elements
+    version: 110

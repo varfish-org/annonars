@@ -52,6 +52,8 @@ strum = { version = "0.26", features = ["strum_macros", "derive"] }
 thiserror = "1.0"
 tracing = "0.1"
 tracing-subscriber = "0.3"
+utoipa-swagger-ui = { version = "7.1.0", features = ["actix-web"] }
+utoipa = { version = "4.2", features = ["actix_extras", "chrono", "indexmap", "preserve_order", "yaml"] }
 
 [dependencies.noodles]
 version = "0.77.0"
