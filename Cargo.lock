@@ -276,7 +276,7 @@ dependencies = [
  "itertools 0.13.0",
  "log",
  "noodles",
- "pbjson",
+ "pbjson 0.7.0",
  "pbjson-build 0.7.0",
  "pbjson-types",
  "pretty_assertions",
@@ -2056,6 +2056,16 @@ dependencies = [
 ]
 
 [[package]]
+name = "pbjson"
+version = "0.7.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "c7e6349fa080353f4a597daffd05cb81572a9c031a6d4fff7e504947496fcc68"
+dependencies = [
+ "base64 0.21.7",
+ "serde",
+]
+
+[[package]]
 name = "pbjson-build"
 version = "0.6.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -2087,7 +2097,7 @@ checksum = "18f596653ba4ac51bdecbb4ef6773bc7f56042dc13927910de1684ad3d32aa12"
 dependencies = [
  "bytes",
  "chrono",
- "pbjson",
+ "pbjson 0.6.0",
  "pbjson-build 0.6.2",
  "prost 0.12.6",
  "prost-build 0.12.6",

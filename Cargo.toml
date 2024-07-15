@@ -38,7 +38,7 @@ indexmap = { version = "2.2", features = ["serde"] }
 indicatif = { version = "0.17", features = ["rayon"] }
 itertools = "0.13.0"
 log = "0.4"
-pbjson = "0.6"
+pbjson = "0.7"
 pbjson-types = "0.6"
 prost = "0.12"
 rayon = "1.8"
