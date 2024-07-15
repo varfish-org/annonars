@@ -39,7 +39,7 @@ indicatif = { version = "0.17", features = ["rayon"] }
 itertools = "0.13.0"
 log = "0.4"
 pbjson = "0.7"
-pbjson-types = "0.6"
+pbjson-types = "0.7"
 prost = "0.12"
 rayon = "1.8"
 rocksdb = { version = "0.22", features = ["multi-threaded-cf"] }
