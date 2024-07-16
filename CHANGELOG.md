@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.40.0](https://github.com/varfish-org/annonars/compare/v0.39.0...v0.40.0) (2024-07-16)
+
+
+### Features
+
+* adding support for gnomAD 4.1 ([#493](https://github.com/varfish-org/annonars/issues/493)) ([3ec4373](https://github.com/varfish-org/annonars/commit/3ec437343a4e7395aac07aeb0a354dcddc9d6cb8))
+
 ## [0.39.0](https://github.com/varfish-org/annonars/compare/v0.38.0...v0.39.0) (2024-06-14)
 
 
