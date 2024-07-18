@@ -24,3 +24,10 @@ updates:
           - "hgvs"
           - "seqrepo"
           - "noodles-*"
+      prost:
+        patterns:
+          - "pbjson"
+          - "pbjson-types"
+          - "pbjson-build"
+          - "prost"
+          - "prost-build"
