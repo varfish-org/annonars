@@ -97,6 +97,8 @@ pub mod test {
     #[case("helixmtdb-grch37-20200327+0.33.0")]
     #[case("helixmtdb-grch38-20200327+0.33.0")]
     fn test_deserialize_spec_yaml(#[case] name: &str) -> Result<(), anyhow::Error> {
+        crate::common::set_snapshot_suffix!("{}", &name);
+
         let full_path = format!("tests/server/annonars/{}/spec.yaml", &name);
         let yaml_str = std::fs::read_to_string(&full_path)
             .map_err(|e| anyhow::anyhow!("problem reading file {}: {}", &full_path, e))?;
