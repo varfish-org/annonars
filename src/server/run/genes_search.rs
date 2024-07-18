@@ -130,6 +130,7 @@ async fn handle(
     let fields_contains = |field: &Fields| -> bool { fields.is_empty() || fields.contains(field) };
 
     let mut genes = genes_db
+        .data
         .gene_names
         .iter()
         .map(|gn| -> Scored<GeneNames> {

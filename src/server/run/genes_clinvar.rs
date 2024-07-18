@@ -44,6 +44,7 @@ async fn handle(
         "genes database not available"
     )))?;
     let db_clinvar = genes_db
+        .data
         .db_clinvar
         .as_ref()
         .ok_or(CustomError::new(anyhow::anyhow!(

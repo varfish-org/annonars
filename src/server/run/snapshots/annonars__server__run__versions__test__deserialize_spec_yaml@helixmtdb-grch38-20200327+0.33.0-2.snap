@@ -1,0 +1,19 @@
+---
+source: src/server/run/versions.rs
+expression: "&proto_spec"
+---
+identifier: "annonars/seqvars/helixmtdb:20200327+0.33.0-grch38"
+title: annonars HelixMtDb RocksDB Database
+creator: "Helix OpCo, LLC"
+contributor:
+  - VarFish Developer Teams
+format: application/x-rocksdb
+date: "20240105"
+version: 20200327+0.33.0
+genomeRelease: grch38
+description: "RocksDB with the information from HelixMtDb v20200327 imported using\nthe annonars package v0.33.0 in varfish-downloader\nv0.3.1.dev42+g3a332a0.d20240105.\n"
+source:
+  - "https://www.helix.com/pages/mitochondrial-variant-database"
+createdFrom:
+  - name: HelixMtdB
+    version: "20200327"

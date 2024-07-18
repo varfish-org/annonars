@@ -10,13 +10,24 @@ use super::{error::CustomError, WebServerData};
 
 /// Code for deserializing the version `spec.yaml` files.
 pub mod schema {
+    use std::path::Path;
+
+    use crate::pbs;
+
     /// Information about input data.
     #[derive(serde::Deserialize, serde::Serialize, Debug, Clone)]
     pub struct CreatedFrom {
-        /// Name of the data source.
+        /// Data source name.
         pub name: String,
         /// Version of the data source.
         pub version: String,
+    }
+
+    impl Into<pbs::common::versions::CreatedFrom> for CreatedFrom {
+        fn into(self) -> pbs::common::versions::CreatedFrom {
+            let Self { name, version } = self;
+            pbs::common::versions::CreatedFrom { name, version }
+        }
     }
 
     /// Version specification.
@@ -57,6 +68,53 @@ pub mod schema {
         /// Created from information.
         #[serde(rename = "x-created-from")]
         pub created_from: Vec<CreatedFrom>,
+    }
+
+    impl VersionSpec {
+        /// Read a `VersionSpec` from a YAML file.
+        pub fn from_path<P>(p: P) -> Result<Self, anyhow::Error>
+        where
+            P: AsRef<Path>,
+        {
+            let full_path = p.as_ref().to_str().ok_or_else(|| {
+                anyhow::anyhow!("problem converting path to string: {:?}", p.as_ref())
+            })?;
+            let yaml_str = std::fs::read_to_string(&full_path)
+                .map_err(|e| anyhow::anyhow!("problem reading file {}: {}", &full_path, e))?;
+            serde_yaml::from_str(&yaml_str)
+                .map_err(|e| anyhow::anyhow!("problem deserializing {}: {}", full_path, e))
+        }
+    }
+
+    impl Into<pbs::common::versions::VersionSpec> for VersionSpec {
+        fn into(self) -> pbs::common::versions::VersionSpec {
+            let Self {
+                identifier,
+                title,
+                creator,
+                contributor,
+                format,
+                date,
+                version,
+                genome_release,
+                description,
+                source,
+                created_from,
+            } = self;
+            pbs::common::versions::VersionSpec {
+                identifier,
+                title,
+                creator,
+                contributor: contributor.unwrap_or_default(),
+                format,
+                date,
+                version,
+                genome_release,
+                description,
+                source,
+                created_from: created_from.into_iter().map(Into::into).collect(),
+            }
+        }
     }
 }
 
@@ -100,12 +158,11 @@ pub mod test {
         crate::common::set_snapshot_suffix!("{}", &name);
 
         let full_path = format!("tests/server/annonars/{}/spec.yaml", &name);
-        let yaml_str = std::fs::read_to_string(&full_path)
-            .map_err(|e| anyhow::anyhow!("problem reading file {}: {}", &full_path, e))?;
-        let spec: super::schema::VersionSpec = serde_yaml::from_str(&yaml_str)
-            .map_err(|e| anyhow::anyhow!("problem deserializing {}: {}", full_path, e))?;
-
+        let spec = super::schema::VersionSpec::from_path(&full_path)?;
         insta::assert_yaml_snapshot!(&spec);
+
+        let proto_spec: crate::pbs::common::versions::VersionSpec = spec.into();
+        insta::assert_yaml_snapshot!(&proto_spec);
 
         Ok(())
     }

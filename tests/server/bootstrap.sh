@@ -5,22 +5,18 @@
 SCRIPT_DIR=$( cd -- "$( dirname -- "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )
 
 REDUCED_DEV_PATHS="
-cadd-grch37-1.6+0.33.0
-cadd-grch38-1.6+0.33.0
-cons-grch37-20161007+0.33.0
-cons-grch38-20190906+0.33.0
-dbnsfp-grch37-4.5a+0.33.0
-dbnsfp-grch37-4.5c+0.33.0
-dbnsfp-grch38-4.5a+0.33.0
-dbnsfp-grch38-4.5c+0.33.0
-dbscsnv-grch37-1.1+0.33.0
-dbscsnv-grch38-1.1+0.33.0
-dbsnp-grch37-b151+0.33.0
-dbsnp-grch38-b151+0.33.0
-gnomad-exomes-grch37-2.1.1+0.33.0
-gnomad-exomes-grch38-4.0+0.33.0
-gnomad-genomes-grch37-2.1.1+0.33.0
-gnomad-genomes-grch38-4.0+0.33.0
+cadd-grch37-1.6+0.39.0
+cadd-grch38-1.6+0.39.0
+dbnsfp-grch37-4.5a+0.39.0
+dbnsfp-grch37-4.5c+0.39.0
+dbnsfp-grch38-4.5a+0.39.0
+dbnsfp-grch38-4.5c+0.39.0
+dbsnp-grch37-b151+0.39.0
+dbsnp-grch38-b151+0.39.0
+gnomad-exomes-grch37-2.1.1+0.39.0
+gnomad-exomes-grch38-4.1+0.39.0
+gnomad-genomes-grch37-2.1.1+0.39.0
+gnomad-genomes-grch38-4.1+0.39.0
 "
 FULL_PATHS="
 alphamissense-grch37-1+0.33.0
@@ -42,7 +38,6 @@ for path in $REDUCED_DEV_PATHS; do
         --no-sign-request \
         sync "s3://varfish-public/reduced-dev/annonars/$path/*" \
         $SCRIPT_DIR/annonars/$path/
-
 done
 
 for path in $FULL_PATHS; do
@@ -52,4 +47,3 @@ for path in $FULL_PATHS; do
         sync "s3://varfish-public/full/annonars/$path/*" \
         $SCRIPT_DIR/annonars/$path/
 done
-

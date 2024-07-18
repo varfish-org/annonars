@@ -44,13 +44,14 @@ async fn handle(
         "genes database not available"
     )))?;
     let cf_genes = genes_db
+        .data
         .db
         .cf_handle("genes")
         .expect("no 'genes' column family");
     let mut genes = indexmap::IndexMap::new();
     if let Some(hgnc_id) = query.hgnc_id.as_ref() {
         for hgnc_id in hgnc_id {
-            if let Some(raw_buf) = genes_db.db.get_cf(&cf_genes, hgnc_id).map_err(|e| {
+            if let Some(raw_buf) = genes_db.data.db.get_cf(&cf_genes, hgnc_id).map_err(|e| {
                 CustomError::new(anyhow::anyhow!("problem querying database: {}", e))
             })? {
                 let record =
@@ -65,10 +66,12 @@ async fn handle(
     }
 
     let cf_meta = genes_db
+        .data
         .db
         .cf_handle("meta")
         .expect("no 'meta' column family");
     let raw_builder_version = &genes_db
+        .data
         .db
         .get_cf(&cf_meta, "builder-version")
         .map_err(|e| CustomError::new(anyhow::anyhow!("problem querying database: {}", e)))?

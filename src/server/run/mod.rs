@@ -12,7 +12,12 @@ pub mod genes_lookup;
 pub mod genes_search;
 pub mod versions;
 
-use std::{collections::HashMap, time::Instant};
+use std::{
+    collections::HashMap,
+    path::{Path, PathBuf},
+    str::FromStr as _,
+    time::Instant,
+};
 
 use clap::Parser;
 use indicatif::ParallelProgressIterator;
@@ -22,7 +27,7 @@ use rayon::prelude::*;
 use crate::{
     clinvar_sv::cli::query::{self as clinvarsv_query, IntervalTrees as ClinvarsvIntervalTrees},
     common::{self, cli::GenomeRelease},
-    pbs::genes,
+    pbs::{self, genes},
 };
 
 use actix_web::{middleware::Logger, web::Data, App, HttpServer};
@@ -225,11 +230,32 @@ fn fetch_db_info(
     Ok((genome_release, db_info))
 }
 
+/// Generic type to store a database together with version specification.
+#[derive(Debug, Default)]
+pub struct WithVersionSpec<T> {
+    /// The actual data.
+    pub data: T,
+    /// Version specification.
+    pub version_spec: pbs::common::versions::VersionSpec,
+}
+
+impl<T> WithVersionSpec<T> {
+    /// Construct with the given data and path to specification YAML file.
+    pub fn from_data_and_path<P>(data: T, path: P) -> Result<Self, anyhow::Error>
+    where
+        P: AsRef<Path>,
+    {
+        let version_spec: pbs::common::versions::VersionSpec =
+            versions::schema::VersionSpec::from_path(path)?.into();
+        Ok(Self { data, version_spec })
+    }
+}
+
 /// Data for the web server.
 #[derive(Debug, Default)]
 pub struct WebServerData {
     /// Gene information database.
-    pub genes: Option<GeneInfoDb>,
+    pub genes: Option<WithVersionSpec<GeneInfoDb>>,
     /// Release-specific annotations for each `GenomeRelease`.
     pub annos: enum_map::EnumMap<GenomeRelease, ReleaseAnnos>,
     /// Release-specific ClinVar SV interval tree indexed databased.
@@ -416,12 +442,25 @@ pub fn run(args_common: &common::cli::Args, args: &Args) -> Result<(), anyhow::E
             result
         };
         tracing::info!("...done building genes names {:?}", before_open.elapsed());
-        data.genes = Some(GeneInfoDb {
+        let gene_info_db = GeneInfoDb {
             db,
             db_clinvar,
             gene_names,
             name_to_hgnc_idx,
-        });
+        };
+        let path_buf = PathBuf::from_str(path_genes)?
+            .parent()
+            .ok_or_else(|| anyhow::anyhow!("cannot get parent directory of path {}", path_genes))?
+            .join("spec.yaml");
+        data.genes = Some(
+            WithVersionSpec::from_data_and_path(gene_info_db, &path_buf).map_err(|e| {
+                anyhow::anyhow!(
+                    "problem loading gene info spec from {}: {}",
+                    path_buf.display(),
+                    e
+                )
+            })?,
+        );
     }
 
     tracing::info!("Opening ClinVar SV databases...");

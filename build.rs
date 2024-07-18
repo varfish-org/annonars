@@ -14,6 +14,7 @@ fn main() -> Result<(), anyhow::Error> {
         "annonars/clinvar/minimal.proto",
         "annonars/clinvar/per_gene.proto",
         "annonars/clinvar/sv.proto",
+        "annonars/common/versions.proto",
         "annonars/cons/base.proto",
         "annonars/dbsnp/base.proto",
         "annonars/functional/refseq.proto",

@@ -1,0 +1,20 @@
+---
+source: src/server/run/versions.rs
+expression: "&proto_spec"
+---
+identifier: "annonars/seqvars/alphamissense:1+0.33.0-grch38"
+title: annonars AlphaMissense RocksDB Database
+creator: DeepMind
+contributor:
+  - VarFish Developer Teams
+format: application/x-rocksdb
+date: "20240105"
+version: 1+0.33.0
+genomeRelease: grch38
+description: "RocksDB with the information from the AlphaMissense_hgGENOME.tsv.gz\nfiles for the canonical transcripts.\n"
+source:
+  - "PMID:37733863"
+  - "https://storage.googleapis.com/dm_alphamissense/README.pdf"
+createdFrom:
+  - name: AlphaMissense
+    version: "1"

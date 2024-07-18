@@ -47,9 +47,10 @@ async fn handle(
 
     let genes = indexmap::IndexMap::from_iter(query.q.iter().map(|q| {
         let v = genes_db
+            .data
             .name_to_hgnc_idx
             .get(q)
-            .map(|idx| genes_db.gene_names[*idx].clone());
+            .map(|idx| genes_db.data.gene_names[*idx].clone());
         (q.clone(), v)
     }));
 
