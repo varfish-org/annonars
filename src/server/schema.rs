@@ -7,7 +7,7 @@ use std::{
 
 use utoipa::OpenApi as _;
 
-use crate::server::run::ApiDoc;
+use crate::server::run::openapi::ApiDoc;
 
 /// Command line arguments for `server schema` sub command.
 #[derive(clap::Parser, Debug, Clone)]

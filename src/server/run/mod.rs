@@ -23,6 +23,7 @@ use clap::Parser;
 use indicatif::ParallelProgressIterator;
 use prost::Message;
 use rayon::prelude::*;
+use utoipa::OpenApi as _;
 
 use crate::{
     clinvar_sv::cli::query::{self as clinvarsv_query, IntervalTrees as ClinvarsvIntervalTrees},
@@ -31,12 +32,21 @@ use crate::{
 };
 
 use actix_web::{middleware::Logger, web::Data, App, HttpServer};
-use utoipa::OpenApi as _;
 
-/// Utoipa-based `OpenAPI` generation helper.
-#[derive(utoipa::OpenApi)]
-#[openapi(paths(), components(schemas()))]
-pub struct ApiDoc;
+/// Module with OpenAPI documentation.
+pub mod openapi {
+    use crate::pbs::common::versions::{CreatedFrom, VersionSpec};
+
+    use super::versions::{self, VersionInfoResponse};
+
+    /// Utoipa-based `OpenAPI` generation helper.
+    #[derive(utoipa::OpenApi)]
+    #[openapi(
+        paths(versions::handle),
+        components(schemas(VersionInfoResponse, CreatedFrom, VersionSpec))
+    )]
+    pub struct ApiDoc;
+}
 
 /// Main entry point for the actix server.
 ///
@@ -45,7 +55,7 @@ pub struct ApiDoc;
 /// If the server cannot be started.
 #[actix_web::main]
 pub async fn main(args: &Args, dbs: Data<WebServerData>) -> std::io::Result<()> {
-    let openapi = ApiDoc::openapi();
+    let openapi = openapi::ApiDoc::openapi();
 
     HttpServer::new(move || {
         let app = App::new()
@@ -185,8 +195,10 @@ pub struct GeneInfoDb {
 }
 
 /// Genome-release specific annotation for each database.
-pub type ReleaseAnnos =
-    enum_map::EnumMap<AnnoDb, Option<rocksdb::DBWithThreadMode<rocksdb::MultiThreaded>>>;
+pub type ReleaseAnnos = enum_map::EnumMap<
+    AnnoDb,
+    Option<WithVersionSpec<rocksdb::DBWithThreadMode<rocksdb::MultiThreaded>>>,
+>;
 
 /// Database information
 #[derive(serde::Serialize, Debug, Clone, Default)]
@@ -231,15 +243,18 @@ fn fetch_db_info(
 }
 
 /// Generic type to store a database together with version specification.
-#[derive(Debug, Default)]
-pub struct WithVersionSpec<T> {
+#[derive(Debug)]
+pub struct WithVersionSpec<T: std::fmt::Debug> {
     /// The actual data.
     pub data: T,
     /// Version specification.
     pub version_spec: pbs::common::versions::VersionSpec,
 }
 
-impl<T> WithVersionSpec<T> {
+impl<T> WithVersionSpec<T>
+where
+    T: std::fmt::Debug,
+{
     /// Construct with the given data and path to specification YAML file.
     pub fn from_data_and_path<P>(data: T, path: P) -> Result<Self, anyhow::Error>
     where
@@ -521,15 +536,31 @@ pub fn run(args_common: &common::cli::Args, args: &Args) -> Result<(), anyhow::E
             let db = open_db(path, anno_db.cf_name())?;
             let (genome_release, db_info) = fetch_db_info(&db, *anno_db)?;
 
-            Ok((db_info, genome_release, db))
+            Ok((path, db_info, genome_release, db))
         })
         .collect::<Result<Vec<_>, _>>()?
         .into_iter()
-        .for_each(|(db_info, genome_release, db)| {
+        .try_for_each(|(path_rocksdb, db_info, genome_release, db)| -> Result<(), anyhow::Error> {
+            let spec_path = PathBuf::from_str(path_rocksdb)?
+                .parent()
+                .ok_or_else(|| {
+                    anyhow::anyhow!("cannot get parent directory of path {}", path_rocksdb)
+                })?
+                .join("spec.yaml");
             let name = db_info.name;
             data.db_infos[genome_release][name] = Some(db_info);
-            data.annos[genome_release][name] = Some(db);
-        });
+            data.annos[genome_release][name] = Some(
+                WithVersionSpec::from_data_and_path(db, &spec_path).map_err(|e| {
+                    anyhow::anyhow!(
+                        "problem loading gene info spec from {}: {}",
+                        spec_path.display(),
+                        e
+                    )
+                })?,
+            );
+
+            Ok(())
+        })?;
     tracing::info!(
         "...done opening databases in {:?}",
         before_opening.elapsed()

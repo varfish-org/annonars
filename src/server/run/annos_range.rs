@@ -98,7 +98,7 @@ async fn handle(
                     .as_ref()
                     .map(|db| {
                         fetch_pos_protobuf::<crate::pbs::clinvar::minimal::ExtractedVcvRecordList>(
-                            db,
+                            &db.data,
                             anno_db.cf_name(),
                             query.start_pos(),
                             query.stop_pos(),
@@ -112,7 +112,7 @@ async fn handle(
                     .as_ref()
                     .map(|db| {
                         fetch_pos_tsv_json(
-                            db,
+                            &db.data,
                             anno_db.cf_name(),
                             query.start_pos(),
                             query.stop_pos(),
@@ -126,7 +126,7 @@ async fn handle(
                     .as_ref()
                     .map(|db| {
                         fetch_pos_protobuf::<crate::dbsnp::pbs::Record>(
-                            db,
+                            &db.data,
                             anno_db.cf_name(),
                             query.start_pos(),
                             query.stop_pos(),
@@ -140,7 +140,7 @@ async fn handle(
                     .as_ref()
                     .map(|db| {
                         fetch_pos_protobuf::<crate::helixmtdb::pbs::Record>(
-                            db,
+                            &db.data,
                             anno_db.cf_name(),
                             query.start_pos(),
                             query.stop_pos(),
@@ -154,7 +154,7 @@ async fn handle(
                     .as_ref()
                     .map(|db| {
                         fetch_pos_protobuf::<crate::pbs::gnomad::mtdna::Record>(
-                            db,
+                            &db.data,
                             anno_db.cf_name(),
                             query.start_pos(),
                             query.stop_pos(),
@@ -176,14 +176,14 @@ async fn handle(
 
                         if db_version.starts_with("2.") {
                             fetch_pos_protobuf::<crate::pbs::gnomad::gnomad2::Record>(
-                                db,
+                                &db.data,
                                 anno_db.cf_name(),
                                 query.start_pos(),
                                 query.stop_pos(),
                             )
                         } else if db_version.starts_with("4.") {
                             fetch_pos_protobuf::<crate::pbs::gnomad::gnomad4::Record>(
-                                db,
+                                &db.data,
                                 anno_db.cf_name(),
                                 query.start_pos(),
                                 query.stop_pos(),
@@ -210,21 +210,21 @@ async fn handle(
                             .expect("gnomAD must have db version");
                         if db_version.starts_with("2.") {
                             fetch_pos_protobuf::<crate::pbs::gnomad::gnomad2::Record>(
-                                db,
+                                &db.data,
                                 anno_db.cf_name(),
                                 query.start_pos(),
                                 query.stop_pos(),
                             )
                         } else if db_version.starts_with("3.") {
                             fetch_pos_protobuf::<crate::pbs::gnomad::gnomad3::Record>(
-                                db,
+                                &db.data,
                                 anno_db.cf_name(),
                                 query.start_pos(),
                                 query.stop_pos(),
                             )
                         } else if db_version.starts_with("4.") {
                             fetch_pos_protobuf::<crate::pbs::gnomad::gnomad4::Record>(
-                                db,
+                                &db.data,
                                 anno_db.cf_name(),
                                 query.start_pos(),
                                 query.stop_pos(),
@@ -244,7 +244,7 @@ async fn handle(
                     .as_ref()
                     .map(|db| {
                         fetch_pos_protobuf::<crate::pbs::cons::RecordList>(
-                            db,
+                            &db.data,
                             anno_db.cf_name(),
                             query.start_pos(),
                             query.stop_pos(),

@@ -5,8 +5,11 @@ use actix_web::{
     web::{self, Data, Json, Path},
     Responder,
 };
+use strum::IntoEnumIterator as _;
 
-use super::{error::CustomError, WebServerData};
+use crate::{common::cli::GenomeRelease, pbs::common::versions::VersionSpec};
+
+use super::{error::CustomError, AnnoDb, WebServerData};
 
 /// Code for deserializing the version `spec.yaml` files.
 pub mod schema {
@@ -119,27 +122,78 @@ pub mod schema {
 }
 
 /// Query parameters for `handle()`.
-#[derive(Debug, Clone, serde::Deserialize)]
-struct Request {
-    pub genome_release: String,
+#[derive(Debug, Clone, serde::Deserialize, utoipa::IntoParams)]
+pub struct VersionInfoQuery {}
+
+/// Version information for one database.
+#[derive(Debug, Clone, serde::Serialize, utoipa::ToSchema)]
+#[serde(rename_all = "camelCase")]
+pub struct AnnoVersionInfo {
+    /// Database name.
+    pub database: AnnoDb,
+    /// Version information of the database.
+    pub version_spec: VersionSpec,
+}
+
+/// Version information for databases in a given release.
+#[derive(Debug, Default, Clone, serde::Serialize, utoipa::ToSchema)]
+#[serde(rename_all = "camelCase")]
+pub struct ReleaseVersionInfos {
+    /// The genome release.
+    pub release: GenomeRelease,
+    /// Version information of annotation databases.
+    pub version_infos: Vec<AnnoVersionInfo>,
+}
+
+/// Response for `handle()`.
+#[derive(Debug, Default, Clone, serde::Serialize, utoipa::ToSchema)]
+pub struct VersionInfoResponse {
+    /// Version information of the genes.
+    pub genes: Option<VersionSpec>,
+    /// Version information of annotation databases per release.
+    pub annos: Vec<ReleaseVersionInfos>,
 }
 
 /// Query for annotations for one variant.
+#[utoipa::path(
+    get,
+    operation_id = "versionInfos",
+    params(VersionInfoQuery),
+    responses(
+        (status = 200, description = "Version information.", body = VersionInfoResponse),
+    )
+)]
 #[get("/v1/versions")]
 async fn handle(
     data: Data<WebServerData>,
     _path: Path<()>,
-    query: web::Query<Request>,
+    _query: web::Query<VersionInfoQuery>,
 ) -> actix_web::Result<impl Responder, CustomError> {
-    let genome_release =
-        query
-            .into_inner()
-            .genome_release
-            .parse()
-            .map_err(|e: strum::ParseError| {
-                CustomError::new(anyhow::anyhow!("problem getting genome release: {}", e))
-            })?;
-    Ok(Json(data.db_infos[genome_release].clone()))
+    let mut annos = Vec::new();
+    for release_version_info in data.anno_versions.iter() {
+        let version_infos = release_version_info
+            .iter()
+            .map(|(db, spec)| AnnoVersionInfo {
+                database: db.clone(),
+                version_spec: spec.clone(),
+            })
+            .collect();
+        annos.push(ReleaseVersionInfos {
+            release: release_version_info.release,
+            version_infos,
+        });
+    }
+
+    let response = VersionInfoResponse {
+        genes: data
+            .as_ref()
+            .genes
+            .as_ref()
+            .map(|genes| genes.version_spec.clone()),
+        annos,
+    };
+
+    Ok(Json(response))
 }
 
 #[cfg(test)]

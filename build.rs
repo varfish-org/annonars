@@ -51,6 +51,8 @@ fn main() -> Result<(), anyhow::Error> {
         // Override prost-types with pbjson-types
         .compile_well_known_types()
         .extern_path(".google.protobuf", "::pbjson_types")
+        // Derive the types for utoipa.
+        .message_attribute(".", "#[derive(utoipa::ToSchema)]")
         // Define the protobuf files to compile.
         .compile_protos(&proto_files, &[root])?;
 
