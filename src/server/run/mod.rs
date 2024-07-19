@@ -35,7 +35,14 @@ use actix_web::{middleware::Logger, web::Data, App, HttpServer};
 
 /// Module with OpenAPI documentation.
 pub mod openapi {
-    use crate::pbs::common::versions::{CreatedFrom, VersionSpec};
+    use crate::{
+        common::cli::GenomeRelease,
+        pbs::common::versions::{CreatedFrom, VersionSpec},
+        server::run::{
+            versions::{AnnoVersionInfo, ReleaseVersionInfos},
+            AnnoDb,
+        },
+    };
 
     use super::versions::{self, VersionInfoResponse};
 
@@ -43,7 +50,15 @@ pub mod openapi {
     #[derive(utoipa::OpenApi)]
     #[openapi(
         paths(versions::handle),
-        components(schemas(VersionInfoResponse, CreatedFrom, VersionSpec))
+        components(schemas(
+            AnnoVersionInfo,
+            ReleaseVersionInfos,
+            VersionInfoResponse,
+            CreatedFrom,
+            VersionSpec,
+            GenomeRelease,
+            AnnoDb,
+        ))
     )]
     pub struct ApiDoc;
 }
@@ -97,6 +112,7 @@ pub async fn main(args: &Args, dbs: Data<WebServerData>) -> std::io::Result<()> 
     serde::Serialize,
     serde::Deserialize,
     enum_map::Enum,
+    utoipa::ToSchema,
 )]
 #[strum(serialize_all = "snake_case")]
 #[serde(rename_all = "snake_case")]
@@ -540,27 +556,29 @@ pub fn run(args_common: &common::cli::Args, args: &Args) -> Result<(), anyhow::E
         })
         .collect::<Result<Vec<_>, _>>()?
         .into_iter()
-        .try_for_each(|(path_rocksdb, db_info, genome_release, db)| -> Result<(), anyhow::Error> {
-            let spec_path = PathBuf::from_str(path_rocksdb)?
-                .parent()
-                .ok_or_else(|| {
-                    anyhow::anyhow!("cannot get parent directory of path {}", path_rocksdb)
-                })?
-                .join("spec.yaml");
-            let name = db_info.name;
-            data.db_infos[genome_release][name] = Some(db_info);
-            data.annos[genome_release][name] = Some(
-                WithVersionSpec::from_data_and_path(db, &spec_path).map_err(|e| {
-                    anyhow::anyhow!(
-                        "problem loading gene info spec from {}: {}",
-                        spec_path.display(),
-                        e
-                    )
-                })?,
-            );
+        .try_for_each(
+            |(path_rocksdb, db_info, genome_release, db)| -> Result<(), anyhow::Error> {
+                let spec_path = PathBuf::from_str(path_rocksdb)?
+                    .parent()
+                    .ok_or_else(|| {
+                        anyhow::anyhow!("cannot get parent directory of path {}", path_rocksdb)
+                    })?
+                    .join("spec.yaml");
+                let name = db_info.name;
+                data.db_infos[genome_release][name] = Some(db_info);
+                data.annos[genome_release][name] = Some(
+                    WithVersionSpec::from_data_and_path(db, &spec_path).map_err(|e| {
+                        anyhow::anyhow!(
+                            "problem loading gene info spec from {}: {}",
+                            spec_path.display(),
+                            e
+                        )
+                    })?,
+                );
 
-            Ok(())
-        })?;
+                Ok(())
+            },
+        )?;
     tracing::info!(
         "...done opening databases in {:?}",
         before_opening.elapsed()

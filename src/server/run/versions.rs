@@ -5,7 +5,6 @@ use actix_web::{
     web::{self, Data, Json, Path},
     Responder,
 };
-use strum::IntoEnumIterator as _;
 
 use crate::{common::cli::GenomeRelease, pbs::common::versions::VersionSpec};
 
@@ -142,6 +141,7 @@ pub struct ReleaseVersionInfos {
     /// The genome release.
     pub release: GenomeRelease,
     /// Version information of annotation databases.
+    #[serde(skip_serializing_if = "Vec::is_empty")]
     pub version_infos: Vec<AnnoVersionInfo>,
 }
 
@@ -149,8 +149,10 @@ pub struct ReleaseVersionInfos {
 #[derive(Debug, Default, Clone, serde::Serialize, utoipa::ToSchema)]
 pub struct VersionInfoResponse {
     /// Version information of the genes.
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub genes: Option<VersionSpec>,
     /// Version information of annotation databases per release.
+    #[serde(skip_serializing_if = "Vec::is_empty")]
     pub annos: Vec<ReleaseVersionInfos>,
 }
 
@@ -170,16 +172,18 @@ async fn handle(
     _query: web::Query<VersionInfoQuery>,
 ) -> actix_web::Result<impl Responder, CustomError> {
     let mut annos = Vec::new();
-    for release_version_info in data.anno_versions.iter() {
-        let version_infos = release_version_info
-            .iter()
-            .map(|(db, spec)| AnnoVersionInfo {
-                database: db.clone(),
-                version_spec: spec.clone(),
-            })
-            .collect();
+    for (release, anno_dbs) in data.as_ref().annos.iter() {
+        let mut version_infos = Vec::new();
+        for (anno_db, with_version) in anno_dbs {
+            if let Some(with_version) = with_version.as_ref() {
+                version_infos.push(AnnoVersionInfo {
+                    database: anno_db.clone(),
+                    version_spec: with_version.version_spec.clone().into(),
+                });
+            }
+        }
         annos.push(ReleaseVersionInfos {
-            release: release_version_info.release,
+            release,
             version_infos,
         });
     }
