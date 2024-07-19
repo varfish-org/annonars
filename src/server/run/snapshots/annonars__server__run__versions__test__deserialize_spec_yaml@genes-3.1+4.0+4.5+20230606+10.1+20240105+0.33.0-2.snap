@@ -1,0 +1,43 @@
+---
+source: src/server/run/versions.rs
+expression: "&proto_spec"
+---
+identifier: "annonars/genes:3.1+4.0+4.5+20240105+0.33.0"
+title: annonars genes database
+creator: VarFish Development Team
+format: application/x-rocksdb
+date: "20240105"
+version: 3.1+4.0+4.5+20240105+0.33.0
+description: "Gene information from the following databases, aggregated using annonars\nv0.33.0 in varfish-downloader v0.3.1.dev42+g3a332a0.d20240105:\n\n- ACMG Supplementary Findings Gene List 3.1\n- gnomAD constraints v4.0\n- dbNSFP v4.5\n- NCBI gene database downloaded at 20240105\n- HGNC database downloaded at 20240105\n- ClinGen Gene Dosage pathogenicity 20240105\n- DOMINO data v2019-02-19\n"
+source:
+  - "PMID:35802134"
+  - "PMID:32461654"
+  - "PMID:33261662"
+  - "PMID:28985496"
+  - "https://www.ncbi.nlm.nih.gov/gene/"
+  - "https://www.genenames.org/"
+createdFrom:
+  - name: ACMG SF Gene List
+    version: "3.1"
+  - name: ClinGen Gene Dosage pathog
+    version: "20240105"
+  - name: gnomAD constraints
+    version: "4.0"
+  - name: dbNSFP
+    version: "4.5"
+  - name: NCBI gene
+    version: "20240105"
+  - name: HGNC
+    version: "20240105"
+  - name: OMIM
+    version: "20240105"
+  - name: ORDO
+    version: "10.1"
+  - name: rCNV pHaplo/pTriplo scores
+    version: 2022-Collins-et-al
+  - name: sHet scores
+    version: 2019-Weghorn-et-a.
+  - name: GTex data
+    version: v8
+  - name: DOMINO data
+    version: 2019-02-19

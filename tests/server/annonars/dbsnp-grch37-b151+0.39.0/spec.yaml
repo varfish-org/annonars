@@ -1,0 +1,18 @@
+dc.identifier: annonars/seqvars/dbsnp:b151+0.39.0-grch37
+dc.title: annonars dbSNP RocksDB Database
+dc.creator: NCBI dbSNP Team
+dc.contributor:
+  - VarFish Developer Teams
+dc.format: application/x-rocksdb
+dc.date: 20240711
+x-version: b151+0.39.0
+x-genome-release: grch37
+dc.description: |
+  RocksDB built from dbSNP b151 VCF file using the annonars package
+  v0.39.0 in varfish-downloader v0.3.1.dev53+g2697370.
+dc.source:
+  - PMID:10592272
+  - https://www.ncbi.nlm.nih.gov/snp/
+x-created-from:
+  - name: dbSNP
+    version: b151

@@ -1,0 +1,19 @@
+dc.identifier: annonars/seqvars/cadd:1.6+0.39.0-grch37
+dc.title: annonars CADD RocksDB Database
+dc.creator: Kircher Lab
+dc.contributor:
+  - VarFish Developer Teams
+dc.format: application/x-rocksdb
+dc.date: 20240711
+x-version: 1.6+0.39.0
+x-genome-release: grch37
+dc.description: |
+  RocksDB with the information from the CADD score TSV files in their "incl. all annotations"
+  variant using the annonars package v0.39.0 in varfish-downloader v0.3.1.dev53+g2697370.
+dc.source:
+  - PMID:33618777
+  - PMID:30371827
+  - https://cadd.gs.washington.edu/
+x-created-from:
+  - name: CADD
+    version: 1.6

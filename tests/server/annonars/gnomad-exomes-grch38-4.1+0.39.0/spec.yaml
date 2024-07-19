@@ -1,0 +1,18 @@
+dc.identifier: annonars/seqvars/gnomad-exomes:4.1+0.39.0-grch38
+dc.title: annonars gnomAD-exomes RocksDB Database
+dc.creator: gnomAD Team
+dc.contributor:
+  - VarFish Developer Teams
+dc.format: application/x-rocksdb
+dc.date: 20240711
+x-version: 4.1+0.39.0
+x-genome-release: grch38
+dc.description: |
+  RocksDB with the information from gnomAD exomes v4.1 converted with
+  annonars v0.39.0 in varfish-downloader v0.3.1.dev53+g2697370.
+dc.source:
+  - PMID:32461654
+  - https://gnomad.broadinstitute.org/
+x-created-from:
+  - name: gnomAD-exomes
+    version: 4.1

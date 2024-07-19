@@ -1,0 +1,17 @@
+---
+source: src/server/run/versions.rs
+expression: "&proto_spec"
+---
+identifier: "annonars/functional:110+0.33.0-"
+title: annonars functional elements RocksDB
+creator: VarFish Developer Teams
+format: application/x-rocksdb
+date: "20240105"
+version: 110+0.33.0
+description: "RocksDB built from RefSeq Functional Elements (and other sources in\nthe future).\n"
+source:
+  - "PMID:34876495"
+  - "https://www.ncbi.nlm.nih.gov/refseq/"
+createdFrom:
+  - name: RefSeq Functional Elements
+    version: "110"

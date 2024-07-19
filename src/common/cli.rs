@@ -33,6 +33,8 @@ pub enum OutputFormat {
     strum::Display,
     strum::EnumString,
     enum_map::Enum,
+    serde::Serialize,
+    utoipa::ToSchema,
 )]
 #[strum(serialize_all = "lowercase")]
 pub enum GenomeRelease {
