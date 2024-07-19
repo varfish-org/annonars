@@ -1,0 +1,65 @@
+// Protocol buffers used on the REST interfaces.
+syntax = "proto3";
+
+package annonars.server.interface;
+
+import "google/protobuf/struct.proto";
+
+// Enumeration for genome release.
+enum GenomeRelease {
+    // Unspecified genome release.
+    GENOME_RELEASE_UNSPECIFIED = 0;
+    // Genome release GRCh37.
+    GENOME_RELEASE_GRCH37 = 1;
+    // Genome release GRCh38.
+    GENOME_RELEASE_GRCH38 = 2;
+}
+
+// Query for retrieving range of annotations.
+message AnnosRangeQuery {
+    // The genome release.
+    GenomeRelease genome_release = 1;
+    // The chromosome.
+    string chromosome = 2;
+    // The start position (1-based).
+    int32 start = 3;
+    // The end position (1-based).
+    int32 stop = 4;
+
+    // The page size.
+    optional int32 page_size = 5;
+    // The next page token.
+    optional string page_token = 6;
+}
+
+// Description of a position.
+message VcfVariant {
+    // The chromosome.
+    string chromosome = 1;
+    // The position (1-based).
+    int32 position = 2;
+    // The reference allele
+    string reference = 3;
+    // The alternate allele
+    string alternative = 4;
+}
+
+// Per-position result information.
+//
+// Note that we store the actual payload as `Struct`/JSON directly.
+message AnnosResult {
+    // The variant.
+    VcfVariant variant = 1;
+    // The annotations.
+    google.protobuf.Struct clinvar = 2;
+}
+
+// Response for a range of annotations.
+message AnnosRangeResponse {
+    // The used query.
+    AnnosRangeQuery query = 1;
+    // An optional token for retrieving the next page.
+    optional string next_page_token = 2;
+    // The resulting annotations.
+    repeated AnnosResult results = 3;
+}

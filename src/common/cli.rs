@@ -56,6 +56,20 @@ impl From<GenomeRelease> for biocommons_bioutils::assemblies::Assembly {
     }
 }
 
+impl TryFrom<crate::pbs::server::interface::GenomeRelease> for GenomeRelease {
+    type Error = anyhow::Error;
+
+    fn try_from(
+        val: crate::pbs::server::interface::GenomeRelease,
+    ) -> Result<GenomeRelease, Self::Error> {
+        match val {
+            crate::pbs::server::interface::GenomeRelease::Grch37 => Ok(GenomeRelease::Grch37),
+            crate::pbs::server::interface::GenomeRelease::Grch38 => Ok(GenomeRelease::Grch38),
+            _ => Err(anyhow::anyhow!("unknown genome release: {:?}", val)),
+        }
+    }
+}
+
 /// Construct the `indicatif` style for progress bars.
 pub fn indicatif_style() -> indicatif::ProgressStyle {
     let tpl = "{spinner:.green} [{elapsed_precise}] [{wide_bar:.cyan/blue}] \

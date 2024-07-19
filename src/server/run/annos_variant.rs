@@ -239,6 +239,7 @@ async fn handle(
                             anno_db.cf_name(),
                             start,
                             stop,
+                            &Default::default(),
                         )
                     })
                     .transpose()?

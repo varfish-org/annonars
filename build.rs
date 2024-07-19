@@ -33,6 +33,7 @@ fn main() -> Result<(), anyhow::Error> {
         "annonars/gnomad/vep_gnomad4.proto",
         "annonars/helixmtdb/base.proto",
         "annonars/regions/clingen.proto",
+        "annonars/server/interface.proto",
     ]
     .iter()
     .map(|f| root.join(f))
@@ -52,7 +53,12 @@ fn main() -> Result<(), anyhow::Error> {
         .compile_well_known_types()
         .extern_path(".google.protobuf", "::pbjson_types")
         // Derive the types for utoipa.
+        .enum_attribute(".", "#[derive(utoipa::ToSchema)]")
         .message_attribute(".", "#[derive(utoipa::ToSchema)]")
+        .message_attribute(
+            ".annonars.server.interface.AnnosRangeQuery",
+            "#[derive(utoipa::IntoParams)]",
+        )
         // Define the protobuf files to compile.
         .compile_protos(&proto_files, &[root])?;
 

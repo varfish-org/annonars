@@ -35,9 +35,11 @@ use actix_web::{middleware::Logger, web::Data, App, HttpServer};
 
 /// Module with OpenAPI documentation.
 pub mod openapi {
+    use super::*;
     use crate::{
         common::cli::GenomeRelease,
         pbs::common::versions::{CreatedFrom, VersionSpec},
+        pbs::server::interface::{AnnosRangeQuery, VcfVariant},
         server::run::{
             versions::{AnnoVersionInfo, ReleaseVersionInfos},
             AnnoDb,
@@ -58,6 +60,8 @@ pub mod openapi {
             VersionSpec,
             GenomeRelease,
             AnnoDb,
+            AnnosRangeQuery,
+            VcfVariant,
         ))
     )]
     pub struct ApiDoc;
@@ -77,6 +81,7 @@ pub async fn main(args: &Args, dbs: Data<WebServerData>) -> std::io::Result<()> 
             .app_data(dbs.clone())
             .service(annos_variant::handle)
             .service(annos_range::handle)
+            .service(annos_range::paginated::handle)
             .service(annos_db_info::handle)
             .service(clinvar_sv::handle)
             .service(genes_clinvar::handle)

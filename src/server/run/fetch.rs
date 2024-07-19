@@ -37,12 +37,20 @@ where
         .transpose()
 }
 
+/// Configuration for position-wise fetching.
+#[derive(Debug, Clone, Default)]
+pub struct FetchConfig {
+    /// Maximal number of records to fetch.
+    pub limit: Option<usize>,
+}
+
 /// Function to fetch prost Message from a position database.
 pub fn fetch_pos_protobuf<T>(
     db: &rocksdb::DBWithThreadMode<rocksdb::MultiThreaded>,
     cf_name: &str,
     start: keys::Pos,
     stop: keys::Pos,
+    config: &FetchConfig,
 ) -> Result<Option<serde_json::Value>, CustomError>
 where
     T: prost::Message + serde::Serialize + Default,
@@ -59,6 +67,16 @@ where
 
     let mut result = Vec::new();
     while iter.valid() {
+        if let Some(limit) = config.limit {
+            if result.len() >= limit {
+                break;
+            }
+        }
+        if let Some(limit) = config.limit {
+            if result.len() >= limit {
+                break;
+            }
+        }
         if let Some(raw_value) = iter.value() {
             let iter_key = iter.key().unwrap();
             let iter_pos: crate::common::keys::Pos = iter_key.into();
@@ -133,6 +151,7 @@ pub fn fetch_pos_tsv_json(
     cf_name: &str,
     start: keys::Pos,
     stop: keys::Pos,
+    config: &FetchConfig,
 ) -> Result<Option<serde_json::Value>, CustomError> {
     let (db_schema, ctx) = fetch_tsv_json_prepare_db(db, cf_name)?;
     let cf_data = db
@@ -156,6 +175,11 @@ pub fn fetch_pos_tsv_json(
     // Iterate over all variants until we are behind stop.
     let mut values = Vec::new();
     while iter.valid() {
+        if let Some(limit) = config.limit {
+            if values.len() >= limit {
+                break;
+            }
+        }
         if let Some(raw_value) = iter.value() {
             tracing::trace!("iterator at {:?} => {:?}", &iter.key(), &raw_value);
             let iter_key = iter.key().unwrap();
@@ -201,7 +225,7 @@ pub fn fetch_tsv_json_prepare_result(
     }))
 }
 
-/// Helper function that opens the atabase for `fetch_*_tsv_json`.
+/// Helper function that opens the database for `fetch_*_tsv_json`.
 pub fn fetch_tsv_json_prepare_db(
     db: &rocksdb::DBWithThreadMode<rocksdb::MultiThreaded>,
     cf_name: &str,
