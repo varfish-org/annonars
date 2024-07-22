@@ -264,7 +264,7 @@ pub struct WithVersionSpec<T: std::fmt::Debug> {
     /// The actual data.
     pub data: T,
     /// Version specification.
-    pub version_spec: pbs::common::versions::VersionSpec,
+    pub version_spec: Option<pbs::common::versions::VersionSpec>,
 }
 
 impl<T> WithVersionSpec<T>
@@ -272,12 +272,15 @@ where
     T: std::fmt::Debug,
 {
     /// Construct with the given data and path to specification YAML file.
-    pub fn from_data_and_path<P>(data: T, path: P) -> Result<Self, anyhow::Error>
+    pub fn from_data_and_path<P>(data: T, path: &Option<P>) -> Result<Self, anyhow::Error>
     where
         P: AsRef<Path>,
     {
-        let version_spec: pbs::common::versions::VersionSpec =
-            versions::schema::VersionSpec::from_path(path)?.into();
+        let version_spec: Option<pbs::common::versions::VersionSpec> = path
+            .as_ref()
+            .map(versions::schema::VersionSpec::from_path)
+            .transpose()?
+            .map(|version_spec| version_spec.into());
         Ok(Self { data, version_spec })
     }
 }
@@ -483,11 +486,16 @@ pub fn run(args_common: &common::cli::Args, args: &Args) -> Result<(), anyhow::E
             .parent()
             .ok_or_else(|| anyhow::anyhow!("cannot get parent directory of path {}", path_genes))?
             .join("spec.yaml");
+        let path_buf = path_buf.exists().then_some(path_buf);
         data.genes = Some(
             WithVersionSpec::from_data_and_path(gene_info_db, &path_buf).map_err(|e| {
                 anyhow::anyhow!(
                     "problem loading gene info spec from {}: {}",
-                    path_buf.display(),
+                    if let Some(path_buf) = path_buf.as_ref() {
+                        format!("{}", path_buf.display())
+                    } else {
+                        "None".to_string()
+                    },
                     e
                 )
             })?,
@@ -564,13 +572,18 @@ pub fn run(args_common: &common::cli::Args, args: &Args) -> Result<(), anyhow::E
                         anyhow::anyhow!("cannot get parent directory of path {}", path_rocksdb)
                     })?
                     .join("spec.yaml");
+                let spec_path = spec_path.exists().then_some(spec_path);
                 let name = db_info.name;
                 data.db_infos[genome_release][name] = Some(db_info);
                 data.annos[genome_release][name] = Some(
                     WithVersionSpec::from_data_and_path(db, &spec_path).map_err(|e| {
                         anyhow::anyhow!(
                             "problem loading gene info spec from {}: {}",
-                            spec_path.display(),
+                            if let Some(spec_path) = spec_path.as_ref() {
+                                format!("{}", spec_path.display())
+                            } else {
+                                "None".to_string()
+                            },
                             e
                         )
                     })?,
