@@ -1,5 +1,13 @@
 # Changelog
 
+## [0.41.0](https://github.com/varfish-org/annonars/compare/v0.40.0...v0.41.0) (2024-07-22)
+
+
+### Features
+
+* make spec.yaml files optional ([#503](https://github.com/varfish-org/annonars/issues/503)) ([c768822](https://github.com/varfish-org/annonars/commit/c768822c59f855142cf95a0b88135982c7fa5341))
+* starting out with v1 API OpenAPI ([#492](https://github.com/varfish-org/annonars/issues/492)) ([625c2a4](https://github.com/varfish-org/annonars/commit/625c2a4cd7f946121bff0a276d68bc2d168ca032))
+
 ## [0.40.0](https://github.com/varfish-org/annonars/compare/v0.39.0...v0.40.0) (2024-07-16)
 
 
