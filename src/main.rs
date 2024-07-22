@@ -327,9 +327,9 @@ struct Server {
 #[derive(Debug, Subcommand, Clone)]
 enum ServerCommands {
     /// "run" sub command.
-    Run(server::run::Args),
+    Run(Box<server::run::Args>),
     /// Dump the schema.
-    Schema(crate::server::schema::Args),
+    Schema(Box<crate::server::schema::Args>),
 }
 
 pub fn main() -> Result<(), anyhow::Error> {

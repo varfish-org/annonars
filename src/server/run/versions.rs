@@ -25,9 +25,9 @@ pub mod schema {
         pub version: String,
     }
 
-    impl Into<pbs::common::versions::CreatedFrom> for CreatedFrom {
-        fn into(self) -> pbs::common::versions::CreatedFrom {
-            let Self { name, version } = self;
+    impl From<CreatedFrom> for pbs::common::versions::CreatedFrom {
+        fn from(val: CreatedFrom) -> Self {
+            let CreatedFrom { name, version } = val;
             pbs::common::versions::CreatedFrom { name, version }
         }
     }
@@ -81,16 +81,16 @@ pub mod schema {
             let full_path = p.as_ref().to_str().ok_or_else(|| {
                 anyhow::anyhow!("problem converting path to string: {:?}", p.as_ref())
             })?;
-            let yaml_str = std::fs::read_to_string(&full_path)
+            let yaml_str = std::fs::read_to_string(full_path)
                 .map_err(|e| anyhow::anyhow!("problem reading file {}: {}", &full_path, e))?;
             serde_yaml::from_str(&yaml_str)
                 .map_err(|e| anyhow::anyhow!("problem deserializing {}: {}", full_path, e))
         }
     }
 
-    impl Into<pbs::common::versions::VersionSpec> for VersionSpec {
-        fn into(self) -> pbs::common::versions::VersionSpec {
-            let Self {
+    impl From<VersionSpec> for pbs::common::versions::VersionSpec {
+        fn from(val: VersionSpec) -> Self {
+            let VersionSpec {
                 identifier,
                 title,
                 creator,
@@ -102,7 +102,7 @@ pub mod schema {
                 description,
                 source,
                 created_from,
-            } = self;
+            } = val;
             pbs::common::versions::VersionSpec {
                 identifier,
                 title,
@@ -131,7 +131,7 @@ pub struct AnnoVersionInfo {
     /// Database name.
     pub database: AnnoDb,
     /// Version information of the database.
-    pub version_spec: VersionSpec,
+    pub version_spec: Option<VersionSpec>,
 }
 
 /// Version information for databases in a given release.
@@ -177,8 +177,8 @@ async fn handle(
         for (anno_db, with_version) in anno_dbs {
             if let Some(with_version) = with_version.as_ref() {
                 version_infos.push(AnnoVersionInfo {
-                    database: anno_db.clone(),
-                    version_spec: with_version.version_spec.clone().into(),
+                    database: anno_db,
+                    version_spec: with_version.version_spec.clone(),
                 });
             }
         }
@@ -193,7 +193,7 @@ async fn handle(
             .as_ref()
             .genes
             .as_ref()
-            .map(|genes| genes.version_spec.clone()),
+            .and_then(|genes| genes.version_spec.clone()),
         annos,
     };
 
@@ -216,7 +216,7 @@ pub mod test {
         crate::common::set_snapshot_suffix!("{}", &name);
 
         let full_path = format!("tests/server/annonars/{}/spec.yaml", &name);
-        let spec = super::schema::VersionSpec::from_path(&full_path)?;
+        let spec = super::schema::VersionSpec::from_path(full_path)?;
         insta::assert_yaml_snapshot!(&spec);
 
         let proto_spec: crate::pbs::common::versions::VersionSpec = spec.into();
