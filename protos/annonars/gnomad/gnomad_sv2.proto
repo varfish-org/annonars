@@ -126,6 +126,14 @@ message AlleleCounts {
     float freq_het = 9;
     // Homozygous alternate genotype frequency (biallelic sites only).
     float freq_homalt = 10;
+    // Number of individuals with hemizygous reference genotypes (biallelic sites only)
+    int32 n_hemiref = 11;
+    // Number of individuals with hemizygous alternate genotypes (biallelic sites only)
+    int32 n_hemialt = 12;
+    // Hemizygous reference genotype frequency (biallelic sites only).
+    float freq_hemiref = 13;
+    // Hemizygous alternate genotype frequency (biallelic sites only).
+    float freq_hemialt = 14;
 }
 
 // Store the allele counts for the given sub cohort and sub cohort factored by sex.

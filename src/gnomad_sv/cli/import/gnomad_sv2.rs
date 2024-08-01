@@ -263,10 +263,15 @@ impl Record {
         let n_homref = get_i32(record, &key("N_HOMREF")).unwrap_or_default();
         let n_het = get_i32(record, &key("N_HET")).unwrap_or_default();
         let n_homalt = get_i32(record, &key("N_HOMALT")).unwrap_or_default();
+        let n_hemiref = get_i32(record, &key("N_HEMIREF")).unwrap_or_default();
+        let n_hemialt = get_i32(record, &key("N_HEMIALT")).unwrap_or_default();
+
         let af = get_f32(record, &key("AF")).unwrap_or_default();
         let freq_homref = get_f32(record, &key("FREQ_HOMREF")).unwrap_or_default();
         let freq_het = get_f32(record, &key("FREQ_HET")).unwrap_or_default();
         let freq_homalt = get_f32(record, &key("FREQ_HOMALT")).unwrap_or_default();
+        let freq_hemiref = get_f32(record, &key("FREQ_HEMIREF")).unwrap_or_default();
+        let freq_hemialt = get_f32(record, &key("FREQ_HEMIALT")).unwrap_or_default();
 
         Ok(AlleleCounts {
             ac,
@@ -279,6 +284,10 @@ impl Record {
             freq_homref,
             freq_het,
             freq_homalt,
+            n_hemiref,
+            n_hemialt,
+            freq_hemiref,
+            freq_hemialt,
         })
     }
 
