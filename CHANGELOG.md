@@ -1,5 +1,20 @@
 # Changelog
 
+## [0.41.0](https://github.com/varfish-org/annonars/compare/v0.40.0...v0.41.0) (2024-09-06)
+
+
+### Features
+
+* add hemizygous allele counts and freqs to protobuf ([#511](https://github.com/varfish-org/annonars/issues/511)) ([9f4b08f](https://github.com/varfish-org/annonars/commit/9f4b08ff4b7781d9d78aec54bab930f26e6a8c49))
+* added ExtractedVcvRecord.clinical_assertions ([#532](https://github.com/varfish-org/annonars/issues/532)) ([9e263a9](https://github.com/varfish-org/annonars/commit/9e263a91054ca402c68bc56b89ed35a327f3a836))
+* make spec.yaml files optional ([#503](https://github.com/varfish-org/annonars/issues/503)) ([c768822](https://github.com/varfish-org/annonars/commit/c768822c59f855142cf95a0b88135982c7fa5341))
+* starting out with v1 API OpenAPI ([#492](https://github.com/varfish-org/annonars/issues/492)) ([625c2a4](https://github.com/varfish-org/annonars/commit/625c2a4cd7f946121bff0a276d68bc2d168ca032))
+
+
+### Bug Fixes
+
+* off-by-one positions on clinvar-minimal import ([#530](https://github.com/varfish-org/annonars/issues/530)) ([#531](https://github.com/varfish-org/annonars/issues/531)) ([14a9107](https://github.com/varfish-org/annonars/commit/14a9107a33188ff3bdf349f860b523cf5495ca35))
+
 ## [0.40.0](https://github.com/varfish-org/annonars/compare/v0.39.0...v0.40.0) (2024-07-16)
 
 
