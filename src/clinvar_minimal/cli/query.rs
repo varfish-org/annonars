@@ -168,7 +168,7 @@ pub fn query_for_accession(
 
 /// Implementation of `tsv query` sub command.
 pub fn run(common: &common::cli::Args, args: &Args) -> Result<(), anyhow::Error> {
-    tracing::info!("Starting 'gnomad-mtdna query' command");
+    tracing::info!("Starting 'clinvar-minimal query' command");
     tracing::info!("common = {:#?}", &common);
     tracing::info!("args = {:#?}", &args);
 

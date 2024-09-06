@@ -75,7 +75,7 @@ fn jsonl_import(
         let sequence_location = sequence_location.expect("sequence_location is required");
         let crate::pbs::clinvar_data::clinvar_public::location::SequenceLocation {
             chr,
-            start,
+            position_vcf,
             reference_allele_vcf,
             alternate_allele_vcf,
             ..
@@ -84,12 +84,12 @@ fn jsonl_import(
             crate::pbs::clinvar_data::clinvar_public::Chromosome::try_from(chr).map_err(|e| {
                 anyhow::anyhow!("problem converting chromosome {} to Chromosome: {}", chr, e)
             })?;
-        if let (Some(start), Some(reference_allele_vcf), Some(alternate_allele_vcf)) =
-            (start, reference_allele_vcf, alternate_allele_vcf)
+        if let (Some(position_vcf), Some(reference_allele_vcf), Some(alternate_allele_vcf)) =
+            (position_vcf, reference_allele_vcf, alternate_allele_vcf)
         {
             let var = keys::Var::from(
                 &chr_pb.as_chr_name(),
-                start as i32,
+                position_vcf as i32,
                 &reference_allele_vcf,
                 &alternate_allele_vcf,
             );
