@@ -74,7 +74,7 @@ if [ "$first" == exec ]; then
 else
   exec \
     annonars \
-    run-server \
+    server run \
       $(test -e $PATH_DB_CLINVAR_37 && echo --path-clinvar $PATH_DB_CLINVAR_37) \
       $(test -e $PATH_DB_CLINVAR_38 && echo --path-clinvar $PATH_DB_CLINVAR_38) \
       $(test -e $PATH_DB_CLINVAR_SV_37 && echo --path-clinvar-sv $PATH_DB_CLINVAR_SV_37) \
