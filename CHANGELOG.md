@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.41.1](https://github.com/varfish-org/annonars/compare/v0.41.0...v0.41.1) (2024-09-18)
+
+
+### Bug Fixes
+
+* Correct the entrypoint command ([#541](https://github.com/varfish-org/annonars/issues/541)) ([f805675](https://github.com/varfish-org/annonars/commit/f805675929544a6435ad7121fa4af0b84684247f))
+
 ## [0.41.0](https://github.com/varfish-org/annonars/compare/v0.40.0...v0.41.0) (2024-09-06)
 
 
