@@ -4,8 +4,6 @@
 #
 # We don't do cross compilation at the moment but build the dependencies first
 # anyway to get the ability to increment.
-#
-#
 
 # ---------------------------------------------------------------------------
 # Builder
@@ -30,7 +28,7 @@ RUN PREFIX=/usr/local bash /tmp/install-protoc.sh
 # Set initial workdir.
 WORKDIR /usr/src
 # Create blank project.
-RUN USER=root cargo new annonars
+RUN USER=root /root/.cargo/bin/cargo new annonars
 # We want dependencies cached, so copy those first.
 COPY Cargo.toml Cargo.lock /usr/src/annonars/
 RUN touch /usr/src/annonars/src/lib.rs
