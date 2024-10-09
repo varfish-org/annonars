@@ -1,3 +1,9 @@
+# This workflow is run as part of CI to test that they run through.
+#
+# The images are pushed to `ghcr.io` for each PR and branch.  The ones for
+# the releases are pushed in `release-please.yml`.
+name: Docker Build
+
 on:
   push:
     branches:
@@ -6,19 +12,13 @@ on:
     branches:
       - main
 
-# This workflow is run as part of CI to test that they run through.
-#
-# The images are pushed to `ghcr.io` for each PR and branch.  The ones for
-# the releases are pushed in `release-please.yml`.
-name: Docker Build
-
 env:
   REGISTRY: ghcr.io
   IMAGE_NAME: ${{ github.repository }}
 
 jobs:
   build-and-push-image:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     permissions:
       contents: read
       packages: write
