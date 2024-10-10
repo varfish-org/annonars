@@ -10,7 +10,7 @@ on:
 
 jobs:
   Formatting:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
@@ -28,14 +28,19 @@ jobs:
           repo-token: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Check format
-        run: |
+        run:
           cargo fmt -- --check
 
   Linting:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
+
+      - name: Install dependencies
+        run: |
+          sudo apt-get update -y
+          sudo apt-get install -y librocksdb-dev libsnappy-dev libsqlite3-dev
 
       - name: Install stable toolchain
         uses: actions-rs/toolchain@v1
@@ -62,12 +67,17 @@ jobs:
 
   Testing:
     needs: Formatting
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
         with:
           lfs: true
+
+      - name: Install dependencies
+        run: |
+          sudo apt-get update -y
+          sudo apt-get install -y librocksdb-dev libsnappy-dev libsqlite3-dev
 
       - name: Install stable toolchain
         uses: actions-rs/toolchain@v1
@@ -82,23 +92,16 @@ jobs:
 
       - uses: Swatinem/rust-cache@v2
         with:
+          key: "covtest"
           cache-directories: |
             ~/.cargo/registry/src/**/librocksdb-sys-*
 
-      - name: Run cargo-tarpaulin
-        uses: actions-rs/tarpaulin@v0.1
-        with:
-          version: "0.21.0"
-          args: "--skip-clean --all-features --timeout 180 -- --test-threads 1"
-
-      - name: Build all examples
-        uses: actions-rs/cargo@v1
-        with:
-          command: build
-          args: --examples
-
-      - name: Codecov submission
+      - name: Install cargo-llvm-cov
+        uses: taiki-e/install-action@cargo-llvm-cov
+      - name: Generate code coverage
+        run: cargo llvm-cov --all-features --workspace --lcov --output-path lcov.info
+      - name: Upload coverage to Codecov
         uses: codecov/codecov-action@v4
         with:
-          verbose: true
           token: ${{ secrets.CODECOV_TOKEN }}
+          files: lcov.info

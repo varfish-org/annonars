@@ -4,25 +4,21 @@
 #
 # We don't do cross compilation at the moment but build the dependencies first
 # anyway to get the ability to increment.
-#
-#
 
 # ---------------------------------------------------------------------------
 # Builder
 # ---------------------------------------------------------------------------
 
-# Pinning Rust version for now because of this issue:
-#
-# - https://github.com/rust-lang/rust/issues/95926
-FROM rust:1-bookworm AS builder
+# Use ubuntu:noble as the base image
+FROM ubuntu:noble AS builder
 
-# Build dependencies first.
-#
-# Install dependencies for compilation of C code (e.g., rocksdb).
+# Install Rust toolchain and dependencies for compilation of C code (e.g., rocksdb)
 RUN apt-get update && \
-    apt-get install -y clang
-# Add the needed Cargo components.
-RUN rustup component add rustfmt
+    apt-get install -y unzip wget curl build-essential clang librocksdb-dev libsqlite3-dev && \
+    curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y && \
+    . $HOME/.cargo/env && \
+    rustup component add rustfmt
+
 # Install build dependency `protoc`.
 COPY utils/install-protoc.sh /tmp
 RUN PREFIX=/usr/local bash /tmp/install-protoc.sh
@@ -32,44 +28,44 @@ RUN PREFIX=/usr/local bash /tmp/install-protoc.sh
 # Set initial workdir.
 WORKDIR /usr/src
 # Create blank project.
-RUN USER=root cargo new annonars
+RUN USER=root /root/.cargo/bin/cargo new annonars
 # We want dependencies cached, so copy those first.
 COPY Cargo.toml Cargo.lock /usr/src/annonars/
 RUN touch /usr/src/annonars/src/lib.rs
 # Set the working directory.
 WORKDIR /usr/src/annonars
-# This is a dummy build to get the dependencies cached.
-RUN cargo build --release
-#
-# Now copy in the rest of the sources.
-COPY build.rs /usr/src/annonars/
+
+# Copy in the rest of the sources.
+COPY build.rs Cargo.toml Cargo.lock /usr/src/annonars/
 COPY src /usr/src/annonars/src/
 COPY protos /usr/src/annonars/protos/
 COPY utils/alpine-linker-script.sh /usr/src/annonars/utils/
 RUN chmod a+rx /usr/src/annonars/utils/alpine-linker-script.sh
 COPY .cargo /usr/src/annonars/.cargo/
-## Touch main.rs to prevent cached release build.
+
+# Touch main.rs to prevent cached release build.
 RUN touch /usr/src/annonars/src/main.rs
-# This is the actual application build.
-RUN cargo build --release
+
+# Build the application
+RUN /root/.cargo/bin/cargo build --release
 
 # ---------------------------------------------------------------------------
 # Runtime
 # ---------------------------------------------------------------------------
 
-FROM debian:bookworm-slim AS runtime
+FROM ubuntu:noble AS runtime
 
-# Copy application binary from builder image
-COPY --from=builder \
-    /usr/src/annonars/target/release/annonars \
-    /usr/local/bin
-
-# Install dependencies (and cleanup afterwards)
+# Install dependencies (and cleanup afterward)
 RUN apt-get update && \
     apt-get install -y libsqlite3-0 && \
     apt-get clean autoclean && \
     apt-get autoremove --yes && \
     rm -rf /var/lib/{apt,dpkg,cache,log}
+
+# Copy application binary from builder image
+COPY --from=builder \
+    /usr/src/annonars/target/release/annonars \
+    /usr/local/bin
 
 # Copy the entrypoint script and make it executable.
 COPY utils/docker/entrypoint.sh /
@@ -77,5 +73,6 @@ RUN chmod a+rx /entrypoint.sh
 
 # Set the entrypoint.
 ENTRYPOINT ["/bin/bash", "/entrypoint.sh"]
-# Set port to expose
+
+# Expose the application port
 EXPOSE 8080
