@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.41.2](https://github.com/varfish-org/annonars/compare/v0.41.1...v0.41.2) (2024-10-10)
+
+
+### Miscellaneous Chores
+
+* release 0.41.2 ([1c7fd3d](https://github.com/varfish-org/annonars/commit/1c7fd3d43ba50445975f86b476ac78ccf641671f))
+
 ## [0.41.1](https://github.com/varfish-org/annonars/compare/v0.41.0...v0.41.1) (2024-09-18)
 
 
