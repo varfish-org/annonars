@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.41.3](https://github.com/varfish-org/annonars/compare/v0.41.2...v0.41.3) (2024-10-16)
+
+
+### Bug Fixes
+
+* add missing librocksdb8.9 to Dockerfile ([#559](https://github.com/varfish-org/annonars/issues/559)) ([710424c](https://github.com/varfish-org/annonars/commit/710424c3758499dda3f7bf99aa4c4b226ce3c8fa))
+
 ## [0.41.2](https://github.com/varfish-org/annonars/compare/v0.41.1...v0.41.2) (2024-10-10)
 
 
