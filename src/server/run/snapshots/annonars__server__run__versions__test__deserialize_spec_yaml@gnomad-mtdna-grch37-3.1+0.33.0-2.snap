@@ -10,11 +10,11 @@ contributor:
 format: application/x-rocksdb
 date: "20240105"
 version: 3.1+0.33.0
-genomeRelease: grch37
+genome_release: grch37
 description: "RocksDB with the information from gnomAD mtDNA v3.1 converted with\nannonars v0.33.0 in varfish-downloader v0.3.1.dev42+g3a332a0.d20240105.\n"
 source:
   - "PMID:32461654"
   - "https://gnomad.broadinstitute.org/"
-createdFrom:
+created_from:
   - name: gnomAD-mtDNA
     version: "3.1"

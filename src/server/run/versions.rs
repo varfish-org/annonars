@@ -6,15 +6,13 @@ use actix_web::{
     Responder,
 };
 
-use crate::{common::cli::GenomeRelease, pbs::common::versions::VersionSpec};
+use crate::common::cli::GenomeRelease;
 
 use super::{error::CustomError, AnnoDb, WebServerData};
 
 /// Code for deserializing the version `spec.yaml` files.
 pub mod schema {
     use std::path::Path;
-
-    use crate::pbs;
 
     /// Information about input data.
     #[derive(serde::Deserialize, serde::Serialize, Debug, Clone)]
@@ -25,10 +23,10 @@ pub mod schema {
         pub version: String,
     }
 
-    impl From<CreatedFrom> for pbs::common::versions::CreatedFrom {
+    impl From<CreatedFrom> for super::VersionsCreatedFrom {
         fn from(val: CreatedFrom) -> Self {
             let CreatedFrom { name, version } = val;
-            pbs::common::versions::CreatedFrom { name, version }
+            super::VersionsCreatedFrom { name, version }
         }
     }
 
@@ -88,7 +86,7 @@ pub mod schema {
         }
     }
 
-    impl From<VersionSpec> for pbs::common::versions::VersionSpec {
+    impl From<VersionSpec> for super::VersionsVersionSpec {
         fn from(val: VersionSpec) -> Self {
             let VersionSpec {
                 identifier,
@@ -103,7 +101,7 @@ pub mod schema {
                 source,
                 created_from,
             } = val;
-            pbs::common::versions::VersionSpec {
+            super::VersionsVersionSpec {
                 identifier,
                 title,
                 creator,
@@ -121,80 +119,118 @@ pub mod schema {
 }
 
 /// Query parameters for `handle()`.
-#[derive(Debug, Clone, serde::Deserialize, utoipa::IntoParams)]
-pub struct VersionInfoQuery {}
+#[derive(
+    Debug, Clone, serde::Serialize, serde::Deserialize, utoipa::IntoParams, utoipa::ToSchema,
+)]
+pub struct VersionsInfoQuery {}
+
+/// Source name and version.
+#[derive(Debug, Clone, PartialEq, Eq, serde::Serialize, serde::Deserialize, utoipa::ToSchema)]
+pub struct VersionsCreatedFrom {
+    /// The name of the data source.
+    pub name: String,
+    /// The version of the data source.
+    pub version: String,
+}
+
+/// Version specification.
+#[derive(Debug, Clone, PartialEq, Eq, serde::Serialize, serde::Deserialize, utoipa::ToSchema)]
+pub struct VersionsVersionSpec {
+    /// Identifier of the data.
+    pub identifier: String,
+    /// Title of the data.
+    pub title: String,
+    /// Creator of the data.
+    pub creator: String,
+    /// Contributors of the data.
+    pub contributor: Vec<String>,
+    /// Format of the data.
+    pub format: String,
+    /// Date of the data.
+    pub date: String,
+    /// Version of the data.
+    pub version: String,
+    /// Optional genome release.
+    pub genome_release: Option<String>,
+    /// Data description.
+    pub description: String,
+    /// Data source.
+    pub source: Vec<String>,
+    /// Created from information.
+    pub created_from: Vec<VersionsCreatedFrom>,
+}
 
 /// Version information for one database.
-#[derive(Debug, Clone, serde::Serialize, utoipa::ToSchema)]
-#[serde(rename_all = "camelCase")]
-pub struct AnnoVersionInfo {
+#[derive(Debug, Clone, serde::Serialize, serde::Deserialize, utoipa::ToSchema)]
+#[serde(rename_all = "snake_case")]
+pub struct VersionsAnnotationInfo {
     /// Database name.
     pub database: AnnoDb,
     /// Version information of the database.
-    pub version_spec: Option<VersionSpec>,
+    pub version_spec: Option<VersionsVersionSpec>,
 }
 
 /// Version information for databases in a given release.
-#[derive(Debug, Default, Clone, serde::Serialize, utoipa::ToSchema)]
-#[serde(rename_all = "camelCase")]
-pub struct ReleaseVersionInfos {
+#[derive(Debug, Default, Clone, serde::Serialize, serde::Deserialize, utoipa::ToSchema)]
+pub struct VersionsPerRelease {
     /// The genome release.
     pub release: GenomeRelease,
     /// Version information of annotation databases.
     #[serde(skip_serializing_if = "Vec::is_empty")]
-    pub version_infos: Vec<AnnoVersionInfo>,
+    pub version_infos: Vec<VersionsAnnotationInfo>,
 }
 
 /// Response for `handle()`.
-#[derive(Debug, Default, Clone, serde::Serialize, utoipa::ToSchema)]
-pub struct VersionInfoResponse {
+#[derive(Debug, Default, Clone, serde::Serialize, serde::Deserialize, utoipa::ToSchema)]
+pub struct VersionsInfoResponse {
     /// Version information of the genes.
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub genes: Option<VersionSpec>,
+    pub genes: Option<VersionsVersionSpec>,
     /// Version information of annotation databases per release.
     #[serde(skip_serializing_if = "Vec::is_empty")]
-    pub annos: Vec<ReleaseVersionInfos>,
+    pub seqvars: Vec<VersionsPerRelease>,
 }
 
 /// Query for annotations for one variant.
 #[utoipa::path(
     get,
-    operation_id = "versionInfos",
-    params(VersionInfoQuery),
+    operation_id = "versionsInfo",
+    params(VersionsInfoQuery),
     responses(
-        (status = 200, description = "Version information.", body = VersionInfoResponse),
+        (status = 200, description = "Version information.", body = VersionsInfoResponse),
+        (status = 500, description = "Internal server error.", body = CustomError)
     )
 )]
-#[get("/v1/versions")]
+#[get("/api/v1/versionsInfo")]
 async fn handle(
     data: Data<WebServerData>,
     _path: Path<()>,
-    _query: web::Query<VersionInfoQuery>,
+    _query: web::Query<VersionsInfoQuery>,
 ) -> actix_web::Result<impl Responder, CustomError> {
-    let mut annos = Vec::new();
+    let mut seqvars = Vec::new();
     for (release, anno_dbs) in data.as_ref().annos.iter() {
         let mut version_infos = Vec::new();
         for (anno_db, with_version) in anno_dbs {
             if let Some(with_version) = with_version.as_ref() {
-                version_infos.push(AnnoVersionInfo {
+                version_infos.push(VersionsAnnotationInfo {
                     database: anno_db,
-                    version_spec: with_version.version_spec.clone(),
+                    version_spec: with_version.version_spec.clone().map(Into::into),
                 });
             }
         }
-        annos.push(ReleaseVersionInfos {
+        seqvars.push(VersionsPerRelease {
             release,
             version_infos,
         });
     }
 
-    let response = VersionInfoResponse {
+    let response = VersionsInfoResponse {
         genes: data
             .as_ref()
             .genes
             .as_ref()
-            .and_then(|genes| genes.version_spec.clone()),
-        annos,
+            .and_then(|genes| genes.version_spec.clone().map(Into::into)),
+        seqvars,
     };
 
     Ok(Json(response))
@@ -219,7 +255,7 @@ pub mod test {
         let spec = super::schema::VersionSpec::from_path(full_path)?;
         insta::assert_yaml_snapshot!(&spec);
 
-        let proto_spec: crate::pbs::common::versions::VersionSpec = spec.into();
+        let proto_spec: super::VersionsVersionSpec = spec.into();
         insta::assert_yaml_snapshot!(&proto_spec);
 
         Ok(())

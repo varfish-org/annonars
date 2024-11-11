@@ -2796,9 +2796,8 @@ mod tests {
             .lines()
             .map(|s| {
                 serde_json::from_str::<panelapp::Record>(s)
-                    .map_err(|e| {
-                        println!("{}", &s);
-                        e
+                    .inspect_err(|e| {
+                        println!("{} -- {:?}", &s, e);
                     })
                     .unwrap()
             })

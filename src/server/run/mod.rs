@@ -28,7 +28,7 @@ use utoipa::OpenApi as _;
 use crate::{
     clinvar_sv::cli::query::{self as clinvarsv_query, IntervalTrees as ClinvarsvIntervalTrees},
     common::{self, cli::GenomeRelease},
-    pbs::{self, genes},
+    pbs::genes,
 };
 
 use actix_web::{middleware::Logger, web::Data, App, HttpServer};
@@ -37,27 +37,27 @@ use actix_web::{middleware::Logger, web::Data, App, HttpServer};
 pub mod openapi {
     use crate::{
         common::cli::GenomeRelease,
-        pbs::common::versions::{CreatedFrom, VersionSpec},
-        server::run::{
-            versions::{AnnoVersionInfo, ReleaseVersionInfos},
-            AnnoDb,
+        server::run::versions::{
+            self, VersionsAnnotationInfo, VersionsCreatedFrom, VersionsInfoQuery,
+            VersionsInfoResponse, VersionsPerRelease, VersionsVersionSpec,
         },
+        server::run::{error::CustomError, AnnoDb},
     };
-
-    use super::versions::{self, VersionInfoResponse};
 
     /// Utoipa-based `OpenAPI` generation helper.
     #[derive(utoipa::OpenApi)]
     #[openapi(
         paths(versions::handle),
         components(schemas(
-            AnnoVersionInfo,
-            ReleaseVersionInfos,
-            VersionInfoResponse,
-            CreatedFrom,
-            VersionSpec,
+            VersionsInfoQuery,
+            VersionsInfoResponse,
+            VersionsVersionSpec,
+            VersionsPerRelease,
+            VersionsAnnotationInfo,
+            VersionsCreatedFrom,
             GenomeRelease,
             AnnoDb,
+            CustomError,
         ))
     )]
     pub struct ApiDoc;
@@ -264,7 +264,7 @@ pub struct WithVersionSpec<T: std::fmt::Debug> {
     /// The actual data.
     pub data: T,
     /// Version specification.
-    pub version_spec: Option<pbs::common::versions::VersionSpec>,
+    pub version_spec: Option<versions::schema::VersionSpec>,
 }
 
 impl<T> WithVersionSpec<T>
@@ -276,11 +276,10 @@ where
     where
         P: AsRef<Path>,
     {
-        let version_spec: Option<pbs::common::versions::VersionSpec> = path
+        let version_spec: Option<versions::schema::VersionSpec> = path
             .as_ref()
             .map(versions::schema::VersionSpec::from_path)
-            .transpose()?
-            .map(|version_spec| version_spec.into());
+            .transpose()?;
         Ok(Self { data, version_spec })
     }
 }
@@ -422,14 +421,9 @@ pub fn run(args_common: &common::cli::Args, args: &Args) -> Result<(), anyhow::E
     tracing::info!("args_common = {:?}", &args_common);
     tracing::info!("args = {:?}", &args);
 
-    if let Some(level) = args_common.verbose.log_level() {
-        match level {
-            log::Level::Trace | log::Level::Debug => {
-                std::env::set_var("RUST_LOG", "debug");
-                env_logger::init_from_env(env_logger::Env::new().default_filter_or("info"));
-            }
-            _ => (),
-        }
+    if let Some(log::Level::Trace | log::Level::Debug) = args_common.verbose.log_level() {
+        std::env::set_var("RUST_LOG", "debug");
+        env_logger::init_from_env(env_logger::Env::new().default_filter_or("info"));
     }
 
     tracing::info!("Opening databases...");

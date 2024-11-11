@@ -10,11 +10,11 @@ contributor:
 format: application/x-rocksdb
 date: "20240105"
 version: 1+0.33.0
-genomeRelease: grch38
+genome_release: grch38
 description: "RocksDB with the information from the AlphaMissense_hgGENOME.tsv.gz\nfiles for the canonical transcripts.\n"
 source:
   - "PMID:37733863"
   - "https://storage.googleapis.com/dm_alphamissense/README.pdf"
-createdFrom:
+created_from:
   - name: AlphaMissense
     version: "1"
