@@ -2,7 +2,6 @@
 
 pub mod clinvar;
 pub mod clinvar_data;
-pub mod common;
 pub mod cons;
 pub mod dbsnp;
 pub mod functional;

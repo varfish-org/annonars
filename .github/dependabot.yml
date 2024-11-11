@@ -24,6 +24,10 @@ updates:
           - "hgvs"
           - "seqrepo"
           - "noodles-*"
+      utoipa:
+        patterns:
+          - "utoipa"
+          - "utoipa-*"
       prost:
         patterns:
           - "pbjson"

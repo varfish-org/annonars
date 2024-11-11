@@ -1156,7 +1156,7 @@ fn write_rocksdb(
             conditions: conditions_by_hgnc_id.get(&hgnc_id).cloned(),
         });
         tracing::debug!("writing {:?} -> {:?}", &hgnc, &record);
-        db.put_cf(&cf_genes, hgnc_id, &record.encode_to_vec())?;
+        db.put_cf(&cf_genes, hgnc_id, record.encode_to_vec())?;
     }
 
     // Finally, compact manually.

@@ -418,7 +418,7 @@ pub fn run(common: &common::cli::Args, args: &Args) -> Result<(), anyhow::Error>
     for (header_field, val) in more_header_values {
         db.put_cf(
             &cf_meta,
-            &format!("gnomad-{}", header_field.replace('_', "-")),
+            format!("gnomad-{}", header_field.replace('_', "-")),
             &val,
         )?;
     }

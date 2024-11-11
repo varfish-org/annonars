@@ -34,16 +34,16 @@ pub enum OutputFormat {
     strum::EnumString,
     enum_map::Enum,
     serde::Serialize,
+    serde::Deserialize,
     utoipa::ToSchema,
 )]
 #[strum(serialize_all = "lowercase")]
+#[serde(rename_all = "lowercase")]
 pub enum GenomeRelease {
     /// GRCh37 genome release.
-    #[strum(serialize = "grch37")]
     #[default]
     Grch37,
     /// GRCh38 genome release.
-    #[strum(serialize = "grch38")]
     Grch38,
 }
 

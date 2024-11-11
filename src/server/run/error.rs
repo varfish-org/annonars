@@ -3,9 +3,9 @@
 use actix_web::ResponseError;
 
 /// Custom error type for the Actix server.
-#[derive(Debug)]
+#[derive(Debug, Clone, serde::Serialize, serde::Deserialize, utoipa::ToSchema)]
 pub struct CustomError {
-    err: anyhow::Error,
+    err: String,
 }
 
 impl std::fmt::Display for CustomError {
@@ -17,7 +17,9 @@ impl std::fmt::Display for CustomError {
 impl CustomError {
     /// Create from `anyhow::Error`.
     pub fn new(err: anyhow::Error) -> Self {
-        CustomError { err }
+        CustomError {
+            err: err.to_string(),
+        }
     }
 }
 

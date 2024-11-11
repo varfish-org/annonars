@@ -1,0 +1,176 @@
+openapi: 3.1.0
+info:
+  title: annonars
+  description: Genome annotation based on Rust and RocksDB
+  contact:
+    name: Manuel Holtgrewe
+    email: manuel.holtgrewe@bih-charite.de
+  license:
+    name: Apache-2.0
+  version: 0.41.3
+paths:
+  /api/v1/versionsInfo:
+    get:
+      tags:
+      - versions
+      summary: Query for annotations for one variant.
+      operationId: versionsInfo
+      parameters: []
+      responses:
+        '200':
+          description: Version information.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/VersionsInfoResponse'
+        '500':
+          description: Internal server error.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CustomError'
+components:
+  schemas:
+    AnnoDb:
+      type: string
+      description: Encode annotation database.
+      enum:
+      - other
+      - cadd
+      - dbsnp
+      - dbnsfp
+      - dbscsnv
+      - gnomad_mtdna
+      - gnomad_exomes
+      - gnomad_genomes
+      - helixmtdb
+      - ucsc_conservation
+      - clinvar
+    CustomError:
+      type: object
+      description: Custom error type for the Actix server.
+      required:
+      - err
+      properties:
+        err:
+          type: string
+    GenomeRelease:
+      type: string
+      description: Local genome release for command line arguments.
+      enum:
+      - grch37
+      - grch38
+    VersionsAnnotationInfo:
+      type: object
+      description: Version information for one database.
+      required:
+      - database
+      properties:
+        database:
+          $ref: '#/components/schemas/AnnoDb'
+          description: Database name.
+        version_spec:
+          oneOf:
+          - type: 'null'
+          - $ref: '#/components/schemas/VersionsVersionSpec'
+            description: Version information of the database.
+    VersionsCreatedFrom:
+      type: object
+      description: Source name and version.
+      required:
+      - name
+      - version
+      properties:
+        name:
+          type: string
+          description: The name of the data source.
+        version:
+          type: string
+          description: The version of the data source.
+    VersionsInfoQuery:
+      type: object
+      description: Query parameters for `handle()`.
+    VersionsInfoResponse:
+      type: object
+      description: Response for `handle()`.
+      properties:
+        genes:
+          oneOf:
+          - type: 'null'
+          - $ref: '#/components/schemas/VersionsVersionSpec'
+            description: Version information of the genes.
+        seqvars:
+          type: array
+          items:
+            $ref: '#/components/schemas/VersionsPerRelease'
+          description: Version information of annotation databases per release.
+    VersionsPerRelease:
+      type: object
+      description: Version information for databases in a given release.
+      required:
+      - release
+      properties:
+        release:
+          $ref: '#/components/schemas/GenomeRelease'
+          description: The genome release.
+        version_infos:
+          type: array
+          items:
+            $ref: '#/components/schemas/VersionsAnnotationInfo'
+          description: Version information of annotation databases.
+    VersionsVersionSpec:
+      type: object
+      description: Version specification.
+      required:
+      - identifier
+      - title
+      - creator
+      - contributor
+      - format
+      - date
+      - version
+      - description
+      - source
+      - created_from
+      properties:
+        identifier:
+          type: string
+          description: Identifier of the data.
+        title:
+          type: string
+          description: Title of the data.
+        creator:
+          type: string
+          description: Creator of the data.
+        contributor:
+          type: array
+          items:
+            type: string
+          description: Contributors of the data.
+        format:
+          type: string
+          description: Format of the data.
+        date:
+          type: string
+          description: Date of the data.
+        version:
+          type: string
+          description: Version of the data.
+        genome_release:
+          type:
+          - string
+          - 'null'
+          description: Optional genome release.
+        description:
+          type: string
+          description: Data description.
+        source:
+          type: array
+          items:
+            type: string
+          description: Data source.
+        created_from:
+          type: array
+          items:
+            $ref: '#/components/schemas/VersionsCreatedFrom'
+          description: Created from information.
