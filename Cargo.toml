@@ -50,7 +50,7 @@ serde = { version = "1.0", features = ["derive"] }
 serde_with = { version = "3.11", features = ["alloc", "macros", "indexmap_2"], default-features = false }
 serde_yaml = "0.9"
 strum = { version = "0.26", features = ["strum_macros", "derive"] }
-thiserror = "1.0"
+thiserror = "2.0"
 tracing = "0.1"
 tracing-subscriber = "0.3"
 utoipa-swagger-ui = { version = "8.0", features = ["actix-web"] }
