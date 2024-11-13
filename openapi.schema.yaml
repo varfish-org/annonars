@@ -9,6 +9,36 @@ info:
     name: Apache-2.0
   version: 0.41.3
 paths:
+  /api/v1/genes/info:
+    get:
+      tags:
+      - genes_info
+      summary: Query for annotations for one or more genes.
+      operationId: genesInfo
+      parameters:
+      - name: hgnc_id
+        in: query
+        description: The HGNC IDs to search for.
+        required: false
+        schema:
+          type:
+          - array
+          - 'null'
+          items:
+            type: string
+      responses:
+        '200':
+          description: Per-gene information.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GenesInfoResponse'
+        '500':
+          description: Internal server error.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CustomError'
   /api/v1/versionsInfo:
     get:
       tags:
@@ -54,6 +84,2067 @@ components:
       properties:
         err:
           type: string
+    GenesAcmgSecondaryFindingRecord:
+      type: object
+      description: Information from ACMG secondary findings list.
+      required:
+      - hgnc_id
+      - ensembl_gene_id
+      - ncbi_gene_id
+      - gene_symbol
+      - mim_gene_id
+      - disease_phenotype
+      - disorder_mim
+      - phenotype_category
+      - inheritance
+      - sf_list_version
+      - variants_to_report
+      properties:
+        hgnc_id:
+          type: string
+          description: The HGNC ID.
+        ensembl_gene_id:
+          type: string
+          description: The Ensembl gene ID.
+        ncbi_gene_id:
+          type: string
+          description: The NCBI gene ID.
+        gene_symbol:
+          type: string
+          description: The HGNC gene symbol.
+        mim_gene_id:
+          type: string
+          description: The MIM gene ID.
+        disease_phenotype:
+          type: string
+          description: The disease phenotype.
+        disorder_mim:
+          type: string
+          description: The disease MIM id.
+        phenotype_category:
+          type: string
+          description: The phenotype category.
+        inheritance:
+          type: string
+          description: The mode of inheritance.
+        sf_list_version:
+          type: string
+          description: The version of the ACMG SF list of first appearance.
+        variants_to_report:
+          type: string
+          description: The variants to report according to ACMG SF.
+    GenesClingenDosageRecord:
+      type: object
+      description: '`ClinGen` gene dosage sensitivity record.'
+      required:
+      - gene_symbol
+      - ncbi_gene_id
+      - genomic_location_37
+      - genomic_location_38
+      properties:
+        gene_symbol:
+          type: string
+          description: Gene symbol.
+        ncbi_gene_id:
+          type: string
+          description: NCBI gene ID.
+        genomic_location_37:
+          type: string
+          description: Genomic location GRCh37.
+        genomic_location_38:
+          type: string
+          description: Genomic location GRCh38.
+        haploinsufficiency_score:
+          oneOf:
+          - type: 'null'
+          - $ref: '#/components/schemas/GenesClingenDosageScore'
+            description: Haploinsufficiency score.
+        triplosensitivity_score:
+          oneOf:
+          - type: 'null'
+          - $ref: '#/components/schemas/GenesClingenDosageScore'
+            description: Triplosensitivity score.
+        haploinsufficiency_disease_id:
+          type:
+          - string
+          - 'null'
+          description: Haploinsufficiency Disease ID.
+        triplosensitivity_disease_id:
+          type:
+          - string
+          - 'null'
+          description: Haploinsufficiency Disease ID.
+    GenesClingenDosageScore:
+      type: string
+      description: Enumeration for Haploinsufficiency / Triplosensitivity scores.
+      enum:
+      - SufficientEvidenceAvailable
+      - SomeEvidenceAvailable
+      - LittleEvidence
+      - NoEvidenceAvailable
+      - Recessive
+      - Unlikely
+    GenesConditionsRecord:
+      type: object
+      description: Record from the integrated conditions computation.
+      required:
+      - hgnc_id
+      - disease_associations
+      - panelapp_associations
+      properties:
+        hgnc_id:
+          type: string
+          description: The HGNC ID.
+        disease_associations:
+          type: array
+          items:
+            $ref: '#/components/schemas/GenesDiseaseAssociation'
+          description: The gene-disease associations.
+        panelapp_associations:
+          type: array
+          items:
+            $ref: '#/components/schemas/GenesPanelappAssociation'
+          description: The PanelApp associations.
+    GenesDbnsfpRecord:
+      type: object
+      description: Code for data from the dbNSFP database.
+      required:
+      - gene_name
+      - gene_old_names
+      - gene_other_names
+      - ccds_id
+      - refseq_id
+      - mim_id
+      - omim_id
+      - pathway_biocarta_short
+      - pathway_biocarta_full
+      - pathway_consensus_path_db
+      - pathway_kegg_id
+      - pathway_kegg_full
+      - function_description
+      - disease_description
+      - mim_phenotype_id
+      - mim_disease
+      - orphanet_disorder_id
+      - orphanet_disorder
+      - orphanet_association_type
+      - trait_association_gwas
+      - hpo_id
+      - hpo_name
+      - go_biological_process
+      - go_cellular_component
+      - go_molecular_function
+      - tissue_specificity_uniprot
+      - expression_egenetics
+      - expression_gnf_atlas
+      - interactions_intact
+      - interactions_biogrid
+      - interactions_consensus_path_db
+      properties:
+        gene_name:
+          type: string
+          description: Gene symbol from HGNC.
+        ensembl_gene:
+          type:
+          - string
+          - 'null'
+          description: Ensembl gene id (from HGNC).
+        chr:
+          type:
+          - string
+          - 'null'
+          description: Chromosome number (from HGNC).
+        gene_old_names:
+          type: array
+          items:
+            type: string
+          description: Old gene symbol (from HGNC).
+        gene_other_names:
+          type: array
+          items:
+            type: string
+          description: Other gene names (from HGNC).
+        uniprot_acc:
+          type:
+          - string
+          - 'null'
+          description: Uniprot acc (from HGNC).
+        uniprot_id:
+          type:
+          - string
+          - 'null'
+          description: Uniprot id (from HGNC).
+        entrez_gene_id:
+          type:
+          - string
+          - 'null'
+          description: Uniprot id (from HGNC).
+        ccds_id:
+          type: array
+          items:
+            type: string
+          description: CCDS id (from HGNC).
+        refseq_id:
+          type: array
+          items:
+            type: string
+          description: Refseq gene id (from HGNC).
+        ucsc_id:
+          type:
+          - string
+          - 'null'
+          description: UCSC gene id (from HGNC).
+        mim_id:
+          type: array
+          items:
+            type: string
+          description: MIM gene id (from OMIM).
+        omim_id:
+          type: array
+          items:
+            type: string
+          description: MIM gene id from OMIM.
+        gene_full_name:
+          type:
+          - string
+          - 'null'
+          description: Gene full name (from HGNC).
+        pathway_uniprot:
+          type:
+          - string
+          - 'null'
+          description: Pathway description from Uniprot.
+        pathway_biocarta_short:
+          type: array
+          items:
+            type: string
+          description: Short name of the Pathway(s) the gene belongs to (from BioCarta).
+        pathway_biocarta_full:
+          type: array
+          items:
+            type: string
+          description: Full name(s) of the Pathway(s) the gene belongs to (from BioCarta).
+        pathway_consensus_path_db:
+          type: array
+          items:
+            type: string
+          description: Pathway(s) the gene belongs to (from ConsensusPathDB).
+        pathway_kegg_id:
+          type: array
+          items:
+            type: string
+          description: ID(s) of the Pathway(s) the gene belongs to (from KEGG).
+        pathway_kegg_full:
+          type: array
+          items:
+            type: string
+          description: Full name(s) of the Pathway(s) the gene belongs to (from KEGG).
+        function_description:
+          type: array
+          items:
+            type: string
+          description: Function description of the gene (from Uniprot).
+        disease_description:
+          type: array
+          items:
+            type: string
+          description: Disease(s) the gene caused or associated with (from Uniprot).
+        mim_phenotype_id:
+          type: array
+          items:
+            type: string
+          description: MIM id(s) of the phenotype the gene caused or associated with (from Uniprot).
+        mim_disease:
+          type: array
+          items:
+            type: string
+          description: MIM disease name(s) with MIM id(s) in \[\] (from Uniprot).
+        orphanet_disorder_id:
+          type: array
+          items:
+            type: string
+          description: Orphanet Number of the disorder the gene caused or associated with.
+        orphanet_disorder:
+          type: array
+          items:
+            type: string
+          description: Disorder name from Orphanet.
+        orphanet_association_type:
+          type: array
+          items:
+            type: string
+          description: The type of association beteen the gene and the disorder in Orphanet.
+        trait_association_gwas:
+          type: array
+          items:
+            type: string
+          description: Trait(s) the gene associated with (from GWAS catalog).
+        hpo_id:
+          type: array
+          items:
+            type: string
+          description: ID of the mapped Human Phenotype Ontology.
+        hpo_name:
+          type: array
+          items:
+            type: string
+          description: Name of the mapped Human Phenotype Ontology.
+        go_biological_process:
+          type: array
+          items:
+            type: string
+          description: GO terms for biological process.
+        go_cellular_component:
+          type: array
+          items:
+            type: string
+          description: GO terms for cellular component.
+        go_molecular_function:
+          type: array
+          items:
+            type: string
+          description: GO terms for molecular function.
+        tissue_specificity_uniprot:
+          type: array
+          items:
+            type: string
+          description: Tissue specificity description from Uniprot.
+        expression_egenetics:
+          type: array
+          items:
+            type: string
+          description: Tissues/organs the gene expressed in (egenetics data from BioMart).
+        expression_gnf_atlas:
+          type: array
+          items:
+            type: string
+          description: Tissues/organs the gene expressed in (GNF/Atlas data from BioMart).
+        interactions_intact:
+          type: array
+          items:
+            type: string
+          description: The interacting genes from IntAct.
+        interactions_biogrid:
+          type: array
+          items:
+            type: string
+          description: The interacting genes from BioGRID.
+        interactions_consensus_path_db:
+          type: array
+          items:
+            type: string
+          description: The interacting genes from ConsensusPathDB.
+        haploinsufficiency:
+          type:
+          - number
+          - 'null'
+          format: double
+          description: |-
+            Estimated probability of haploinsufficiency of the gene (from
+            doi:10.1371/journal.pgen.1001154).
+        hipred_score:
+          type:
+          - number
+          - 'null'
+          format: double
+          description: |-
+            Estimated probability of haploinsufficiency of the gene (from
+            doi:10.1093/bioinformatics/btx028).
+        hipred:
+          type:
+          - string
+          - 'null'
+          description: |-
+            HIPred prediction of haploinsufficiency of the gene. Y(es) or N(o). (from
+            doi:10.1093/bioinformatics/btx028).
+        ghis:
+          type:
+          - number
+          - 'null'
+          format: double
+          description: |-
+            A score predicting the gene haploinsufficiency. The higher the score the more likely the
+            gene is haploinsufficient (from doi: 10.1093/nar/gkv474).
+        prec:
+          type:
+          - number
+          - 'null'
+          format: double
+          description: |-
+            Estimated probability that gene is a recessive disease gene (from
+            DOI:10.1126/science.1215040).
+        known_rec_info:
+          type:
+          - string
+          - 'null'
+          description: |-
+            Known recessive status of the gene (from DOI:10.1126/science.1215040) "lof-tolerant =
+            seen in homozygous state in at least one 1000G individual" "recessive = known OMIM
+            recessive disease" (original annotations from DOI:10.1126/science.1215040).
+        rvis_evs:
+          type:
+          - number
+          - 'null'
+          format: double
+          description: |-
+            Residual Variation Intolerance Score, a measure of intolerance of mutational burden, the
+            higher the score the more tolerant to mutational burden the gene is. Based on EVS
+            (ESP6500) data.  from doi:10.1371/journal.pgen.1003709.
+        rvis_percentile_evs:
+          type:
+          - number
+          - 'null'
+          format: double
+          description: |-
+            The percentile rank of the gene based on RVIS, the higher the percentile the more
+            tolerant to mutational burden the gene is. Based on EVS (ESP6500) data.
+        lof_fdr_exac:
+          type:
+          - number
+          - 'null'
+          format: double
+          description: |-
+            "A gene's corresponding FDR p-value for preferential LoF depletion among the ExAC
+            population.  Lower FDR corresponds with genes that are increasingly depleted of LoF
+            variants." cited from RVIS document.
+        rvis_exac:
+          type:
+          - number
+          - 'null'
+          format: double
+          description: |-
+            "ExAC-based RVIS; setting 'common' MAF filter at 0.05% in at least one of the six
+            individual ethnic strata from ExAC." cited from RVIS document.
+        rvis_percentile_exac:
+          type:
+          - number
+          - 'null'
+          format: double
+          description: |-
+            "Genome-Wide percentile for the new ExAC-based RVIS; setting 'common' MAF filter at 0.05%
+            in at least one of the six individual ethnic strata from ExAC." cited from RVIS document.
+        exac_pli:
+          type:
+          - number
+          - 'null'
+          format: double
+          description: |-
+            "the probability of being loss-of-function intolerant (intolerant of both heterozygous
+            and homozygous lof variants)" based on ExAC r0.3 data.
+        exac_prec:
+          type:
+          - number
+          - 'null'
+          format: double
+          description: |-
+            "the probability of being intolerant of homozygous, but not heterozygous lof variants"
+            based on ExAC r0.3 data.
+        exac_pnull:
+          type:
+          - number
+          - 'null'
+          format: double
+          description: |-
+            "the probability of being tolerant of both heterozygous and homozygous lof variants"
+            based on ExAC r0.3 data.
+        exac_nontcga_pli:
+          type:
+          - number
+          - 'null'
+          format: double
+          description: |-
+            "the probability of being loss-of-function intolerant (intolerant of both heterozygous
+            and homozygous lof variants)" based on ExAC r0.3 nonTCGA subset.
+        exac_nontcga_prec:
+          type:
+          - number
+          - 'null'
+          format: double
+          description: |-
+            "the probability of being intolerant of homozygous, but not heterozygous lof variants"
+            based on ExAC r0.3 nonTCGA subset.
+        exac_nontcga_pnull:
+          type:
+          - number
+          - 'null'
+          format: double
+          description: |-
+            "the probability of being tolerant of both heterozygous and homozygous lof variants"
+            based on ExAC r0.3 nonTCGA subset.
+        exac_nonpsych_pli:
+          type:
+          - number
+          - 'null'
+          format: double
+          description: |-
+            "the probability of being loss-of-function intolerant (intolerant of both heterozygous
+            and homozygous lof variants)" based on ExAC r0.3 nonpsych subset.
+        exac_nonpsych_prec:
+          type:
+          - number
+          - 'null'
+          format: double
+          description: |-
+            "the probability of being intolerant of homozygous, but not heterozygous lof variants"
+            based on ExAC r0.3 nonpsych subset.
+        exac_nonpsych_pnull:
+          type:
+          - number
+          - 'null'
+          format: double
+          description: |-
+            "the probability of being tolerant of both heterozygous and homozygous lof variants"
+            based on ExAC r0.3 nonpsych subset/
+        gnomad_pli:
+          type:
+          - number
+          - 'null'
+          format: double
+          description: |-
+            "the probability of being loss-of-function intolerant (intolerant of both heterozygous
+            and homozygous lof variants)" based on gnomAD 2.1 data.
+        gnomad_prec:
+          type:
+          - number
+          - 'null'
+          format: double
+          description: |-
+            "the probability of being intolerant of homozygous, but not heterozygous lof variants"
+            based on gnomAD 2.1 data.
+        gnomad_pnull:
+          type:
+          - number
+          - 'null'
+          format: double
+          description: |-
+            "the probability of being tolerant of both heterozygous and homozygous lof variants"
+            based on gnomAD 2.1 data.
+        exac_del_score:
+          type:
+          - number
+          - 'null'
+          format: double
+          description: '"Winsorised deletion intolerance z-score" based on ExAC r0.3.1 CNV data.'
+        exac_dup_score:
+          type:
+          - number
+          - 'null'
+          format: double
+          description: '"Winsorised duplication intolerance z-score" based on ExAC r0.3.1 CNV data.'
+        exac_cnv_score:
+          type:
+          - number
+          - 'null'
+          format: double
+          description: '"Winsorised cnv intolerance z-score" based on ExAC r0.3.1 CNV data.'
+        exac_cnv_flag:
+          type:
+          - string
+          - 'null'
+          description: |-
+            "Gene is in a known region of recurrent CNVs mediated by tandem segmental duplications
+            and intolerance scores are more likely to be biased or noisy." from ExAC r0.3.1 CNV
+            release.
+        gdi:
+          type:
+          - number
+          - 'null'
+          format: double
+          description: |-
+            gene damage index score, "a genome-wide, gene-level metric of the mutational damage that
+            has accumulated in the general population" from doi: 10.1073/pnas.1518646112. The higher
+            the score the less likely the gene is to be responsible for monogenic diseases.
+        gdi_phred:
+          type:
+          - number
+          - 'null'
+          format: double
+          description: Phred-scaled GDI scores.
+        gdp_all_disease_causing:
+          type:
+          - string
+          - 'null'
+          description: gene damage prediction (low/medium/high) by GDI for all diseases.,
+        gdp_all_mendelian:
+          type:
+          - string
+          - 'null'
+          description: gene damage prediction (low/medium/high) by GDI for all Mendelian diseases.
+        gdp_all_mendelian_ad:
+          type:
+          - string
+          - 'null'
+          description: |-
+            gene damage prediction (low/medium/high) by GDI for Mendelian autosomal dominant
+            diseases.
+        gdp_mendelian_ar:
+          type:
+          - string
+          - 'null'
+          description: |-
+            gene damage prediction (low/medium/high) by GDI for Mendelian autosomal recessive
+            diseases.
+        gdp_pid:
+          type:
+          - string
+          - 'null'
+          description: |-
+            gene damage prediction (low/medium/high) by GDI for all primary immunodeficiency
+            diseases.
+        gdp_pid_ad:
+          type:
+          - string
+          - 'null'
+          description: |-
+            gene damage prediction (low/medium/high) by GDI for primary immunodeficiency autosomal
+            dominant diseases.
+        gdp_pid_ar:
+          type:
+          - string
+          - 'null'
+          description: |-
+            gene damage prediction (low/medium/high) by GDI for primary immunodeficiency autosomal
+            recessive diseases.
+        gdp_cancer:
+          type:
+          - string
+          - 'null'
+          description: gene damage prediction (low/medium/high) by GDI for all cancer disease.
+        gdb_cancer_rec:
+          type:
+          - string
+          - 'null'
+          description: gene damage prediction (low/medium/high) by GDI for cancer recessive disease.
+        gdp_cancer_dom:
+          type:
+          - string
+          - 'null'
+          description: gene damage prediction (low/medium/high) by GDI for cancer dominant disease.
+        loftool_score:
+          type:
+          - number
+          - 'null'
+          format: double
+          description: |-
+            A percentile score for gene intolerance to functional change. The lower the score the
+            higher gene intolerance to functional change. For details see doi:
+            10.1093/bioinformatics/btv602.
+        sorva_lof_maf_5_het_or_hom:
+          type:
+          - number
+          - 'null'
+          format: double
+          description: |-
+            The fraction of individuals in the 1000 Genomes Project data (N=2504) who are either
+            Heterozygote or Homozygote of LOF SNVs whose MAF<0.005. This fraction is from a method
+            for ranking genes based on mutational burden called SORVA (Significance Of Rare
+            VAriants). Please see doi: 10.1101/103218 for details.
+        sorva_lof_maf_5_hom_or_comphet:
+          type:
+          - number
+          - 'null'
+          format: double
+          description: |-
+            The fraction of individuals in the 1000 Genomes Project data (N=2504) who are either
+            Compound Heterozygote or Homozygote of LOF SNVs whose MAF<0.005. This fraction is from a
+            method for ranking genes based on mutational burden called SORVA (Significance Of Rare
+            VAriants). Please see doi: 10.1101/103218 for details.
+        sorva_lof_maf_1_het_or_hom:
+          type:
+          - number
+          - 'null'
+          format: double
+          description: |-
+            The fraction of individuals in the 1000 Genomes Project data (N=2504) who are either
+            Heterozygote or Homozygote of LOF SNVs whose MAF<0.001. This fraction is from a method
+            for ranking genes based on mutational burden called SORVA (Significance Of Rare
+            VAriants). Please see doi: 10.1101/103218 for details.
+        sorva_lof_maf_1_hom_or_comphet:
+          type:
+          - number
+          - 'null'
+          format: double
+          description: |-
+            The fraction of individuals in the 1000 Genomes Project data (N=2504) who are either
+            Compound Heterozygote or Homozygote of LOF SNVs whose MAF<0.001. This fraction is from a
+            method for ranking genes based on mutational burden called SORVA (Significance Of Rare
+            VAriants). Please see doi: 10.1101/103218 for details.
+        sorva_lof_or_mis_maf_5_het_or_hom:
+          type:
+          - number
+          - 'null'
+          format: double
+          description: |-
+            The fraction of individuals in the 1000 Genomes Project data (N=2504) who are either
+            Heterozygote or Homozygote of LOF or missense SNVs whose MAF<0.005. This fraction is from
+            a method for ranking genes based on mutational burden called SORVA (Significance Of Rare
+            VAriants).  Please see doi: 10.1101/103218 for details.
+        sorva_lof_or_mis_maf_5_hom_or_comphet:
+          type:
+          - number
+          - 'null'
+          format: double
+          description: |-
+            The fraction of individuals in the 1000 Genomes Project data (N=2504) who are either
+            Compound Heterozygote or Homozygote of LOF or missense SNVs whose MAF<0.005. This
+            fraction is from a method for ranking genes based on mutational burden called SORVA
+            (Significance Of Rare VAriants).  Please see doi: 10.1101/103218 for details.
+        sorva_lof_or_mis_maf_1_het_or_hom:
+          type:
+          - number
+          - 'null'
+          format: double
+          description: |-
+            The fraction of individuals in the 1000 Genomes Project data (N=2504) who are either
+            Heterozygote or Homozygote of LOF or missense SNVs whose MAF<0.001. This fraction is from
+            a method for ranking genes based on mutational burden called SORVA (Significance Of Rare
+            VAriants).  Please see doi: 10.1101/103218 for details.
+        sorva_lof_or_mis_maf_1_hom_or_comphet:
+          type:
+          - number
+          - 'null'
+          format: double
+          description: |-
+            The fraction of individuals in the 1000 Genomes Project data (N=2504) who are either
+            Compound Heterozygote or Homozygote of LOF or missense SNVs whose MAF<0.001. This
+            fraction is from a method for ranking genes based on mutational burden called SORVA
+            (Significance Of Rare VAriants).  Please see doi: 10.1101/103218 for details.
+        essential_gene:
+          type:
+          - string
+          - 'null'
+          description: |-
+            Essential ("E") or Non-essential phenotype-changing ("N") based on Mouse Genome
+            Informatics database. from doi:10.1371/journal.pgen.1003484.
+        essential_gene_crispr:
+          type:
+          - string
+          - 'null'
+          description: |-
+            Essential ("E") or Non-essential phenotype-changing ("N") based on large scale CRISPR
+            experiments. from doi: 10.1126/science.aac7041.
+        essential_gene_crispr2:
+          type:
+          - string
+          - 'null'
+          description: |-
+            Essential ("E"), context-Specific essential ("S"), or Non-essential phenotype-changing
+            ("N") based on large scale CRISPR experiments. from
+            <http://dx.doi.org/10.1016/j.cell.2015.11.015.>
+        essential_gene_gene_trap:
+          type:
+          - string
+          - 'null'
+          description: |-
+            Essential ("E"), HAP1-Specific essential ("H"), KBM7-Specific essential ("K"), or
+            Non-essential phenotype-changing ("N"), based on large scale mutagenesis experiments.
+            from doi: 10.1126/science.aac7557.
+        gene_indispensability_score:
+          type:
+          - number
+          - 'null'
+          format: double
+          description: |-
+            A probability prediction of the gene being essential. From
+            doi:10.1371/journal.pcbi.1002886.
+        gene_indispensability_pred:
+          type:
+          - string
+          - 'null'
+          description: Essential ("E") or loss-of-function tolerant ("N") based on Gene_indispensability_score.
+        mgi_mouse_gene:
+          type:
+          - string
+          - 'null'
+          description: Homolog mouse gene name from MGI.
+        mgi_mouse_phenotype:
+          type:
+          - string
+          - 'null'
+          description: Phenotype description for the homolog mouse gene from MGI.
+        zfin_zebrafish_gene:
+          type:
+          - string
+          - 'null'
+          description: Homolog zebrafish gene name from ZFIN.
+        zfin_zebrafish_structure:
+          type:
+          - string
+          - 'null'
+          description: Affected structure of the homolog zebrafish gene from ZFIN.
+        zfin_zebrafish_phenotype_quality:
+          type:
+          - string
+          - 'null'
+          description: Phenotype description for the homolog zebrafish gene from ZFIN.
+        zfin_zebrafish_phenotype_tag:
+          type:
+          - string
+          - 'null'
+          description: Phenotype tag for the homolog zebrafish gene from ZFIN"
+    GenesDecipherHiRecord:
+      type: object
+      description: Decipher HI Predictions
+      required:
+      - hgnc_id
+      - hgnc_symbol
+      - p_hi
+      - hi_index
+      properties:
+        hgnc_id:
+          type: string
+          description: HGNC identifier.
+        hgnc_symbol:
+          type: string
+          description: Official HGNC gene symbol.
+        p_hi:
+          type: number
+          format: double
+          description: P(HI) prediction from DECIPHER HI.
+        hi_index:
+          type: number
+          format: double
+          description: Percent HI index.
+    GenesDiseaseAssociation:
+      type: object
+      description: A gene-disease association.
+      required:
+      - hgnc_id
+      - labeled_disorders
+      - sources
+      - confidence
+      properties:
+        hgnc_id:
+          type: string
+          description: The HGNC ID.
+        labeled_disorders:
+          type: array
+          items:
+            $ref: '#/components/schemas/GenesLabeledDisorder'
+          description: The gene-disease association entries.
+        disease_name:
+          type:
+          - string
+          - 'null'
+          description: Overall disease name.
+        disease_definition:
+          type:
+          - string
+          - 'null'
+          description: Disease definition.
+        sources:
+          type: array
+          items:
+            $ref: '#/components/schemas/GenesDiseaseAssociationSource'
+          description: The gene-disease association sources.
+        confidence:
+          $ref: '#/components/schemas/GenesDiseaseAssociationConfidenceLevel'
+          description: Overall disease-gene association confidence level.
+    GenesDiseaseAssociationConfidenceLevel:
+      type: string
+      description: Enumeration for confidence levels.
+      enum:
+      - High
+      - Medium
+      - Low
+    GenesDiseaseAssociationEntryConfidenceLevel:
+      type: string
+      description: Enumeration for confidence levels.
+      enum:
+      - High
+      - Medium
+      - Low
+    GenesDiseaseAssociationSource:
+      type: string
+      description: Enumeration for sources.
+      enum:
+      - Omim
+      - Orphanet
+      - Panelapp
+    GenesDominoRecord:
+      type: object
+      description: Information from DOMINO.
+      required:
+      - gene_symbol
+      - score
+      properties:
+        gene_symbol:
+          type: string
+          description: Gene symbol.
+        score:
+          type: number
+          format: double
+          description: The score.
+    GenesEntityType:
+      type: string
+      description: Enumeration for entity types.
+      enum:
+      - Gene
+      - Str
+      - Region
+    GenesGeneData:
+      type: object
+      description: Gene identity information.
+      properties:
+        hgnc_id:
+          type:
+          - string
+          - 'null'
+          description: HGNC ID.
+        hgnc_symbol:
+          type:
+          - string
+          - 'null'
+          description: HGNC gene symbol.
+        gene_symbol:
+          type:
+          - string
+          - 'null'
+          description: Gene symbol.
+    GenesGeneDiseaseAssociationEntry:
+      type: object
+      description: A gene-disease association entry.
+      required:
+      - source
+      - confidence
+      properties:
+        source:
+          $ref: '#/components/schemas/GenesDiseaseAssociationSource'
+          description: The gene-disease association source.
+        confidence:
+          $ref: '#/components/schemas/GenesDiseaseAssociationEntryConfidenceLevel'
+          description: The gene-disease association confidence level.
+    GenesGeneInfoRecord:
+      type: object
+      description: Information about a gene.
+      required:
+      - panelapp
+      properties:
+        acmg_sf:
+          oneOf:
+          - type: 'null'
+          - $ref: '#/components/schemas/GenesAcmgSecondaryFindingRecord'
+            description: Information from the ACMG secondary finding list.
+        clingen:
+          oneOf:
+          - type: 'null'
+          - $ref: '#/components/schemas/GenesClingenDosageRecord'
+            description: Information from ClinGen dosage curation.
+        dbnsfp:
+          oneOf:
+          - type: 'null'
+          - $ref: '#/components/schemas/GenesDbnsfpRecord'
+            description: Information from dbNSFP.
+        gnomad_constraints:
+          oneOf:
+          - type: 'null'
+          - $ref: '#/components/schemas/GenesGnomadConstraintsRecord'
+            description: Information from the gnomAD constraints database.
+        hgnc:
+          oneOf:
+          - type: 'null'
+          - $ref: '#/components/schemas/GenesHgncRecord'
+            description: Information from the HGNC database.
+        ncbi:
+          oneOf:
+          - type: 'null'
+          - $ref: '#/components/schemas/GenesNcbiRecord'
+            description: Information from the NCBI gene database (aka "Entrez").
+        omim:
+          oneOf:
+          - type: 'null'
+          - $ref: '#/components/schemas/GenesOmimRecord'
+            description: Information about gene to OMIM term annotation, composed from clingen and HPO.
+        orpha:
+          oneOf:
+          - type: 'null'
+          - $ref: '#/components/schemas/GenesOrphaRecord'
+            description: Information about gene to Orphanet annotation, derived from Orphapacket.
+        rcnv:
+          oneOf:
+          - type: 'null'
+          - $ref: '#/components/schemas/GenesRcnvRecord'
+            description: Information from the rCNV dosage sensitivity scores (Collins et al., 2022).
+        shet:
+          oneOf:
+          - type: 'null'
+          - $ref: '#/components/schemas/GenesShetRecord'
+            description: Information from the sHet score (Weghor et al., 2019)
+        gtex:
+          oneOf:
+          - type: 'null'
+          - $ref: '#/components/schemas/GenesGtexRecord'
+            description: Information from GTEx data
+        domino:
+          oneOf:
+          - type: 'null'
+          - $ref: '#/components/schemas/GenesDominoRecord'
+            description: Information from DOMINO.
+        decipher_hi:
+          oneOf:
+          - type: 'null'
+          - $ref: '#/components/schemas/GenesDecipherHiRecord'
+            description: DECIPHER HI score.
+        panelapp:
+          type: array
+          items:
+            $ref: '#/components/schemas/GenesPanelAppRecord'
+          description: GenomicsEngland PanelApp gene information.
+        conditions:
+          oneOf:
+          - type: 'null'
+          - $ref: '#/components/schemas/GenesConditionsRecord'
+            description: Conditions record.
+    GenesGeneRecord:
+      type: object
+      description: Entry in the genes RocksDB database.
+      required:
+      - panelapp
+      properties:
+        acmg_sf:
+          oneOf:
+          - type: 'null'
+          - $ref: '#/components/schemas/GenesAcmgSecondaryFindingRecord'
+            description: Information from the ACMG secondary finding list.
+        clingen:
+          oneOf:
+          - type: 'null'
+          - $ref: '#/components/schemas/GenesClingenDosageRecord'
+            description: Information from ClinGen dosage curation.
+        dbnsfp:
+          oneOf:
+          - type: 'null'
+          - $ref: '#/components/schemas/GenesDbnsfpRecord'
+            description: Information from dbNSFP.
+        gnomad_constraints:
+          oneOf:
+          - type: 'null'
+          - $ref: '#/components/schemas/GenesGnomadConstraintsRecord'
+            description: Information from the gnomAD constraints database.
+        hgnc:
+          oneOf:
+          - type: 'null'
+          - $ref: '#/components/schemas/GenesHgncRecord'
+            description: Information from the HGNC database.
+        ncbi:
+          oneOf:
+          - type: 'null'
+          - $ref: '#/components/schemas/GenesNcbiRecord'
+            description: Information from the NCBI gene database (aka "Entrez").
+        omim:
+          oneOf:
+          - type: 'null'
+          - $ref: '#/components/schemas/GenesOmimRecord'
+            description: Information about gene to OMIM term annotation, composed from clingen and HPO.
+        orpha:
+          oneOf:
+          - type: 'null'
+          - $ref: '#/components/schemas/GenesOrphaRecord'
+            description: Information about gene to Orphanet annotation, derived from Orphapacket.
+        rcnv:
+          oneOf:
+          - type: 'null'
+          - $ref: '#/components/schemas/GenesRcnvRecord'
+            description: Information from the rCNV dosage sensitivity scores (Collins et al., 2022).
+        shet:
+          oneOf:
+          - type: 'null'
+          - $ref: '#/components/schemas/GenesShetRecord'
+            description: Information from the sHet score (Weghor et al., 2019)
+        gtex:
+          oneOf:
+          - type: 'null'
+          - $ref: '#/components/schemas/GenesGtexRecord'
+            description: Information from GTEx data
+        domino:
+          oneOf:
+          - type: 'null'
+          - $ref: '#/components/schemas/GenesDominoRecord'
+            description: Information from DOMINO.
+        decipher_hi:
+          oneOf:
+          - type: 'null'
+          - $ref: '#/components/schemas/GenesDecipherHiRecord'
+            description: DECIPHER HI score.
+        panelapp:
+          type: array
+          items:
+            $ref: '#/components/schemas/GenesPanelAppRecord'
+          description: GenomicsEngland PanelApp gene information.
+        conditions:
+          oneOf:
+          - type: 'null'
+          - $ref: '#/components/schemas/GenesConditionsRecord'
+            description: Conditions record.
+    GenesGnomadConstraintsRecord:
+      type: object
+      description: Code for data from the gnomAD constraints.
+      required:
+      - ensembl_gene_id
+      - entrez_id
+      - gene_symbol
+      properties:
+        ensembl_gene_id:
+          type: string
+          description: The Ensembl gene ID.
+        entrez_id:
+          type: string
+          description: The NCBI gene ID.
+        gene_symbol:
+          type: string
+          description: The HGNC gene symbol.
+        exp_lof:
+          type:
+          - number
+          - 'null'
+          format: double
+          description: The expected number of loss-of-function variants.
+        exp_mis:
+          type:
+          - number
+          - 'null'
+          format: double
+          description: The expected number of missense variants.
+        exp_syn:
+          type:
+          - number
+          - 'null'
+          format: double
+          description: The expected number of synonymous variants.
+        mis_z:
+          type:
+          - number
+          - 'null'
+          format: double
+          description: The missense-related Z-score.
+        obs_lof:
+          type:
+          - integer
+          - 'null'
+          format: int32
+          description: The observed number of loss-of-function variants.
+          minimum: 0
+        obs_mis:
+          type:
+          - integer
+          - 'null'
+          format: int32
+          description: The observed number of missense variants.
+          minimum: 0
+        obs_syn:
+          type:
+          - integer
+          - 'null'
+          format: int32
+          description: The observed number of synonymous variants.
+          minimum: 0
+        oe_lof:
+          type:
+          - number
+          - 'null'
+          format: double
+          description: The loss-of-function observed/expected ratio.
+        oe_lof_lower:
+          type:
+          - number
+          - 'null'
+          format: double
+          description: The lower bound of the loss-of-function observed/expected ratio.
+        oe_lof_upper:
+          type:
+          - number
+          - 'null'
+          format: double
+          description: The upper bound of the loss-of-function observed/expected ratio.
+        oe_mis:
+          type:
+          - number
+          - 'null'
+          format: double
+          description: The missense observed/expected ratio.
+        oe_mis_lower:
+          type:
+          - number
+          - 'null'
+          format: double
+          description: The lower bound of the missense observed/expected ratio.
+        oe_mis_upper:
+          type:
+          - number
+          - 'null'
+          format: double
+          description: The upper bound of the missense observed/expected ratio.
+        oe_syn:
+          type:
+          - number
+          - 'null'
+          format: double
+          description: The synonymous observed/expected ratio.
+        oe_syn_lower:
+          type:
+          - number
+          - 'null'
+          format: double
+          description: The lower bound of the synonymous observed/expected ratio.
+        oe_syn_upper:
+          type:
+          - number
+          - 'null'
+          format: double
+          description: The upper bound of the synonymous observed/expected ratio.
+        pli:
+          type:
+          - number
+          - 'null'
+          format: double
+          description: The probability of loss-of-function intolerance (pLI score).
+        syn_z:
+          type:
+          - number
+          - 'null'
+          format: double
+          description: The synonymous-related Z-score.
+        exac_pli:
+          type:
+          - number
+          - 'null'
+          format: double
+          description: The probability of loss-of-function intolerance (pLI score) from ExAC.
+        exac_obs_lof:
+          type:
+          - number
+          - 'null'
+          format: double
+          description: The observed number of loss-of-function variants from ExAC.
+        exac_exp_lof:
+          type:
+          - number
+          - 'null'
+          format: double
+          description: The expected number of loss-of-function variants from ExAC.
+        exac_oe_lof:
+          type:
+          - number
+          - 'null'
+          format: double
+          description: The loss-of-function observed/expected ratio from ExAC.
+    GenesGtexRecord:
+      type: object
+      description: Entry with the GTEx information.
+      required:
+      - hgnc_id
+      - ensembl_gene_id
+      - ensembl_gene_version
+      - records
+      properties:
+        hgnc_id:
+          type: string
+          description: The HGNC ID.
+        ensembl_gene_id:
+          type: string
+          description: ENSEMBL gene ID.
+        ensembl_gene_version:
+          type: string
+          description: ENSEMBL gene version.
+        records:
+          type: array
+          items:
+            $ref: '#/components/schemas/GenesGtexTissueRecord'
+          description: Counts per tissue
+    GenesGtexTissue:
+      type: string
+      description: Enumeration for GTEx V8 tissue
+      enum:
+      - AdiposeTissue
+      - AdrenalGland
+      - Bladder
+      - Blood
+      - BloodVessel
+      - BoneMarrow
+      - Brain
+      - Breast
+      - CervixUteri
+      - Colon
+      - Esophagus
+      - FallopianTube
+      - Heart
+      - Kidney
+      - Liver
+      - Lung
+      - Muscle
+      - Nerve
+      - Ovary
+      - Pancreas
+      - Pituitary
+      - Prostate
+      - SalivaryGland
+      - Skin
+      - SmallIntestine
+      - Spleen
+      - Stomach
+      - Testis
+      - Thyroid
+      - Uterus
+      - Vagina
+    GenesGtexTissueDetailed:
+      type: string
+      description: Enumeration for GTEx V8 tissue details
+      enum:
+      - AdiposeSubcutaneous
+      - AdiposeVisceralOmentum
+      - AdrenalGland
+      - ArteryAorta
+      - ArteryCoronary
+      - ArteryTibial
+      - Bladder
+      - BrainAmygdala
+      - BrainAnteriorCingulateCortex
+      - BrainCaudateBasalGanglia
+      - BrainCerebellarHemisphere
+      - BrainCerebellum
+      - BrainCortex
+      - BrainFrontalCortex
+      - BrainHippocampus
+      - BrainHypothalamus
+      - BrainNucleusAccumbens
+      - BrainPutamenBasalGanglia
+      - BrainSpinalCord
+      - BrainSubstantiaNigra
+      - BreastMammaryTissue
+      - CellsCulturedFibroblasts
+      - CellsEbvTransformedLymphocytes
+      - CellsLeukemiaCellLine
+      - CervixEctocervix
+      - CervixEndocervix
+      - ColonSigmoid
+      - ColonTransverse
+      - EsophagusGastroesophagealJunction
+      - EsophagusMucosa
+      - EsophagusMuscularis
+      - FallopianTube
+      - HeartAtrialAppendage
+      - HeartLeftVentricle
+      - KidneyCortex
+      - KidneyMedulla
+      - Liver
+      - Lung
+      - MinorSalivaryGland
+      - MuscleSkeletal
+      - NerveTibial
+      - Ovary
+      - Pancreas
+      - Pituitary
+      - Prostate
+      - SalivaryGland
+      - SkinNotSunExposedSuprapubic
+      - SkinSunExposedLowerLeg
+      - SmallIntestineTerminalIleum
+      - Spleen
+      - Stomach
+      - Testis
+      - Thyroid
+      - Uterus
+      - Vagina
+      - WholeBlood
+    GenesGtexTissueRecord:
+      type: object
+      description: Entry with the tissue-specific information for a gene.
+      required:
+      - tissue
+      - tissue_detailed
+      - tpms
+      properties:
+        tissue:
+          $ref: '#/components/schemas/GenesGtexTissue'
+          description: The tissue type
+        tissue_detailed:
+          $ref: '#/components/schemas/GenesGtexTissueDetailed'
+          description: The detailed tissue type
+        tpms:
+          type: array
+          items:
+            type: number
+            format: float
+          description: TPM counts
+    GenesHgncLsdb:
+      type: object
+      description: Information from the locus-specific dabase.
+      required:
+      - name
+      - url
+      properties:
+        name:
+          type: string
+          description: The name of the Locus Specific Mutation Database.
+        url:
+          type: string
+          description: The URL for the gene.
+    GenesHgncRecord:
+      type: object
+      description: A record from the HGNC database.
+      required:
+      - hgnc_id
+      - symbol
+      - name
+      - status
+      - alias_symbol
+      - alias_name
+      - prev_symbol
+      - prev_name
+      - gene_group
+      - gene_group_id
+      - ena
+      - refseq_accession
+      - ccds_id
+      - uniprot_ids
+      - pubmed_id
+      - mgd_id
+      - rgd_id
+      - lsdb
+      - omim_id
+      - enzyme_id
+      - mane_select
+      properties:
+        hgnc_id:
+          type: string
+          description: HGNC ID. A unique ID created by the HGNC for every approved symbol.
+        symbol:
+          type: string
+          description: The HGNC approved gene symbol.
+        name:
+          type: string
+          description: HGNC approved name for the gene.
+        locus_group:
+          type:
+          - string
+          - 'null'
+          description: |-
+            A group name for a set of related locus types as defined by the HGNC
+            (e.g. non-coding RNA).
+        locus_type:
+          type:
+          - string
+          - 'null'
+          description: The locus type as defined by the HGNC (e.g. RNA, transfer).
+        status:
+          type: integer
+          format: int32
+          description: Status of the symbol report.
+        location:
+          type:
+          - string
+          - 'null'
+          description: Cytogenetic location of the gene (e.g. 2q34).
+        location_sortable:
+          type:
+          - string
+          - 'null'
+          description: Sortable cytogenic location of the gene (e.g. 02q34).
+        alias_symbol:
+          type: array
+          items:
+            type: string
+          description: Other symbols used to refer to this gene.
+        alias_name:
+          type: array
+          items:
+            type: string
+          description: Other names used to refer to this gene.
+        prev_symbol:
+          type: array
+          items:
+            type: string
+          description: Prevous symbols used to refer to this gene.
+        prev_name:
+          type: array
+          items:
+            type: string
+          description: Previous names used to refer to this gene.
+        gene_group:
+          type: array
+          items:
+            type: string
+          description: Name given to a gene group.
+        gene_group_id:
+          type: array
+          items:
+            type: integer
+            format: int32
+            minimum: 0
+          description: ID used to designate a gene group.
+        date_approved_reserved:
+          type:
+          - string
+          - 'null'
+          description: The date the entry was first approved.
+        date_symbol_changed:
+          type:
+          - string
+          - 'null'
+          description: The date the gene symbol was last changed.
+        date_name_changed:
+          type:
+          - string
+          - 'null'
+          description: The date the gene name was last changed.
+        date_modified:
+          type:
+          - string
+          - 'null'
+          description: Date the entry was last modified.
+        entrez_id:
+          type:
+          - string
+          - 'null'
+          description: Entrez gene id.
+        ensembl_gene_id:
+          type:
+          - string
+          - 'null'
+          description: Ensembl gene id.
+        vega_id:
+          type:
+          - string
+          - 'null'
+          description: Vega gene id.
+        ucsc_id:
+          type:
+          - string
+          - 'null'
+          description: UCSC gene id.
+        ena:
+          type: array
+          items:
+            type: string
+          description: ENA accession number(s).
+        refseq_accession:
+          type: array
+          items:
+            type: string
+          description: RefSeq nucleotide accession(s).
+        ccds_id:
+          type: array
+          items:
+            type: string
+          description: Consensus CDS ID(ds).
+        uniprot_ids:
+          type: array
+          items:
+            type: string
+          description: Uniprot IDs.
+        pubmed_id:
+          type: array
+          items:
+            type: integer
+            format: int32
+            minimum: 0
+          description: Pubmed IDs.
+        mgd_id:
+          type: array
+          items:
+            type: string
+          description: Mouse genome informatics database ID(s).
+        rgd_id:
+          type: array
+          items:
+            type: string
+          description: Rat genome database gene ID(s).
+        lsdb:
+          type: array
+          items:
+            $ref: '#/components/schemas/GenesHgncLsdb'
+          description: The name of the Locus Specific Mutation Database and URL for the gene.
+        cosmic:
+          type:
+          - string
+          - 'null'
+          description: Symbol used within COSMIC.
+        omim_id:
+          type: array
+          items:
+            type: string
+          description: OMIM ID(s).
+        mirbase:
+          type:
+          - string
+          - 'null'
+          description: miRBase ID.
+        homeodb:
+          type:
+          - integer
+          - 'null'
+          format: int32
+          description: Homeobox Database ID.
+          minimum: 0
+        snornabase:
+          type:
+          - string
+          - 'null'
+          description: snoRNABase ID.
+        bioparadigms_slc:
+          type:
+          - string
+          - 'null'
+          description: |-
+            Symbol used to link to the SLC tables database at bioparadigms.org
+            for the gene.
+        orphanet:
+          type:
+          - integer
+          - 'null'
+          format: int32
+          description: Orphanet ID.
+          minimum: 0
+        pseudogene_org:
+          type:
+          - string
+          - 'null'
+          description: Pseudogene.org.
+        horde_id:
+          type:
+          - string
+          - 'null'
+          description: Symbol used within HORDE for the gene.
+        merops:
+          type:
+          - string
+          - 'null'
+          description: ID used to link to the MEROPS peptidase database.
+        imgt:
+          type:
+          - string
+          - 'null'
+          description: Symbol used within international ImMunoGeneTics information system.
+        iuphar:
+          type:
+          - string
+          - 'null'
+          description: |-
+            The objectId used to link to the IUPHAR/BPS Guide to PHARMACOLOGY
+            database.
+        cd:
+          type:
+          - string
+          - 'null'
+          description: Symbol used within the Human Cell Differentiation Molecule database.
+        mamit_trnadb:
+          type:
+          - integer
+          - 'null'
+          format: int32
+          description: ID to link to the Mamit-tRNA database
+          minimum: 0
+        lncrnadb:
+          type:
+          - string
+          - 'null'
+          description: lncRNA Database ID.
+        enzyme_id:
+          type: array
+          items:
+            type: string
+          description: ENZYME EC accession number.
+        intermediate_filament_db:
+          type:
+          - string
+          - 'null'
+          description: ID used to link to the Human Intermediate Filament Database.
+        agr:
+          type:
+          - string
+          - 'null'
+          description: The HGNC ID that the Alliance of Genome Resources (AGR) use.
+        mane_select:
+          type: array
+          items:
+            type: string
+          description: |-
+            NCBI and Ensembl transcript IDs/acessions including the version
+            number.
+    GenesHgncStatus:
+      type: string
+      description: Status of the symbol report, which can be either "Approved" or "Entry Withdrawn".
+      enum:
+      - Approved
+      - Withdrawn
+    GenesInfoResponse:
+      type: object
+      description: Query response for `handle_with_openapi()`.
+      required:
+      - genes
+      properties:
+        genes:
+          type: array
+          items:
+            $ref: '#/components/schemas/GenesGeneInfoRecord'
+          description: Version information of the genes.
+    GenesLabeledDisorder:
+      type: object
+      description: A labeled disorder.
+      required:
+      - term_id
+      properties:
+        term_id:
+          type: string
+          description: The disorder ID.
+        title:
+          type:
+          - string
+          - 'null'
+          description: The disorder name.
+    GenesNcbiRecord:
+      type: object
+      description: A record from the NCBI gene database.
+      required:
+      - gene_id
+      - rif_entries
+      properties:
+        gene_id:
+          type: string
+          description: NCBI Gene ID.
+        summary:
+          type:
+          - string
+          - 'null'
+          description: Gene summary.
+        rif_entries:
+          type: array
+          items:
+            $ref: '#/components/schemas/GenesRifEntry'
+          description: '"Reference Into Function" entry.'
+    GenesOmimRecord:
+      type: object
+      description: A record from the OMIM gene association.
+      required:
+      - hgnc_id
+      - omim_diseases
+      properties:
+        hgnc_id:
+          type: string
+          description: The HGNC gene ID.
+        omim_diseases:
+          type: array
+          items:
+            $ref: '#/components/schemas/GenesOmimTerm'
+          description: The associated OMIM records.
+    GenesOmimTerm:
+      type: object
+      description: Description of an OMIM record.
+      required:
+      - omim_id
+      - label
+      properties:
+        omim_id:
+          type: string
+          description: The OMIM ID.
+        label:
+          type: string
+          description: The OMIM label.
+    GenesOrphaRecord:
+      type: object
+      description: A record from the ORDO gene association.
+      required:
+      - hgnc_id
+      - orpha_diseases
+      properties:
+        hgnc_id:
+          type: string
+          description: The HGNC gene ID.
+        orpha_diseases:
+          type: array
+          items:
+            $ref: '#/components/schemas/GenesOrphaTerm'
+          description: The associated ORPHA diseases.
+    GenesOrphaTerm:
+      type: object
+      description: Description of an ORDO record.
+      required:
+      - orpha_id
+      - label
+      properties:
+        orpha_id:
+          type: string
+          description: The ORPHA ID.
+        label:
+          type: string
+          description: The disease name.
+    GenesPanel:
+      type: object
+      description: Message for panel information.
+      required:
+      - id
+      - name
+      - disease_group
+      - disease_sub_group
+      - version
+      - version_created
+      - relevant_disorders
+      - types
+      properties:
+        id:
+          type: integer
+          format: int32
+          description: Panel ID.
+          minimum: 0
+        hash_id:
+          type:
+          - string
+          - 'null'
+          description: Panel hash ID.
+        name:
+          type: string
+          description: Panel name.
+        disease_group:
+          type: string
+          description: Disease group.
+        disease_sub_group:
+          type: string
+          description: Disease subgroup.
+        version:
+          type: string
+          description: Version
+        version_created:
+          type: string
+          description: Creation date of version.
+        relevant_disorders:
+          type: array
+          items:
+            type: string
+          description: Relevant disorders.
+        stats:
+          oneOf:
+          - type: 'null'
+          - $ref: '#/components/schemas/GenesPanelStats'
+            description: Stats.
+        types:
+          type: array
+          items:
+            $ref: '#/components/schemas/GenesPanelType'
+          description: Panel types.
+    GenesPanelAppRecord:
+      type: object
+      description: Entry in PanelApp.
+      required:
+      - entity_type
+      - entity_name
+      - confidence_level
+      - publications
+      - evidence
+      - phenotypes
+      - mode_of_inheritance
+      properties:
+        gene_data:
+          oneOf:
+          - type: 'null'
+          - $ref: '#/components/schemas/GenesGeneData'
+            description: Gene identity information.
+        entity_type:
+          $ref: '#/components/schemas/GenesEntityType'
+          description: Entity type.
+        entity_name:
+          type: string
+          description: Entity name.
+        confidence_level:
+          $ref: '#/components/schemas/GenesPanelappRecordConfidenceLevel'
+          description: Confidence level.
+        penetrance:
+          oneOf:
+          - type: 'null'
+          - $ref: '#/components/schemas/GenesPenetrance'
+            description: Penetrance.
+        publications:
+          type: array
+          items:
+            type: string
+          description: Publications.
+        evidence:
+          type: array
+          items:
+            type: string
+          description: Evidence.
+        phenotypes:
+          type: array
+          items:
+            type: string
+          description: Phenotypes.
+        mode_of_inheritance:
+          type: string
+          description: Mode of inheritance.
+        panel:
+          oneOf:
+          - type: 'null'
+          - $ref: '#/components/schemas/GenesPanel'
+            description: Panel.
+    GenesPanelStats:
+      type: object
+      description: Message for panel statistics.
+      required:
+      - number_of_genes
+      - number_of_strs
+      - number_of_regions
+      properties:
+        number_of_genes:
+          type: integer
+          format: int32
+          description: Number of genes.
+          minimum: 0
+        number_of_strs:
+          type: integer
+          format: int32
+          description: Number of STRs.
+          minimum: 0
+        number_of_regions:
+          type: integer
+          format: int32
+          description: Number of regions.
+          minimum: 0
+    GenesPanelType:
+      type: object
+      description: Message for panel types.
+      required:
+      - name
+      - slug
+      - description
+      properties:
+        name:
+          type: string
+          description: Type name.
+        slug:
+          type: string
+          description: Slug.
+        description:
+          type: string
+          description: Description.
+    GenesPanelappAssociation:
+      type: object
+      description: An association of a gene by HGNC with a panel from PanelApp.
+      required:
+      - hgnc_id
+      - confidence_level
+      - entity_type
+      - phenotypes
+      properties:
+        hgnc_id:
+          type: string
+          description: The HGNC ID.
+        confidence_level:
+          $ref: '#/components/schemas/GenesPanelappAssociationConfidenceLevel'
+          description: The PanelApp confidence level.
+        entity_type:
+          $ref: '#/components/schemas/GenesPanelappEntityType'
+          description: The PanelApp entity type.
+        mode_of_inheritance:
+          type:
+          - string
+          - 'null'
+          description: The PanelApp entity name.
+        phenotypes:
+          type: array
+          items:
+            type: string
+          description: The PanelApp publications.
+        panel:
+          oneOf:
+          - type: 'null'
+          - $ref: '#/components/schemas/GenesPanelappPanel'
+            description: The PanelApp panel.
+    GenesPanelappAssociationConfidenceLevel:
+      type: string
+      description: Enumeration for PanelApp confidence level.
+      enum:
+      - Green
+      - Amber
+      - Red
+      - None
+    GenesPanelappEntityType:
+      type: string
+      description: Enumeration for entity type.
+      enum:
+      - Gene
+      - Region
+      - Str
+    GenesPanelappPanel:
+      type: object
+      description: A panel from PanelApp.
+      required:
+      - id
+      - name
+      - version
+      properties:
+        id:
+          type: integer
+          format: int32
+          description: PanelApp panel ID.
+        name:
+          type: string
+          description: PanelApp panel name.
+        version:
+          type: string
+          description: PanelApp panel version.
+    GenesPanelappRecordConfidenceLevel:
+      type: string
+      description: Enumeration for PanelApp confidence level.
+      enum:
+      - Green
+      - Amber
+      - Red
+      - None
+    GenesPenetrance:
+      type: string
+      description: Enumeration for penetrance.
+      enum:
+      - Complete
+      - Incomplete
+    GenesRcnvRecord:
+      type: object
+      description: Entry in the rCNV dosage sensitivity scores (Collins et al., 2022).
+      required:
+      - hgnc_id
+      - p_haplo
+      - p_triplo
+      properties:
+        hgnc_id:
+          type: string
+          description: The HGNC ID.
+        p_haplo:
+          type: number
+          format: double
+          description: The pHaplo value.
+        p_triplo:
+          type: number
+          format: double
+          description: The pTriplo value.
+    GenesRifEntry:
+      type: object
+      description: Reference into function record.
+      required:
+      - text
+      - pmids
+      properties:
+        text:
+          type: string
+          description: The RIF text.
+        pmids:
+          type: array
+          items:
+            type: integer
+            format: int32
+            minimum: 0
+          description: PubMed IDs.
+    GenesShetRecord:
+      type: object
+      description: Entry with sHet information (Weghorn et al., 2019).
+      required:
+      - hgnc_id
+      - s_het
+      properties:
+        hgnc_id:
+          type: string
+          description: The HGNC ID.
+        s_het:
+          type: number
+          format: double
+          description: The sHet value.
     GenomeRelease:
       type: string
       description: Local genome release for command line arguments.
