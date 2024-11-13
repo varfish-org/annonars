@@ -38,17 +38,24 @@ pub mod openapi {
     use crate::{
         common::cli::GenomeRelease,
         server::run::genes_info::{self, response::*},
+        server::run::genes_search::{
+            self, GenesFields, GenesScoredGeneNames, GenesSearchQuery, GenesSearchResponse,
+        },
         server::run::versions::{
             self, VersionsAnnotationInfo, VersionsCreatedFrom, VersionsInfoQuery,
             VersionsInfoResponse, VersionsPerRelease, VersionsVersionSpec,
         },
-        server::run::{error::CustomError, AnnoDb},
+        server::run::{error::CustomError, AnnoDb, GeneNames},
     };
 
     /// Utoipa-based `OpenAPI` generation helper.
     #[derive(utoipa::OpenApi)]
     #[openapi(
-        paths(versions::handle, genes_info::handle_with_openapi),
+        paths(
+            versions::handle,
+            genes_info::handle_with_openapi,
+            genes_search::handle_with_openapi
+        ),
         components(schemas(
             VersionsInfoQuery,
             VersionsInfoResponse,
@@ -103,6 +110,11 @@ pub mod openapi {
             GenesGtexTissueDetailed,
             GenesGeneInfoRecord,
             GenesInfoResponse,
+            GenesSearchQuery,
+            GenesFields,
+            GenesSearchResponse,
+            GenesScoredGeneNames,
+            GeneNames,
         ))
     )]
     pub struct ApiDoc;
@@ -128,6 +140,7 @@ pub async fn main(args: &Args, dbs: Data<WebServerData>) -> std::io::Result<()> 
             .service(genes_info::handle)
             .service(genes_info::handle_with_openapi)
             .service(genes_search::handle)
+            .service(genes_search::handle_with_openapi)
             .service(genes_lookup::handle)
             .service(versions::handle)
             .service(
@@ -225,7 +238,7 @@ impl AnnoDb {
 }
 
 /// Identifier / name information for one gene.
-#[derive(Debug, serde::Serialize, serde::Deserialize, Clone)]
+#[derive(Debug, Clone, serde::Serialize, serde::Deserialize, utoipa::ToSchema)]
 pub struct GeneNames {
     /// HGNC gene ID.
     pub hgnc_id: String,
