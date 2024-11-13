@@ -39,6 +39,34 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/CustomError'
+  /api/v1/genes/lookup:
+    get:
+      tags:
+      - genes_lookup
+      summary: Search for genes.
+      operationId: genesLookup
+      parameters:
+      - name: q
+        in: query
+        description: The strings to search for.
+        required: true
+        schema:
+          type: array
+          items:
+            type: string
+      responses:
+        '200':
+          description: Genes search results.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GenesLookupResponse'
+        '500':
+          description: Internal server error.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CustomError'
   /api/v1/genes/search:
     get:
       tags:
@@ -1886,6 +1914,31 @@ components:
           - string
           - 'null'
           description: The disorder name.
+    GenesLookupResponse:
+      type: object
+      description: Result for `async fn handle_with_openapi(
+      required:
+      - genes
+      properties:
+        genes:
+          type: array
+          items:
+            $ref: '#/components/schemas/GenesLookupResultEntry'
+          description: The resulting gene information.
+    GenesLookupResultEntry:
+      type: object
+      description: One result entry in the response.
+      required:
+      - query
+      properties:
+        query:
+          type: string
+          description: The query string,
+        gene_names:
+          oneOf:
+          - type: 'null'
+          - $ref: '#/components/schemas/GeneNames'
+            description: The gene names information.
     GenesNcbiRecord:
       type: object
       description: A record from the NCBI gene database.

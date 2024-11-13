@@ -38,6 +38,7 @@ pub mod openapi {
     use crate::{
         common::cli::GenomeRelease,
         server::run::genes_info::{self, response::*},
+        server::run::genes_lookup::{self, GenesLookupResponse, GenesLookupResultEntry},
         server::run::genes_search::{
             self, GenesFields, GenesScoredGeneNames, GenesSearchQuery, GenesSearchResponse,
         },
@@ -54,6 +55,7 @@ pub mod openapi {
         paths(
             versions::handle,
             genes_info::handle_with_openapi,
+            genes_lookup::handle_with_openapi,
             genes_search::handle_with_openapi
         ),
         components(schemas(
@@ -115,6 +117,8 @@ pub mod openapi {
             GenesSearchResponse,
             GenesScoredGeneNames,
             GeneNames,
+            GenesLookupResponse,
+            GenesLookupResultEntry
         ))
     )]
     pub struct ApiDoc;
@@ -142,6 +146,7 @@ pub async fn main(args: &Args, dbs: Data<WebServerData>) -> std::io::Result<()> 
             .service(genes_search::handle)
             .service(genes_search::handle_with_openapi)
             .service(genes_lookup::handle)
+            .service(genes_lookup::handle_with_openapi)
             .service(versions::handle)
             .service(
                 utoipa_swagger_ui::SwaggerUi::new("/swagger-ui/{_:.*}")
