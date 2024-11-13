@@ -37,6 +37,7 @@ use actix_web::{middleware::Logger, web::Data, App, HttpServer};
 pub mod openapi {
     use crate::{
         common::cli::GenomeRelease,
+        server::run::genes_info::{self, response::*},
         server::run::versions::{
             self, VersionsAnnotationInfo, VersionsCreatedFrom, VersionsInfoQuery,
             VersionsInfoResponse, VersionsPerRelease, VersionsVersionSpec,
@@ -47,7 +48,7 @@ pub mod openapi {
     /// Utoipa-based `OpenAPI` generation helper.
     #[derive(utoipa::OpenApi)]
     #[openapi(
-        paths(versions::handle),
+        paths(versions::handle, genes_info::handle_with_openapi),
         components(schemas(
             VersionsInfoQuery,
             VersionsInfoResponse,
@@ -58,6 +59,50 @@ pub mod openapi {
             GenomeRelease,
             AnnoDb,
             CustomError,
+            GenesAcmgSecondaryFindingRecord,
+            GenesClingenDosageScore,
+            GenesClingenDosageRecord,
+            GenesDecipherHiRecord,
+            GenesDominoRecord,
+            GenesDbnsfpRecord,
+            GenesGnomadConstraintsRecord,
+            GenesHgncLsdb,
+            GenesHgncRecord,
+            GenesRifEntry,
+            GenesNcbiRecord,
+            GenesOmimTerm,
+            GenesOmimRecord,
+            GenesOrphaTerm,
+            GenesOrphaRecord,
+            GenesRcnvRecord,
+            GenesShetRecord,
+            GenesGtexTissueRecord,
+            GenesGtexRecord,
+            GenesPanelAppRecord,
+            GenesGeneData,
+            GenesPanelStats,
+            GenesPanelType,
+            GenesPanel,
+            GenesEntityType,
+            GenesDiseaseAssociationEntryConfidenceLevel,
+            GenesPenetrance,
+            GenesConditionsRecord,
+            GenesGeneDiseaseAssociationEntry,
+            GenesDiseaseAssociationSource,
+            GenesDiseaseAssociationConfidenceLevel,
+            GenesLabeledDisorder,
+            GenesDiseaseAssociation,
+            GenesPanelappPanel,
+            GenesPanelappAssociation,
+            GenesPanelappRecordConfidenceLevel,
+            GenesPanelappAssociationConfidenceLevel,
+            GenesPanelappEntityType,
+            GenesGeneRecord,
+            GenesHgncStatus,
+            GenesGtexTissue,
+            GenesGtexTissueDetailed,
+            GenesGeneInfoRecord,
+            GenesInfoResponse,
         ))
     )]
     pub struct ApiDoc;
@@ -81,6 +126,7 @@ pub async fn main(args: &Args, dbs: Data<WebServerData>) -> std::io::Result<()> 
             .service(clinvar_sv::handle)
             .service(genes_clinvar::handle)
             .service(genes_info::handle)
+            .service(genes_info::handle_with_openapi)
             .service(genes_search::handle)
             .service(genes_lookup::handle)
             .service(versions::handle)
@@ -387,6 +433,10 @@ fn extract_gene_names(
     while iter.valid() {
         if let Some(iter_value) = iter.value() {
             let record = genes::base::Record::decode(std::io::Cursor::new(iter_value))?;
+            // Useful snippet to ensure that all gene records can be converted into serializeable ones.
+            // if !genes_info::response::GenesGeneInfoRecord::try_from(record.clone()).is_ok() {
+            //     tracing::warn!("Skipping record: {:?}", record.clone().hgnc.unwrap().hgnc_id);
+            // }
             let genes::base::Record { hgnc, .. } = record;
             if let Some(hgnc) = hgnc {
                 let genes::base::HgncRecord {

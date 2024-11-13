@@ -1,4 +1,4 @@
-//! Provide information about the software and database versions.
+//! Implementation of endpoint `/api/v1/genes/transcripts`.
 
 use actix_web::{
     get,
