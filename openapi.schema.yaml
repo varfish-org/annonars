@@ -39,6 +39,50 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/CustomError'
+  /api/v1/genes/search:
+    get:
+      tags:
+      - genes_search
+      summary: Search for genes.
+      operationId: genesSearch
+      parameters:
+      - name: q
+        in: query
+        description: The string to search for.
+        required: true
+        schema:
+          type: string
+      - name: fields
+        in: query
+        description: The fields to search in.
+        required: false
+        schema:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/GenesFields'
+      - name: case_sensitive
+        in: query
+        description: Enable case sensitive search.
+        required: false
+        schema:
+          type:
+          - boolean
+          - 'null'
+      responses:
+        '200':
+          description: Genes search results.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GenesSearchResponse'
+        '500':
+          description: Internal server error.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CustomError'
   /api/v1/versionsInfo:
     get:
       tags:
@@ -84,6 +128,45 @@ components:
       properties:
         err:
           type: string
+    GeneNames:
+      type: object
+      description: Identifier / name information for one gene.
+      required:
+      - hgnc_id
+      - symbol
+      - name
+      - alias_symbol
+      - alias_name
+      properties:
+        hgnc_id:
+          type: string
+          description: HGNC gene ID.
+        symbol:
+          type: string
+          description: HGNC gene symbol.
+        name:
+          type: string
+          description: Gene name from HGNC.
+        alias_symbol:
+          type: array
+          items:
+            type: string
+          description: HGNC alias symbols.
+        alias_name:
+          type: array
+          items:
+            type: string
+          description: HGNC alias names.
+        ensembl_gene_id:
+          type:
+          - string
+          - 'null'
+          description: ENSEMBL gene ID.
+        ncbi_gene_id:
+          type:
+          - string
+          - 'null'
+          description: NCBI gene ID.
     GenesAcmgSecondaryFindingRecord:
       type: object
       description: Information from ACMG secondary findings list.
@@ -982,6 +1065,17 @@ components:
       - Gene
       - Str
       - Region
+    GenesFields:
+      type: string
+      description: The allowed fields to search in.
+      enum:
+      - hgnc_id
+      - symbol
+      - name
+      - alias_symbol
+      - alias_name
+      - ensembl_gene_id
+      - ncbi_gene_id
     GenesGeneData:
       type: object
       description: Gene identity information.
@@ -2131,6 +2225,38 @@ components:
             format: int32
             minimum: 0
           description: PubMed IDs.
+    GenesSearchQuery:
+      type: object
+      description: Parameters for `handle`.
+      required:
+      - q
+      properties:
+        q:
+          type: string
+          description: The string to search for.
+        fields:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/GenesFields'
+          description: The fields to search in.
+        case_sensitive:
+          type:
+          - boolean
+          - 'null'
+          description: Enable case sensitive search.
+    GenesSearchResponse:
+      type: object
+      description: Result for `handle`.
+      required:
+      - genes
+      properties:
+        genes:
+          type: array
+          items:
+            $ref: '#/components/schemas/Scored'
+          description: The resulting gene information.
     GenesShetRecord:
       type: object
       description: Entry with sHet information (Weghorn et al., 2019).
@@ -2151,6 +2277,20 @@ components:
       enum:
       - grch37
       - grch38
+    Scored:
+      type: object
+      description: A scored result.
+      required:
+      - score
+      - data
+      properties:
+        score:
+          type: number
+          format: float
+          description: The score.
+        data:
+          $ref: '#/components/schemas/GeneNames'
+          description: The result.
     VersionsAnnotationInfo:
       type: object
       description: Version information for one database.
