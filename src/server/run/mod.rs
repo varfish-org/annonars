@@ -3,6 +3,7 @@
 pub mod annos_db_info;
 pub mod annos_range;
 pub mod annos_variant;
+pub mod clinvar_data;
 pub mod clinvar_sv;
 pub mod error;
 pub mod fetch;
