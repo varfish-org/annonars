@@ -62,7 +62,12 @@ impl TryFrom<pbs::clinvar_data::clinvar_public::Xref> for Xref {
             id: value.id,
             r#type: value.r#type,
             url: value.url,
-            status: value.status.map(|x| x.try_into()).transpose()?,
+            status: value
+                .status
+                .map(|status| {
+                    Status::try_from(pbs::clinvar_data::clinvar_public::Status::try_from(status)?)
+                })
+                .transpose()?,
         })
     }
 }
@@ -88,7 +93,11 @@ impl TryFrom<pbs::clinvar_data::clinvar_public::Citation> for Citation {
 
     fn try_from(value: pbs::clinvar_data::clinvar_public::Citation) -> Result<Self, Self::Error> {
         Ok(Citation {
-            ids: value.ids.into_iter().map(IdType::from).collect()?,
+            ids: value
+                .ids
+                .into_iter()
+                .map(IdType::try_from)
+                .collect::<Result<Vec<_>, _>>()?,
             url: value.url,
             citation_text: value.citation_text,
             r#type: value.r#type,
@@ -187,7 +196,16 @@ impl TryFrom<pbs::clinvar_data::clinvar_public::HgvsNucleotideExpression>
     ) -> Result<Self, Self::Error> {
         Ok(HgvsNucleotideExpression {
             expression: value.expression,
-            sequence_type: value.sequence_type.map(|x| x.try_into()).transpose()?,
+            sequence_type: value
+                .sequence_type
+                .map(|sequence_type| {
+                    NucleotideSequence::try_from(
+                        pbs::clinvar_data::clinvar_public::NucleotideSequence::try_from(
+                            sequence_type,
+                        )?,
+                    )
+                })
+                .transpose()?,
             sequence_accession_version: value.sequence_accession_version,
             sequence_accession: value.sequence_accession,
             sequence_version: value.sequence_version,
@@ -272,7 +290,9 @@ impl TryFrom<pbs::clinvar_data::clinvar_public::HgvsExpression> for HgvsExpressi
                 .into_iter()
                 .map(|x| x.try_into())
                 .collect::<Result<_, _>>()?,
-            r#type: value.r#type.map(|x| x.try_into()).transpose()?,
+            r#type: HgvsType::try_from(pbs::clinvar_data::clinvar_public::HgvsType::try_from(
+                value.r#type,
+            )?)?,
             assembly: value.assembly,
         })
     }
@@ -548,7 +568,11 @@ impl TryFrom<pbs::clinvar_data::clinvar_public::r#trait::TraitRelationship> for 
                 .map(|x| x.try_into())
                 .collect::<Result<_, _>>()?,
             sources: value.sources,
-            r#type: value.r#type.map(|x| x.try_into()).transpose()?,
+            r#type: TraitRelationshipType::try_from(
+                pbs::clinvar_data::clinvar_public::r#trait::r#trait_relationship::Type::try_from(
+                    value.r#type,
+                )?,
+            )?,
         })
     }
 }
@@ -670,7 +694,9 @@ impl TryFrom<pbs::clinvar_data::clinvar_public::Indication> for Indication {
                 .into_iter()
                 .map(|x| x.try_into())
                 .collect::<Result<_, _>>()?,
-            r#type: value.r#type.map(|x| x.try_into()).transpose()?,
+            r#type: IndicationType::try_from(
+                pbs::clinvar_data::clinvar_public::indication::Type::try_from(value.r#type)?,
+            )?,
         })
     }
 }
@@ -785,9 +811,12 @@ impl TryFrom<pbs::clinvar_data::clinvar_public::TraitSet> for TraitSet {
                 .into_iter()
                 .map(|x| x.try_into())
                 .collect::<Result<_, _>>()?,
-            r#type: value.r#type.map(|x| x.try_into()).transpose()?,
+            r#type: TraitSetType::try_from(
+                pbs::clinvar_data::clinvar_public::trait_set::Type::try_from(value.r#type)?,
+            )?,
             date_last_evaluated: value.date_last_evaluated.map(|x| {
                 chrono::DateTime::<chrono::Utc>::from_timestamp(x.seconds, x.nanos as u32)
+                    .unwrap_or_default()
             }),
             id: value.id,
             contributes_to_aggregate_classification: value.contributes_to_aggregate_classification,
@@ -903,7 +932,11 @@ impl TryFrom<pbs::clinvar_data::clinvar_public::AggregatedGermlineClassification
         value: pbs::clinvar_data::clinvar_public::AggregatedGermlineClassification,
     ) -> Result<Self, Self::Error> {
         Ok(AggregatedGermlineClassification {
-            review_status: value.review_status.map(|x| x.try_into()).transpose()?,
+            review_status: AggregateGermlineReviewStatus::try_from(
+                pbs::clinvar_data::clinvar_public::AggregateGermlineReviewStatus::try_from(
+                    value.review_status,
+                )?,
+            )?,
             description: value.description,
             explanation: value.explanation.map(|x| x.try_into()).transpose()?,
             xrefs: value
@@ -992,7 +1025,11 @@ impl TryFrom<pbs::clinvar_data::clinvar_public::AggregatedSomaticClinicalImpact>
         value: pbs::clinvar_data::clinvar_public::AggregatedSomaticClinicalImpact,
     ) -> Result<Self, Self::Error> {
         Ok(AggregatedSomaticClinicalImpact {
-            review_status: value.review_status.map(|x| x.try_into()).transpose()?,
+            review_status: AggregateSomaticClinicalImpactReviewStatus::try_from(
+                pbs::clinvar_data::clinvar_public::AggregateSomaticClinicalImpactReviewStatus::try_from(
+                    value.review_status,
+                )?,
+            )?,
             description: value.description,
             xrefs: value
                 .xrefs
@@ -1080,7 +1117,11 @@ impl TryFrom<pbs::clinvar_data::clinvar_public::AggregatedOncogenicityClassifica
         value: pbs::clinvar_data::clinvar_public::AggregatedOncogenicityClassification,
     ) -> Result<Self, Self::Error> {
         Ok(AggregatedOncogenicityClassification {
-            review_status: value.review_status.map(|x| x.try_into()).transpose()?,
+            review_status: AggregateOncogenicityReviewStatus::try_from(
+                pbs::clinvar_data::clinvar_public::AggregateOncogenicityReviewStatus::try_from(
+                    value.review_status,
+                )?,
+            )?,
             description: value.description,
             xrefs: value
                 .xrefs
@@ -1205,7 +1246,16 @@ impl TryFrom<pbs::clinvar_data::clinvar_public::ClinicalSignificance> for Clinic
         value: pbs::clinvar_data::clinvar_public::ClinicalSignificance,
     ) -> Result<Self, Self::Error> {
         Ok(ClinicalSignificance {
-            review_status: value.review_status.map(|x| x.try_into()).transpose()?,
+            review_status: value
+                .review_status
+                .map(|review_status| {
+                    SubmitterReviewStatus::try_from(
+                        pbs::clinvar_data::clinvar_public::SubmitterReviewStatus::try_from(
+                            review_status,
+                        )?,
+                    )
+                })
+                .transpose()?,
             description: value.description,
             explanation: value.explanation.map(|x| x.try_into()).transpose()?,
             xrefs: value
@@ -1260,9 +1310,18 @@ impl TryFrom<pbs::clinvar_data::clinvar_public::AlleleDescription> for AlleleDes
             name: value.name,
             relative_orientation: value
                 .relative_orientation
-                .map(|x| x.try_into())
+                .map(|relative_orientation|
+                    RelativeOrientation::try_from(
+                        pbs::clinvar_data::clinvar_public::allele_description::RelativeOrientation::try_from(relative_orientation)?
+                    )
+                )
                 .transpose()?,
-            zygosity: value.zygosity.map(|x| x.try_into()).transpose()?,
+            zygosity: value.zygosity                .map(|zygosity| {
+                Zygosity::try_from(pbs::clinvar_data::clinvar_public::Zygosity::try_from(
+                    zygosity,
+                )?)
+            })
+            .transpose()?,
             clinical_significance: value
                 .clinical_significance
                 .map(|x| x.try_into())
@@ -1343,10 +1402,14 @@ pub struct RecordHistory {
     pub variation_id: Option<i64>,
 }
 
-impl From<pbs::clinvar_data::clinvar_public::RecordHistory> for RecordHistory {
-    fn from(record_history: pbs::clinvar_data::clinvar_public::RecordHistory) -> Self {
-        Self {
-            comment: record_history.comment.map(|x| x.into()),
+impl TryFrom<pbs::clinvar_data::clinvar_public::RecordHistory> for RecordHistory {
+    type Error = anyhow::Error;
+
+    fn try_from(
+        record_history: pbs::clinvar_data::clinvar_public::RecordHistory,
+    ) -> Result<Self, anyhow::Error> {
+        Ok(Self {
+            comment: record_history.comment.map(|x| x.try_into()).transpose()?,
             accession: record_history.accession,
             version: record_history.version,
             date_changed: record_history.date_changed.map(|x| {
@@ -1354,7 +1417,7 @@ impl From<pbs::clinvar_data::clinvar_public::RecordHistory> for RecordHistory {
                     .unwrap_or_default()
             }),
             variation_id: record_history.variation_id,
-        }
+        })
     }
 }
 
@@ -1388,10 +1451,18 @@ pub struct ClassificationScv {
     pub date_last_evaluated: Option<chrono::DateTime<chrono::Utc>>,
 }
 
-impl From<pbs::clinvar_data::clinvar_public::ClassificationScv> for ClassificationScv {
-    fn from(classification_scv: pbs::clinvar_data::clinvar_public::ClassificationScv) -> Self {
-        Self {
-            review_status: classification_scv.review_status.into(),
+impl TryFrom<pbs::clinvar_data::clinvar_public::ClassificationScv> for ClassificationScv {
+    type Error = anyhow::Error;
+
+    fn try_from(
+        classification_scv: pbs::clinvar_data::clinvar_public::ClassificationScv,
+    ) -> Result<Self, Self::Error> {
+        Ok(Self {
+            review_status: SubmitterReviewStatus::try_from(
+                pbs::clinvar_data::clinvar_public::SubmitterReviewStatus::try_from(
+                    classification_scv.review_status,
+                )?,
+            )?,
             germline_classification: classification_scv.germline_classification,
             somatic_clinical_impact: classification_scv.somatic_clinical_impact.map(|x| x.into()),
             oncogenicity_classification: classification_scv.oncogenicity_classification,
@@ -1404,23 +1475,23 @@ impl From<pbs::clinvar_data::clinvar_public::ClassificationScv> for Classificati
             xrefs: classification_scv
                 .xrefs
                 .into_iter()
-                .map(|x| x.into())
-                .collect(),
+                .map(|x| x.try_into())
+                .collect::<Result<Vec<_>, _>>()?,
             citations: classification_scv
                 .citations
                 .into_iter()
-                .map(|x| x.into())
-                .collect(),
+                .map(|x| x.try_into())
+                .collect::<Result<Vec<_>, _>>()?,
             comments: classification_scv
                 .comments
                 .into_iter()
-                .map(|x| x.into())
-                .collect(),
+                .map(|x| x.try_into())
+                .collect::<Result<Vec<_>, _>>()?,
             date_last_evaluated: classification_scv.date_last_evaluated.map(|x| {
                 chrono::DateTime::<chrono::Utc>::from_timestamp(x.seconds, x.nanos as u32)
                     .unwrap_or_default()
             }),
-        }
+        })
     }
 }
 
@@ -1677,7 +1748,14 @@ impl TryFrom<pbs::clinvar_data::clinvar_public::Cooccurrence> for Cooccurrence {
         value: pbs::clinvar_data::clinvar_public::Cooccurrence,
     ) -> Result<Self, Self::Error> {
         Ok(Cooccurrence {
-            zygosity: value.zygosity.map(|x| x.try_into()).transpose()?,
+            zygosity: value
+                .zygosity
+                .map(|zygosity| {
+                    Zygosity::try_from(pbs::clinvar_data::clinvar_public::Zygosity::try_from(
+                        zygosity,
+                    )?)
+                })
+                .transpose()?,
             allele_descriptions: value
                 .allele_descriptions
                 .into_iter()
@@ -1707,7 +1785,9 @@ impl TryFrom<pbs::clinvar_data::clinvar_public::Submitter> for Submitter {
                 .submitter_identifiers
                 .map(|x| x.try_into())
                 .transpose()?,
-            r#type: value.r#type.try_into()?,
+            r#type: SubmitterType::try_from(
+                pbs::clinvar_data::clinvar_public::submitter::Type::try_from(value.r#type)?,
+            )?,
         })
     }
 }
@@ -1939,7 +2019,11 @@ impl TryFrom<pbs::clinvar_data::clinvar_public::location::SequenceLocation> for 
         Ok(SequenceLocation {
             for_display: value.for_display,
             assembly: value.assembly,
-            chr: value.chr.try_into()?,
+            chr: Chromosome::try_from(
+                pbs::clinvar_data::clinvar_public::Chromosome::try_from(
+                    value.chr
+                )?
+            )?,
             accession: value.accession,
             outer_start: value.outer_start,
             inner_start: value.inner_start,
@@ -1954,7 +2038,11 @@ impl TryFrom<pbs::clinvar_data::clinvar_public::location::SequenceLocation> for 
             reference_allele: value.reference_allele,
             alternate_allele: value.alternate_allele,
             assembly_accession_version: value.assembly_accession_version,
-            assembly_status: value.assembly_status.map(|x| x.try_into()).transpose()?,
+            assembly_status: value.assembly_status.map(|assembly_status|
+                AssemblyStatus::try_from(
+                pbs::clinvar_data::clinvar_public::location::sequence_location::AssemblyStatus::try_from(assembly_status)?
+                )
+            ).transpose()?,
             position_vcf: value.position_vcf,
             reference_allele_vcf: value.reference_allele_vcf,
             alternate_allele_vcf: value.alternate_allele_vcf,
@@ -2131,13 +2219,21 @@ impl TryFrom<pbs::clinvar_data::clinvar_public::Sample> for Sample {
                 .sample_description
                 .map(SampleDescription::try_from)
                 .transpose()?,
-            origin: value.origin.map(Origin::try_from).transpose()?,
+            origin: value.origin.map(|origin| Origin::try_from(
+                pbs::clinvar_data::clinvar_public::Origin::try_from(origin)?
+            )).transpose()?,
             ethnicity: value.ethnicity,
             geographic_origin: value.geographic_origin,
             tissue: value.tissue,
             somatic_variant_in_normal_tissue: value
                 .somatic_variant_in_normal_tissue
-                .map(SomaticVariantInNormalTissue::try_from)
+                .map(|somatic_variant_in_normal_tissue|
+                    SomaticVariantInNormalTissue::try_from(
+                    pbs::clinvar_data::clinvar_public::sample::SomaticVariantInNormalTissue::try_from(
+                        somatic_variant_in_normal_tissue,
+                    )?
+                )
+                )
                 .transpose()?,
             somatic_variant_allele_fraction: value.somatic_variant_allele_fraction,
             cell_line: value.cell_line,
@@ -2150,7 +2246,13 @@ impl TryFrom<pbs::clinvar_data::clinvar_public::Sample> for Sample {
             strain: value.strain,
             affected_status: value
                 .affected_status
-                .map(AffectedStatus::try_from)
+                .map(|affected_status| {
+                    AffectedStatus::try_from(
+                        pbs::clinvar_data::clinvar_public::sample::AffectedStatus::try_from(
+                            affected_status,
+                        )?,
+                    )
+                })
                 .transpose()?,
             numer_tested: value.numer_tested,
             number_males: value.number_males,
@@ -2158,9 +2260,11 @@ impl TryFrom<pbs::clinvar_data::clinvar_public::Sample> for Sample {
             number_chr_tested: value.number_chr_tested,
             gender: value
                 .gender
-                .map(Gender::try_from(
-                    pbs::clinvar_data::clinvar_public::sample::Gender::try_from(value.gender)?,
-                ))
+                .map(|gender| {
+                    Gender::try_from(pbs::clinvar_data::clinvar_public::sample::Gender::try_from(
+                        gender,
+                    )?)
+                })
                 .transpose()?,
             family_data: value.family_data.map(FamilyData::try_from).transpose()?,
             proband: value.proband,
@@ -2182,7 +2286,13 @@ impl TryFrom<pbs::clinvar_data::clinvar_public::Sample> for Sample {
                 .collect::<Result<Vec<_>, _>>()?,
             source_type: value
                 .source_type
-                .map(SampleSourceType::try_from)
+                .map(|source_type| {
+                    SampleSourceType::try_from(
+                        pbs::clinvar_data::clinvar_public::sample::SourceType::try_from(
+                            source_type,
+                        )?,
+                    )
+                })
                 .transpose()?,
         })
     }
@@ -2229,8 +2339,12 @@ impl TryFrom<pbs::clinvar_data::clinvar_public::sample::Age> for Age {
     ) -> Result<Self, Self::Error> {
         Ok(Age {
             value: value.value,
-            unit: AgeUnit::try_from(value.unit)?,
-            r#type: AgeType::try_from(value.r#type)?,
+            unit: AgeUnit::try_from(
+                pbs::clinvar_data::clinvar_public::sample::AgeUnit::try_from(value.unit)?,
+            )?,
+            r#type: AgeType::try_from(
+                pbs::clinvar_data::clinvar_public::sample::AgeType::try_from(value.r#type)?,
+            )?,
         })
     }
 }
@@ -2578,8 +2692,19 @@ impl TryFrom<pbs::clinvar_data::clinvar_public::Method> for Method {
                 .into_iter()
                 .map(TryInto::try_into)
                 .collect::<Result<Vec<_>, _>>()?,
-            source_type: value.source_type.map(TryInto::try_into).transpose()?,
-            method_type: value.method_type.try_into()?,
+            source_type: value
+                .source_type
+                .map(|source_type| {
+                    MethodSourceType::try_from(
+                        pbs::clinvar_data::clinvar_public::method::SourceType::try_from(
+                            source_type,
+                        )?,
+                    )
+                })
+                .transpose()?,
+            method_type: MethodListType::try_from(
+                pbs::clinvar_data::clinvar_public::MethodListType::try_from(value.method_type)?,
+            )?,
             method_attributes: value
                 .method_attributes
                 .into_iter()
@@ -2696,7 +2821,11 @@ impl TryFrom<pbs::clinvar_data::clinvar_public::method::ObsMethodAttribute> for 
     ) -> Result<Self, Self::Error> {
         Ok(Self {
             base: value.base.map(TryInto::try_into).transpose()?,
-            r#type: value.r#type.try_into()?,
+            r#type: ObsMethodAttributeType::try_from(
+                pbs::clinvar_data::clinvar_public::method::obs_method_attribute::AttributeType::try_from(
+                    value.r#type,
+                )?,
+            )?,
             comments: value
                 .comments
                 .into_iter()
@@ -2959,7 +3088,16 @@ impl TryFrom<pbs::clinvar_data::clinvar_public::allele_scv::Gene> for AlleleScvG
                 .map(TryInto::try_into)
                 .collect::<Result<Vec<_>, _>>()?,
             symbol: value.symbol,
-            relationship_type: value.relationship_type.map(TryInto::try_into).transpose()?,
+            relationship_type: value
+                .relationship_type
+                .map(|relationship_type| {
+                    GeneVariantRelationship::try_from(
+                        pbs::clinvar_data::clinvar_public::GeneVariantRelationship::try_from(
+                            relationship_type,
+                        )?,
+                    )
+                })
+                .transpose()?,
         })
     }
 }
@@ -3156,7 +3294,9 @@ impl TryFrom<pbs::clinvar_data::clinvar_public::GenotypeScv> for GenotypeScv {
                 .into_iter()
                 .map(TryInto::try_into)
                 .collect::<Result<Vec<_>, _>>()?,
-            variation_type: value.variation_type.try_into()?,
+            variation_type: VariationType::try_from(
+                pbs::clinvar_data::clinvar_public::VariationType::try_from(value.variation_type)?,
+            )?,
             functional_consequences: value
                 .functional_consequences
                 .into_iter()
@@ -3211,6 +3351,42 @@ pub struct ObservedIn {
     pub comments: Vec<Comment>,
 }
 
+impl TryFrom<pbs::clinvar_data::clinvar_public::ObservedIn> for ObservedIn {
+    type Error = anyhow::Error;
+
+    fn try_from(value: pbs::clinvar_data::clinvar_public::ObservedIn) -> Result<Self, Self::Error> {
+        Ok(Self {
+            sample: value.sample.map(TryInto::try_into).transpose()?,
+            observed_data: value
+                .observed_data
+                .into_iter()
+                .map(TryInto::try_into)
+                .collect::<Result<Vec<_>, _>>()?,
+            cooccurrence_sets: value
+                .cooccurrence_sets
+                .into_iter()
+                .map(TryInto::try_into)
+                .collect::<Result<Vec<_>, _>>()?,
+            trait_set: value.trait_set.map(TryInto::try_into).transpose()?,
+            citations: value
+                .citations
+                .into_iter()
+                .map(TryInto::try_into)
+                .collect::<Result<Vec<_>, _>>()?,
+            xrefs: value
+                .xrefs
+                .into_iter()
+                .map(TryInto::try_into)
+                .collect::<Result<Vec<_>, _>>()?,
+            comments: value
+                .comments
+                .into_iter()
+                .map(TryInto::try_into)
+                .collect::<Result<Vec<_>, _>>()?,
+        })
+    }
+}
+
 /// Local struct for attributes based on `BaseAttribute`.
 #[derive(Clone, Debug, serde::Serialize, serde::Deserialize, utoipa::ToSchema)]
 pub struct ObservedDataAttribute {
@@ -3230,7 +3406,11 @@ impl TryFrom<pbs::clinvar_data::clinvar_public::observed_in::ObservedDataAttribu
     ) -> Result<Self, Self::Error> {
         Ok(Self {
             base: value.base.map(TryInto::try_into).transpose()?,
-            r#type: value.r#type.try_into()?,
+            r#type: ObservedDataAttributeType::try_from(
+                pbs::clinvar_data::clinvar_public::observed_in::observed_data_attribute::Type::try_from(
+                    value.r#type
+                )?
+            )?,
         })
     }
 }
@@ -3422,7 +3602,14 @@ impl TryFrom<pbs::clinvar_data::clinvar_public::observed_in::ObservedData> for O
                 .into_iter()
                 .map(ObservedDataAttribute::try_from)
                 .collect::<Result<Vec<_>, _>>()?,
-            severity: value.severity.map(Severity::try_from).transpose()?,
+            severity: value
+                .severity
+                .map(|severity| {
+                    Severity::try_from(pbs::clinvar_data::clinvar_public::Severity::try_from(
+                        severity,
+                    )?)
+                })
+                .transpose()?,
             citations: value
                 .citations
                 .into_iter()
@@ -3583,7 +3770,11 @@ impl TryFrom<pbs::clinvar_data::clinvar_public::ClinicalAssertion> for ClinicalA
                 .into_iter()
                 .map(Submitter::try_from)
                 .collect::<Result<Vec<_>, _>>()?,
-            record_status: value.record_status.try_into()?,
+            record_status: ClinicalAssertionRecordStatus::try_from(
+                pbs::clinvar_data::clinvar_public::clinical_assertion::RecordStatus::try_from(
+                    value.record_status,
+                )?,
+            )?,
             replaces: value.replaces,
             replaceds: value
                 .replaceds
@@ -3594,7 +3785,9 @@ impl TryFrom<pbs::clinvar_data::clinvar_public::ClinicalAssertion> for ClinicalA
                 .classifications
                 .map(ClassificationScv::try_from)
                 .transpose()?,
-            assertion: value.assertion.try_into()?,
+            assertion: Assertion::try_from(
+                pbs::clinvar_data::clinvar_public::Assertion::try_from(value.assertion)?,
+            )?,
             attributes: value
                 .attributes
                 .into_iter()
@@ -3804,12 +3997,14 @@ impl TryFrom<pbs::clinvar_data::clinvar_public::clinical_assertion::ClinvarAcces
                 .submitter_identifiers
                 .map(SubmitterIdentifiers::try_from)
                 .transpose()?,
-            date_updated: value
-                .date_updated
-                .map(chrono::DateTime::<chrono::Utc>::from),
-            date_created: value
-                .date_created
-                .map(chrono::DateTime::<chrono::Utc>::from),
+            date_updated: value.date_updated.map(|ts| {
+                chrono::DateTime::<chrono::Utc>::from_timestamp(ts.seconds, ts.nanos as u32)
+                    .unwrap_or_default()
+            }),
+            date_created: value.date_created.map(|ts| {
+                chrono::DateTime::<chrono::Utc>::from_timestamp(ts.seconds, ts.nanos as u32)
+                    .unwrap_or_default()
+            }),
         })
     }
 }
@@ -4485,9 +4680,10 @@ impl TryFrom<pbs::clinvar_data::clinvar_public::rcv_accession::germline_classifi
     ) -> Result<Self, Self::Error> {
         Ok(Self {
             value: value.value,
-            date_last_evaluated: value
-                .date_last_evaluated
-                .map(chrono::DateTime::<chrono::Utc>::from),
+            date_last_evaluated: value.date_last_evaluated.map(|ts| {
+                chrono::DateTime::<chrono::Utc>::from_timestamp(ts.seconds, ts.nanos as u32)
+                    .unwrap_or_default()
+            }),
             submission_count: value.submission_count,
         })
     }
@@ -4554,9 +4750,10 @@ impl TryFrom<pbs::clinvar_data::clinvar_public::rcv_accession::somatic_clinical_
             value: value.value,
             clinical_impact_assertion_type: value.clinical_impact_assertion_type,
             clinical_impact_clinical_significance: value.clinical_impact_clinical_significance,
-            date_last_evaluated: value
-                .date_last_evaluated
-                .map(chrono::DateTime::<chrono::Utc>::from),
+            date_last_evaluated: value.date_last_evaluated.map(|ts| {
+                chrono::DateTime::<chrono::Utc>::from_timestamp(ts.seconds, ts.nanos as u32)
+                    .unwrap_or_default()
+            }),
             submission_count: value.submission_count,
         })
     }
@@ -4616,9 +4813,10 @@ impl
     ) -> Result<Self, Self::Error> {
         Ok(Self {
             value: value.value,
-            date_last_evaluated: value
-                .date_last_evaluated
-                .map(chrono::DateTime::<chrono::Utc>::from),
+            date_last_evaluated: value.date_last_evaluated.map(|ts| {
+                chrono::DateTime::<chrono::Utc>::from_timestamp(ts.seconds, ts.nanos as u32)
+                    .unwrap_or_default()
+            }),
             submission_count: value.submission_count,
         })
     }
@@ -4704,7 +4902,45 @@ pub struct ClassifiedRecord {
     pub general_citations: Vec<GeneralCitations>,
 }
 
-// XXX
+impl TryFrom<pbs::clinvar_data::clinvar_public::ClassifiedRecord> for ClassifiedRecord {
+    type Error = anyhow::Error;
+
+    fn try_from(
+        value: pbs::clinvar_data::clinvar_public::ClassifiedRecord,
+    ) -> Result<Self, Self::Error> {
+        Ok(Self {
+            simple_allele: value.simple_allele.map(Allele::try_from).transpose()?,
+            haplotype: value.haplotype.map(Haplotype::try_from).transpose()?,
+            genotype: value.genotype.map(Genotype::try_from).transpose()?,
+            rcv_list: value.rcv_list.map(RcvList::try_from).transpose()?,
+            classifications: value
+                .classifications
+                .map(AggregateClassificationSet::try_from)
+                .transpose()?,
+            clinical_assertions: value
+                .clinical_assertions
+                .into_iter()
+                .map(ClinicalAssertion::try_from)
+                .collect::<Result<Vec<_>, _>>()?,
+            trait_mappings: value
+                .trait_mappings
+                .into_iter()
+                .map(RcvTraitMapping::try_from)
+                .collect::<Result<Vec<_>, _>>()?,
+            deleted_scvs: value
+                .deleted_scvs
+                .into_iter()
+                .map(DeletedScv::try_from)
+                .collect::<Result<Vec<_>, _>>()?,
+            general_citations: value
+                .general_citations
+                .into_iter()
+                .map(GeneralCitations::try_from)
+                .collect::<Result<Vec<_>, _>>()?,
+        })
+    }
+}
+
 /// Local type for tag `RCVList`.
 #[derive(Clone, Debug, serde::Serialize, serde::Deserialize, utoipa::ToSchema)]
 pub struct RcvList {
@@ -4716,17 +4952,21 @@ pub struct RcvList {
     pub independent_observations: Option<i32>,
 }
 
-impl From<pbs::clinvar_data::clinvar_public::classified_record::RcvList> for RcvList {
-    fn from(value: pbs::clinvar_data::clinvar_public::classified_record::RcvList) -> Self {
-        Self {
+impl TryFrom<pbs::clinvar_data::clinvar_public::classified_record::RcvList> for RcvList {
+    type Error = anyhow::Error;
+
+    fn try_from(
+        value: pbs::clinvar_data::clinvar_public::classified_record::RcvList,
+    ) -> Result<Self, anyhow::Error> {
+        Ok(Self {
             rcv_accessions: value
                 .rcv_accessions
                 .into_iter()
-                .map(RcvAccession::from)
-                .collect(),
+                .map(RcvAccession::try_from)
+                .collect::<Result<Vec<_>, _>>()?,
             submission_count: value.submission_count,
             independent_observations: value.independent_observations,
-        }
+        })
     }
 }
 
@@ -4913,21 +5153,32 @@ impl TryFrom<pbs::clinvar_data::clinvar_public::VariationArchive> for VariationA
             variation_id: value.variation_id,
             variation_name: value.variation_name,
             variation_type: value.variation_type,
-            date_created: value
-                .date_created
-                .map(chrono::DateTime::<chrono::Utc>::from),
-            date_last_updated: value
-                .date_last_updated
-                .map(chrono::DateTime::<chrono::Utc>::from),
-            most_recent_submission: value
-                .most_recent_submission
-                .map(chrono::DateTime::<chrono::Utc>::from),
+            date_created: value.date_created.map(|ts| {
+                chrono::DateTime::<chrono::Utc>::from_timestamp(ts.seconds, ts.nanos as u32)
+                    .unwrap_or_default()
+            }),
+            date_last_updated: value.date_last_updated.map(|ts| {
+                chrono::DateTime::<chrono::Utc>::from_timestamp(ts.seconds, ts.nanos as u32)
+                    .unwrap_or_default()
+            }),
+            most_recent_submission: value.most_recent_submission.map(|ts| {
+                chrono::DateTime::<chrono::Utc>::from_timestamp(ts.seconds, ts.nanos as u32)
+                    .unwrap_or_default()
+            }),
             accession: value.accession,
             version: value.version,
             number_of_submitters: value.number_of_submitters,
             number_of_submissions: value.number_of_submissions,
-            record_type: value.record_type.try_into()?,
-            record_status: value.record_status.try_into()?,
+            record_type: VariationArchiveRecordType::try_from(
+                pbs::clinvar_data::clinvar_public::variation_archive::RecordType::try_from(
+                    value.record_type,
+                )?,
+            )?,
+            record_status: VariationArchiveRecordStatus::try_from(
+                pbs::clinvar_data::clinvar_public::variation_archive::RecordStatus::try_from(
+                    value.record_status,
+                )?,
+            )?,
             replaced_by: value.replaced_by.map(TryInto::try_into).transpose()?,
             replaceds: value
                 .replaceds
@@ -5056,9 +5307,10 @@ impl TryFrom<pbs::clinvar_data::clinvar_public::ClinvarVariationRelease>
         value: pbs::clinvar_data::clinvar_public::ClinvarVariationRelease,
     ) -> Result<Self, Self::Error> {
         Ok(Self {
-            release_date: value
-                .release_date
-                .map(chrono::DateTime::<chrono::Utc>::from),
+            release_date: value.release_date.map(|ts| {
+                chrono::DateTime::<chrono::Utc>::from_timestamp(ts.seconds, ts.nanos as u32)
+                    .unwrap_or_default()
+            }),
             variation_archives: value
                 .variation_archives
                 .into_iter()
@@ -5972,6 +6224,7 @@ impl TryFrom<pbs::clinvar_data::clinvar_public::ProteinSequence> for ProteinSequ
     }
 }
 
+/// Enumeration describing phenotype set.
 #[derive(
     Clone,
     Copy,
