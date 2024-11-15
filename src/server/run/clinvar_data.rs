@@ -1783,8 +1783,7 @@ impl TryFrom<pbs::clinvar_data::clinvar_public::Submitter> for Submitter {
         Ok(Submitter {
             submitter_identifiers: value
                 .submitter_identifiers
-                .map(|x| x.try_into())
-                .transpose()?,
+                .map(|x| x.into()),
             r#type: SubmitterType::try_from(
                 pbs::clinvar_data::clinvar_public::submitter::Type::try_from(value.r#type)?,
             )?,
