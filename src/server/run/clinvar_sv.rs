@@ -1,9 +1,10 @@
-//! Code for `/clinvar-sv/query` endpoint.
+//! Implementation of endpoint `/api/v1/strucvars/clinvar/query`.
+//!
+//! Also includes the implementation of the `/clinvar-sv/query` endpoint (deprecated).
 
 use actix_web::{
     get,
     web::{self, Data, Json, Path},
-    Responder,
 };
 
 use crate::common::{cli::GenomeRelease, spdi};
@@ -11,7 +12,8 @@ use crate::common::{cli::GenomeRelease, spdi};
 use super::error::CustomError;
 use serde_with::{formats::CommaSeparator, StringWithSeparator};
 
-use crate::pbs::clinvar_data::extracted_vars::VariationType;
+use crate::pbs::clinvar_data::extracted_vars::VariationType as PbVariationType;
+use crate::server::run::clinvar_data::ExtractedVariationType;
 
 /// The default page size to use.
 const DEFAULT_PAGE_SIZE: u32 = 100;
@@ -24,11 +26,10 @@ const DEFAULT_MIN_OVERLAP: f64 = 0.5;
 /// JSON serialized protobufs.
 #[serde_with::skip_serializing_none]
 #[serde_with::serde_as]
-#[derive(serde::Serialize, serde::Deserialize, Debug, Clone)]
+#[derive(Debug, Clone, serde::Serialize, serde::Deserialize)]
 #[serde(rename_all = "camelCase")]
 struct Request {
     /// Genome release specification.
-    #[allow(dead_code)]
     pub genome_release: String,
     /// Chromosome name.
     pub chromosome: String,
@@ -37,8 +38,8 @@ struct Request {
     /// 1-based stop postion.
     pub stop: u32,
     /// Optionally, the variant types.
-    #[serde_as(as = "Option<StringWithSeparator::<CommaSeparator, VariationType>>")]
-    pub variation_types: Option<Vec<VariationType>>,
+    #[serde_as(as = "Option<StringWithSeparator::<CommaSeparator, PbVariationType>>")]
+    pub variation_types: Option<Vec<PbVariationType>>,
     /// Optionally, minimal overlap.
     pub min_overlap: Option<f64>,
     /// Optional 1-based page number.
@@ -69,19 +70,16 @@ where
     }
 }
 
-/// Query for annotations for one variant.
-#[allow(clippy::option_map_unit_fn)]
-#[get("/clinvar-sv/query")]
-async fn handle(
+/// Implementation of both endpoints.
+async fn handle_impl(
     data: Data<crate::server::run::WebServerData>,
     _path: Path<()>,
-    query: web::Query<Request>,
-) -> actix_web::Result<impl Responder, CustomError> {
+    query: Request,
+) -> actix_web::Result<crate::pbs::clinvar::sv::ResponsePage, CustomError> {
     // Parse out genome release.
     let genome_release: GenomeRelease =
         query
             .clone()
-            .into_inner()
             .genome_release
             .parse()
             .map_err(|e: strum::ParseError| {
@@ -184,8 +182,176 @@ async fn handle(
         total_pages,
     };
 
-    Ok(Json(crate::pbs::clinvar::sv::ResponsePage {
+    Ok(crate::pbs::clinvar::sv::ResponsePage {
         records,
         page_info: Some(page_info),
-    }))
+    })
+}
+
+/// Query for annotations for one variant.
+#[get("/clinvar-sv/query")]
+async fn handle(
+    data: Data<crate::server::run::WebServerData>,
+    path: Path<()>,
+    query: web::Query<Request>,
+) -> actix_web::Result<Json<crate::pbs::clinvar::sv::ResponsePage>, CustomError> {
+    Ok(Json(handle_impl(data, path, query.into_inner()).await?))
+}
+
+/// Query of the `/api/v1/strucvars/clinvar-annos/query` endpoint.
+#[serde_with::skip_serializing_none]
+#[serde_with::serde_as]
+#[derive(
+    Debug, Clone, serde::Serialize, serde::Deserialize, utoipa::ToSchema, utoipa::IntoParams,
+)]
+pub(crate) struct StrucvarsClinvarQuery {
+    /// Genome release specification.
+    pub genome_release: GenomeRelease,
+    /// Chromosome name.
+    pub chromosome: String,
+    /// 1-based start position.
+    pub start: u32,
+    /// 1-based stop postion.
+    pub stop: u32,
+    /// Optionally, the variant types.
+    #[serde_as(as = "Option<StringWithSeparator::<CommaSeparator, ExtractedVariationType>>")]
+    pub variation_types: Option<Vec<ExtractedVariationType>>,
+    /// Optionally, minimal overlap.
+    pub min_overlap: Option<f64>,
+    /// Optional 1-based page number.
+    pub page_no: Option<u32>,
+    /// Optional page size.
+    pub page_size: Option<u32>,
+}
+
+impl Into<Request> for StrucvarsClinvarQuery {
+    fn into(self) -> Request {
+        Request {
+            genome_release: self.genome_release.to_string(),
+            chromosome: self.chromosome,
+            start: self.start,
+            stop: self.stop,
+            variation_types: self
+                .variation_types
+                .map(|v| v.into_iter().map(Into::into).collect()),
+            min_overlap: self.min_overlap,
+            page_no: self.page_no,
+            page_size: self.page_size,
+        }
+    }
+}
+
+/// Module with response information.
+pub mod response {
+    use crate::server::run::clinvar_data::ExtractedVcvRecord;
+
+    /// Information on one response record.
+    #[derive(
+        Debug, Clone, serde::Serialize, serde::Deserialize, utoipa::ToSchema, utoipa::ToResponse,
+    )]
+    pub struct ResponseRecord {
+        /// The record.
+        pub record: Option<ExtractedVcvRecord>,
+        /// The reciprocal overlap with the query.
+        pub overlap: f64,
+    }
+
+    impl TryFrom<crate::pbs::clinvar::sv::ResponseRecord> for ResponseRecord {
+        type Error = anyhow::Error;
+
+        fn try_from(value: crate::pbs::clinvar::sv::ResponseRecord) -> Result<Self, Self::Error> {
+            Ok(Self {
+                record: value.record.map(|record| record.try_into()).transpose()?,
+                overlap: value.overlap,
+            })
+        }
+    }
+
+    /// Information regarding the pagination.
+    #[derive(
+        Debug, Clone, serde::Serialize, serde::Deserialize, utoipa::ToSchema, utoipa::ToResponse,
+    )]
+    pub struct StrucvarsClinvarPageInfo {
+        /// The total number of records.
+        pub total: u32,
+        /// The number of records per page.
+        pub per_page: u32,
+        /// The current page number.
+        pub current_page: u32,
+        /// The total number of pages.
+        pub total_pages: u32,
+    }
+
+    impl From<crate::pbs::clinvar::sv::PageInfo> for StrucvarsClinvarPageInfo {
+        fn from(value: crate::pbs::clinvar::sv::PageInfo) -> Self {
+            Self {
+                total: value.total,
+                per_page: value.per_page,
+                current_page: value.current_page,
+                total_pages: value.total_pages,
+            }
+        }
+    }
+
+    /// Response of the `/api/v1/strucvars/clinvar-annos/query` endpoint.
+    #[derive(
+        Debug, Clone, serde::Serialize, serde::Deserialize, utoipa::ToSchema, utoipa::ToResponse,
+    )]
+    pub struct StrucvarsClinvarResponse {
+        /// The records in this page.
+        pub records: Vec<ResponseRecord>,
+        /// Pagination information.
+        pub page_info: StrucvarsClinvarPageInfo,
+    }
+
+    impl TryFrom<crate::pbs::clinvar::sv::ResponsePage> for StrucvarsClinvarResponse {
+        type Error = anyhow::Error;
+
+        fn try_from(value: crate::pbs::clinvar::sv::ResponsePage) -> Result<Self, Self::Error> {
+            Ok(Self {
+                records: value
+                    .records
+                    .into_iter()
+                    .map(|record| record.try_into())
+                    .collect::<Result<_, _>>()?,
+                page_info: value
+                    .page_info
+                    .map(|page_info| page_info.into())
+                    .ok_or_else(|| anyhow::anyhow!("missing page_info in response"))?,
+            })
+        }
+    }
+}
+
+use response::*;
+
+/// Endpoint for querying ClinVar SV annotations.
+#[utoipa::path(
+    get,
+    operation_id = "strucvarsClinvarQuery",
+    params(StrucvarsClinvarQuery),
+    responses(
+        (status = 200, description = "Clinvar strucvars information.", body = StrucvarsClinvarResponse),
+        (status = 500, description = "Internal server error.", body = CustomError)
+    )
+)]
+#[get("/api/v1/strucvars/clinvar/query")]
+async fn handle_with_openapi(
+    data: Data<crate::server::run::WebServerData>,
+    path: Path<()>,
+    query: web::Query<StrucvarsClinvarQuery>,
+) -> actix_web::Result<Json<StrucvarsClinvarResponse>, CustomError> {
+    Ok(Json(
+        handle_impl(
+            data,
+            path,
+            TryInto::<Request>::try_into(query.into_inner()).map_err(|e| {
+                CustomError::new(anyhow::anyhow!("Query conversion error: {:?}", e))
+            })?,
+        )
+        .await
+        .map_err(|e| CustomError::new(anyhow::anyhow!("Implementaion error: {:?}", e)))?
+        .try_into()
+        .map_err(|e| CustomError::new(anyhow::anyhow!("Response conversion error: {:?}", e)))?,
+    ))
 }

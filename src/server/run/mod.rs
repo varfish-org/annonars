@@ -38,6 +38,7 @@ use actix_web::{middleware::Logger, web::Data, App, HttpServer};
 pub mod openapi {
     use crate::{
         common::cli::GenomeRelease,
+        server::run::clinvar_sv::{self, response::*, StrucvarsClinvarQuery},
         server::run::genes_info::{self, response::*},
         server::run::genes_lookup::{self, GenesLookupResponse, GenesLookupResultEntry},
         server::run::genes_search::{
@@ -55,6 +56,7 @@ pub mod openapi {
     #[openapi(
         paths(
             versions::handle,
+            clinvar_sv::handle_with_openapi,
             genes_info::handle_with_openapi,
             genes_lookup::handle_with_openapi,
             genes_search::handle_with_openapi
@@ -119,7 +121,11 @@ pub mod openapi {
             GenesScoredGeneNames,
             GeneNames,
             GenesLookupResponse,
-            GenesLookupResultEntry
+            GenesLookupResultEntry,
+            StrucvarsClinvarQuery,
+            StrucvarsClinvarPageInfo,
+            ResponseRecord,
+            StrucvarsClinvarResponse
         ))
     )]
     pub struct ApiDoc;
@@ -141,6 +147,7 @@ pub async fn main(args: &Args, dbs: Data<WebServerData>) -> std::io::Result<()> 
             .service(annos_range::handle)
             .service(annos_db_info::handle)
             .service(clinvar_sv::handle)
+            .service(clinvar_sv::handle_with_openapi)
             .service(genes_clinvar::handle)
             .service(genes_info::handle)
             .service(genes_info::handle_with_openapi)

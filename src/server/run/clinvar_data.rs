@@ -1781,9 +1781,7 @@ impl TryFrom<pbs::clinvar_data::clinvar_public::Submitter> for Submitter {
 
     fn try_from(value: pbs::clinvar_data::clinvar_public::Submitter) -> Result<Self, Self::Error> {
         Ok(Submitter {
-            submitter_identifiers: value
-                .submitter_identifiers
-                .map(|x| x.into()),
+            submitter_identifiers: value.submitter_identifiers.map(|x| x.into()),
             r#type: SubmitterType::try_from(
                 pbs::clinvar_data::clinvar_public::submitter::Type::try_from(value.r#type)?,
             )?,
@@ -6700,8 +6698,11 @@ impl TryFrom<pbs::clinvar_data::extracted_vars::ExtractedVcvRecord> for Extracte
     Ord,
     serde::Serialize,
     serde::Deserialize,
+    strum::Display,
+    strum::EnumString,
     utoipa::ToSchema,
 )]
+#[strum(serialize_all = "snake_case")]
 pub enum ExtractedVariationType {
     /// Corresponds to "insertion".
     Insertion,
@@ -6777,5 +6778,49 @@ impl TryFrom<pbs::clinvar_data::extracted_vars::VariationType> for ExtractedVari
             }
             _ => anyhow::bail!("Invalid variation type {:?}", value),
         })
+    }
+}
+
+impl Into<pbs::clinvar_data::extracted_vars::VariationType> for ExtractedVariationType {
+    fn into(self) -> pbs::clinvar_data::extracted_vars::VariationType {
+        match self {
+            ExtractedVariationType::Insertion => {
+                pbs::clinvar_data::extracted_vars::VariationType::Insertion
+            }
+            ExtractedVariationType::Deletion => {
+                pbs::clinvar_data::extracted_vars::VariationType::Deletion
+            }
+            ExtractedVariationType::Snv => pbs::clinvar_data::extracted_vars::VariationType::Snv,
+            ExtractedVariationType::Indel => {
+                pbs::clinvar_data::extracted_vars::VariationType::Indel
+            }
+            ExtractedVariationType::Duplication => {
+                pbs::clinvar_data::extracted_vars::VariationType::Duplication
+            }
+            ExtractedVariationType::TandemDuplication => {
+                pbs::clinvar_data::extracted_vars::VariationType::TandemDuplication
+            }
+            ExtractedVariationType::StructuralVariant => {
+                pbs::clinvar_data::extracted_vars::VariationType::StructuralVariant
+            }
+            ExtractedVariationType::CopyNumberGain => {
+                pbs::clinvar_data::extracted_vars::VariationType::CopyNumberGain
+            }
+            ExtractedVariationType::CopyNumberLoss => {
+                pbs::clinvar_data::extracted_vars::VariationType::CopyNumberLoss
+            }
+            ExtractedVariationType::ProteinOnly => {
+                pbs::clinvar_data::extracted_vars::VariationType::ProteinOnly
+            }
+            ExtractedVariationType::Microsatellite => {
+                pbs::clinvar_data::extracted_vars::VariationType::Microsatellite
+            }
+            ExtractedVariationType::Inversion => {
+                pbs::clinvar_data::extracted_vars::VariationType::Inversion
+            }
+            ExtractedVariationType::Other => {
+                pbs::clinvar_data::extracted_vars::VariationType::Other
+            }
+        }
     }
 }
