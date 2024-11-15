@@ -81,7 +81,6 @@ async fn handle_impl(
 }
 
 /// Query for annotations for one or more genes.
-#[allow(clippy::option_map_unit_fn)]
 #[get("/genes/info")]
 async fn handle(
     data: Data<crate::server::run::WebServerData>,
@@ -2484,7 +2483,6 @@ pub mod response {
 use response::*;
 
 /// Query for annotations for one or more genes.
-#[allow(clippy::option_map_unit_fn)]
 #[utoipa::path(
     get,
     operation_id = "genesInfo",
