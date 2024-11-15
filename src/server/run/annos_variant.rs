@@ -67,7 +67,6 @@ struct Container {
 }
 
 /// Query for annotations for one variant.
-#[allow(clippy::option_map_unit_fn)]
 #[get("/annos/variant")]
 async fn handle(
     data: Data<crate::server::run::WebServerData>,
