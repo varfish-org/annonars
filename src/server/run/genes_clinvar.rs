@@ -18,7 +18,7 @@ use serde_with::{formats::CommaSeparator, StringWithSeparator};
     Debug, Clone, serde::Serialize, serde::Deserialize, utoipa::ToSchema, utoipa::IntoParams,
 )]
 #[serde(rename_all = "snake_case")]
-struct GenesClinvarQuery {
+pub struct GenesClinvarQuery {
     /// The HGNC IDs to search for.
     #[serde_as(as = "Option<StringWithSeparator::<CommaSeparator, String>>")]
     pub hgnc_id: Option<Vec<String>>,
@@ -96,254 +96,19 @@ async fn handle(
 /// Types used in the response.
 pub(crate) mod response {
     use crate::pbs;
-
-    /// Accession with version.
-    pub struct VersionedAccession {
-        /// The accession.
-        pub accession: String,
-        /// The version.
-        pub version: i32,
-    }
-
-    impl From<pbs::clinvar_data::extracted_vars::VersionedAccession> for VersionedAccession {
-        fn from(value: pbs::clinvar_data::extracted_vars::VersionedAccession) -> Self {
-            Self {
-                accession: value.accession,
-                version: value.version,
-            }
-        }
-    }
-
-    /// Local type for ClassifiedConditionList.
-    ///
-    /// nested elements
-    #[derive(Debug, Clone, serde::Serialize, serde::Deserialize, utoipa::ToSchema)]
-    pub struct ClassifiedConditionList {
-        /// List of interpreted conditions.
-        pub classified_conditions: ::prost::alloc::vec::Vec<super::ClassifiedCondition>,
-        /// Trait set ID.
-        pub trait_set_id: Option<i64>,
-    }
-
-    /// Local type for GermlineClassification.
-    ///
-    /// The aggregate review status based on
-    /// all germline submissions for this record.
-    #[derive(Debug, Clone, serde::Serialize, serde::Deserialize, utoipa::ToSchema)]
-    pub struct GermlineClassification {
-        /// The aggregate review status based on
-        /// all somatic clinical impact submissions for this
-        /// record.
-        pub review_status: i32,
-        /// The oncogenicity description.
-        pub description: Option<germline_classification::Description>,
-    }
-
-    /// Nested message and enum types in `GermlineClassification`.
-    pub mod germline_classification {
-        /// Local type for Description.
-        #[derive(Debug, Clone, serde::Serialize, serde::Deserialize, utoipa::ToSchema)]
-        pub struct Description {
-            /// The description.
-            pub value: String,
-            /// The date of the description.
-            pub date_last_evaluated: Option<::pbjson_types::Timestamp>,
-            /// The number of submissions.
-            pub submission_count: Option<u32>,
-        }
-    }
-    /// Local type for SomaticClinicalImpact.
-    ///
-    /// The aggregate review status based on
-    /// all somatic clinical impact submissions for this
-    /// record.
-    #[derive(Debug, Clone, serde::Serialize, serde::Deserialize, utoipa::ToSchema)]
-    pub struct SomaticClinicalImpact {
-        /// The aggregate review status based on
-        /// all somatic clinical impact submissions for this
-        /// record.
-        pub review_status: i32,
-        /// The oncogenicity description.
-        pub descriptions: ::prost::alloc::vec::Vec<somatic_clinical_impact::Description>,
-    }
-
-    /// Local type for Description.
-    #[derive(Debug, Clone, serde::Serialize, serde::Deserialize, utoipa::ToSchema)]
-    pub struct Description {
-        /// The description.
-        pub value: String,
-        /// Clinical impact assertion type.
-        pub clinical_impact_assertion_type: Option<String>,
-        /// Clinical impact significance
-        pub clinical_impact_clinical_significance: Option<String>,
-        /// The date of the description.
-        pub date_last_evaluated: Option<::pbjson_types::Timestamp>,
-        /// The number of submissions.
-        pub submission_count: Option<u32>,
-    }
-
-    /// Local type for OncogenicityClassification.
-    #[derive(Debug, Clone, serde::Serialize, serde::Deserialize, utoipa::ToSchema)]
-    pub struct OncogenicityClassification {
-        /// The aggregate review status based on
-        /// all oncogenic submissions for this record.
-        pub review_status: i32,
-        /// The oncogenicity description.
-        pub description: Option<oncogenicity_classification::Description>,
-    }
-
-    /// Local type for Description.
-    #[derive(Debug, Clone, serde::Serialize, serde::Deserialize, utoipa::ToSchema)]
-    pub struct Description {
-        /// The description.
-        pub value: String,
-        /// The date of the description.
-        pub date_last_evaluated: Option<::pbjson_types::Timestamp>,
-        /// The number of submissions.
-        pub submission_count: Option<u32>,
-    }
-    /// Local type for RCV classifications.
-    #[derive(Debug, Clone, serde::Serialize, serde::Deserialize, utoipa::ToSchema)]
-    pub struct RcvClassifications {
-        /// Germline classification.
-        pub germline_classification: Option<GermlineClassification>,
-        /// Somatic clinical impact.
-        pub somatic_clinical_impact: Option<SomaticClinicalImpact>,
-        /// Oncogenicity classification.
-        pub oncogenicity_classification: Option<OncogenicityClassification>,
-    }
-
-    /// Protocol buffer for storing essential information of one RCV.
-    #[derive(Debug, Clone, serde::Serialize, serde::Deserialize, utoipa::ToSchema)]
-    pub struct ExtractedRcvRecord {
-        /// The accession.
-        pub accession: Option<VersionedAccession>,
-        /// Title of RCV.
-        pub title: String,
-        /// Classifications (thinned out).
-        pub classifications: Option<RcvClassifications>,
-    }
-
-    /// Protocol buffer for storing essential information of one VCV.
-    #[derive(Debug, Clone, serde::Serialize, serde::Deserialize, utoipa::ToSchema)]
-    pub struct ExtractedVcvRecord {
-        /// The accession.
-        pub accession: Option<VersionedAccession>,
-        /// List of aggregated RCVs.
-        pub rcvs: Vec<ExtractedRcvRecord>,
-        /// Name of VCV.
-        pub name: String,
-        /// The type of the variant.
-        pub variation_type: i32,
-        /// Classifications (thinned out).
-        pub classifications: Option<super::clinvar_public::AggregateClassificationSet>,
-        /// Clinical assertions (thinned out),
-        pub clinical_assertions: Vec<super::clinvar_public::ClinicalAssertion>,
-        /// The sequence location on one reference.
-        pub sequence_location: Option<super::clinvar_public::location::SequenceLocation>,
-        /// List of HGNC IDs.
-        pub hgnc_ids: Vec<String>,
-    }
-
-    /// Enumeration for the type of the variant.
-    #[derive(
-        Clone,
-        Copy,
-        Debug,
-        PartialEq,
-        Eq,
-        Hash,
-        PartialOrd,
-        Ord,
-        serde::Serialize,
-        serde::Deserialize,
-        utoipa::ToSchema,
-    )]
-    pub enum VariationType {
-        /// Corresponds to "insertion".
-        Insertion,
-        /// Corresponds to "deletion".
-        Deletion,
-        /// Corresponds to "single nucleotide variant".
-        Snv,
-        /// Corresponds to "indel".
-        Indel,
-        /// Corresponds to "duplication".
-        Duplication,
-        /// Corresponds to "tandem duplication".
-        TandemDuplication,
-        /// Corresponds to "structural variant".
-        StructuralVariant,
-        /// Corresponds to "copy number gain".
-        CopyNumberGain,
-        /// Corresponds to "copy number loss".
-        CopyNumberLoss,
-        /// Corresponds to "protein only".
-        ProteinOnly,
-        /// Corresponds to "microsatellite".
-        Microsatellite,
-        /// Corresponds to "inversion".
-        Inversion,
-        /// Corresponds to "other".
-        Other,
-    }
-
-    impl TryFrom<pbs::clinvar_data::extracted_vars::VariationType> for VariationType {
-        type Error = anyhow::Error;
-
-        fn try_from(
-            value: pbs::clinvar_data::extracted_vars::VariationType,
-        ) -> Result<Self, Self::Error> {
-            match value {
-                pbs::clinvar_data::extracted_vars::VariationType::Insertion => {
-                    Ok(VariationType::Insertion)
-                }
-                pbs::clinvar_data::extracted_vars::VariationType::Deletion => {
-                    Ok(VariationType::Deletion)
-                }
-                pbs::clinvar_data::extracted_vars::VariationType::Snv => Ok(VariationType::Snv),
-                pbs::clinvar_data::extracted_vars::VariationType::Indel => Ok(VariationType::Indel),
-                pbs::clinvar_data::extracted_vars::VariationType::Duplication => {
-                    Ok(VariationType::Duplication)
-                }
-                pbs::clinvar_data::extracted_vars::VariationType::TandemDuplication => {
-                    Ok(VariationType::TandemDuplication)
-                }
-                pbs::clinvar_data::extracted_vars::VariationType::StructuralVariant => {
-                    Ok(VariationType::StructuralVariant)
-                }
-                pbs::clinvar_data::extracted_vars::VariationType::CopyNumberGain => {
-                    Ok(VariationType::CopyNumberGain)
-                }
-                pbs::clinvar_data::extracted_vars::VariationType::CopyNumberLoss => {
-                    Ok(VariationType::CopyNumberLoss)
-                }
-                pbs::clinvar_data::extracted_vars::VariationType::ProteinOnly => {
-                    Ok(VariationType::ProteinOnly)
-                }
-                pbs::clinvar_data::extracted_vars::VariationType::Microsatellite => {
-                    Ok(VariationType::Microsatellite)
-                }
-                pbs::clinvar_data::extracted_vars::VariationType::Inversion => {
-                    Ok(VariationType::Inversion)
-                }
-                pbs::clinvar_data::extracted_vars::VariationType::Other => Ok(VariationType::Other),
-                _ => Err(anyhow::anyhow!("unknown value: {:?}", value)),
-            }
-        }
-    }
+    use crate::server::run::clinvar_data::ClinvarExtractedVcvRecord;
 
     /// Extracted variants per release.
     #[derive(Debug, Clone, serde::Serialize, serde::Deserialize, utoipa::ToSchema)]
-    pub struct ExtractedVariantsPerRelease {
+    pub struct GenesExtractedVariantsPerRelease {
         /// Release version.
         pub release: Option<String>,
         /// Variants per gene.
-        pub variants: Vec<ExtractedVcvRecord>,
+        pub variants: Vec<ClinvarExtractedVcvRecord>,
     }
 
     impl TryFrom<pbs::clinvar::per_gene::ExtractedVariantsPerRelease>
-        for ExtractedVariantsPerRelease
+        for GenesExtractedVariantsPerRelease
     {
         type Error = anyhow::Error;
 
@@ -353,9 +118,9 @@ pub(crate) mod response {
             let variants = value
                 .variants
                 .into_iter()
-                .map(ExtractedVcvRecord::try_from)
+                .map(ClinvarExtractedVcvRecord::try_from)
                 .collect::<Result<Vec<_>, _>>()?;
-            Ok(ExtractedVariantsPerRelease {
+            Ok(GenesExtractedVariantsPerRelease {
                 release: value.release,
                 variants,
             })
@@ -363,7 +128,7 @@ pub(crate) mod response {
     }
 
     #[derive(Debug, Clone, serde::Serialize, serde::Deserialize, utoipa::ToSchema)]
-    pub struct GeneCoarseClinsigFrequencyCounts {
+    pub struct GenesCoarseClinsigFrequencyCounts {
         /// The gene HGNC ID.
         pub hgnc_id: String,
         /// The counts for (likely) pathogenic.
@@ -375,7 +140,7 @@ pub(crate) mod response {
     }
 
     impl From<pbs::clinvar_data::class_by_freq::GeneCoarseClinsigFrequencyCounts>
-        for GeneCoarseClinsigFrequencyCounts
+        for GenesCoarseClinsigFrequencyCounts
     {
         fn from(value: pbs::clinvar_data::class_by_freq::GeneCoarseClinsigFrequencyCounts) -> Self {
             Self {
@@ -383,52 +148,6 @@ pub(crate) mod response {
                 pathogenic_counts: value.pathogenic_counts,
                 uncertain_counts: value.uncertain_counts,
                 benign_counts: value.benign_counts,
-            }
-        }
-    }
-
-    /// Enumeration for coarse-grain classification.
-    #[derive(
-        Clone,
-        Copy,
-        Debug,
-        PartialEq,
-        Eq,
-        Hash,
-        PartialOrd,
-        Ord,
-        serde::Serialize,
-        serde::Deserialize,
-        utoipa::ToSchema,
-    )]
-    pub enum CoarseClinicalSignificance {
-        /// Corresponds to "benign".
-        Benign,
-        /// Corresponds to "uncertain".
-        Uncertain,
-        /// Corresponds to "pathogenic".
-        Pathogenic,
-    }
-
-    impl TryFrom<pbs::clinvar_data::class_by_freq::CoarseClinicalSignificance>
-        for CoarseClinicalSignificance
-    {
-        type Error = anyhow::Error;
-
-        fn try_from(
-            value: pbs::clinvar_data::class_by_freq::CoarseClinicalSignificance,
-        ) -> Result<Self, Self::Error> {
-            match value {
-                pbs::clinvar_data::class_by_freq::CoarseClinicalSignificance::Benign => {
-                    Ok(CoarseClinicalSignificance::Benign)
-                }
-                pbs::clinvar_data::class_by_freq::CoarseClinicalSignificance::Uncertain => {
-                    Ok(CoarseClinicalSignificance::Uncertain)
-                }
-                pbs::clinvar_data::class_by_freq::CoarseClinicalSignificance::Pathogenic => {
-                    Ok(CoarseClinicalSignificance::Pathogenic)
-                }
-                _ => Err(anyhow::anyhow!("unknown value: {:?}", value)),
             }
         }
     }
@@ -447,7 +166,7 @@ pub(crate) mod response {
         serde::Deserialize,
         utoipa::ToSchema,
     )]
-    pub enum GeneImpact {
+    pub enum GenesGeneImpact {
         /// unspecified impact
         Unspecified,
         /// Corresponds to "3_prime_UTR_variant"
@@ -484,7 +203,7 @@ pub(crate) mod response {
         UpstreamTranscriptVariant,
     }
 
-    impl TryFrom<pbs::clinvar_data::gene_impact::GeneImpact> for GeneImpact {
+    impl TryFrom<pbs::clinvar_data::gene_impact::GeneImpact> for GenesGeneImpact {
         type Error = anyhow::Error;
 
         fn try_from(
@@ -492,51 +211,55 @@ pub(crate) mod response {
         ) -> Result<Self, Self::Error> {
             match value {
                 pbs::clinvar_data::gene_impact::GeneImpact::Unspecified => {
-                    Ok(GeneImpact::Unspecified)
+                    Ok(GenesGeneImpact::Unspecified)
                 }
                 pbs::clinvar_data::gene_impact::GeneImpact::ThreePrimeUtrVariant => {
-                    Ok(GeneImpact::ThreePrimeUtrVariant)
+                    Ok(GenesGeneImpact::ThreePrimeUtrVariant)
                 }
                 pbs::clinvar_data::gene_impact::GeneImpact::FivePrimeUtrVariant => {
-                    Ok(GeneImpact::FivePrimeUtrVariant)
+                    Ok(GenesGeneImpact::FivePrimeUtrVariant)
                 }
                 pbs::clinvar_data::gene_impact::GeneImpact::DownstreamTranscriptVariant => {
-                    Ok(GeneImpact::DownstreamTranscriptVariant)
+                    Ok(GenesGeneImpact::DownstreamTranscriptVariant)
                 }
                 pbs::clinvar_data::gene_impact::GeneImpact::FrameshiftVariant => {
-                    Ok(GeneImpact::FrameshiftVariant)
+                    Ok(GenesGeneImpact::FrameshiftVariant)
                 }
                 pbs::clinvar_data::gene_impact::GeneImpact::InframeIndel => {
-                    Ok(GeneImpact::InframeIndel)
+                    Ok(GenesGeneImpact::InframeIndel)
                 }
-                pbs::clinvar_data::gene_impact::GeneImpact::StartLost => Ok(GeneImpact::StartLost),
+                pbs::clinvar_data::gene_impact::GeneImpact::StartLost => {
+                    Ok(GenesGeneImpact::StartLost)
+                }
                 pbs::clinvar_data::gene_impact::GeneImpact::IntronVariant => {
-                    Ok(GeneImpact::IntronVariant)
+                    Ok(GenesGeneImpact::IntronVariant)
                 }
                 pbs::clinvar_data::gene_impact::GeneImpact::MissenseVariant => {
-                    Ok(GeneImpact::MissenseVariant)
+                    Ok(GenesGeneImpact::MissenseVariant)
                 }
                 pbs::clinvar_data::gene_impact::GeneImpact::NonCodingTranscriptVariant => {
-                    Ok(GeneImpact::NonCodingTranscriptVariant)
+                    Ok(GenesGeneImpact::NonCodingTranscriptVariant)
                 }
                 pbs::clinvar_data::gene_impact::GeneImpact::StopGained => {
-                    Ok(GeneImpact::StopGained)
+                    Ok(GenesGeneImpact::StopGained)
                 }
                 pbs::clinvar_data::gene_impact::GeneImpact::NoSequenceAlteration => {
-                    Ok(GeneImpact::NoSequenceAlteration)
+                    Ok(GenesGeneImpact::NoSequenceAlteration)
                 }
                 pbs::clinvar_data::gene_impact::GeneImpact::SpliceAcceptorVariant => {
-                    Ok(GeneImpact::SpliceAcceptorVariant)
+                    Ok(GenesGeneImpact::SpliceAcceptorVariant)
                 }
                 pbs::clinvar_data::gene_impact::GeneImpact::SpliceDonorVariant => {
-                    Ok(GeneImpact::SpliceDonorVariant)
+                    Ok(GenesGeneImpact::SpliceDonorVariant)
                 }
-                pbs::clinvar_data::gene_impact::GeneImpact::StopLost => Ok(GeneImpact::StopLost),
+                pbs::clinvar_data::gene_impact::GeneImpact::StopLost => {
+                    Ok(GenesGeneImpact::StopLost)
+                }
                 pbs::clinvar_data::gene_impact::GeneImpact::SynonymousVariant => {
-                    Ok(GeneImpact::SynonymousVariant)
+                    Ok(GenesGeneImpact::SynonymousVariant)
                 }
                 pbs::clinvar_data::gene_impact::GeneImpact::UpstreamTranscriptVariant => {
-                    Ok(GeneImpact::UpstreamTranscriptVariant)
+                    Ok(GenesGeneImpact::UpstreamTranscriptVariant)
                 }
             }
         }
@@ -544,9 +267,9 @@ pub(crate) mod response {
 
     /// Stores the counts for a gene impact.
     #[derive(Debug, Clone, serde::Serialize, serde::Deserialize, utoipa::ToSchema)]
-    pub struct ImpactCounts {
+    pub struct GenesImpactCounts {
         /// The gene impact.
-        pub gene_impact: GeneImpact,
+        pub gene_impact: GenesGeneImpact,
         /// The counts for the benign impact.
         pub count_benign: u32,
         /// The counts for the likely benign impact.
@@ -559,14 +282,16 @@ pub(crate) mod response {
         pub count_pathogenic: u32,
     }
 
-    impl TryFrom<pbs::clinvar_data::gene_impact::gene_impact_counts::ImpactCounts> for ImpactCounts {
+    impl TryFrom<pbs::clinvar_data::gene_impact::gene_impact_counts::ImpactCounts>
+        for GenesImpactCounts
+    {
         type Error = anyhow::Error;
 
         fn try_from(
             value: pbs::clinvar_data::gene_impact::gene_impact_counts::ImpactCounts,
         ) -> Result<Self, Self::Error> {
-            Ok(ImpactCounts {
-                gene_impact: GeneImpact::try_from(
+            Ok(GenesImpactCounts {
+                gene_impact: GenesGeneImpact::try_from(
                     pbs::clinvar_data::gene_impact::GeneImpact::try_from(value.gene_impact)?,
                 )?,
                 count_benign: value.count_benign,
@@ -580,14 +305,14 @@ pub(crate) mod response {
 
     /// Entry for storing counts of `GeneImpact` and `ClinicalSignificance`.
     #[derive(Debug, Clone, serde::Serialize, serde::Deserialize, utoipa::ToSchema)]
-    pub struct GeneImpactCounts {
+    pub struct GenesGeneImpactCounts {
         /// The gene HGNC ID.
         pub hgnc_id: String,
         /// The impact counts.
-        pub impact_counts: Vec<ImpactCounts>,
+        pub impact_counts: Vec<GenesImpactCounts>,
     }
 
-    impl TryFrom<pbs::clinvar_data::gene_impact::GeneImpactCounts> for GeneImpactCounts {
+    impl TryFrom<pbs::clinvar_data::gene_impact::GeneImpactCounts> for GenesGeneImpactCounts {
         type Error = anyhow::Error;
 
         fn try_from(
@@ -596,9 +321,9 @@ pub(crate) mod response {
             let impact_counts = value
                 .impact_counts
                 .into_iter()
-                .map(ImpactCounts::try_from)
+                .map(GenesImpactCounts::try_from)
                 .collect::<Result<Vec<_>, _>>()?;
-            Ok(GeneImpactCounts {
+            Ok(GenesGeneImpactCounts {
                 hgnc_id: value.hgnc_id,
                 impact_counts,
             })
@@ -607,16 +332,16 @@ pub(crate) mod response {
 
     /// ClinVar detailed information per gene.
     #[derive(Debug, Clone, serde::Serialize, serde::Deserialize, utoipa::ToSchema)]
-    pub struct ClinvarPerGeneRecord {
+    pub struct GenesClinvarPerGeneRecord {
         /// Counts of variants per impact
-        pub per_impact_counts: Option<GeneImpactCounts>,
+        pub per_impact_counts: Option<GenesGeneImpactCounts>,
         /// Counts of variants per impact / frequency
-        pub per_freq_counts: Option<GeneCoarseClinsigFrequencyCounts>,
+        pub per_freq_counts: Option<GenesCoarseClinsigFrequencyCounts>,
         /// Variants for the given gene.
-        pub per_release_vars: Vec<ExtractedVariantsPerRelease>,
+        pub per_release_vars: Vec<GenesExtractedVariantsPerRelease>,
     }
 
-    impl TryFrom<pbs::clinvar::per_gene::ClinvarPerGeneRecord> for ClinvarPerGeneRecord {
+    impl TryFrom<pbs::clinvar::per_gene::ClinvarPerGeneRecord> for GenesClinvarPerGeneRecord {
         type Error = anyhow::Error;
 
         fn try_from(
@@ -624,18 +349,18 @@ pub(crate) mod response {
         ) -> Result<Self, Self::Error> {
             let per_impact_counts = value
                 .per_impact_counts
-                .map(GeneImpactCounts::try_from)
+                .map(GenesGeneImpactCounts::try_from)
                 .transpose()?;
             let per_freq_counts = value
                 .per_freq_counts
-                .map(GeneCoarseClinsigFrequencyCounts::try_from)
+                .map(GenesCoarseClinsigFrequencyCounts::try_from)
                 .transpose()?;
             let per_release_vars = value
                 .per_release_vars
                 .into_iter()
-                .map(ExtractedVariantsPerRelease::try_from)
+                .map(GenesExtractedVariantsPerRelease::try_from)
                 .collect::<Result<Vec<_>, _>>()?;
-            Ok(ClinvarPerGeneRecord {
+            Ok(GenesClinvarPerGeneRecord {
                 per_impact_counts,
                 per_freq_counts,
                 per_release_vars,
@@ -649,7 +374,7 @@ pub(crate) mod response {
         /// HGNC ID of the gene.
         pub hgnc_id: String,
         /// The resulting per-gene record.
-        pub record: ClinvarPerGeneRecord,
+        pub record: GenesClinvarPerGeneRecord,
     }
 
     impl TryFrom<(String, pbs::clinvar::per_gene::ClinvarPerGeneRecord)> for GenesClinvarResponseEntry {
@@ -658,7 +383,7 @@ pub(crate) mod response {
         fn try_from(
             (hgnc_id, record): (String, pbs::clinvar::per_gene::ClinvarPerGeneRecord),
         ) -> Result<Self, Self::Error> {
-            let record = ClinvarPerGeneRecord::try_from(record)?;
+            let record = GenesClinvarPerGeneRecord::try_from(record)?;
             Ok(GenesClinvarResponseEntry { hgnc_id, record })
         }
     }
@@ -678,8 +403,13 @@ pub(crate) mod response {
             let genes = container
                 .genes
                 .into_iter()
-                .map(|(hgnc_id, record)| GenesClinvarResponseEntry { hgnc_id, record })
-                .collect();
+                .map(|(hgnc_id, record)| -> Result<_, anyhow::Error> {
+                    Ok(GenesClinvarResponseEntry {
+                        hgnc_id,
+                        record: record.try_into()?,
+                    })
+                })
+                .collect::<Result<Vec<_>, _>>()?;
             Ok(GenesClinvarResponse { genes })
         }
     }
