@@ -5,16 +5,16 @@ use crate::pbs;
 /// A structure to support reporting unformatted content, with type and
 /// source specified.
 #[derive(Clone, Debug, serde::Serialize, serde::Deserialize, utoipa::ToSchema)]
-pub struct Comment {
+pub struct ClinvarComment {
     /// The comment's value.
     pub value: String,
     /// The optional comment data source.
     pub data_source: Option<String>,
     /// The comment's type.
-    pub r#type: Option<CommentType>,
+    pub r#type: Option<ClinvarCommentType>,
 }
 
-impl TryFrom<pbs::clinvar_data::clinvar_public::Comment> for Comment {
+impl TryFrom<pbs::clinvar_data::clinvar_public::Comment> for ClinvarComment {
     type Error = anyhow::Error;
 
     fn try_from(value: pbs::clinvar_data::clinvar_public::Comment) -> Result<Self, Self::Error> {
@@ -24,9 +24,9 @@ impl TryFrom<pbs::clinvar_data::clinvar_public::Comment> for Comment {
             r#type: value
                 .r#type
                 .map(|t| {
-                    CommentType::try_from(pbs::clinvar_data::clinvar_public::CommentType::try_from(
-                        t,
-                    )?)
+                    ClinvarCommentType::try_from(
+                        pbs::clinvar_data::clinvar_public::CommentType::try_from(t)?,
+                    )
                 })
                 .transpose()?,
         })
@@ -36,7 +36,7 @@ impl TryFrom<pbs::clinvar_data::clinvar_public::Comment> for Comment {
 /// This structure is used to represent how an object described in the
 /// submission relates to objects in other databases.
 #[derive(Clone, Debug, serde::Serialize, serde::Deserialize, utoipa::ToSchema)]
-pub struct Xref {
+pub struct ClinvarXref {
     /// The name of the database. When there is an overlap with sequence
     /// databases, that name is used.
     pub db: String,
@@ -50,14 +50,14 @@ pub struct Xref {
     /// Optional URL to the database entry.
     pub url: Option<String>,
     /// The status; defaults to "current".
-    pub status: Option<Status>,
+    pub status: Option<ClinvarStatus>,
 }
 
-impl TryFrom<pbs::clinvar_data::clinvar_public::Xref> for Xref {
+impl TryFrom<pbs::clinvar_data::clinvar_public::Xref> for ClinvarXref {
     type Error = anyhow::Error;
 
     fn try_from(value: pbs::clinvar_data::clinvar_public::Xref) -> Result<Self, Self::Error> {
-        Ok(Xref {
+        Ok(ClinvarXref {
             db: value.db,
             id: value.id,
             r#type: value.r#type,
@@ -65,7 +65,9 @@ impl TryFrom<pbs::clinvar_data::clinvar_public::Xref> for Xref {
             status: value
                 .status
                 .map(|status| {
-                    Status::try_from(pbs::clinvar_data::clinvar_public::Status::try_from(status)?)
+                    ClinvarStatus::try_from(pbs::clinvar_data::clinvar_public::Status::try_from(
+                        status,
+                    )?)
                 })
                 .transpose()?,
         })
@@ -74,9 +76,9 @@ impl TryFrom<pbs::clinvar_data::clinvar_public::Xref> for Xref {
 
 /// Description of a citation.
 #[derive(Clone, Debug, serde::Serialize, serde::Deserialize, utoipa::ToSchema)]
-pub struct Citation {
+pub struct ClinvarCitation {
     /// Optional list of IDs.
-    pub ids: Vec<IdType>,
+    pub ids: Vec<ClinvarIdType>,
     /// Optional URL.
     pub url: Option<String>,
     /// Optional citation text.
@@ -88,15 +90,15 @@ pub struct Citation {
     pub abbrev: Option<String>,
 }
 
-impl TryFrom<pbs::clinvar_data::clinvar_public::Citation> for Citation {
+impl TryFrom<pbs::clinvar_data::clinvar_public::Citation> for ClinvarCitation {
     type Error = anyhow::Error;
 
     fn try_from(value: pbs::clinvar_data::clinvar_public::Citation) -> Result<Self, Self::Error> {
-        Ok(Citation {
+        Ok(ClinvarCitation {
             ids: value
                 .ids
                 .into_iter()
-                .map(IdType::try_from)
+                .map(ClinvarIdType::try_from)
                 .collect::<Result<Vec<_>, _>>()?,
             url: value.url,
             citation_text: value.citation_text,
@@ -108,16 +110,16 @@ impl TryFrom<pbs::clinvar_data::clinvar_public::Citation> for Citation {
 
 /// Local ID with source.
 #[derive(Clone, Debug, serde::Serialize, serde::Deserialize, utoipa::ToSchema)]
-pub struct IdType {
+pub struct ClinvarIdType {
     /// The citation's value.
     pub value: String,
     /// If there is an identifier, what database provides it.
     pub source: String,
 }
 
-impl From<pbs::clinvar_data::clinvar_public::citation::IdType> for IdType {
+impl From<pbs::clinvar_data::clinvar_public::citation::IdType> for ClinvarIdType {
     fn from(value: pbs::clinvar_data::clinvar_public::citation::IdType) -> Self {
-        IdType {
+        ClinvarIdType {
             value: value.value,
             source: value.source,
         }
@@ -133,7 +135,7 @@ impl From<pbs::clinvar_data::clinvar_public::citation::IdType> for IdType {
 /// of AttributeType and should be used with extension when it is used to specify Type
 /// and its enumerations.
 #[derive(Clone, Debug, serde::Serialize, serde::Deserialize, utoipa::ToSchema)]
-pub struct BaseAttribute {
+pub struct ClinvarBaseAttribute {
     /// The attribute's value; can be empty.
     pub value: Option<String>,
     /// The optional integer value.
@@ -142,13 +144,13 @@ pub struct BaseAttribute {
     pub date_value: Option<chrono::DateTime<chrono::Utc>>,
 }
 
-impl TryFrom<pbs::clinvar_data::clinvar_public::BaseAttribute> for BaseAttribute {
+impl TryFrom<pbs::clinvar_data::clinvar_public::BaseAttribute> for ClinvarBaseAttribute {
     type Error = anyhow::Error;
 
     fn try_from(
         value: pbs::clinvar_data::clinvar_public::BaseAttribute,
     ) -> Result<Self, Self::Error> {
-        Ok(BaseAttribute {
+        Ok(ClinvarBaseAttribute {
             value: value.value,
             integer_value: value.integer_value,
             date_value: value.date_value.map(|x| {
@@ -163,11 +165,11 @@ impl TryFrom<pbs::clinvar_data::clinvar_public::BaseAttribute> for BaseAttribute
 ///
 /// Corresponds to `typeNucleotideSequenceExpression`
 #[derive(Clone, Debug, serde::Serialize, serde::Deserialize, utoipa::ToSchema)]
-pub struct HgvsNucleotideExpression {
+pub struct ClinvarHgvsNucleotideExpression {
     /// The expression values.
     pub expression: String,
     /// The type of the nucleotide sequence.
-    pub sequence_type: Option<NucleotideSequence>,
+    pub sequence_type: Option<ClinvarNucleotideSequence>,
     /// Optional sequence accession version.
     pub sequence_accession_version: Option<String>,
     /// Optional sequence accession.
@@ -187,19 +189,19 @@ pub struct HgvsNucleotideExpression {
 }
 
 impl TryFrom<pbs::clinvar_data::clinvar_public::HgvsNucleotideExpression>
-    for HgvsNucleotideExpression
+    for ClinvarHgvsNucleotideExpression
 {
     type Error = anyhow::Error;
 
     fn try_from(
         value: pbs::clinvar_data::clinvar_public::HgvsNucleotideExpression,
     ) -> Result<Self, Self::Error> {
-        Ok(HgvsNucleotideExpression {
+        Ok(ClinvarHgvsNucleotideExpression {
             expression: value.expression,
             sequence_type: value
                 .sequence_type
                 .map(|sequence_type| {
-                    NucleotideSequence::try_from(
+                    ClinvarNucleotideSequence::try_from(
                         pbs::clinvar_data::clinvar_public::NucleotideSequence::try_from(
                             sequence_type,
                         )?,
@@ -222,7 +224,7 @@ impl TryFrom<pbs::clinvar_data::clinvar_public::HgvsNucleotideExpression>
 ///
 /// Corresponds to `typeProteinSequenceExpression` in XSD.
 #[derive(Clone, Debug, serde::Serialize, serde::Deserialize, utoipa::ToSchema)]
-pub struct HgvsProteinExpression {
+pub struct ClinvarHgvsProteinExpression {
     /// The expression values.
     pub expression: String,
     /// Optional sequence accession version.
@@ -235,13 +237,15 @@ pub struct HgvsProteinExpression {
     pub change: Option<String>,
 }
 
-impl TryFrom<pbs::clinvar_data::clinvar_public::HgvsProteinExpression> for HgvsProteinExpression {
+impl TryFrom<pbs::clinvar_data::clinvar_public::HgvsProteinExpression>
+    for ClinvarHgvsProteinExpression
+{
     type Error = anyhow::Error;
 
     fn try_from(
         value: pbs::clinvar_data::clinvar_public::HgvsProteinExpression,
     ) -> Result<Self, Self::Error> {
-        Ok(HgvsProteinExpression {
+        Ok(ClinvarHgvsProteinExpression {
             expression: value.expression,
             sequence_accession_version: value.sequence_accession_version,
             sequence_accession: value.sequence_accession,
@@ -260,26 +264,26 @@ impl TryFrom<pbs::clinvar_data::clinvar_public::HgvsProteinExpression> for HgvsP
 ///
 /// nested elements
 #[derive(Clone, Debug, serde::Serialize, serde::Deserialize, utoipa::ToSchema)]
-pub struct HgvsExpression {
+pub struct ClinvarHgvsExpression {
     /// Optional nucleotide sequence expression.
-    pub nucleotide_expression: Option<HgvsNucleotideExpression>,
+    pub nucleotide_expression: Option<ClinvarHgvsNucleotideExpression>,
     /// Optional protein sequence expression.
-    pub protein_expression: Option<HgvsProteinExpression>,
+    pub protein_expression: Option<ClinvarHgvsProteinExpression>,
     /// List of molecular consequences.
-    pub molecular_consequences: Vec<Xref>,
+    pub molecular_consequences: Vec<ClinvarXref>,
     /// Type of HGVS expression.
-    pub r#type: HgvsType,
+    pub r#type: ClinvarHgvsType,
     /// Optional assembly.
     pub assembly: Option<String>,
 }
 
-impl TryFrom<pbs::clinvar_data::clinvar_public::HgvsExpression> for HgvsExpression {
+impl TryFrom<pbs::clinvar_data::clinvar_public::HgvsExpression> for ClinvarHgvsExpression {
     type Error = anyhow::Error;
 
     fn try_from(
         value: pbs::clinvar_data::clinvar_public::HgvsExpression,
     ) -> Result<Self, Self::Error> {
-        Ok(HgvsExpression {
+        Ok(ClinvarHgvsExpression {
             nucleotide_expression: value
                 .nucleotide_expression
                 .map(|x| x.try_into())
@@ -290,9 +294,9 @@ impl TryFrom<pbs::clinvar_data::clinvar_public::HgvsExpression> for HgvsExpressi
                 .into_iter()
                 .map(|x| x.try_into())
                 .collect::<Result<_, _>>()?,
-            r#type: HgvsType::try_from(pbs::clinvar_data::clinvar_public::HgvsType::try_from(
-                value.r#type,
-            )?)?,
+            r#type: ClinvarHgvsType::try_from(
+                pbs::clinvar_data::clinvar_public::HgvsType::try_from(value.r#type)?,
+            )?,
             assembly: value.assembly,
         })
     }
@@ -300,7 +304,7 @@ impl TryFrom<pbs::clinvar_data::clinvar_public::HgvsExpression> for HgvsExpressi
 
 /// Description of a software.
 #[derive(Clone, Debug, serde::Serialize, serde::Deserialize, utoipa::ToSchema)]
-pub struct Software {
+pub struct ClinvarSoftware {
     /// Name of the software.
     pub name: String,
     /// Version of the software; optional.
@@ -309,11 +313,11 @@ pub struct Software {
     pub purpose: Option<String>,
 }
 
-impl TryFrom<pbs::clinvar_data::clinvar_public::Software> for Software {
+impl TryFrom<pbs::clinvar_data::clinvar_public::Software> for ClinvarSoftware {
     type Error = anyhow::Error;
 
     fn try_from(value: pbs::clinvar_data::clinvar_public::Software) -> Result<Self, Self::Error> {
-        Ok(Software {
+        Ok(ClinvarSoftware {
             name: value.name,
             version: value.version,
             purpose: value.purpose,
@@ -325,20 +329,20 @@ impl TryFrom<pbs::clinvar_data::clinvar_public::Software> for Software {
 ///
 /// Called ``typeDescriptionHistory`` in XSD.
 #[derive(Clone, Debug, serde::Serialize, serde::Deserialize, utoipa::ToSchema)]
-pub struct DescriptionHistory {
+pub struct ClinvarDescriptionHistory {
     /// The pathogenicity description.
     pub description: String,
     /// The date of the description.
     pub dated: Option<chrono::DateTime<chrono::Utc>>,
 }
 
-impl TryFrom<pbs::clinvar_data::clinvar_public::DescriptionHistory> for DescriptionHistory {
+impl TryFrom<pbs::clinvar_data::clinvar_public::DescriptionHistory> for ClinvarDescriptionHistory {
     type Error = anyhow::Error;
 
     fn try_from(
         value: pbs::clinvar_data::clinvar_public::DescriptionHistory,
     ) -> Result<Self, Self::Error> {
-        Ok(DescriptionHistory {
+        Ok(ClinvarDescriptionHistory {
             description: value.description,
             dated: value.dated.map(|x| {
                 chrono::DateTime::<chrono::Utc>::from_timestamp(x.seconds, x.nanos as u32)
@@ -352,26 +356,26 @@ impl TryFrom<pbs::clinvar_data::clinvar_public::DescriptionHistory> for Descript
 ///
 /// Called ``SetElementSetType`` in XSD.
 #[derive(Clone, Debug, serde::Serialize, serde::Deserialize, utoipa::ToSchema)]
-pub struct GenericSetElement {
+pub struct ClinvarGenericSetElement {
     /// The element's value.
     pub value: String,
     /// The element's type.
     pub r#type: String,
     /// List of citations.
-    pub citations: Vec<Citation>,
+    pub citations: Vec<ClinvarCitation>,
     /// List of xrefs.
-    pub xrefs: Vec<Xref>,
+    pub xrefs: Vec<ClinvarXref>,
     /// List of comments.
-    pub comments: Vec<Comment>,
+    pub comments: Vec<ClinvarComment>,
 }
 
-impl TryFrom<pbs::clinvar_data::clinvar_public::GenericSetElement> for GenericSetElement {
+impl TryFrom<pbs::clinvar_data::clinvar_public::GenericSetElement> for ClinvarGenericSetElement {
     type Error = anyhow::Error;
 
     fn try_from(
         value: pbs::clinvar_data::clinvar_public::GenericSetElement,
     ) -> Result<Self, Self::Error> {
-        Ok(GenericSetElement {
+        Ok(ClinvarGenericSetElement {
             value: value.value,
             r#type: value.r#type,
             citations: value
@@ -397,24 +401,26 @@ impl TryFrom<pbs::clinvar_data::clinvar_public::GenericSetElement> for GenericSe
 ///
 /// Called ``typeAttributeSet`` in XSD.
 #[derive(Clone, Debug, serde::Serialize, serde::Deserialize, utoipa::ToSchema)]
-pub struct AttributeSetElement {
+pub struct ClinvarAttributeSetElement {
     /// The attribute value.
-    pub attribute: Option<Attribute>,
+    pub attribute: Option<ClinvarAttribute>,
     /// List of xrefs.
-    pub xrefs: Vec<Xref>,
+    pub xrefs: Vec<ClinvarXref>,
     /// List of citations.
-    pub citations: Vec<Citation>,
+    pub citations: Vec<ClinvarCitation>,
     /// List of comments.
-    pub comments: Vec<Comment>,
+    pub comments: Vec<ClinvarComment>,
 }
 
-impl TryFrom<pbs::clinvar_data::clinvar_public::AttributeSetElement> for AttributeSetElement {
+impl TryFrom<pbs::clinvar_data::clinvar_public::AttributeSetElement>
+    for ClinvarAttributeSetElement
+{
     type Error = anyhow::Error;
 
     fn try_from(
         value: pbs::clinvar_data::clinvar_public::AttributeSetElement,
     ) -> Result<Self, Self::Error> {
-        Ok(AttributeSetElement {
+        Ok(ClinvarAttributeSetElement {
             attribute: value.attribute.map(|x| x.try_into()).transpose()?,
             xrefs: value
                 .xrefs
@@ -437,20 +443,22 @@ impl TryFrom<pbs::clinvar_data::clinvar_public::AttributeSetElement> for Attribu
 
 /// Extend the BaseAttribute with a `type` field.
 #[derive(Clone, Debug, serde::Serialize, serde::Deserialize, utoipa::ToSchema)]
-pub struct Attribute {
+pub struct ClinvarAttribute {
     /// The base value.
-    pub base: Option<BaseAttribute>,
+    pub base: Option<ClinvarBaseAttribute>,
     /// The type of the attribute.
     pub r#type: String,
 }
 
-impl TryFrom<pbs::clinvar_data::clinvar_public::attribute_set_element::Attribute> for Attribute {
+impl TryFrom<pbs::clinvar_data::clinvar_public::attribute_set_element::Attribute>
+    for ClinvarAttribute
+{
     type Error = anyhow::Error;
 
     fn try_from(
         value: pbs::clinvar_data::clinvar_public::attribute_set_element::Attribute,
     ) -> Result<Self, Self::Error> {
-        Ok(Attribute {
+        Ok(ClinvarAttribute {
             base: value.base.map(|x| x.try_into()).transpose()?,
             r#type: value.r#type,
         })
@@ -459,30 +467,30 @@ impl TryFrom<pbs::clinvar_data::clinvar_public::attribute_set_element::Attribute
 
 /// Type to describe traits in various places.
 #[derive(Clone, Debug, serde::Serialize, serde::Deserialize, utoipa::ToSchema)]
-pub struct Trait {
+pub struct ClinvarTrait {
     /// names
-    pub names: Vec<GenericSetElement>,
+    pub names: Vec<ClinvarGenericSetElement>,
     /// symbols
-    pub symbols: Vec<GenericSetElement>,
+    pub symbols: Vec<ClinvarGenericSetElement>,
     /// attributes
-    pub attributes: Vec<AttributeSetElement>,
+    pub attributes: Vec<ClinvarAttributeSetElement>,
     /// Trait relationships
-    pub trait_relationships: Vec<TraitRelationship>,
+    pub trait_relationships: Vec<ClinvarTraitRelationship>,
     /// Citation list.
-    pub citations: Vec<Citation>,
+    pub citations: Vec<ClinvarCitation>,
     /// Xref list.
-    pub xrefs: Vec<Xref>,
+    pub xrefs: Vec<ClinvarXref>,
     /// Comment list.
-    pub comments: Vec<Comment>,
+    pub comments: Vec<ClinvarComment>,
     /// Sources
     pub sources: Vec<String>,
 }
 
-impl TryFrom<pbs::clinvar_data::clinvar_public::Trait> for Trait {
+impl TryFrom<pbs::clinvar_data::clinvar_public::Trait> for ClinvarTrait {
     type Error = anyhow::Error;
 
     fn try_from(value: pbs::clinvar_data::clinvar_public::Trait) -> Result<Self, Self::Error> {
-        Ok(Trait {
+        Ok(ClinvarTrait {
             names: value
                 .names
                 .into_iter()
@@ -525,28 +533,30 @@ impl TryFrom<pbs::clinvar_data::clinvar_public::Trait> for Trait {
 
 /// Local type for trait relationship.
 #[derive(Clone, Debug, serde::Serialize, serde::Deserialize, utoipa::ToSchema)]
-pub struct TraitRelationship {
+pub struct ClinvarTraitRelationship {
     /// Name(s) of the trait.
-    pub names: Vec<GenericSetElement>,
+    pub names: Vec<ClinvarGenericSetElement>,
     /// Citation list.
-    pub citations: Vec<Citation>,
+    pub citations: Vec<ClinvarCitation>,
     /// Xref list.
-    pub xrefs: Vec<Xref>,
+    pub xrefs: Vec<ClinvarXref>,
     /// Comment list.
-    pub comments: Vec<Comment>,
+    pub comments: Vec<ClinvarComment>,
     /// Sources
     pub sources: Vec<String>,
     /// Trait type.
-    pub r#type: TraitRelationshipType,
+    pub r#type: ClinvarTraitRelationshipType,
 }
 
-impl TryFrom<pbs::clinvar_data::clinvar_public::r#trait::TraitRelationship> for TraitRelationship {
+impl TryFrom<pbs::clinvar_data::clinvar_public::r#trait::TraitRelationship>
+    for ClinvarTraitRelationship
+{
     type Error = anyhow::Error;
 
     fn try_from(
         value: pbs::clinvar_data::clinvar_public::r#trait::TraitRelationship,
     ) -> Result<Self, Self::Error> {
-        Ok(TraitRelationship {
+        Ok(ClinvarTraitRelationship {
             names: value
                 .names
                 .into_iter()
@@ -568,7 +578,7 @@ impl TryFrom<pbs::clinvar_data::clinvar_public::r#trait::TraitRelationship> for 
                 .map(|x| x.try_into())
                 .collect::<Result<_, _>>()?,
             sources: value.sources,
-            r#type: TraitRelationshipType::try_from(
+            r#type: ClinvarTraitRelationshipType::try_from(
                 pbs::clinvar_data::clinvar_public::r#trait::r#trait_relationship::Type::try_from(
                     value.r#type,
                 )?,
@@ -591,9 +601,13 @@ impl TryFrom<pbs::clinvar_data::clinvar_public::r#trait::TraitRelationship> for 
     Ord,
     serde::Serialize,
     serde::Deserialize,
+    strum::Display,
+    strum::EnumString,
     utoipa::ToSchema,
 )]
-pub enum TraitRelationshipType {
+#[serde(rename_all = "snake_case")]
+#[strum(serialize_all = "snake_case")]
+pub enum ClinvarTraitRelationshipType {
     /// corresponds to "phenotype"
     Phenotype,
     /// corresponds to "Subphenotype"
@@ -607,7 +621,7 @@ pub enum TraitRelationshipType {
 }
 
 impl TryFrom<pbs::clinvar_data::clinvar_public::r#trait::r#trait_relationship::Type>
-    for TraitRelationshipType
+    for ClinvarTraitRelationshipType
 {
     type Error = anyhow::Error;
 
@@ -616,19 +630,19 @@ impl TryFrom<pbs::clinvar_data::clinvar_public::r#trait::r#trait_relationship::T
     ) -> Result<Self, Self::Error> {
         match value {
             pbs::clinvar_data::clinvar_public::r#trait::r#trait_relationship::Type::Phenotype => {
-                Ok(TraitRelationshipType::Phenotype)
+                Ok(ClinvarTraitRelationshipType::Phenotype)
             }
             pbs::clinvar_data::clinvar_public::r#trait::r#trait_relationship::Type::Subphenotype => {
-                Ok(TraitRelationshipType::Subphenotype)
+                Ok(ClinvarTraitRelationshipType::Subphenotype)
             }
             pbs::clinvar_data::clinvar_public::r#trait::r#trait_relationship::Type::DrugResponseAndDisease => {
-                Ok(TraitRelationshipType::DrugResponseAndDisease)
+                Ok(ClinvarTraitRelationshipType::DrugResponseAndDisease)
             }
             pbs::clinvar_data::clinvar_public::r#trait::r#trait_relationship::Type::CoOccuringCondition => {
-                Ok(TraitRelationshipType::CoOccuringCondition)
+                Ok(ClinvarTraitRelationshipType::CoOccuringCondition)
             }
             pbs::clinvar_data::clinvar_public::r#trait::r#trait_relationship::Type::FindingMember => {
-                Ok(TraitRelationshipType::FindingMember)
+                Ok(ClinvarTraitRelationshipType::FindingMember)
             }
             _ => Err(anyhow::anyhow!(
                 "Invalid value for TraitRelationshipType: {:?}",
@@ -642,28 +656,28 @@ impl TryFrom<pbs::clinvar_data::clinvar_public::r#trait::r#trait_relationship::T
 ///
 /// NB: Called "IndicationType" in the XSD.
 #[derive(Clone, Debug, serde::Serialize, serde::Deserialize, utoipa::ToSchema)]
-pub struct Indication {
+pub struct ClinvarIndication {
     /// Represents the value for the test indication as a name of a trait.
-    pub traits: Vec<Trait>,
+    pub traits: Vec<ClinvarTrait>,
     /// List of names.
-    pub names: Vec<GenericSetElement>,
+    pub names: Vec<ClinvarGenericSetElement>,
     /// List of attributes.
-    pub attributes: Vec<AttributeSetElement>,
+    pub attributes: Vec<ClinvarAttributeSetElement>,
     /// List of xrefs.
-    pub xrefs: Vec<Xref>,
+    pub xrefs: Vec<ClinvarXref>,
     /// List of citations.
-    pub citations: Vec<Citation>,
+    pub citations: Vec<ClinvarCitation>,
     /// List of comments.
-    pub comments: Vec<Comment>,
+    pub comments: Vec<ClinvarComment>,
     /// The type of indication.
-    pub r#type: IndicationType,
+    pub r#type: ClinvarIndicationType,
 }
 
-impl TryFrom<pbs::clinvar_data::clinvar_public::Indication> for Indication {
+impl TryFrom<pbs::clinvar_data::clinvar_public::Indication> for ClinvarIndication {
     type Error = anyhow::Error;
 
     fn try_from(value: pbs::clinvar_data::clinvar_public::Indication) -> Result<Self, Self::Error> {
-        Ok(Indication {
+        Ok(ClinvarIndication {
             traits: value
                 .traits
                 .into_iter()
@@ -694,7 +708,7 @@ impl TryFrom<pbs::clinvar_data::clinvar_public::Indication> for Indication {
                 .into_iter()
                 .map(|x| x.try_into())
                 .collect::<Result<_, _>>()?,
-            r#type: IndicationType::try_from(
+            r#type: ClinvarIndicationType::try_from(
                 pbs::clinvar_data::clinvar_public::indication::Type::try_from(value.r#type)?,
             )?,
         })
@@ -713,14 +727,18 @@ impl TryFrom<pbs::clinvar_data::clinvar_public::Indication> for Indication {
     Ord,
     serde::Serialize,
     serde::Deserialize,
+    strum::Display,
+    strum::EnumString,
     utoipa::ToSchema,
 )]
-pub enum IndicationType {
+#[serde(rename_all = "snake_case")]
+#[strum(serialize_all = "snake_case")]
+pub enum ClinvarIndicationType {
     /// corresponds to "Indication"
     Indication,
 }
 
-impl TryFrom<pbs::clinvar_data::clinvar_public::indication::Type> for IndicationType {
+impl TryFrom<pbs::clinvar_data::clinvar_public::indication::Type> for ClinvarIndicationType {
     type Error = anyhow::Error;
 
     fn try_from(
@@ -728,7 +746,7 @@ impl TryFrom<pbs::clinvar_data::clinvar_public::indication::Type> for Indication
     ) -> Result<Self, Self::Error> {
         match value {
             pbs::clinvar_data::clinvar_public::indication::Type::Indication => {
-                Ok(IndicationType::Indication)
+                Ok(ClinvarIndicationType::Indication)
             }
             _ => Err(anyhow::anyhow!(
                 "Invalid value for IndicationType: {:?}",
@@ -742,23 +760,23 @@ impl TryFrom<pbs::clinvar_data::clinvar_public::indication::Type> for Indication
 ///
 /// NB: Called "ClinAsserTraitSetType" in the XSD.
 #[derive(Clone, Debug, serde::Serialize, serde::Deserialize, utoipa::ToSchema)]
-pub struct TraitSet {
+pub struct ClinvarTraitSet {
     /// The traits.
-    pub traits: Vec<Trait>,
+    pub traits: Vec<ClinvarTrait>,
     /// The names.
-    pub names: Vec<GenericSetElement>,
+    pub names: Vec<ClinvarGenericSetElement>,
     /// The symbols.
-    pub symbols: Vec<GenericSetElement>,
+    pub symbols: Vec<ClinvarGenericSetElement>,
     /// The attributes.
-    pub attributes: Vec<AttributeSetElement>,
+    pub attributes: Vec<ClinvarAttributeSetElement>,
     /// List of xrefs.
-    pub xrefs: Vec<Xref>,
+    pub xrefs: Vec<ClinvarXref>,
     /// List of citations.
-    pub citations: Vec<Citation>,
+    pub citations: Vec<ClinvarCitation>,
     /// List of comments.
-    pub comments: Vec<Comment>,
+    pub comments: Vec<ClinvarComment>,
     /// The type.
-    pub r#type: TraitSetType,
+    pub r#type: ClinvarTraitSetType,
     /// Date of last evaluation.
     pub date_last_evaluated: Option<chrono::DateTime<chrono::Utc>>,
     /// ID.
@@ -771,11 +789,11 @@ pub struct TraitSet {
     pub multiple_condition_explanation: Option<String>,
 }
 
-impl TryFrom<pbs::clinvar_data::clinvar_public::TraitSet> for TraitSet {
+impl TryFrom<pbs::clinvar_data::clinvar_public::TraitSet> for ClinvarTraitSet {
     type Error = anyhow::Error;
 
     fn try_from(value: pbs::clinvar_data::clinvar_public::TraitSet) -> Result<Self, Self::Error> {
-        Ok(TraitSet {
+        Ok(ClinvarTraitSet {
             traits: value
                 .traits
                 .into_iter()
@@ -811,7 +829,7 @@ impl TryFrom<pbs::clinvar_data::clinvar_public::TraitSet> for TraitSet {
                 .into_iter()
                 .map(|x| x.try_into())
                 .collect::<Result<_, _>>()?,
-            r#type: TraitSetType::try_from(
+            r#type: ClinvarTraitSetType::try_from(
                 pbs::clinvar_data::clinvar_public::trait_set::Type::try_from(value.r#type)?,
             )?,
             date_last_evaluated: value.date_last_evaluated.map(|x| {
@@ -838,9 +856,13 @@ impl TryFrom<pbs::clinvar_data::clinvar_public::TraitSet> for TraitSet {
     Ord,
     serde::Serialize,
     serde::Deserialize,
+    strum::Display,
+    strum::EnumString,
     utoipa::ToSchema,
 )]
-pub enum TraitSetType {
+#[serde(rename_all = "snake_case")]
+#[strum(serialize_all = "snake_case")]
+pub enum ClinvarTraitSetType {
     /// corresponds to "Disease"
     Disease,
     /// corresponds to "DrugResponse"
@@ -853,7 +875,7 @@ pub enum TraitSetType {
     TraitChoice,
 }
 
-impl TryFrom<pbs::clinvar_data::clinvar_public::trait_set::Type> for TraitSetType {
+impl TryFrom<pbs::clinvar_data::clinvar_public::trait_set::Type> for ClinvarTraitSetType {
     type Error = anyhow::Error;
 
     fn try_from(
@@ -861,19 +883,19 @@ impl TryFrom<pbs::clinvar_data::clinvar_public::trait_set::Type> for TraitSetTyp
     ) -> Result<Self, Self::Error> {
         match value {
             pbs::clinvar_data::clinvar_public::trait_set::Type::Disease => {
-                Ok(TraitSetType::Disease)
+                Ok(ClinvarTraitSetType::Disease)
             }
             pbs::clinvar_data::clinvar_public::trait_set::Type::DrugResponse => {
-                Ok(TraitSetType::DrugResponse)
+                Ok(ClinvarTraitSetType::DrugResponse)
             }
             pbs::clinvar_data::clinvar_public::trait_set::Type::Finding => {
-                Ok(TraitSetType::Finding)
+                Ok(ClinvarTraitSetType::Finding)
             }
             pbs::clinvar_data::clinvar_public::trait_set::Type::PhenotypeInstruction => {
-                Ok(TraitSetType::PhenotypeInstruction)
+                Ok(ClinvarTraitSetType::PhenotypeInstruction)
             }
             pbs::clinvar_data::clinvar_public::trait_set::Type::TraitChoice => {
-                Ok(TraitSetType::TraitChoice)
+                Ok(ClinvarTraitSetType::TraitChoice)
             }
             _ => Err(anyhow::anyhow!(
                 "Invalid value for TraitSetType: {:?}",
@@ -889,10 +911,10 @@ impl TryFrom<pbs::clinvar_data::clinvar_public::trait_set::Type> for TraitSetTyp
 ///
 /// nested elements
 #[derive(Clone, Debug, serde::Serialize, serde::Deserialize, utoipa::ToSchema)]
-pub struct AggregatedGermlineClassification {
+pub struct ClinvarAggregatedGermlineClassification {
     /// The aggregate review status based on all germline submissions
     /// for this record.
-    pub review_status: AggregateGermlineReviewStatus,
+    pub review_status: ClinvarAggregateGermlineReviewStatus,
     /// We are not providing an enumeration for the values we report
     /// for germline classification within the xsd. Details are in
     /// <https://github.com/ncbi/clinvar/ClassificationOnClinVar.md>
@@ -900,17 +922,17 @@ pub struct AggregatedGermlineClassification {
     pub description: Option<String>,
     /// Explanation is used only when the description is 'conflicting
     /// data from submitters' The element summarizes the conflict.
-    pub explanation: Option<Comment>,
+    pub explanation: Option<ClinvarComment>,
     /// List of xrefs.
-    pub xrefs: Vec<Xref>,
+    pub xrefs: Vec<ClinvarXref>,
     /// List of citations.
-    pub citations: Vec<Citation>,
+    pub citations: Vec<ClinvarCitation>,
     /// List of comments.
-    pub comments: Vec<Comment>,
+    pub comments: Vec<ClinvarComment>,
     /// History information.
-    pub history_records: Vec<DescriptionHistory>,
+    pub history_records: Vec<ClinvarDescriptionHistory>,
     /// List of conditions.
-    pub conditions: Vec<TraitSet>,
+    pub conditions: Vec<ClinvarTraitSet>,
     /// Date of last evaluation.
     pub date_last_evaluated: Option<chrono::DateTime<chrono::Utc>>,
     /// Date of creation.
@@ -924,15 +946,15 @@ pub struct AggregatedGermlineClassification {
 }
 
 impl TryFrom<pbs::clinvar_data::clinvar_public::AggregatedGermlineClassification>
-    for AggregatedGermlineClassification
+    for ClinvarAggregatedGermlineClassification
 {
     type Error = anyhow::Error;
 
     fn try_from(
         value: pbs::clinvar_data::clinvar_public::AggregatedGermlineClassification,
     ) -> Result<Self, Self::Error> {
-        Ok(AggregatedGermlineClassification {
-            review_status: AggregateGermlineReviewStatus::try_from(
+        Ok(ClinvarAggregatedGermlineClassification {
+            review_status: ClinvarAggregateGermlineReviewStatus::try_from(
                 pbs::clinvar_data::clinvar_public::AggregateGermlineReviewStatus::try_from(
                     value.review_status,
                 )?,
@@ -986,24 +1008,24 @@ impl TryFrom<pbs::clinvar_data::clinvar_public::AggregatedGermlineClassification
 ///
 /// nested elements
 #[derive(Clone, Debug, serde::Serialize, serde::Deserialize, utoipa::ToSchema)]
-pub struct AggregatedSomaticClinicalImpact {
+pub struct ClinvarAggregatedSomaticClinicalImpact {
     /// The aggregate review status based on all somatic clinical
     /// impact submissions for this record.
-    pub review_status: AggregateSomaticClinicalImpactReviewStatus,
+    pub review_status: ClinvarAggregateSomaticClinicalImpactReviewStatus,
     /// We are not providing an enumeration for the values we report
     /// for somatic clinical impact classification within the xsd. Details are in
     /// <https://github.com/ncbi/clinvar/ClassificationOnClinVar.md>
     pub description: Option<String>,
     /// List of xrefs.
-    pub xrefs: Vec<Xref>,
+    pub xrefs: Vec<ClinvarXref>,
     /// List of citations.
-    pub citations: Vec<Citation>,
+    pub citations: Vec<ClinvarCitation>,
     /// List of comments.
-    pub comments: Vec<Comment>,
+    pub comments: Vec<ClinvarComment>,
     /// History information.
-    pub history_records: Vec<DescriptionHistory>,
+    pub history_records: Vec<ClinvarDescriptionHistory>,
     /// List of conditions.
-    pub conditions: Vec<TraitSet>,
+    pub conditions: Vec<ClinvarTraitSet>,
     /// Date of last evaluation.
     pub date_last_evaluated: Option<chrono::DateTime<chrono::Utc>>,
     /// Date of creation.
@@ -1017,15 +1039,15 @@ pub struct AggregatedSomaticClinicalImpact {
 }
 
 impl TryFrom<pbs::clinvar_data::clinvar_public::AggregatedSomaticClinicalImpact>
-    for AggregatedSomaticClinicalImpact
+    for ClinvarAggregatedSomaticClinicalImpact
 {
     type Error = anyhow::Error;
 
     fn try_from(
         value: pbs::clinvar_data::clinvar_public::AggregatedSomaticClinicalImpact,
     ) -> Result<Self, Self::Error> {
-        Ok(AggregatedSomaticClinicalImpact {
-            review_status: AggregateSomaticClinicalImpactReviewStatus::try_from(
+        Ok(ClinvarAggregatedSomaticClinicalImpact {
+            review_status: ClinvarAggregateSomaticClinicalImpactReviewStatus::try_from(
                 pbs::clinvar_data::clinvar_public::AggregateSomaticClinicalImpactReviewStatus::try_from(
                     value.review_status,
                 )?,
@@ -1078,24 +1100,24 @@ impl TryFrom<pbs::clinvar_data::clinvar_public::AggregatedSomaticClinicalImpact>
 ///
 /// nested elements
 #[derive(Clone, Debug, serde::Serialize, serde::Deserialize, utoipa::ToSchema)]
-pub struct AggregatedOncogenicityClassification {
+pub struct ClinvarAggregatedOncogenicityClassification {
     /// The aggregate review status based on all somatic clinical
     /// impact submissions for this record.
-    pub review_status: AggregateOncogenicityReviewStatus,
+    pub review_status: ClinvarAggregateOncogenicityReviewStatus,
     /// We are not providing an enumeration for the values we report
     /// for somatic clinical impact classification within the xsd. Details are in
     /// <https://github.com/ncbi/clinvar/ClassificationOnClinVar.md>
     pub description: Option<String>,
     /// List of xrefs.
-    pub xrefs: Vec<Xref>,
+    pub xrefs: Vec<ClinvarXref>,
     /// List of citations.
-    pub citations: Vec<Citation>,
+    pub citations: Vec<ClinvarCitation>,
     /// List of comments.
-    pub comments: Vec<Comment>,
+    pub comments: Vec<ClinvarComment>,
     /// History information.
-    pub history_records: Vec<DescriptionHistory>,
+    pub history_records: Vec<ClinvarDescriptionHistory>,
     /// List of conditions.
-    pub conditions: Vec<TraitSet>,
+    pub conditions: Vec<ClinvarTraitSet>,
     /// Date of last evaluation.
     pub date_last_evaluated: Option<chrono::DateTime<chrono::Utc>>,
     /// Date of creation.
@@ -1109,15 +1131,15 @@ pub struct AggregatedOncogenicityClassification {
 }
 
 impl TryFrom<pbs::clinvar_data::clinvar_public::AggregatedOncogenicityClassification>
-    for AggregatedOncogenicityClassification
+    for ClinvarAggregatedOncogenicityClassification
 {
     type Error = anyhow::Error;
 
     fn try_from(
         value: pbs::clinvar_data::clinvar_public::AggregatedOncogenicityClassification,
     ) -> Result<Self, Self::Error> {
-        Ok(AggregatedOncogenicityClassification {
-            review_status: AggregateOncogenicityReviewStatus::try_from(
+        Ok(ClinvarAggregatedOncogenicityClassification {
+            review_status: ClinvarAggregateOncogenicityReviewStatus::try_from(
                 pbs::clinvar_data::clinvar_public::AggregateOncogenicityReviewStatus::try_from(
                     value.review_status,
                 )?,
@@ -1172,24 +1194,24 @@ impl TryFrom<pbs::clinvar_data::clinvar_public::AggregatedOncogenicityClassifica
 ///
 /// NB: called "typeAggregateClassificationSet" in XSD.
 #[derive(Clone, Debug, serde::Serialize, serde::Deserialize, utoipa::ToSchema)]
-pub struct AggregateClassificationSet {
+pub struct ClinvarAggregateClassificationSet {
     /// The aggregate germline classification.
-    pub germline_classification: Option<AggregatedGermlineClassification>,
+    pub germline_classification: Option<ClinvarAggregatedGermlineClassification>,
     /// The aggregate somatic clinical impact.
-    pub somatic_clinical_impact: Option<AggregatedSomaticClinicalImpact>,
+    pub somatic_clinical_impact: Option<ClinvarAggregatedSomaticClinicalImpact>,
     /// The aggregate oncogenicity classification.
-    pub oncogenicity_classification: Option<AggregatedOncogenicityClassification>,
+    pub oncogenicity_classification: Option<ClinvarAggregatedOncogenicityClassification>,
 }
 
 impl TryFrom<pbs::clinvar_data::clinvar_public::AggregateClassificationSet>
-    for AggregateClassificationSet
+    for ClinvarAggregateClassificationSet
 {
     type Error = anyhow::Error;
 
     fn try_from(
         value: pbs::clinvar_data::clinvar_public::AggregateClassificationSet,
     ) -> Result<Self, Self::Error> {
-        Ok(AggregateClassificationSet {
+        Ok(ClinvarAggregateClassificationSet {
             germline_classification: value
                 .germline_classification
                 .map(|x| x.try_into())
@@ -1212,9 +1234,9 @@ impl TryFrom<pbs::clinvar_data::clinvar_public::AggregateClassificationSet>
 ///
 /// contained elements
 #[derive(Clone, Debug, serde::Serialize, serde::Deserialize, utoipa::ToSchema)]
-pub struct ClinicalSignificance {
+pub struct ClinvarClinicalSignificance {
     /// The optional review status.
-    pub review_status: Option<SubmitterReviewStatus>,
+    pub review_status: Option<ClinvarSubmitterReviewStatus>,
     /// Structure used to support old data of AlleleDescriptionSet
     /// within Co-occurenceSet.
     ///
@@ -1226,30 +1248,32 @@ pub struct ClinicalSignificance {
     /// data from submitters' The element summarizes the conflict.
     ///
     /// NB: unused in XML
-    pub explanation: Option<Comment>,
+    pub explanation: Option<ClinvarComment>,
     /// Optional list of xrefs.
-    pub xrefs: Vec<Xref>,
+    pub xrefs: Vec<ClinvarXref>,
     /// Optional list of citations.
-    pub citations: Vec<Citation>,
+    pub citations: Vec<ClinvarCitation>,
     /// Optional list of comments.
-    pub comments: Vec<Comment>,
+    pub comments: Vec<ClinvarComment>,
     /// Date of last evaluation.
     ///
     /// NB: unused in XML
     pub date_last_evaluated: Option<chrono::DateTime<chrono::Utc>>,
 }
 
-impl TryFrom<pbs::clinvar_data::clinvar_public::ClinicalSignificance> for ClinicalSignificance {
+impl TryFrom<pbs::clinvar_data::clinvar_public::ClinicalSignificance>
+    for ClinvarClinicalSignificance
+{
     type Error = anyhow::Error;
 
     fn try_from(
         value: pbs::clinvar_data::clinvar_public::ClinicalSignificance,
     ) -> Result<Self, Self::Error> {
-        Ok(ClinicalSignificance {
+        Ok(ClinvarClinicalSignificance {
             review_status: value
                 .review_status
                 .map(|review_status| {
-                    SubmitterReviewStatus::try_from(
+                    ClinvarSubmitterReviewStatus::try_from(
                         pbs::clinvar_data::clinvar_public::SubmitterReviewStatus::try_from(
                             review_status,
                         )?,
@@ -1285,39 +1309,39 @@ impl TryFrom<pbs::clinvar_data::clinvar_public::ClinicalSignificance> for Clinic
 ///
 /// Corresponds to `typeAlleleDescr` in XSD.
 #[derive(Clone, Debug, serde::Serialize, serde::Deserialize, utoipa::ToSchema)]
-pub struct AlleleDescription {
+pub struct ClinvarAlleleDescription {
     /// The name of the allele.
     pub name: String,
     /// Optional relative orientation.
     ///
     /// NB: Unused in XML
-    pub relative_orientation: Option<RelativeOrientation>,
+    pub relative_orientation: Option<ClinvarRelativeOrientation>,
     /// Optional zygosity.
-    pub zygosity: Option<Zygosity>,
+    pub zygosity: Option<ClinvarZygosity>,
     /// Optional clinical significance.
     ///
     /// Corresponds to `ClinicalSignificanceType` in XSD.
-    pub clinical_significance: Option<ClinicalSignificance>,
+    pub clinical_significance: Option<ClinvarClinicalSignificance>,
 }
 
-impl TryFrom<pbs::clinvar_data::clinvar_public::AlleleDescription> for AlleleDescription {
+impl TryFrom<pbs::clinvar_data::clinvar_public::AlleleDescription> for ClinvarAlleleDescription {
     type Error = anyhow::Error;
 
     fn try_from(
         value: pbs::clinvar_data::clinvar_public::AlleleDescription,
     ) -> Result<Self, Self::Error> {
-        Ok(AlleleDescription {
+        Ok(ClinvarAlleleDescription {
             name: value.name,
             relative_orientation: value
                 .relative_orientation
                 .map(|relative_orientation|
-                    RelativeOrientation::try_from(
+                    ClinvarRelativeOrientation::try_from(
                         pbs::clinvar_data::clinvar_public::allele_description::RelativeOrientation::try_from(relative_orientation)?
                     )
                 )
                 .transpose()?,
             zygosity: value.zygosity                .map(|zygosity| {
-                Zygosity::try_from(pbs::clinvar_data::clinvar_public::Zygosity::try_from(
+                ClinvarZygosity::try_from(pbs::clinvar_data::clinvar_public::Zygosity::try_from(
                     zygosity,
                 )?)
             })
@@ -1344,9 +1368,13 @@ impl TryFrom<pbs::clinvar_data::clinvar_public::AlleleDescription> for AlleleDes
     Ord,
     serde::Serialize,
     serde::Deserialize,
+    strum::Display,
+    strum::EnumString,
     utoipa::ToSchema,
 )]
-pub enum RelativeOrientation {
+#[serde(rename_all = "snake_case")]
+#[strum(serialize_all = "snake_case")]
+pub enum ClinvarRelativeOrientation {
     /// corresponds to "cis"
     Cis,
     /// corresponds to "trans"
@@ -1356,7 +1384,7 @@ pub enum RelativeOrientation {
 }
 
 impl TryFrom<pbs::clinvar_data::clinvar_public::allele_description::RelativeOrientation>
-    for RelativeOrientation
+    for ClinvarRelativeOrientation
 {
     type Error = anyhow::Error;
 
@@ -1365,13 +1393,13 @@ impl TryFrom<pbs::clinvar_data::clinvar_public::allele_description::RelativeOrie
     ) -> Result<Self, Self::Error> {
         match value {
             pbs::clinvar_data::clinvar_public::allele_description::RelativeOrientation::Cis => {
-                Ok(RelativeOrientation::Cis)
+                Ok(ClinvarRelativeOrientation::Cis)
             }
             pbs::clinvar_data::clinvar_public::allele_description::RelativeOrientation::Trans => {
-                Ok(RelativeOrientation::Trans)
+                Ok(ClinvarRelativeOrientation::Trans)
             }
             pbs::clinvar_data::clinvar_public::allele_description::RelativeOrientation::Unknown => {
-                Ok(RelativeOrientation::Unknown)
+                Ok(ClinvarRelativeOrientation::Unknown)
             }
             _ => Err(anyhow::anyhow!(
                 "Invalid value for RelativeOrientation: {:?}",
@@ -1388,9 +1416,9 @@ impl TryFrom<pbs::clinvar_data::clinvar_public::allele_description::RelativeOrie
 ///
 /// nested elements
 #[derive(Clone, Debug, serde::Serialize, serde::Deserialize, utoipa::ToSchema)]
-pub struct RecordHistory {
+pub struct ClinvarRecordHistory {
     /// Optional comment on the history record.
-    pub comment: Option<Comment>,
+    pub comment: Option<ClinvarComment>,
     /// The accession.
     pub accession: String,
     /// The version.
@@ -1402,7 +1430,7 @@ pub struct RecordHistory {
     pub variation_id: Option<i64>,
 }
 
-impl TryFrom<pbs::clinvar_data::clinvar_public::RecordHistory> for RecordHistory {
+impl TryFrom<pbs::clinvar_data::clinvar_public::RecordHistory> for ClinvarRecordHistory {
     type Error = anyhow::Error;
 
     fn try_from(
@@ -1425,40 +1453,40 @@ impl TryFrom<pbs::clinvar_data::clinvar_public::RecordHistory> for RecordHistory
 ///
 /// Corresponds to `ClassificationTypeSCV` in XSD.
 #[derive(Clone, Debug, serde::Serialize, serde::Deserialize, utoipa::ToSchema)]
-pub struct ClassificationScv {
+pub struct ClinvarClassificationScv {
     /// The field's review status.
-    pub review_status: SubmitterReviewStatus,
+    pub review_status: ClinvarSubmitterReviewStatus,
     /// The germline classification; mutually exlusive with `somatic_clinical_impact`
     /// and `oncogenicity_classification`.
     pub germline_classification: Option<String>,
     /// Information on the clinical impact; mutually exlusive with `germline_classification`
     /// and `oncogenicity_classification`.
-    pub somatic_clinical_impact: Option<ClassificationScvSomaticClinicalImpact>,
+    pub somatic_clinical_impact: Option<ClinvarClassificationScvSomaticClinicalImpact>,
     /// The oncogenicity classification; mutually exlusive with `germline_classification`
     /// and `oncogenicity_classification`.
     pub oncogenicity_classification: Option<String>,
     /// Optional explanation of classification.
     pub explanation_of_classification: Option<String>,
     /// List of classification scores.
-    pub classification_scores: Vec<ClassificationScore>,
+    pub classification_scores: Vec<ClinvarClassificationScore>,
     /// List of xrefs.
-    pub xrefs: Vec<Xref>,
+    pub xrefs: Vec<ClinvarXref>,
     /// List of citations.
-    pub citations: Vec<Citation>,
+    pub citations: Vec<ClinvarCitation>,
     /// List of comments.
-    pub comments: Vec<Comment>,
+    pub comments: Vec<ClinvarComment>,
     /// Date of last evaluation.
     pub date_last_evaluated: Option<chrono::DateTime<chrono::Utc>>,
 }
 
-impl TryFrom<pbs::clinvar_data::clinvar_public::ClassificationScv> for ClassificationScv {
+impl TryFrom<pbs::clinvar_data::clinvar_public::ClassificationScv> for ClinvarClassificationScv {
     type Error = anyhow::Error;
 
     fn try_from(
         classification_scv: pbs::clinvar_data::clinvar_public::ClassificationScv,
     ) -> Result<Self, Self::Error> {
         Ok(Self {
-            review_status: SubmitterReviewStatus::try_from(
+            review_status: ClinvarSubmitterReviewStatus::try_from(
                 pbs::clinvar_data::clinvar_public::SubmitterReviewStatus::try_from(
                     classification_scv.review_status,
                 )?,
@@ -1497,7 +1525,7 @@ impl TryFrom<pbs::clinvar_data::clinvar_public::ClassificationScv> for Classific
 
 /// Clinical impact of a somatic variatn.
 #[derive(Clone, Debug, serde::Serialize, serde::Deserialize, utoipa::ToSchema)]
-pub struct ClassificationScvSomaticClinicalImpact {
+pub struct ClinvarClassificationScvSomaticClinicalImpact {
     /// The somatic clinical impact value.
     pub value: String,
     /// Type of the clinical impact assertion.
@@ -1509,7 +1537,7 @@ pub struct ClassificationScvSomaticClinicalImpact {
 }
 
 impl From<pbs::clinvar_data::clinvar_public::classification_scv::SomaticClinicalImpact>
-    for ClassificationScvSomaticClinicalImpact
+    for ClinvarClassificationScvSomaticClinicalImpact
 {
     fn from(
         classification_scv_somatic_clinical_impact: pbs::clinvar_data::clinvar_public::classification_scv::SomaticClinicalImpact,
@@ -1528,7 +1556,7 @@ impl From<pbs::clinvar_data::clinvar_public::classification_scv::SomaticClinical
 
 /// Classification score description.
 #[derive(Clone, Debug, serde::Serialize, serde::Deserialize, utoipa::ToSchema)]
-pub struct ClassificationScore {
+pub struct ClinvarClassificationScore {
     /// The score's value.
     pub value: f64,
     /// The score's type; optional.
@@ -1536,7 +1564,7 @@ pub struct ClassificationScore {
 }
 
 impl From<pbs::clinvar_data::clinvar_public::classification_scv::ClassificationScore>
-    for ClassificationScore
+    for ClinvarClassificationScore
 {
     fn from(
         classification_score: pbs::clinvar_data::clinvar_public::classification_scv::ClassificationScore,
@@ -1551,7 +1579,7 @@ impl From<pbs::clinvar_data::clinvar_public::classification_scv::ClassificationS
 /// Set of attributes for the primary submitter. Any addtional submitters
 /// are captured in the AdditionalSubmitters element.
 #[derive(Clone, Debug, serde::Serialize, serde::Deserialize, utoipa::ToSchema)]
-pub struct SubmitterIdentifiers {
+pub struct ClinvarSubmitterIdentifiers {
     /// Name of submitter.
     pub submitter_name: String,
     /// Organization ID.
@@ -1562,7 +1590,7 @@ pub struct SubmitterIdentifiers {
     pub org_abbreviation: Option<String>,
 }
 
-impl From<pbs::clinvar_data::clinvar_public::SubmitterIdentifiers> for SubmitterIdentifiers {
+impl From<pbs::clinvar_data::clinvar_public::SubmitterIdentifiers> for ClinvarSubmitterIdentifiers {
     fn from(
         submitter_identifiers: pbs::clinvar_data::clinvar_public::SubmitterIdentifiers,
     ) -> Self {
@@ -1577,14 +1605,14 @@ impl From<pbs::clinvar_data::clinvar_public::SubmitterIdentifiers> for Submitter
 
 /// Definition of a species.
 #[derive(Clone, Debug, serde::Serialize, serde::Deserialize, utoipa::ToSchema)]
-pub struct Species {
+pub struct ClinvarSpecies {
     /// Name of the species.
     pub name: String,
     /// Optional taxonomy ID.
     pub taxonomy_id: Option<i32>,
 }
 
-impl From<pbs::clinvar_data::clinvar_public::Species> for Species {
+impl From<pbs::clinvar_data::clinvar_public::Species> for ClinvarSpecies {
     fn from(species: pbs::clinvar_data::clinvar_public::Species) -> Self {
         Self {
             name: species.name,
@@ -1597,7 +1625,7 @@ impl From<pbs::clinvar_data::clinvar_public::Species> for Species {
 ///
 /// Corresponds to `typeRCVInterpretedCondition` in XSD.
 #[derive(Clone, Debug, serde::Serialize, serde::Deserialize, utoipa::ToSchema)]
-pub struct ClassifiedCondition {
+pub struct ClinvarClassifiedCondition {
     /// Condition value.
     pub value: String,
     /// Database name.
@@ -1606,13 +1634,15 @@ pub struct ClassifiedCondition {
     pub id: Option<String>,
 }
 
-impl TryFrom<pbs::clinvar_data::clinvar_public::ClassifiedCondition> for ClassifiedCondition {
+impl TryFrom<pbs::clinvar_data::clinvar_public::ClassifiedCondition>
+    for ClinvarClassifiedCondition
+{
     type Error = anyhow::Error;
 
     fn try_from(
         value: pbs::clinvar_data::clinvar_public::ClassifiedCondition,
     ) -> Result<Self, Self::Error> {
-        Ok(ClassifiedCondition {
+        Ok(ClinvarClassifiedCondition {
             value: value.value,
             db: value.db,
             id: value.id,
@@ -1625,9 +1655,9 @@ impl TryFrom<pbs::clinvar_data::clinvar_public::ClassifiedCondition> for Classif
 ///
 /// Corresponds to `typeClinicalAssertionRecordHistory` in XSD.
 #[derive(Clone, Debug, serde::Serialize, serde::Deserialize, utoipa::ToSchema)]
-pub struct ClinicalAssertionRecordHistory {
+pub struct ClinvarClinicalAssertionRecordHistory {
     /// Optional comment.
-    pub comment: Option<Comment>,
+    pub comment: Option<ClinvarComment>,
     /// Accession.
     pub accession: String,
     /// Optional version.
@@ -1637,14 +1667,14 @@ pub struct ClinicalAssertionRecordHistory {
 }
 
 impl TryFrom<pbs::clinvar_data::clinvar_public::ClinicalAssertionRecordHistory>
-    for ClinicalAssertionRecordHistory
+    for ClinvarClinicalAssertionRecordHistory
 {
     type Error = anyhow::Error;
 
     fn try_from(
         value: pbs::clinvar_data::clinvar_public::ClinicalAssertionRecordHistory,
     ) -> Result<Self, Self::Error> {
-        Ok(ClinicalAssertionRecordHistory {
+        Ok(ClinvarClinicalAssertionRecordHistory {
             comment: value.comment.map(|x| x.try_into()).transpose()?,
             accession: value.accession,
             version: value.version,
@@ -1662,24 +1692,26 @@ impl TryFrom<pbs::clinvar_data::clinvar_public::ClinicalAssertionRecordHistory>
 ///
 /// nested elements
 #[derive(Clone, Debug, serde::Serialize, serde::Deserialize, utoipa::ToSchema)]
-pub struct FunctionalConsequence {
+pub struct ClinvarFunctionalConsequence {
     /// List of xrefs.
-    pub xrefs: Vec<Xref>,
+    pub xrefs: Vec<ClinvarXref>,
     /// List of citations.
-    pub citations: Vec<Citation>,
+    pub citations: Vec<ClinvarCitation>,
     /// List of comments.
-    pub comments: Vec<Comment>,
+    pub comments: Vec<ClinvarComment>,
     /// Value of functional consequence.
     pub value: String,
 }
 
-impl TryFrom<pbs::clinvar_data::clinvar_public::FunctionalConsequence> for FunctionalConsequence {
+impl TryFrom<pbs::clinvar_data::clinvar_public::FunctionalConsequence>
+    for ClinvarFunctionalConsequence
+{
     type Error = anyhow::Error;
 
     fn try_from(
         value: pbs::clinvar_data::clinvar_public::FunctionalConsequence,
     ) -> Result<Self, Self::Error> {
-        Ok(FunctionalConsequence {
+        Ok(ClinvarFunctionalConsequence {
             xrefs: value
                 .xrefs
                 .into_iter()
@@ -1702,20 +1734,20 @@ impl TryFrom<pbs::clinvar_data::clinvar_public::FunctionalConsequence> for Funct
 
 /// Type for the tag `GeneralCitations`.
 #[derive(Clone, Debug, serde::Serialize, serde::Deserialize, utoipa::ToSchema)]
-pub struct GeneralCitations {
+pub struct ClinvarGeneralCitations {
     /// List of xrefs.
-    pub xrefs: Vec<Xref>,
+    pub xrefs: Vec<ClinvarXref>,
     /// List of citations.
-    pub citations: Vec<Citation>,
+    pub citations: Vec<ClinvarCitation>,
 }
 
-impl TryFrom<pbs::clinvar_data::clinvar_public::GeneralCitations> for GeneralCitations {
+impl TryFrom<pbs::clinvar_data::clinvar_public::GeneralCitations> for ClinvarGeneralCitations {
     type Error = anyhow::Error;
 
     fn try_from(
         value: pbs::clinvar_data::clinvar_public::GeneralCitations,
     ) -> Result<Self, Self::Error> {
-        Ok(GeneralCitations {
+        Ok(ClinvarGeneralCitations {
             xrefs: value
                 .xrefs
                 .into_iter()
@@ -1732,28 +1764,28 @@ impl TryFrom<pbs::clinvar_data::clinvar_public::GeneralCitations> for GeneralCit
 
 /// This refers to the zygosity of the variant being asserted.
 #[derive(Clone, Debug, serde::Serialize, serde::Deserialize, utoipa::ToSchema)]
-pub struct Cooccurrence {
+pub struct ClinvarCooccurrence {
     /// Optional zygosity.
-    pub zygosity: Option<Zygosity>,
+    pub zygosity: Option<ClinvarZygosity>,
     /// The allele descriptions.
-    pub allele_descriptions: Vec<AlleleDescription>,
+    pub allele_descriptions: Vec<ClinvarAlleleDescription>,
     /// The optional count.
     pub count: Option<i32>,
 }
 
-impl TryFrom<pbs::clinvar_data::clinvar_public::Cooccurrence> for Cooccurrence {
+impl TryFrom<pbs::clinvar_data::clinvar_public::Cooccurrence> for ClinvarCooccurrence {
     type Error = anyhow::Error;
 
     fn try_from(
         value: pbs::clinvar_data::clinvar_public::Cooccurrence,
     ) -> Result<Self, Self::Error> {
-        Ok(Cooccurrence {
+        Ok(ClinvarCooccurrence {
             zygosity: value
                 .zygosity
                 .map(|zygosity| {
-                    Zygosity::try_from(pbs::clinvar_data::clinvar_public::Zygosity::try_from(
-                        zygosity,
-                    )?)
+                    ClinvarZygosity::try_from(
+                        pbs::clinvar_data::clinvar_public::Zygosity::try_from(zygosity)?,
+                    )
                 })
                 .transpose()?,
             allele_descriptions: value
@@ -1769,20 +1801,20 @@ impl TryFrom<pbs::clinvar_data::clinvar_public::Cooccurrence> for Cooccurrence {
 /// A structure to support reporting the name of a submitter, its
 /// organization id, and its abbreviation and type.
 #[derive(Clone, Debug, serde::Serialize, serde::Deserialize, utoipa::ToSchema)]
-pub struct Submitter {
+pub struct ClinvarSubmitter {
     /// The submitter's identifier.
-    pub submitter_identifiers: Option<SubmitterIdentifiers>,
+    pub submitter_identifiers: Option<ClinvarSubmitterIdentifiers>,
     /// The submitter type.
-    pub r#type: SubmitterType,
+    pub r#type: ClinvarSubmitterType,
 }
 
-impl TryFrom<pbs::clinvar_data::clinvar_public::Submitter> for Submitter {
+impl TryFrom<pbs::clinvar_data::clinvar_public::Submitter> for ClinvarSubmitter {
     type Error = anyhow::Error;
 
     fn try_from(value: pbs::clinvar_data::clinvar_public::Submitter) -> Result<Self, Self::Error> {
-        Ok(Submitter {
+        Ok(ClinvarSubmitter {
             submitter_identifiers: value.submitter_identifiers.map(|x| x.into()),
-            r#type: SubmitterType::try_from(
+            r#type: ClinvarSubmitterType::try_from(
                 pbs::clinvar_data::clinvar_public::submitter::Type::try_from(value.r#type)?,
             )?,
         })
@@ -1801,9 +1833,13 @@ impl TryFrom<pbs::clinvar_data::clinvar_public::Submitter> for Submitter {
     Ord,
     serde::Serialize,
     serde::Deserialize,
+    strum::Display,
+    strum::EnumString,
     utoipa::ToSchema,
 )]
-pub enum SubmitterType {
+#[serde(rename_all = "snake_case")]
+#[strum(serialize_all = "snake_case")]
+pub enum ClinvarSubmitterType {
     /// corresponds to "primary"
     Primary,
     /// corresponds to "secondary"
@@ -1812,7 +1848,7 @@ pub enum SubmitterType {
     Behalf,
 }
 
-impl TryFrom<pbs::clinvar_data::clinvar_public::submitter::Type> for SubmitterType {
+impl TryFrom<pbs::clinvar_data::clinvar_public::submitter::Type> for ClinvarSubmitterType {
     type Error = anyhow::Error;
 
     fn try_from(
@@ -1820,12 +1856,14 @@ impl TryFrom<pbs::clinvar_data::clinvar_public::submitter::Type> for SubmitterTy
     ) -> Result<Self, Self::Error> {
         match value {
             pbs::clinvar_data::clinvar_public::submitter::Type::Primary => {
-                Ok(SubmitterType::Primary)
+                Ok(ClinvarSubmitterType::Primary)
             }
             pbs::clinvar_data::clinvar_public::submitter::Type::Secondary => {
-                Ok(SubmitterType::Secondary)
+                Ok(ClinvarSubmitterType::Secondary)
             }
-            pbs::clinvar_data::clinvar_public::submitter::Type::Behalf => Ok(SubmitterType::Behalf),
+            pbs::clinvar_data::clinvar_public::submitter::Type::Behalf => {
+                Ok(ClinvarSubmitterType::Behalf)
+            }
             _ => Err(anyhow::anyhow!(
                 "Invalid value for SubmitterType: {:?}",
                 value
@@ -1838,7 +1876,7 @@ impl TryFrom<pbs::clinvar_data::clinvar_public::submitter::Type> for SubmitterTy
 ///
 /// nested elements
 #[derive(Clone, Debug, serde::Serialize, serde::Deserialize, utoipa::ToSchema)]
-pub struct DosageSensitivity {
+pub struct ClinvarDosageSensitivity {
     /// Value.
     pub value: String,
     /// Optional last evaluated date.
@@ -1847,13 +1885,13 @@ pub struct DosageSensitivity {
     pub clingen: Option<String>,
 }
 
-impl TryFrom<pbs::clinvar_data::clinvar_public::DosageSensitivity> for DosageSensitivity {
+impl TryFrom<pbs::clinvar_data::clinvar_public::DosageSensitivity> for ClinvarDosageSensitivity {
     type Error = anyhow::Error;
 
     fn try_from(
         value: pbs::clinvar_data::clinvar_public::DosageSensitivity,
     ) -> Result<Self, Self::Error> {
-        Ok(DosageSensitivity {
+        Ok(ClinvarDosageSensitivity {
             value: value.value,
             last_evaluated: value.last_evaluated.map(|x| {
                 chrono::DateTime::<chrono::Utc>::from_timestamp(x.seconds, x.nanos as u32)
@@ -1868,18 +1906,18 @@ impl TryFrom<pbs::clinvar_data::clinvar_public::DosageSensitivity> for DosageSen
 ///
 /// Corresponds to `typeNames` in XSD.
 #[derive(Clone, Debug, serde::Serialize, serde::Deserialize, utoipa::ToSchema)]
-pub struct OtherName {
+pub struct ClinvarOtherName {
     /// The name's value.
     pub value: String,
     /// The name's type.
     pub r#type: Option<String>,
 }
 
-impl TryFrom<pbs::clinvar_data::clinvar_public::OtherName> for OtherName {
+impl TryFrom<pbs::clinvar_data::clinvar_public::OtherName> for ClinvarOtherName {
     type Error = anyhow::Error;
 
     fn try_from(value: pbs::clinvar_data::clinvar_public::OtherName) -> Result<Self, Self::Error> {
-        Ok(OtherName {
+        Ok(ClinvarOtherName {
             value: value.value,
             r#type: value.r#type,
         })
@@ -1891,7 +1929,7 @@ impl TryFrom<pbs::clinvar_data::clinvar_public::OtherName> for OtherName {
 ///
 /// Corresponds to `typeDeletedSCV`.
 #[derive(Clone, Debug, serde::Serialize, serde::Deserialize, utoipa::ToSchema)]
-pub struct DeletedScv {
+pub struct ClinvarDeletedScv {
     /// The accession.
     pub accession: String,
     /// The version.
@@ -1900,11 +1938,11 @@ pub struct DeletedScv {
     pub date_deleted: Option<chrono::DateTime<chrono::Utc>>,
 }
 
-impl TryFrom<pbs::clinvar_data::clinvar_public::DeletedScv> for DeletedScv {
+impl TryFrom<pbs::clinvar_data::clinvar_public::DeletedScv> for ClinvarDeletedScv {
     type Error = anyhow::Error;
 
     fn try_from(value: pbs::clinvar_data::clinvar_public::DeletedScv) -> Result<Self, Self::Error> {
-        Ok(DeletedScv {
+        Ok(ClinvarDeletedScv {
             accession: value.accession,
             version: value.version,
             date_deleted: value.date_deleted.map(|x| {
@@ -1920,7 +1958,7 @@ impl TryFrom<pbs::clinvar_data::clinvar_public::DeletedScv> for DeletedScv {
 ///
 /// Corresponds to `typeLocation` in XSD.
 #[derive(Clone, Debug, serde::Serialize, serde::Deserialize, utoipa::ToSchema)]
-pub struct Location {
+pub struct ClinvarLocation {
     /// Cytogenetic location is maintained independent of sequence
     /// location, and can be submitted or computed from the sequence location.
     ///
@@ -1930,18 +1968,18 @@ pub struct Location {
     /// allele, and start /stop values depending on the specificity with which the
     /// variant location is known. The number system of offset 1, and
     /// right-justified to be consistent with HGVS location data.
-    pub sequence_locations: Vec<SequenceLocation>,
+    pub sequence_locations: Vec<ClinvarSequenceLocation>,
     /// The location of the variant relative to features within the gene.
     pub gene_locations: Vec<String>,
     /// List of xrefs.
-    pub xrefs: Vec<Xref>,
+    pub xrefs: Vec<ClinvarXref>,
 }
 
-impl TryFrom<pbs::clinvar_data::clinvar_public::Location> for Location {
+impl TryFrom<pbs::clinvar_data::clinvar_public::Location> for ClinvarLocation {
     type Error = anyhow::Error;
 
     fn try_from(value: pbs::clinvar_data::clinvar_public::Location) -> Result<Self, Self::Error> {
-        Ok(Location {
+        Ok(ClinvarLocation {
             cytogenetic_locations: value.cytogenetic_locations,
             sequence_locations: value
                 .sequence_locations
@@ -1960,13 +1998,13 @@ impl TryFrom<pbs::clinvar_data::clinvar_public::Location> for Location {
 
 /// Local type for sequence location.
 #[derive(Clone, Debug, serde::Serialize, serde::Deserialize, utoipa::ToSchema)]
-pub struct SequenceLocation {
+pub struct ClinvarSequenceLocation {
     /// forDisplay value.
     pub for_display: Option<bool>,
     /// Name of assembly.
     pub assembly: String,
     /// Chromosomeof variant.
-    pub chr: Chromosome,
+    pub chr: ClinvarChromosome,
     /// Optional chromosome accession.
     pub accession: Option<String>,
     /// Outer start position.
@@ -1996,7 +2034,7 @@ pub struct SequenceLocation {
     /// Assembly accession version.
     pub assembly_accession_version: Option<String>,
     /// Assembly status.
-    pub assembly_status: Option<AssemblyStatus>,
+    pub assembly_status: Option<ClinvarAssemblyStatus>,
     /// Position in VCF.
     pub position_vcf: Option<u32>,
     /// Reference allele in VCF.
@@ -2007,16 +2045,18 @@ pub struct SequenceLocation {
     pub for_display_length: Option<u32>,
 }
 
-impl TryFrom<pbs::clinvar_data::clinvar_public::location::SequenceLocation> for SequenceLocation {
+impl TryFrom<pbs::clinvar_data::clinvar_public::location::SequenceLocation>
+    for ClinvarSequenceLocation
+{
     type Error = anyhow::Error;
 
     fn try_from(
         value: pbs::clinvar_data::clinvar_public::location::SequenceLocation,
     ) -> Result<Self, Self::Error> {
-        Ok(SequenceLocation {
+        Ok(ClinvarSequenceLocation {
             for_display: value.for_display,
             assembly: value.assembly,
-            chr: Chromosome::try_from(
+            chr: ClinvarChromosome::try_from(
                 pbs::clinvar_data::clinvar_public::Chromosome::try_from(
                     value.chr
                 )?
@@ -2036,7 +2076,7 @@ impl TryFrom<pbs::clinvar_data::clinvar_public::location::SequenceLocation> for 
             alternate_allele: value.alternate_allele,
             assembly_accession_version: value.assembly_accession_version,
             assembly_status: value.assembly_status.map(|assembly_status|
-                AssemblyStatus::try_from(
+                ClinvarAssemblyStatus::try_from(
                 pbs::clinvar_data::clinvar_public::location::sequence_location::AssemblyStatus::try_from(assembly_status)?
                 )
             ).transpose()?,
@@ -2060,9 +2100,13 @@ impl TryFrom<pbs::clinvar_data::clinvar_public::location::SequenceLocation> for 
     Ord,
     serde::Serialize,
     serde::Deserialize,
+    strum::Display,
+    strum::EnumString,
     utoipa::ToSchema,
 )]
-pub enum AssemblyStatus {
+#[serde(rename_all = "snake_case")]
+#[strum(serialize_all = "snake_case")]
+pub enum ClinvarAssemblyStatus {
     /// corresponds to "current"
     Current,
     /// corresponds to "previous"
@@ -2070,7 +2114,7 @@ pub enum AssemblyStatus {
 }
 
 impl TryFrom<pbs::clinvar_data::clinvar_public::location::sequence_location::AssemblyStatus>
-    for AssemblyStatus
+    for ClinvarAssemblyStatus
 {
     type Error = anyhow::Error;
 
@@ -2079,10 +2123,10 @@ impl TryFrom<pbs::clinvar_data::clinvar_public::location::sequence_location::Ass
     ) -> Result<Self, Self::Error> {
         match value {
             pbs::clinvar_data::clinvar_public::location::sequence_location::AssemblyStatus::Current => {
-                Ok(AssemblyStatus::Current)
+                Ok(ClinvarAssemblyStatus::Current)
             }
             pbs::clinvar_data::clinvar_public::location::sequence_location::AssemblyStatus::Previous => {
-                Ok(AssemblyStatus::Previous)
+                Ok(ClinvarAssemblyStatus::Previous)
             }
             _ => Err(anyhow::anyhow!("Unknown AssemblyStatus value: {:?}", value)),
         }
@@ -2093,7 +2137,7 @@ impl TryFrom<pbs::clinvar_data::clinvar_public::location::sequence_location::Ass
 ///
 /// Corresponds to "typeSCV" in XSD.
 #[derive(Clone, Debug, serde::Serialize, serde::Deserialize, utoipa::ToSchema)]
-pub struct Scv {
+pub struct ClinvarScv {
     /// Optional title.
     pub title: Option<String>,
     /// Accession.
@@ -2102,9 +2146,9 @@ pub struct Scv {
     pub version: i32,
 }
 
-impl From<pbs::clinvar_data::clinvar_public::Scv> for Scv {
+impl From<pbs::clinvar_data::clinvar_public::Scv> for ClinvarScv {
     fn from(value: pbs::clinvar_data::clinvar_public::Scv) -> Self {
-        Scv {
+        ClinvarScv {
             title: value.title,
             accession: value.accession,
             version: value.version,
@@ -2121,7 +2165,7 @@ impl From<pbs::clinvar_data::clinvar_public::Scv> for Scv {
 ///
 /// nested elements
 #[derive(Clone, Debug, serde::Serialize, serde::Deserialize, utoipa::ToSchema)]
-pub struct FamilyData {
+pub struct ClinvarFamilyData {
     /// Optional family history.
     pub family_history: Option<String>,
     /// Number of families.
@@ -2136,9 +2180,9 @@ pub struct FamilyData {
     pub segregation_observed: Option<String>,
 }
 
-impl From<pbs::clinvar_data::clinvar_public::FamilyData> for FamilyData {
+impl From<pbs::clinvar_data::clinvar_public::FamilyData> for ClinvarFamilyData {
     fn from(value: pbs::clinvar_data::clinvar_public::FamilyData) -> Self {
-        FamilyData {
+        ClinvarFamilyData {
             family_history: value.family_history,
             num_families: value.num_families,
             num_families_with_variant: value.num_families_with_variant,
@@ -2153,11 +2197,11 @@ impl From<pbs::clinvar_data::clinvar_public::FamilyData> for FamilyData {
 ///
 /// Corresponds to `typeSample` in XSD.
 #[derive(Clone, Debug, serde::Serialize, serde::Deserialize, utoipa::ToSchema)]
-pub struct Sample {
+pub struct ClinvarSample {
     /// The sample description.
-    pub sample_description: Option<SampleDescription>,
+    pub sample_description: Option<ClinvarSampleDescription>,
     /// The sample origin.
-    pub origin: Option<Origin>,
+    pub origin: Option<ClinvarOrigin>,
     /// Sample ethnicity.
     pub ethnicity: Option<String>,
     /// Sample geographic origin.
@@ -2165,19 +2209,19 @@ pub struct Sample {
     /// Sample tissue.
     pub tissue: Option<String>,
     /// Presence of variant in normal tissue.
-    pub somatic_variant_in_normal_tissue: Option<SomaticVariantInNormalTissue>,
+    pub somatic_variant_in_normal_tissue: Option<ClinvarSomaticVariantInNormalTissue>,
     /// Somatic variant allele fraction.
     pub somatic_variant_allele_fraction: Option<String>,
     /// Cell line name.
     pub cell_line: Option<String>,
     /// Species.
-    pub species: Option<Species>,
+    pub species: Option<ClinvarSpecies>,
     /// Age (range), max. size of 2.
-    pub ages: Vec<Age>,
+    pub ages: Vec<ClinvarAge>,
     /// Strain.
     pub strain: Option<String>,
     /// Affected status.
-    pub affected_status: Option<AffectedStatus>,
+    pub affected_status: Option<ClinvarAffectedStatus>,
     /// Denominator, total individuals included in this observation set.
     pub numer_tested: Option<i32>,
     /// Denominator, total males included in this observation set.
@@ -2190,33 +2234,33 @@ pub struct Sample {
     /// Gender should be used ONLY if explicit values are not
     /// available for number of males or females, and there is a need to indicate
     /// that the genders in the sample are known.
-    pub gender: Option<Gender>,
+    pub gender: Option<ClinvarGender>,
     /// Family information.
-    pub family_data: Option<FamilyData>,
+    pub family_data: Option<ClinvarFamilyData>,
     /// Optional proband ID.
     pub proband: Option<String>,
     /// Optional indication.
-    pub indication: Option<Indication>,
+    pub indication: Option<ClinvarIndication>,
     /// List of citations.
-    pub citations: Vec<Citation>,
+    pub citations: Vec<ClinvarCitation>,
     /// List of xrefs.
-    pub xrefs: Vec<Xref>,
+    pub xrefs: Vec<ClinvarXref>,
     /// List of comments.
-    pub comments: Vec<Comment>,
+    pub comments: Vec<ClinvarComment>,
     /// Source type.
-    pub source_type: Option<SampleSourceType>,
+    pub source_type: Option<ClinvarSampleSourceType>,
 }
 
-impl TryFrom<pbs::clinvar_data::clinvar_public::Sample> for Sample {
+impl TryFrom<pbs::clinvar_data::clinvar_public::Sample> for ClinvarSample {
     type Error = anyhow::Error;
 
     fn try_from(value: pbs::clinvar_data::clinvar_public::Sample) -> Result<Self, Self::Error> {
-        Ok(Sample {
+        Ok(ClinvarSample {
             sample_description: value
                 .sample_description
-                .map(SampleDescription::try_from)
+                .map(ClinvarSampleDescription::try_from)
                 .transpose()?,
-            origin: value.origin.map(|origin| Origin::try_from(
+            origin: value.origin.map(|origin| ClinvarOrigin::try_from(
                 pbs::clinvar_data::clinvar_public::Origin::try_from(origin)?
             )).transpose()?,
             ethnicity: value.ethnicity,
@@ -2225,7 +2269,7 @@ impl TryFrom<pbs::clinvar_data::clinvar_public::Sample> for Sample {
             somatic_variant_in_normal_tissue: value
                 .somatic_variant_in_normal_tissue
                 .map(|somatic_variant_in_normal_tissue|
-                    SomaticVariantInNormalTissue::try_from(
+                    ClinvarSomaticVariantInNormalTissue::try_from(
                     pbs::clinvar_data::clinvar_public::sample::SomaticVariantInNormalTissue::try_from(
                         somatic_variant_in_normal_tissue,
                     )?
@@ -2234,17 +2278,17 @@ impl TryFrom<pbs::clinvar_data::clinvar_public::Sample> for Sample {
                 .transpose()?,
             somatic_variant_allele_fraction: value.somatic_variant_allele_fraction,
             cell_line: value.cell_line,
-            species: value.species.map(Species::try_from).transpose()?,
+            species: value.species.map(ClinvarSpecies::try_from).transpose()?,
             ages: value
                 .ages
                 .into_iter()
-                .map(Age::try_from)
+                .map(ClinvarAge::try_from)
                 .collect::<Result<Vec<_>, _>>()?,
             strain: value.strain,
             affected_status: value
                 .affected_status
                 .map(|affected_status| {
-                    AffectedStatus::try_from(
+                    ClinvarAffectedStatus::try_from(
                         pbs::clinvar_data::clinvar_public::sample::AffectedStatus::try_from(
                             affected_status,
                         )?,
@@ -2258,33 +2302,33 @@ impl TryFrom<pbs::clinvar_data::clinvar_public::Sample> for Sample {
             gender: value
                 .gender
                 .map(|gender| {
-                    Gender::try_from(pbs::clinvar_data::clinvar_public::sample::Gender::try_from(
+                    ClinvarGender::try_from(pbs::clinvar_data::clinvar_public::sample::Gender::try_from(
                         gender,
                     )?)
                 })
                 .transpose()?,
-            family_data: value.family_data.map(FamilyData::try_from).transpose()?,
+            family_data: value.family_data.map(ClinvarFamilyData::try_from).transpose()?,
             proband: value.proband,
-            indication: value.indication.map(Indication::try_from).transpose()?,
+            indication: value.indication.map(ClinvarIndication::try_from).transpose()?,
             citations: value
                 .citations
                 .into_iter()
-                .map(Citation::try_from)
+                .map(ClinvarCitation::try_from)
                 .collect::<Result<Vec<_>, _>>()?,
             xrefs: value
                 .xrefs
                 .into_iter()
-                .map(Xref::try_from)
+                .map(ClinvarXref::try_from)
                 .collect::<Result<Vec<_>, _>>()?,
             comments: value
                 .comments
                 .into_iter()
-                .map(Comment::try_from)
+                .map(ClinvarComment::try_from)
                 .collect::<Result<Vec<_>, _>>()?,
             source_type: value
                 .source_type
                 .map(|source_type| {
-                    SampleSourceType::try_from(
+                    ClinvarSampleSourceType::try_from(
                         pbs::clinvar_data::clinvar_public::sample::SourceType::try_from(
                             source_type,
                         )?,
@@ -2297,49 +2341,54 @@ impl TryFrom<pbs::clinvar_data::clinvar_public::Sample> for Sample {
 
 /// Local type for sample description.
 #[derive(Clone, Debug, serde::Serialize, serde::Deserialize, utoipa::ToSchema)]
-pub struct SampleDescription {
+pub struct ClinvarSampleDescription {
     /// Description of sample.
-    pub description: Option<Comment>,
+    pub description: Option<ClinvarComment>,
     /// Citation.
-    pub citation: Option<Citation>,
+    pub citation: Option<ClinvarCitation>,
 }
 
-impl TryFrom<pbs::clinvar_data::clinvar_public::sample::SampleDescription> for SampleDescription {
+impl TryFrom<pbs::clinvar_data::clinvar_public::sample::SampleDescription>
+    for ClinvarSampleDescription
+{
     type Error = anyhow::Error;
 
     fn try_from(
         value: pbs::clinvar_data::clinvar_public::sample::SampleDescription,
     ) -> Result<Self, Self::Error> {
-        Ok(SampleDescription {
-            description: value.description.map(Comment::try_from).transpose()?,
-            citation: value.citation.map(Citation::try_from).transpose()?,
+        Ok(ClinvarSampleDescription {
+            description: value
+                .description
+                .map(ClinvarComment::try_from)
+                .transpose()?,
+            citation: value.citation.map(ClinvarCitation::try_from).transpose()?,
         })
     }
 }
 
 /// Local type for an age.
 #[derive(Clone, Debug, serde::Serialize, serde::Deserialize, utoipa::ToSchema)]
-pub struct Age {
+pub struct ClinvarAge {
     /// The age value.
     pub value: i32,
     /// The age unit.
-    pub unit: AgeUnit,
+    pub unit: ClinvarAgeUnit,
     /// The age type.
-    pub r#type: AgeType,
+    pub r#type: ClinvarAgeType,
 }
 
-impl TryFrom<pbs::clinvar_data::clinvar_public::sample::Age> for Age {
+impl TryFrom<pbs::clinvar_data::clinvar_public::sample::Age> for ClinvarAge {
     type Error = anyhow::Error;
 
     fn try_from(
         value: pbs::clinvar_data::clinvar_public::sample::Age,
     ) -> Result<Self, Self::Error> {
-        Ok(Age {
+        Ok(ClinvarAge {
             value: value.value,
-            unit: AgeUnit::try_from(
+            unit: ClinvarAgeUnit::try_from(
                 pbs::clinvar_data::clinvar_public::sample::AgeUnit::try_from(value.unit)?,
             )?,
-            r#type: AgeType::try_from(
+            r#type: ClinvarAgeType::try_from(
                 pbs::clinvar_data::clinvar_public::sample::AgeType::try_from(value.r#type)?,
             )?,
         })
@@ -2358,9 +2407,13 @@ impl TryFrom<pbs::clinvar_data::clinvar_public::sample::Age> for Age {
     Ord,
     serde::Serialize,
     serde::Deserialize,
+    strum::Display,
+    strum::EnumString,
     utoipa::ToSchema,
 )]
-pub enum SomaticVariantInNormalTissue {
+#[serde(rename_all = "snake_case")]
+#[strum(serialize_all = "snake_case")]
+pub enum ClinvarSomaticVariantInNormalTissue {
     /// corresponds to "present"
     Present,
     /// corresponds to "absent"
@@ -2370,7 +2423,7 @@ pub enum SomaticVariantInNormalTissue {
 }
 
 impl TryFrom<pbs::clinvar_data::clinvar_public::sample::SomaticVariantInNormalTissue>
-    for SomaticVariantInNormalTissue
+    for ClinvarSomaticVariantInNormalTissue
 {
     type Error = anyhow::Error;
 
@@ -2379,13 +2432,13 @@ impl TryFrom<pbs::clinvar_data::clinvar_public::sample::SomaticVariantInNormalTi
     ) -> Result<Self, Self::Error> {
         Ok(match value {
             pbs::clinvar_data::clinvar_public::sample::SomaticVariantInNormalTissue::Present => {
-                SomaticVariantInNormalTissue::Present
+                ClinvarSomaticVariantInNormalTissue::Present
             }
             pbs::clinvar_data::clinvar_public::sample::SomaticVariantInNormalTissue::Absent => {
-                SomaticVariantInNormalTissue::Absent
+                ClinvarSomaticVariantInNormalTissue::Absent
             }
             pbs::clinvar_data::clinvar_public::sample::SomaticVariantInNormalTissue::NotTested => {
-                SomaticVariantInNormalTissue::NotTested
+                ClinvarSomaticVariantInNormalTissue::NotTested
             }
             _ => anyhow::bail!("Invalid sample::SomaticVariantInNormalTissue {:?}", value),
         })
@@ -2404,9 +2457,13 @@ impl TryFrom<pbs::clinvar_data::clinvar_public::sample::SomaticVariantInNormalTi
     Ord,
     serde::Serialize,
     serde::Deserialize,
+    strum::Display,
+    strum::EnumString,
     utoipa::ToSchema,
 )]
-pub enum AgeUnit {
+#[serde(rename_all = "snake_case")]
+#[strum(serialize_all = "snake_case")]
+pub enum ClinvarAgeUnit {
     /// corresponds to "days"
     Days,
     /// corresponds to "weeks"
@@ -2421,22 +2478,22 @@ pub enum AgeUnit {
     MonthsGestation,
 }
 
-impl TryFrom<pbs::clinvar_data::clinvar_public::sample::AgeUnit> for AgeUnit {
+impl TryFrom<pbs::clinvar_data::clinvar_public::sample::AgeUnit> for ClinvarAgeUnit {
     type Error = anyhow::Error;
 
     fn try_from(
         value: pbs::clinvar_data::clinvar_public::sample::AgeUnit,
     ) -> Result<Self, Self::Error> {
         Ok(match value {
-            pbs::clinvar_data::clinvar_public::sample::AgeUnit::Days => AgeUnit::Days,
-            pbs::clinvar_data::clinvar_public::sample::AgeUnit::Weeks => AgeUnit::Weeks,
-            pbs::clinvar_data::clinvar_public::sample::AgeUnit::Months => AgeUnit::Months,
-            pbs::clinvar_data::clinvar_public::sample::AgeUnit::Years => AgeUnit::Years,
+            pbs::clinvar_data::clinvar_public::sample::AgeUnit::Days => ClinvarAgeUnit::Days,
+            pbs::clinvar_data::clinvar_public::sample::AgeUnit::Weeks => ClinvarAgeUnit::Weeks,
+            pbs::clinvar_data::clinvar_public::sample::AgeUnit::Months => ClinvarAgeUnit::Months,
+            pbs::clinvar_data::clinvar_public::sample::AgeUnit::Years => ClinvarAgeUnit::Years,
             pbs::clinvar_data::clinvar_public::sample::AgeUnit::WeeksGestation => {
-                AgeUnit::WeeksGestation
+                ClinvarAgeUnit::WeeksGestation
             }
             pbs::clinvar_data::clinvar_public::sample::AgeUnit::MonthsGestation => {
-                AgeUnit::MonthsGestation
+                ClinvarAgeUnit::MonthsGestation
             }
             _ => anyhow::bail!("Invalid sample::AgeUnit {:?}", value),
         })
@@ -2455,9 +2512,13 @@ impl TryFrom<pbs::clinvar_data::clinvar_public::sample::AgeUnit> for AgeUnit {
     Ord,
     serde::Serialize,
     serde::Deserialize,
+    strum::Display,
+    strum::EnumString,
     utoipa::ToSchema,
 )]
-pub enum AgeType {
+#[serde(rename_all = "snake_case")]
+#[strum(serialize_all = "snake_case")]
+pub enum ClinvarAgeType {
     /// corresponds to "minimum"
     Minimum,
     /// corresponds to "maximum"
@@ -2466,16 +2527,16 @@ pub enum AgeType {
     Single,
 }
 
-impl TryFrom<pbs::clinvar_data::clinvar_public::sample::AgeType> for AgeType {
+impl TryFrom<pbs::clinvar_data::clinvar_public::sample::AgeType> for ClinvarAgeType {
     type Error = anyhow::Error;
 
     fn try_from(
         value: pbs::clinvar_data::clinvar_public::sample::AgeType,
     ) -> Result<Self, Self::Error> {
         Ok(match value {
-            pbs::clinvar_data::clinvar_public::sample::AgeType::Minimum => AgeType::Minimum,
-            pbs::clinvar_data::clinvar_public::sample::AgeType::Maximum => AgeType::Maximum,
-            pbs::clinvar_data::clinvar_public::sample::AgeType::Single => AgeType::Single,
+            pbs::clinvar_data::clinvar_public::sample::AgeType::Minimum => ClinvarAgeType::Minimum,
+            pbs::clinvar_data::clinvar_public::sample::AgeType::Maximum => ClinvarAgeType::Maximum,
+            pbs::clinvar_data::clinvar_public::sample::AgeType::Single => ClinvarAgeType::Single,
             _ => anyhow::bail!("Invalid sample::AgeType {:?}", value),
         })
     }
@@ -2493,9 +2554,13 @@ impl TryFrom<pbs::clinvar_data::clinvar_public::sample::AgeType> for AgeType {
     Ord,
     serde::Serialize,
     serde::Deserialize,
+    strum::Display,
+    strum::EnumString,
     utoipa::ToSchema,
 )]
-pub enum AffectedStatus {
+#[serde(rename_all = "snake_case")]
+#[strum(serialize_all = "snake_case")]
+pub enum ClinvarAffectedStatus {
     /// corresponds to "yes"
     Yes,
     /// corresponds to "no"
@@ -2508,23 +2573,27 @@ pub enum AffectedStatus {
     NotApplicable,
 }
 
-impl TryFrom<pbs::clinvar_data::clinvar_public::sample::AffectedStatus> for AffectedStatus {
+impl TryFrom<pbs::clinvar_data::clinvar_public::sample::AffectedStatus> for ClinvarAffectedStatus {
     type Error = anyhow::Error;
 
     fn try_from(
         value: pbs::clinvar_data::clinvar_public::sample::AffectedStatus,
     ) -> Result<Self, Self::Error> {
         Ok(match value {
-            pbs::clinvar_data::clinvar_public::sample::AffectedStatus::Yes => AffectedStatus::Yes,
-            pbs::clinvar_data::clinvar_public::sample::AffectedStatus::No => AffectedStatus::No,
+            pbs::clinvar_data::clinvar_public::sample::AffectedStatus::Yes => {
+                ClinvarAffectedStatus::Yes
+            }
+            pbs::clinvar_data::clinvar_public::sample::AffectedStatus::No => {
+                ClinvarAffectedStatus::No
+            }
             pbs::clinvar_data::clinvar_public::sample::AffectedStatus::NotProvided => {
-                AffectedStatus::NotProvided
+                ClinvarAffectedStatus::NotProvided
             }
             pbs::clinvar_data::clinvar_public::sample::AffectedStatus::Unknown => {
-                AffectedStatus::Unknown
+                ClinvarAffectedStatus::Unknown
             }
             pbs::clinvar_data::clinvar_public::sample::AffectedStatus::NotApplicable => {
-                AffectedStatus::NotApplicable
+                ClinvarAffectedStatus::NotApplicable
             }
             _ => anyhow::bail!("Invalid sample::AffectedStatus {:?}", value),
         })
@@ -2543,9 +2612,13 @@ impl TryFrom<pbs::clinvar_data::clinvar_public::sample::AffectedStatus> for Affe
     Ord,
     serde::Serialize,
     serde::Deserialize,
+    strum::Display,
+    strum::EnumString,
     utoipa::ToSchema,
 )]
-pub enum Gender {
+#[serde(rename_all = "snake_case")]
+#[strum(serialize_all = "snake_case")]
+pub enum ClinvarGender {
     /// corresponds to "male"
     Male,
     /// corresponds to "female"
@@ -2554,16 +2627,16 @@ pub enum Gender {
     Mixed,
 }
 
-impl TryFrom<pbs::clinvar_data::clinvar_public::sample::Gender> for Gender {
+impl TryFrom<pbs::clinvar_data::clinvar_public::sample::Gender> for ClinvarGender {
     type Error = anyhow::Error;
 
     fn try_from(
         value: pbs::clinvar_data::clinvar_public::sample::Gender,
     ) -> Result<Self, Self::Error> {
         Ok(match value {
-            pbs::clinvar_data::clinvar_public::sample::Gender::Male => Gender::Male,
-            pbs::clinvar_data::clinvar_public::sample::Gender::Female => Gender::Female,
-            pbs::clinvar_data::clinvar_public::sample::Gender::Mixed => Gender::Mixed,
+            pbs::clinvar_data::clinvar_public::sample::Gender::Male => ClinvarGender::Male,
+            pbs::clinvar_data::clinvar_public::sample::Gender::Female => ClinvarGender::Female,
+            pbs::clinvar_data::clinvar_public::sample::Gender::Mixed => ClinvarGender::Mixed,
             _ => anyhow::bail!("Invalid sample::Gender {:?}", value),
         })
     }
@@ -2581,16 +2654,20 @@ impl TryFrom<pbs::clinvar_data::clinvar_public::sample::Gender> for Gender {
     Ord,
     serde::Serialize,
     serde::Deserialize,
+    strum::Display,
+    strum::EnumString,
     utoipa::ToSchema,
 )]
-pub enum SampleSourceType {
+#[serde(rename_all = "snake_case")]
+#[strum(serialize_all = "snake_case")]
+pub enum ClinvarSampleSourceType {
     /// corresponds to "submitter-generated"
     SubmitterGenerated,
     /// corresponds to "data mining"
     DataMining,
 }
 
-impl TryFrom<pbs::clinvar_data::clinvar_public::sample::SourceType> for SampleSourceType {
+impl TryFrom<pbs::clinvar_data::clinvar_public::sample::SourceType> for ClinvarSampleSourceType {
     type Error = anyhow::Error;
 
     fn try_from(
@@ -2598,10 +2675,10 @@ impl TryFrom<pbs::clinvar_data::clinvar_public::sample::SourceType> for SampleSo
     ) -> Result<Self, Self::Error> {
         match value {
             pbs::clinvar_data::clinvar_public::sample::SourceType::SubmitterGenerated => {
-                Ok(SampleSourceType::SubmitterGenerated)
+                Ok(ClinvarSampleSourceType::SubmitterGenerated)
             }
             pbs::clinvar_data::clinvar_public::sample::SourceType::DataMining => {
-                Ok(SampleSourceType::DataMining)
+                Ok(ClinvarSampleSourceType::DataMining)
             }
             _ => Err(anyhow::anyhow!(
                 "Invalid value for sample::SourceType: {:?}",
@@ -2617,7 +2694,7 @@ impl TryFrom<pbs::clinvar_data::clinvar_public::sample::SourceType> for SampleSo
 ///
 /// Corresponds to `MethodType` in XSD.
 #[derive(Clone, Debug, serde::Serialize, serde::Deserialize, utoipa::ToSchema)]
-pub struct Method {
+pub struct ClinvarMethod {
     /// Platform name.
     pub name_platform: Option<String>,
     /// Platform type.
@@ -2625,7 +2702,7 @@ pub struct Method {
     /// Method purpose.
     pub purpose: Option<String>,
     /// Method result type.
-    pub result_type: Option<ResultType>,
+    pub result_type: Option<ClinvarResultType>,
     /// Smallest reported.
     pub min_reported: Option<String>,
     /// Largest reported.
@@ -2633,26 +2710,26 @@ pub struct Method {
     /// Reference standard.
     pub reference_standard: Option<String>,
     /// List of citations.
-    pub citations: Vec<Citation>,
+    pub citations: Vec<ClinvarCitation>,
     /// List of xrefs.
-    pub xrefs: Vec<Xref>,
+    pub xrefs: Vec<ClinvarXref>,
     /// Free text to enrich the description of the method and to
     /// provide information not captured in specific fields.
     pub description: Option<String>,
     /// List of softwares used.
-    pub software: Vec<Software>,
+    pub software: Vec<ClinvarSoftware>,
     /// Source type.
-    pub source_type: Option<MethodSourceType>,
+    pub source_type: Option<ClinvarMethodSourceType>,
     /// Method type.
-    pub method_type: MethodListType,
+    pub method_type: ClinvarMethodListType,
     /// Method attribute.
-    pub method_attributes: Vec<MethodAttribute>,
+    pub method_attributes: Vec<ClinvarMethodAttribute>,
     /// ObsMethodAttribute is used to indicate an attribute specific
     /// to a particular method in conjunction with a particular observation .
-    pub obs_method_attributes: Vec<ObsMethodAttribute>,
+    pub obs_method_attributes: Vec<ClinvarObsMethodAttribute>,
 }
 
-impl TryFrom<pbs::clinvar_data::clinvar_public::Method> for Method {
+impl TryFrom<pbs::clinvar_data::clinvar_public::Method> for ClinvarMethod {
     type Error = anyhow::Error;
 
     fn try_from(value: pbs::clinvar_data::clinvar_public::Method) -> Result<Self, Self::Error> {
@@ -2663,7 +2740,7 @@ impl TryFrom<pbs::clinvar_data::clinvar_public::Method> for Method {
             result_type: value
                 .result_type
                 .map(|result_type| {
-                    ResultType::try_from(
+                    ClinvarResultType::try_from(
                         pbs::clinvar_data::clinvar_public::method::ResultType::try_from(
                             result_type,
                         )?,
@@ -2692,14 +2769,14 @@ impl TryFrom<pbs::clinvar_data::clinvar_public::Method> for Method {
             source_type: value
                 .source_type
                 .map(|source_type| {
-                    MethodSourceType::try_from(
+                    ClinvarMethodSourceType::try_from(
                         pbs::clinvar_data::clinvar_public::method::SourceType::try_from(
                             source_type,
                         )?,
                     )
                 })
                 .transpose()?,
-            method_type: MethodListType::try_from(
+            method_type: ClinvarMethodListType::try_from(
                 pbs::clinvar_data::clinvar_public::MethodListType::try_from(value.method_type)?,
             )?,
             method_attributes: value
@@ -2718,14 +2795,16 @@ impl TryFrom<pbs::clinvar_data::clinvar_public::Method> for Method {
 
 /// Local type for method attribute.
 #[derive(Clone, Debug, serde::Serialize, serde::Deserialize, utoipa::ToSchema)]
-pub struct MethodAttribute {
+pub struct ClinvarMethodAttribute {
     /// The base value.
-    pub base: Option<BaseAttribute>,
+    pub base: Option<ClinvarBaseAttribute>,
     /// The attribute type.
-    pub r#type: MethodAttributeType,
+    pub r#type: ClinvarMethodAttributeType,
 }
 
-impl TryFrom<pbs::clinvar_data::clinvar_public::method::MethodAttribute> for MethodAttribute {
+impl TryFrom<pbs::clinvar_data::clinvar_public::method::MethodAttribute>
+    for ClinvarMethodAttribute
+{
     type Error = anyhow::Error;
 
     fn try_from(
@@ -2733,7 +2812,7 @@ impl TryFrom<pbs::clinvar_data::clinvar_public::method::MethodAttribute> for Met
     ) -> Result<Self, Self::Error> {
         Ok(Self {
             base: value.base.map(TryInto::try_into).transpose()?,
-            r#type: MethodAttributeType::try_from(
+            r#type: ClinvarMethodAttributeType::try_from(
                 pbs::clinvar_data::clinvar_public::method::method_attribute::AttributeType::try_from(
                     value.r#type
                 )?
@@ -2754,9 +2833,13 @@ impl TryFrom<pbs::clinvar_data::clinvar_public::method::MethodAttribute> for Met
     Ord,
     serde::Serialize,
     serde::Deserialize,
+    strum::Display,
+    strum::EnumString,
     utoipa::ToSchema,
 )]
-pub enum MethodAttributeType {
+#[serde(rename_all = "snake_case")]
+#[strum(serialize_all = "snake_case")]
+pub enum ClinvarMethodAttributeType {
     /// corresponds to "Location"
     Location,
     /// corresponds to "ControlsAppropriate"
@@ -2772,7 +2855,7 @@ pub enum MethodAttributeType {
 }
 
 impl TryFrom<pbs::clinvar_data::clinvar_public::method::method_attribute::AttributeType>
-    for MethodAttributeType
+    for ClinvarMethodAttributeType
 {
     type Error = anyhow::Error;
 
@@ -2780,19 +2863,19 @@ impl TryFrom<pbs::clinvar_data::clinvar_public::method::method_attribute::Attrib
         value: pbs::clinvar_data::clinvar_public::method::method_attribute::AttributeType,
     ) -> Result<Self, Self::Error> {
         match value {
-            pbs::clinvar_data::clinvar_public::method::method_attribute::AttributeType::Location => Ok(MethodAttributeType::Location),
+            pbs::clinvar_data::clinvar_public::method::method_attribute::AttributeType::Location => Ok(ClinvarMethodAttributeType::Location),
             pbs::clinvar_data::clinvar_public::method::method_attribute::AttributeType::ControlsAppropriate => {
-                Ok(MethodAttributeType::ControlsAppropriate)
+                Ok(ClinvarMethodAttributeType::ControlsAppropriate)
             }
             pbs::clinvar_data::clinvar_public::method::method_attribute::AttributeType::MethodAppropriate => {
-                Ok(MethodAttributeType::MethodAppropriate)
+                Ok(ClinvarMethodAttributeType::MethodAppropriate)
             }
-            pbs::clinvar_data::clinvar_public::method::method_attribute::AttributeType::TestName => Ok(MethodAttributeType::TestName),
+            pbs::clinvar_data::clinvar_public::method::method_attribute::AttributeType::TestName => Ok(ClinvarMethodAttributeType::TestName),
             pbs::clinvar_data::clinvar_public::method::method_attribute::AttributeType::StructVarMethodType => {
-                Ok(MethodAttributeType::StructVarMethodType)
+                Ok(ClinvarMethodAttributeType::StructVarMethodType)
             }
             pbs::clinvar_data::clinvar_public::method::method_attribute::AttributeType::ProbeAccession => {
-                Ok(MethodAttributeType::ProbeAccession)
+                Ok(ClinvarMethodAttributeType::ProbeAccession)
             }
             _ => anyhow::bail!("Invalid AttributeType {:?}", value)
         }
@@ -2801,16 +2884,18 @@ impl TryFrom<pbs::clinvar_data::clinvar_public::method::method_attribute::Attrib
 
 /// Local type for observation method attribute.
 #[derive(Clone, Debug, serde::Serialize, serde::Deserialize, utoipa::ToSchema)]
-pub struct ObsMethodAttribute {
+pub struct ClinvarObsMethodAttribute {
     /// The base value.
-    pub base: Option<BaseAttribute>,
+    pub base: Option<ClinvarBaseAttribute>,
     /// The attribute type.
-    pub r#type: ObsMethodAttributeType,
+    pub r#type: ClinvarObsMethodAttributeType,
     /// Optional comments.
-    pub comments: Vec<Comment>,
+    pub comments: Vec<ClinvarComment>,
 }
 
-impl TryFrom<pbs::clinvar_data::clinvar_public::method::ObsMethodAttribute> for ObsMethodAttribute {
+impl TryFrom<pbs::clinvar_data::clinvar_public::method::ObsMethodAttribute>
+    for ClinvarObsMethodAttribute
+{
     type Error = anyhow::Error;
 
     fn try_from(
@@ -2818,7 +2903,7 @@ impl TryFrom<pbs::clinvar_data::clinvar_public::method::ObsMethodAttribute> for 
     ) -> Result<Self, Self::Error> {
         Ok(Self {
             base: value.base.map(TryInto::try_into).transpose()?,
-            r#type: ObsMethodAttributeType::try_from(
+            r#type: ClinvarObsMethodAttributeType::try_from(
                 pbs::clinvar_data::clinvar_public::method::obs_method_attribute::AttributeType::try_from(
                     value.r#type,
                 )?,
@@ -2844,9 +2929,13 @@ impl TryFrom<pbs::clinvar_data::clinvar_public::method::ObsMethodAttribute> for 
     Ord,
     serde::Serialize,
     serde::Deserialize,
+    strum::Display,
+    strum::EnumString,
     utoipa::ToSchema,
 )]
-pub enum ObsMethodAttributeType {
+#[serde(rename_all = "snake_case")]
+#[strum(serialize_all = "snake_case")]
+pub enum ClinvarObsMethodAttributeType {
     /// corresponds to "MethodResult"
     MethodResult,
     /// corresponds to "TestingLaboratory"
@@ -2854,7 +2943,7 @@ pub enum ObsMethodAttributeType {
 }
 
 impl TryFrom<pbs::clinvar_data::clinvar_public::method::obs_method_attribute::AttributeType>
-    for ObsMethodAttributeType
+    for ClinvarObsMethodAttributeType
 {
     type Error = anyhow::Error;
 
@@ -2862,8 +2951,8 @@ impl TryFrom<pbs::clinvar_data::clinvar_public::method::obs_method_attribute::At
         value: pbs::clinvar_data::clinvar_public::method::obs_method_attribute::AttributeType,
     ) -> Result<Self, Self::Error> {
         match value {
-            pbs::clinvar_data::clinvar_public::method::obs_method_attribute::AttributeType::MethodResult => Ok(ObsMethodAttributeType::MethodResult),
-            pbs::clinvar_data::clinvar_public::method::obs_method_attribute::AttributeType::TestingLaboratory => Ok(ObsMethodAttributeType::TestingLaboratory),
+            pbs::clinvar_data::clinvar_public::method::obs_method_attribute::AttributeType::MethodResult => Ok(ClinvarObsMethodAttributeType::MethodResult),
+            pbs::clinvar_data::clinvar_public::method::obs_method_attribute::AttributeType::TestingLaboratory => Ok(ClinvarObsMethodAttributeType::TestingLaboratory),
             _ => anyhow::bail!("Invalid obs_method_attribute::AttributeType: {:?}", value),
         }
     }
@@ -2881,9 +2970,13 @@ impl TryFrom<pbs::clinvar_data::clinvar_public::method::obs_method_attribute::At
     Ord,
     serde::Serialize,
     serde::Deserialize,
+    strum::Display,
+    strum::EnumString,
     utoipa::ToSchema,
 )]
-pub enum ResultType {
+#[serde(rename_all = "snake_case")]
+#[strum(serialize_all = "snake_case")]
+pub enum ClinvarResultType {
     /// corresponds to "number of occurrences"
     NumberOfOccurrences,
     /// corresponds to "p value"
@@ -2894,7 +2987,7 @@ pub enum ResultType {
     VariantCall,
 }
 
-impl TryFrom<pbs::clinvar_data::clinvar_public::method::ResultType> for ResultType {
+impl TryFrom<pbs::clinvar_data::clinvar_public::method::ResultType> for ClinvarResultType {
     type Error = anyhow::Error;
 
     fn try_from(
@@ -2902,14 +2995,16 @@ impl TryFrom<pbs::clinvar_data::clinvar_public::method::ResultType> for ResultTy
     ) -> Result<Self, Self::Error> {
         match value {
             pbs::clinvar_data::clinvar_public::method::ResultType::NumberOfOccurrences => {
-                Ok(ResultType::NumberOfOccurrences)
+                Ok(ClinvarResultType::NumberOfOccurrences)
             }
-            pbs::clinvar_data::clinvar_public::method::ResultType::PValue => Ok(ResultType::PValue),
+            pbs::clinvar_data::clinvar_public::method::ResultType::PValue => {
+                Ok(ClinvarResultType::PValue)
+            }
             pbs::clinvar_data::clinvar_public::method::ResultType::OddsRatio => {
-                Ok(ResultType::OddsRatio)
+                Ok(ClinvarResultType::OddsRatio)
             }
             pbs::clinvar_data::clinvar_public::method::ResultType::VariantCall => {
-                Ok(ResultType::VariantCall)
+                Ok(ClinvarResultType::VariantCall)
             }
             _ => anyhow::bail!("Invalid method::ResultType {:?}", value),
         }
@@ -2928,9 +3023,13 @@ impl TryFrom<pbs::clinvar_data::clinvar_public::method::ResultType> for ResultTy
     Ord,
     serde::Serialize,
     serde::Deserialize,
+    strum::Display,
+    strum::EnumString,
     utoipa::ToSchema,
 )]
-pub enum MethodSourceType {
+#[serde(rename_all = "snake_case")]
+#[strum(serialize_all = "snake_case")]
+pub enum ClinvarMethodSourceType {
     /// corresponds to "submitter-generated"
     SubmitterGenerated,
     /// corresponds to "data mining"
@@ -2939,7 +3038,7 @@ pub enum MethodSourceType {
     DataReview,
 }
 
-impl TryFrom<pbs::clinvar_data::clinvar_public::method::SourceType> for MethodSourceType {
+impl TryFrom<pbs::clinvar_data::clinvar_public::method::SourceType> for ClinvarMethodSourceType {
     type Error = anyhow::Error;
 
     fn try_from(
@@ -2947,13 +3046,13 @@ impl TryFrom<pbs::clinvar_data::clinvar_public::method::SourceType> for MethodSo
     ) -> Result<Self, Self::Error> {
         match value {
             pbs::clinvar_data::clinvar_public::method::SourceType::SubmitterGenerated => {
-                Ok(MethodSourceType::SubmitterGenerated)
+                Ok(ClinvarMethodSourceType::SubmitterGenerated)
             }
             pbs::clinvar_data::clinvar_public::method::SourceType::DataMining => {
-                Ok(MethodSourceType::DataMining)
+                Ok(ClinvarMethodSourceType::DataMining)
             }
             pbs::clinvar_data::clinvar_public::method::SourceType::DataReview => {
-                Ok(MethodSourceType::DataReview)
+                Ok(ClinvarMethodSourceType::DataReview)
             }
             _ => anyhow::bail!("Invalid method::SourceType {:?}", value),
         }
@@ -2965,39 +3064,39 @@ impl TryFrom<pbs::clinvar_data::clinvar_public::method::SourceType> for MethodSo
 ///
 /// Corresponds to "typeAlleleSCV" in XSD.
 #[derive(Clone, Debug, serde::Serialize, serde::Deserialize, utoipa::ToSchema)]
-pub struct AlleleScv {
+pub struct ClinvarAlleleScv {
     /// 0 to many genes (and related data ) related to the allele
     /// being reported.
-    pub genes: Vec<AlleleScvGene>,
+    pub genes: Vec<ClinvarAlleleScvGene>,
     /// Name provided by the submitter.
-    pub name: Option<OtherName>,
+    pub name: Option<ClinvarOtherName>,
     /// Variant type.
     pub variant_type: Option<String>,
     /// Location.
-    pub location: Option<Location>,
+    pub location: Option<ClinvarLocation>,
     /// List of other names.
-    pub other_names: Vec<OtherName>,
+    pub other_names: Vec<ClinvarOtherName>,
     /// Single letter representation of the amino acid change and its
     /// location.
     pub protein_changes: Vec<String>,
     /// List of xrefs.
-    pub xrefs: Vec<Xref>,
+    pub xrefs: Vec<ClinvarXref>,
     /// List of citations.
-    pub citations: Vec<Citation>,
+    pub citations: Vec<ClinvarCitation>,
     /// List of comments.
-    pub comments: Vec<Comment>,
+    pub comments: Vec<ClinvarComment>,
     /// Currently redundant with the MolecularConsequence element of
     /// the HGVS element?
-    pub molecular_consequences: Vec<MolecularConsequence>,
+    pub molecular_consequences: Vec<ClinvarMolecularConsequence>,
     /// Functional consequences.
-    pub functional_consequences: Vec<FunctionalConsequence>,
+    pub functional_consequences: Vec<ClinvarFunctionalConsequence>,
     /// Attributes.
-    pub attributes: Vec<AttributeSetElement>,
+    pub attributes: Vec<ClinvarAttributeSetElement>,
     /// Allele ID.
     pub allele_id: Option<i64>,
 }
 
-impl TryFrom<pbs::clinvar_data::clinvar_public::AlleleScv> for AlleleScv {
+impl TryFrom<pbs::clinvar_data::clinvar_public::AlleleScv> for ClinvarAlleleScv {
     type Error = anyhow::Error;
 
     fn try_from(value: pbs::clinvar_data::clinvar_public::AlleleScv) -> Result<Self, Self::Error> {
@@ -3054,7 +3153,7 @@ impl TryFrom<pbs::clinvar_data::clinvar_public::AlleleScv> for AlleleScv {
 ///
 /// nested elements
 #[derive(Clone, Debug, serde::Serialize, serde::Deserialize, utoipa::ToSchema)]
-pub struct AlleleScvGene {
+pub struct ClinvarAlleleScvGene {
     /// Gene name.
     pub name: Option<String>,
     /// Used to set key words for retrieval or
@@ -3063,14 +3162,14 @@ pub struct AlleleScvGene {
     pub properties: Vec<String>,
     /// Used for gene specific identifiers
     /// such as MIM number, Gene ID, HGNC ID, etc.
-    pub xrefs: Vec<Xref>,
+    pub xrefs: Vec<ClinvarXref>,
     /// Optional gene symbol.
     pub symbol: Option<String>,
     /// Relationship between gene and variant.
-    pub relationship_type: Option<GeneVariantRelationship>,
+    pub relationship_type: Option<ClinvarGeneVariantRelationship>,
 }
 
-impl TryFrom<pbs::clinvar_data::clinvar_public::allele_scv::Gene> for AlleleScvGene {
+impl TryFrom<pbs::clinvar_data::clinvar_public::allele_scv::Gene> for ClinvarAlleleScvGene {
     type Error = anyhow::Error;
 
     fn try_from(
@@ -3088,7 +3187,7 @@ impl TryFrom<pbs::clinvar_data::clinvar_public::allele_scv::Gene> for AlleleScvG
             relationship_type: value
                 .relationship_type
                 .map(|relationship_type| {
-                    GeneVariantRelationship::try_from(
+                    ClinvarGeneVariantRelationship::try_from(
                         pbs::clinvar_data::clinvar_public::GeneVariantRelationship::try_from(
                             relationship_type,
                         )?,
@@ -3103,13 +3202,13 @@ impl TryFrom<pbs::clinvar_data::clinvar_public::allele_scv::Gene> for AlleleScvG
 ///
 /// nested elements
 #[derive(Clone, Debug, serde::Serialize, serde::Deserialize, utoipa::ToSchema)]
-pub struct MolecularConsequence {
+pub struct ClinvarMolecularConsequence {
     /// Xref list.
-    pub xrefs: Vec<Xref>,
+    pub xrefs: Vec<ClinvarXref>,
     /// Citation list.
-    pub citations: Vec<Citation>,
+    pub citations: Vec<ClinvarCitation>,
     /// Comment list.
-    pub comments: Vec<Comment>,
+    pub comments: Vec<ClinvarComment>,
     /// RS id.
     pub rs: Option<i64>,
     /// Optional HGVS expression.
@@ -3121,7 +3220,7 @@ pub struct MolecularConsequence {
 }
 
 impl TryFrom<pbs::clinvar_data::clinvar_public::allele_scv::MolecularConsequence>
-    for MolecularConsequence
+    for ClinvarMolecularConsequence
 {
     type Error = anyhow::Error;
 
@@ -3156,25 +3255,25 @@ impl TryFrom<pbs::clinvar_data::clinvar_public::allele_scv::MolecularConsequence
 ///
 /// Corresponds to `typeHaplotypeSCV` in XSD.
 #[derive(Clone, Debug, serde::Serialize, serde::Deserialize, utoipa::ToSchema)]
-pub struct HaplotypeScv {
+pub struct ClinvarHaplotypeScv {
     /// The list of alleles in the haplotype.
-    pub simple_alleles: Vec<AlleleScv>,
+    pub simple_alleles: Vec<ClinvarAlleleScv>,
     /// The preferred representation of the haplotype.
     pub name: Option<String>,
     /// Names other than 'preferred' used for the haplotype.
-    pub other_names: Vec<OtherName>,
+    pub other_names: Vec<ClinvarOtherName>,
     /// Classification of the variant.
-    pub classifications: Option<AggregateClassificationSet>,
+    pub classifications: Option<ClinvarAggregateClassificationSet>,
     /// Functional consequences of the variant.
-    pub functional_consequences: Vec<FunctionalConsequence>,
+    pub functional_consequences: Vec<ClinvarFunctionalConsequence>,
     /// List of attributes.
-    pub attributes: Vec<AttributeSetElement>,
+    pub attributes: Vec<ClinvarAttributeSetElement>,
     /// List of citations.
-    pub citations: Vec<Citation>,
+    pub citations: Vec<ClinvarCitation>,
     /// List of cross-references.
-    pub xrefs: Vec<Xref>,
+    pub xrefs: Vec<ClinvarXref>,
     /// List of comments.
-    pub comments: Vec<Comment>,
+    pub comments: Vec<ClinvarComment>,
     /// Variation ID.
     pub variation_id: Option<i64>,
     /// Number of copies.
@@ -3183,7 +3282,7 @@ pub struct HaplotypeScv {
     pub number_of_chromosomes: Option<i32>,
 }
 
-impl TryFrom<pbs::clinvar_data::clinvar_public::HaplotypeScv> for HaplotypeScv {
+impl TryFrom<pbs::clinvar_data::clinvar_public::HaplotypeScv> for ClinvarHaplotypeScv {
     type Error = anyhow::Error;
 
     fn try_from(
@@ -3240,35 +3339,35 @@ impl TryFrom<pbs::clinvar_data::clinvar_public::HaplotypeScv> for HaplotypeScv {
 ///
 /// nested elements
 #[derive(Clone, Debug, serde::Serialize, serde::Deserialize, utoipa::ToSchema)]
-pub struct GenotypeScv {
+pub struct ClinvarGenotypeScv {
     /// Simple alleles; mutually exclusive with `haplotypes`.
-    pub simple_alleles: Vec<AlleleScv>,
+    pub simple_alleles: Vec<ClinvarAlleleScv>,
     /// Haplotype; mutually exclusive with `simple_alleles`.
     ///
     /// Allows more than 2 haplotypes per genotype to support
     /// representation of ploidy.
-    pub haplotypes: Vec<HaplotypeScv>,
+    pub haplotypes: Vec<ClinvarHaplotypeScv>,
     /// Optional name.
     pub name: Option<String>,
     /// Other names used for the genotype.
-    pub other_names: Vec<OtherName>,
+    pub other_names: Vec<ClinvarOtherName>,
     /// The variation type.
-    pub variation_type: VariationType,
+    pub variation_type: ClinvarVariationType,
     /// Functional consequences.
-    pub functional_consequences: Vec<FunctionalConsequence>,
+    pub functional_consequences: Vec<ClinvarFunctionalConsequence>,
     /// Attributes.
-    pub attributes: Vec<AttributeSetElement>,
+    pub attributes: Vec<ClinvarAttributeSetElement>,
     /// List of citations.
-    pub citations: Vec<Citation>,
+    pub citations: Vec<ClinvarCitation>,
     /// List of xrefs.
-    pub xrefs: Vec<Xref>,
+    pub xrefs: Vec<ClinvarXref>,
     /// List of comments.
-    pub comments: Vec<Comment>,
+    pub comments: Vec<ClinvarComment>,
     /// Variation ID.
     pub variation_id: Option<i64>,
 }
 
-impl TryFrom<pbs::clinvar_data::clinvar_public::GenotypeScv> for GenotypeScv {
+impl TryFrom<pbs::clinvar_data::clinvar_public::GenotypeScv> for ClinvarGenotypeScv {
     type Error = anyhow::Error;
 
     fn try_from(
@@ -3291,7 +3390,7 @@ impl TryFrom<pbs::clinvar_data::clinvar_public::GenotypeScv> for GenotypeScv {
                 .into_iter()
                 .map(TryInto::try_into)
                 .collect::<Result<Vec<_>, _>>()?,
-            variation_type: VariationType::try_from(
+            variation_type: ClinvarVariationType::try_from(
                 pbs::clinvar_data::clinvar_public::VariationType::try_from(value.variation_type)?,
             )?,
             functional_consequences: value
@@ -3331,24 +3430,24 @@ impl TryFrom<pbs::clinvar_data::clinvar_public::GenotypeScv> for GenotypeScv {
 ///
 /// Corresponds to `ObservationSet` in XSD.
 #[derive(Clone, Debug, serde::Serialize, serde::Deserialize, utoipa::ToSchema)]
-pub struct ObservedIn {
+pub struct ClinvarObservedIn {
     /// Sample.
-    pub sample: Option<Sample>,
+    pub sample: Option<ClinvarSample>,
     /// Observed data.
-    pub observed_data: Vec<ObservedData>,
+    pub observed_data: Vec<ClinvarObservedData>,
     /// Co-occurence set.
-    pub cooccurrence_sets: Vec<Cooccurrence>,
+    pub cooccurrence_sets: Vec<ClinvarCooccurrence>,
     /// TraitSet.
-    pub trait_set: Option<TraitSet>,
+    pub trait_set: Option<ClinvarTraitSet>,
     /// Citation list.
-    pub citations: Vec<Citation>,
+    pub citations: Vec<ClinvarCitation>,
     /// Xref list.
-    pub xrefs: Vec<Xref>,
+    pub xrefs: Vec<ClinvarXref>,
     /// Comment list.
-    pub comments: Vec<Comment>,
+    pub comments: Vec<ClinvarComment>,
 }
 
-impl TryFrom<pbs::clinvar_data::clinvar_public::ObservedIn> for ObservedIn {
+impl TryFrom<pbs::clinvar_data::clinvar_public::ObservedIn> for ClinvarObservedIn {
     type Error = anyhow::Error;
 
     fn try_from(value: pbs::clinvar_data::clinvar_public::ObservedIn) -> Result<Self, Self::Error> {
@@ -3386,15 +3485,15 @@ impl TryFrom<pbs::clinvar_data::clinvar_public::ObservedIn> for ObservedIn {
 
 /// Local struct for attributes based on `BaseAttribute`.
 #[derive(Clone, Debug, serde::Serialize, serde::Deserialize, utoipa::ToSchema)]
-pub struct ObservedDataAttribute {
+pub struct ClinvarObservedDataAttribute {
     /// base
-    pub base: Option<BaseAttribute>,
+    pub base: Option<ClinvarBaseAttribute>,
     /// type
-    pub r#type: ObservedDataAttributeType,
+    pub r#type: ClinvarObservedDataAttributeType,
 }
 
 impl TryFrom<pbs::clinvar_data::clinvar_public::observed_in::ObservedDataAttribute>
-    for ObservedDataAttribute
+    for ClinvarObservedDataAttribute
 {
     type Error = anyhow::Error;
 
@@ -3403,7 +3502,7 @@ impl TryFrom<pbs::clinvar_data::clinvar_public::observed_in::ObservedDataAttribu
     ) -> Result<Self, Self::Error> {
         Ok(Self {
             base: value.base.map(TryInto::try_into).transpose()?,
-            r#type: ObservedDataAttributeType::try_from(
+            r#type: ClinvarObservedDataAttributeType::try_from(
                 pbs::clinvar_data::clinvar_public::observed_in::observed_data_attribute::Type::try_from(
                     value.r#type
                 )?
@@ -3424,9 +3523,13 @@ impl TryFrom<pbs::clinvar_data::clinvar_public::observed_in::ObservedDataAttribu
     Ord,
     serde::Serialize,
     serde::Deserialize,
+    strum::Display,
+    strum::EnumString,
     utoipa::ToSchema,
 )]
-pub enum ObservedDataAttributeType {
+#[serde(rename_all = "snake_case")]
+#[strum(serialize_all = "snake_case")]
+pub enum ClinvarObservedDataAttributeType {
     /// corresponds to "Description"
     Description,
     /// corresponds to "VariantAlleles"
@@ -3480,7 +3583,7 @@ pub enum ObservedDataAttributeType {
 }
 
 impl TryFrom<pbs::clinvar_data::clinvar_public::observed_in::observed_data_attribute::Type>
-    for ObservedDataAttributeType
+    for ClinvarObservedDataAttributeType
 {
     type Error = anyhow::Error;
 
@@ -3489,79 +3592,79 @@ impl TryFrom<pbs::clinvar_data::clinvar_public::observed_in::observed_data_attri
     ) -> Result<Self, Self::Error> {
         Ok(match value {
             pbs::clinvar_data::clinvar_public::observed_in::observed_data_attribute::Type::Description => {
-                ObservedDataAttributeType::Description
+                ClinvarObservedDataAttributeType::Description
             }
             pbs::clinvar_data::clinvar_public::observed_in::observed_data_attribute::Type::VariantAlleles => {
-                ObservedDataAttributeType::VariantAlleles
+                ClinvarObservedDataAttributeType::VariantAlleles
             }
             pbs::clinvar_data::clinvar_public::observed_in::observed_data_attribute::Type::SubjectsWithVariant => {
-                ObservedDataAttributeType::SubjectsWithVariant
+                ClinvarObservedDataAttributeType::SubjectsWithVariant
             }
             pbs::clinvar_data::clinvar_public::observed_in::observed_data_attribute::Type::SubjectsWithDifferentCausativeVariant => {
-                ObservedDataAttributeType::SubjectsWithDifferentCausativeVariant
+                ClinvarObservedDataAttributeType::SubjectsWithDifferentCausativeVariant
             }
             pbs::clinvar_data::clinvar_public::observed_in::observed_data_attribute::Type::VariantChromosomes => {
-                ObservedDataAttributeType::VariantChromosomes
+                ClinvarObservedDataAttributeType::VariantChromosomes
             }
             pbs::clinvar_data::clinvar_public::observed_in::observed_data_attribute::Type::IndependentObservations => {
-                ObservedDataAttributeType::IndependentObservations
+                ClinvarObservedDataAttributeType::IndependentObservations
             }
             pbs::clinvar_data::clinvar_public::observed_in::observed_data_attribute::Type::SingleHeterozygous => {
-                ObservedDataAttributeType::SingleHeterozygous
+                ClinvarObservedDataAttributeType::SingleHeterozygous
             }
             pbs::clinvar_data::clinvar_public::observed_in::observed_data_attribute::Type::CompoundHeterozygous => {
-                ObservedDataAttributeType::CompoundHeterozygous
+                ClinvarObservedDataAttributeType::CompoundHeterozygous
             }
             pbs::clinvar_data::clinvar_public::observed_in::observed_data_attribute::Type::Homozygous => {
-                ObservedDataAttributeType::Homozygous
+                ClinvarObservedDataAttributeType::Homozygous
             }
             pbs::clinvar_data::clinvar_public::observed_in::observed_data_attribute::Type::Hemizygous => {
-                ObservedDataAttributeType::Hemizygous
+                ClinvarObservedDataAttributeType::Hemizygous
             }
             pbs::clinvar_data::clinvar_public::observed_in::observed_data_attribute::Type::NumberMosaic => {
-                ObservedDataAttributeType::NumberMosaic
+                ClinvarObservedDataAttributeType::NumberMosaic
             }
             pbs::clinvar_data::clinvar_public::observed_in::observed_data_attribute::Type::ObservedUnspecified => {
-                ObservedDataAttributeType::ObservedUnspecified
+                ClinvarObservedDataAttributeType::ObservedUnspecified
             }
             pbs::clinvar_data::clinvar_public::observed_in::observed_data_attribute::Type::AlleleFrequency => {
-                ObservedDataAttributeType::AlleleFrequency
+                ClinvarObservedDataAttributeType::AlleleFrequency
             }
             pbs::clinvar_data::clinvar_public::observed_in::observed_data_attribute::Type::SecondaryFinding => {
-                ObservedDataAttributeType::SecondaryFinding
+                ClinvarObservedDataAttributeType::SecondaryFinding
             }
             pbs::clinvar_data::clinvar_public::observed_in::observed_data_attribute::Type::GenotypeAndMoiConsistent => {
-                ObservedDataAttributeType::GenotypeAndMoiConsistent
+                ClinvarObservedDataAttributeType::GenotypeAndMoiConsistent
             }
             pbs::clinvar_data::clinvar_public::observed_in::observed_data_attribute::Type::UnaffectedFamilyMemberWithCausativeVariant => {
-                ObservedDataAttributeType::UnaffectedFamilyMemberWithCausativeVariant
+                ClinvarObservedDataAttributeType::UnaffectedFamilyMemberWithCausativeVariant
             }
             pbs::clinvar_data::clinvar_public::observed_in::observed_data_attribute::Type::HetParentTransmitNormalAllele => {
-                ObservedDataAttributeType::HetParentTransmitNormalAllele
+                ClinvarObservedDataAttributeType::HetParentTransmitNormalAllele
             }
             pbs::clinvar_data::clinvar_public::observed_in::observed_data_attribute::Type::CosegregatingFamilies => {
-                ObservedDataAttributeType::CosegregatingFamilies
+                ClinvarObservedDataAttributeType::CosegregatingFamilies
             }
             pbs::clinvar_data::clinvar_public::observed_in::observed_data_attribute::Type::InformativeMeioses => {
-                ObservedDataAttributeType::InformativeMeioses
+                ClinvarObservedDataAttributeType::InformativeMeioses
             }
             pbs::clinvar_data::clinvar_public::observed_in::observed_data_attribute::Type::SampleLocalId => {
-                ObservedDataAttributeType::SampleLocalId
+                ClinvarObservedDataAttributeType::SampleLocalId
             }
             pbs::clinvar_data::clinvar_public::observed_in::observed_data_attribute::Type::SampleVariantId => {
-                ObservedDataAttributeType::SampleVariantId
+                ClinvarObservedDataAttributeType::SampleVariantId
             }
             pbs::clinvar_data::clinvar_public::observed_in::observed_data_attribute::Type::FamilyHistory => {
-                ObservedDataAttributeType::FamilyHistory
+                ClinvarObservedDataAttributeType::FamilyHistory
             }
             pbs::clinvar_data::clinvar_public::observed_in::observed_data_attribute::Type::NumFamiliesWithVariant => {
-                ObservedDataAttributeType::NumFamiliesWithVariant
+                ClinvarObservedDataAttributeType::NumFamiliesWithVariant
             }
             pbs::clinvar_data::clinvar_public::observed_in::observed_data_attribute::Type::NumFamiliesWithSegregationObserved => {
-                ObservedDataAttributeType::NumFamiliesWithSegregationObserved
+                ClinvarObservedDataAttributeType::NumFamiliesWithSegregationObserved
             }
             pbs::clinvar_data::clinvar_public::observed_in::observed_data_attribute::Type::SegregationObserved => {
-                ObservedDataAttributeType::SegregationObserved
+                ClinvarObservedDataAttributeType::SegregationObserved
             }
             _ =>  anyhow::bail!("Invalid observed_data_attribute::Type: {:?}", value)
         })
@@ -3574,20 +3677,20 @@ impl TryFrom<pbs::clinvar_data::clinvar_public::observed_in::observed_data_attri
 /// Attribute will be either decimal or string depending on type. The value will
 /// be stored here, but decimals will be entered to the database as a string.
 #[derive(Clone, Debug, serde::Serialize, serde::Deserialize, utoipa::ToSchema)]
-pub struct ObservedData {
+pub struct ClinvarObservedData {
     /// Attributes.
-    pub attributes: Vec<ObservedDataAttribute>,
+    pub attributes: Vec<ClinvarObservedDataAttribute>,
     /// Severity.
-    pub severity: Option<Severity>,
+    pub severity: Option<ClinvarSeverity>,
     /// Citation list.
-    pub citations: Vec<Citation>,
+    pub citations: Vec<ClinvarCitation>,
     /// Xref list.
-    pub xrefs: Vec<Xref>,
+    pub xrefs: Vec<ClinvarXref>,
     /// Comment list.
-    pub comments: Vec<Comment>,
+    pub comments: Vec<ClinvarComment>,
 }
 
-impl TryFrom<pbs::clinvar_data::clinvar_public::observed_in::ObservedData> for ObservedData {
+impl TryFrom<pbs::clinvar_data::clinvar_public::observed_in::ObservedData> for ClinvarObservedData {
     type Error = anyhow::Error;
 
     fn try_from(
@@ -3597,30 +3700,30 @@ impl TryFrom<pbs::clinvar_data::clinvar_public::observed_in::ObservedData> for O
             attributes: value
                 .attributes
                 .into_iter()
-                .map(ObservedDataAttribute::try_from)
+                .map(ClinvarObservedDataAttribute::try_from)
                 .collect::<Result<Vec<_>, _>>()?,
             severity: value
                 .severity
                 .map(|severity| {
-                    Severity::try_from(pbs::clinvar_data::clinvar_public::Severity::try_from(
-                        severity,
-                    )?)
+                    ClinvarSeverity::try_from(
+                        pbs::clinvar_data::clinvar_public::Severity::try_from(severity)?,
+                    )
                 })
                 .transpose()?,
             citations: value
                 .citations
                 .into_iter()
-                .map(Citation::try_from)
+                .map(ClinvarCitation::try_from)
                 .collect::<Result<Vec<_>, _>>()?,
             xrefs: value
                 .xrefs
                 .into_iter()
-                .map(Xref::try_from)
+                .map(ClinvarXref::try_from)
                 .collect::<Result<Vec<_>, _>>()?,
             comments: value
                 .comments
                 .into_iter()
-                .map(Comment::try_from)
+                .map(ClinvarComment::try_from)
                 .collect::<Result<Vec<_>, _>>()?,
         })
     }
@@ -3638,9 +3741,13 @@ impl TryFrom<pbs::clinvar_data::clinvar_public::observed_in::ObservedData> for O
     Ord,
     serde::Serialize,
     serde::Deserialize,
+    strum::Display,
+    strum::EnumString,
     utoipa::ToSchema,
 )]
-pub enum MethodType {
+#[serde(rename_all = "snake_case")]
+#[strum(serialize_all = "snake_case")]
+pub enum ClinvarMethodType {
     /// corresponds to "literature only"
     LiteratureOnly,
     /// corresponds to "reference population"
@@ -3659,7 +3766,7 @@ pub enum MethodType {
     Research,
 }
 
-impl TryFrom<pbs::clinvar_data::clinvar_public::observed_in::MethodType> for MethodType {
+impl TryFrom<pbs::clinvar_data::clinvar_public::observed_in::MethodType> for ClinvarMethodType {
     type Error = anyhow::Error;
 
     fn try_from(
@@ -3667,28 +3774,28 @@ impl TryFrom<pbs::clinvar_data::clinvar_public::observed_in::MethodType> for Met
     ) -> Result<Self, Self::Error> {
         Ok(match value {
             pbs::clinvar_data::clinvar_public::observed_in::MethodType::LiteratureOnly => {
-                MethodType::LiteratureOnly
+                ClinvarMethodType::LiteratureOnly
             }
             pbs::clinvar_data::clinvar_public::observed_in::MethodType::ReferencePopulation => {
-                MethodType::ReferencePopulation
+                ClinvarMethodType::ReferencePopulation
             }
             pbs::clinvar_data::clinvar_public::observed_in::MethodType::CaseControl => {
-                MethodType::CaseControl
+                ClinvarMethodType::CaseControl
             }
             pbs::clinvar_data::clinvar_public::observed_in::MethodType::ClinicalTesting => {
-                MethodType::ClinicalTesting
+                ClinvarMethodType::ClinicalTesting
             }
             pbs::clinvar_data::clinvar_public::observed_in::MethodType::InVitro => {
-                MethodType::InVitro
+                ClinvarMethodType::InVitro
             }
             pbs::clinvar_data::clinvar_public::observed_in::MethodType::InVivo => {
-                MethodType::InVivo
+                ClinvarMethodType::InVivo
             }
             pbs::clinvar_data::clinvar_public::observed_in::MethodType::InferredFromSource => {
-                MethodType::InferredFromSource
+                ClinvarMethodType::InferredFromSource
             }
             pbs::clinvar_data::clinvar_public::observed_in::MethodType::Research => {
-                MethodType::Research
+                ClinvarMethodType::Research
             }
             _ => anyhow::bail!("Invalid observed_in::MethodType: {:?}", value),
         })
@@ -3699,43 +3806,43 @@ impl TryFrom<pbs::clinvar_data::clinvar_public::observed_in::MethodType> for Met
 ///
 /// Corresponds to `MeasureTraitType` in XSD and `<ClinicalAssertion>` in XML
 #[derive(Clone, Debug, serde::Serialize, serde::Deserialize, utoipa::ToSchema)]
-pub struct ClinicalAssertion {
+pub struct ClinvarClinicalAssertion {
     /// The ClinVar submission ID.
     pub clinvar_submission_id: Option<ClinvarSubmissionId>,
     /// The ClinVar SCV accessions.
     pub clinvar_accession: Option<ClinvarAccession>,
     /// Optional list of additional submitters.
-    pub additional_submitters: Vec<Submitter>,
+    pub additional_submitters: Vec<ClinvarSubmitter>,
     /// Record status.
-    pub record_status: ClinicalAssertionRecordStatus,
+    pub record_status: ClinvarClinicalAssertionRecordStatus,
     /// Replaces; mutually exclusive with replaceds
     pub replaces: Vec<String>,
     /// Replaced list; mutually exclusive with replaces
-    pub replaceds: Vec<ClinicalAssertionRecordHistory>,
+    pub replaceds: Vec<ClinvarClinicalAssertionRecordHistory>,
     /// SCV classification.
-    pub classifications: Option<ClassificationScv>,
+    pub classifications: Option<ClinvarClassificationScv>,
     /// The assertion.
-    pub assertion: Assertion,
+    pub assertion: ClinvarAssertion,
     /// Attributes.
-    pub attributes: Vec<ClinicalAssertionAttributeSetElement>,
+    pub attributes: Vec<ClinvarClinicalAssertionAttributeSetElement>,
     /// Observed in.
-    pub observed_ins: Vec<ObservedIn>,
+    pub observed_ins: Vec<ClinvarObservedIn>,
     /// Allele in SCV; mutually exclusive with haplotype/genotype.
-    pub simple_allele: Option<AlleleScv>,
+    pub simple_allele: Option<ClinvarAlleleScv>,
     /// Haplotype in SCV; mutually exclusive with allele/genotype.
-    pub haplotype: Option<HaplotypeScv>,
+    pub haplotype: Option<ClinvarHaplotypeScv>,
     /// Genotype in SCV; mutually exclusive with allele/haplotype.
-    pub genotype: Option<GenotypeScv>,
+    pub genotype: Option<ClinvarGenotypeScv>,
     /// The trait set.
-    pub trait_set: Option<TraitSet>,
+    pub trait_set: Option<ClinvarTraitSet>,
     /// List of citations.
-    pub citations: Vec<Citation>,
+    pub citations: Vec<ClinvarCitation>,
     /// Optional study name.
     pub study_name: Option<String>,
     /// Optional study description.
     pub study_description: Option<String>,
     /// List of comments.
-    pub comments: Vec<Comment>,
+    pub comments: Vec<ClinvarComment>,
     /// List of submissions.
     pub submission_names: Vec<String>,
     /// Date of creation.
@@ -3750,7 +3857,7 @@ pub struct ClinicalAssertion {
     pub fda_recognized_database: Option<bool>,
 }
 
-impl TryFrom<pbs::clinvar_data::clinvar_public::ClinicalAssertion> for ClinicalAssertion {
+impl TryFrom<pbs::clinvar_data::clinvar_public::ClinicalAssertion> for ClinvarClinicalAssertion {
     type Error = anyhow::Error;
 
     fn try_from(
@@ -3765,9 +3872,9 @@ impl TryFrom<pbs::clinvar_data::clinvar_public::ClinicalAssertion> for ClinicalA
             additional_submitters: value
                 .additional_submitters
                 .into_iter()
-                .map(Submitter::try_from)
+                .map(ClinvarSubmitter::try_from)
                 .collect::<Result<Vec<_>, _>>()?,
-            record_status: ClinicalAssertionRecordStatus::try_from(
+            record_status: ClinvarClinicalAssertionRecordStatus::try_from(
                 pbs::clinvar_data::clinvar_public::clinical_assertion::RecordStatus::try_from(
                     value.record_status,
                 )?,
@@ -3776,40 +3883,49 @@ impl TryFrom<pbs::clinvar_data::clinvar_public::ClinicalAssertion> for ClinicalA
             replaceds: value
                 .replaceds
                 .into_iter()
-                .map(ClinicalAssertionRecordHistory::try_from)
+                .map(ClinvarClinicalAssertionRecordHistory::try_from)
                 .collect::<Result<Vec<_>, _>>()?,
             classifications: value
                 .classifications
-                .map(ClassificationScv::try_from)
+                .map(ClinvarClassificationScv::try_from)
                 .transpose()?,
-            assertion: Assertion::try_from(
+            assertion: ClinvarAssertion::try_from(
                 pbs::clinvar_data::clinvar_public::Assertion::try_from(value.assertion)?,
             )?,
             attributes: value
                 .attributes
                 .into_iter()
-                .map(ClinicalAssertionAttributeSetElement::try_from)
+                .map(ClinvarClinicalAssertionAttributeSetElement::try_from)
                 .collect::<Result<Vec<_>, _>>()?,
             observed_ins: value
                 .observed_ins
                 .into_iter()
-                .map(ObservedIn::try_from)
+                .map(ClinvarObservedIn::try_from)
                 .collect::<Result<Vec<_>, _>>()?,
-            simple_allele: value.simple_allele.map(AlleleScv::try_from).transpose()?,
-            haplotype: value.haplotype.map(HaplotypeScv::try_from).transpose()?,
-            genotype: value.genotype.map(GenotypeScv::try_from).transpose()?,
-            trait_set: value.trait_set.map(TraitSet::try_from).transpose()?,
+            simple_allele: value
+                .simple_allele
+                .map(ClinvarAlleleScv::try_from)
+                .transpose()?,
+            haplotype: value
+                .haplotype
+                .map(ClinvarHaplotypeScv::try_from)
+                .transpose()?,
+            genotype: value
+                .genotype
+                .map(ClinvarGenotypeScv::try_from)
+                .transpose()?,
+            trait_set: value.trait_set.map(ClinvarTraitSet::try_from).transpose()?,
             citations: value
                 .citations
                 .into_iter()
-                .map(Citation::try_from)
+                .map(ClinvarCitation::try_from)
                 .collect::<Result<Vec<_>, _>>()?,
             study_name: value.study_name,
             study_description: value.study_description,
             comments: value
                 .comments
                 .into_iter()
-                .map(Comment::try_from)
+                .map(ClinvarComment::try_from)
                 .collect::<Result<Vec<_>, _>>()?,
             submission_names: value.submission_names,
             date_created: value.date_created.map(|x| {
@@ -3863,21 +3979,21 @@ impl From<pbs::clinvar_data::clinvar_public::clinical_assertion::ClinvarSubmissi
 
 /// Local type for attribute set.
 #[derive(Clone, Debug, serde::Serialize, serde::Deserialize, utoipa::ToSchema)]
-pub struct ClinicalAssertionAttributeSetElement {
+pub struct ClinvarClinicalAssertionAttributeSetElement {
     /// The base value.
-    pub attribute: Option<BaseAttribute>,
+    pub attribute: Option<ClinvarBaseAttribute>,
     /// The type of the attribute.
-    pub r#type: AttributeSetElementType,
+    pub r#type: ClinvarAttributeSetElementType,
     /// List of xrefs.
-    pub xrefs: Vec<Xref>,
+    pub xrefs: Vec<ClinvarXref>,
     /// List of citations.
-    pub citations: Vec<Citation>,
+    pub citations: Vec<ClinvarCitation>,
     /// List of comments.
-    pub comments: Vec<Comment>,
+    pub comments: Vec<ClinvarComment>,
 }
 
 impl TryFrom<pbs::clinvar_data::clinvar_public::clinical_assertion::AttributeSetElement>
-    for ClinicalAssertionAttributeSetElement
+    for ClinvarClinicalAssertionAttributeSetElement
 {
     type Error = anyhow::Error;
 
@@ -3885,8 +4001,8 @@ impl TryFrom<pbs::clinvar_data::clinvar_public::clinical_assertion::AttributeSet
         value: pbs::clinvar_data::clinvar_public::clinical_assertion::AttributeSetElement,
     ) -> Result<Self, Self::Error> {
         Ok(Self {
-            attribute: value.attribute.map(BaseAttribute::try_from).transpose()?,
-            r#type: AttributeSetElementType::try_from(
+            attribute: value.attribute.map(ClinvarBaseAttribute::try_from).transpose()?,
+            r#type: ClinvarAttributeSetElementType::try_from(
                 pbs::clinvar_data::clinvar_public::clinical_assertion::attribute_set_element::Type::try_from(
                     value.r#type
                 )?
@@ -3894,17 +4010,17 @@ impl TryFrom<pbs::clinvar_data::clinvar_public::clinical_assertion::AttributeSet
             xrefs: value
                 .xrefs
                 .into_iter()
-                .map(Xref::try_from)
+                .map(ClinvarXref::try_from)
                 .collect::<Result<Vec<_>, _>>()?,
             citations: value
                 .citations
                 .into_iter()
-                .map(Citation::try_from)
+                .map(ClinvarCitation::try_from)
                 .collect::<Result<Vec<_>, _>>()?,
             comments: value
                 .comments
                 .into_iter()
-                .map(Comment::try_from)
+                .map(ClinvarComment::try_from)
                 .collect::<Result<Vec<_>, _>>()?,
         })
     }
@@ -3922,9 +4038,13 @@ impl TryFrom<pbs::clinvar_data::clinvar_public::clinical_assertion::AttributeSet
     Ord,
     serde::Serialize,
     serde::Deserialize,
+    strum::Display,
+    strum::EnumString,
     utoipa::ToSchema,
 )]
-pub enum AttributeSetElementType {
+#[serde(rename_all = "snake_case")]
+#[strum(serialize_all = "snake_case")]
+pub enum ClinvarAttributeSetElementType {
     /// Corresponds to "ModeOfInheritance"
     ModeOfInheritance,
     /// Corresponds to "Penetrance"
@@ -3942,7 +4062,7 @@ pub enum AttributeSetElementType {
 }
 
 impl TryFrom<pbs::clinvar_data::clinvar_public::clinical_assertion::attribute_set_element::Type>
-    for AttributeSetElementType
+    for ClinvarAttributeSetElementType
 {
     type Error = anyhow::Error;
 
@@ -3970,7 +4090,7 @@ pub struct ClinvarAccession {
     /// Version.
     pub version: i32,
     /// The submitter's identifier.
-    pub submitter_identifiers: Option<SubmitterIdentifiers>,
+    pub submitter_identifiers: Option<ClinvarSubmitterIdentifiers>,
     /// The date that the latest update to the submitted
     /// record (SCV) became public in ClinVar.
     pub date_updated: Option<chrono::DateTime<chrono::Utc>>,
@@ -3992,7 +4112,7 @@ impl TryFrom<pbs::clinvar_data::clinvar_public::clinical_assertion::ClinvarAcces
             version: value.version,
             submitter_identifiers: value
                 .submitter_identifiers
-                .map(SubmitterIdentifiers::try_from)
+                .map(ClinvarSubmitterIdentifiers::try_from)
                 .transpose()?,
             date_updated: value.date_updated.map(|ts| {
                 chrono::DateTime::<chrono::Utc>::from_timestamp(ts.seconds, ts.nanos as u32)
@@ -4018,9 +4138,13 @@ impl TryFrom<pbs::clinvar_data::clinvar_public::clinical_assertion::ClinvarAcces
     Ord,
     serde::Serialize,
     serde::Deserialize,
+    strum::Display,
+    strum::EnumString,
     utoipa::ToSchema,
 )]
-pub enum ClinicalAssertionRecordStatus {
+#[serde(rename_all = "snake_case")]
+#[strum(serialize_all = "snake_case")]
+pub enum ClinvarClinicalAssertionRecordStatus {
     /// corresponds to "current"
     Current,
     /// corresponds to "replaced"
@@ -4030,7 +4154,7 @@ pub enum ClinicalAssertionRecordStatus {
 }
 
 impl TryFrom<pbs::clinvar_data::clinvar_public::clinical_assertion::RecordStatus>
-    for ClinicalAssertionRecordStatus
+    for ClinvarClinicalAssertionRecordStatus
 {
     type Error = anyhow::Error;
 
@@ -4056,9 +4180,9 @@ impl TryFrom<pbs::clinvar_data::clinvar_public::clinical_assertion::RecordStatus
 ///
 /// Corresponds to "typeAllele" in XSD.
 #[derive(Clone, Debug, serde::Serialize, serde::Deserialize, utoipa::ToSchema)]
-pub struct Allele {
+pub struct ClinvarAllele {
     /// Gene list.
-    pub genes: Vec<AlleleGene>,
+    pub genes: Vec<ClinvarAlleleGene>,
     /// Name.
     pub name: String,
     /// Canonical SPDI.
@@ -4066,32 +4190,32 @@ pub struct Allele {
     /// Variant type(s).
     pub variant_types: Vec<String>,
     /// Location.
-    pub locations: Vec<Location>,
+    pub locations: Vec<ClinvarLocation>,
     /// List of other names.
-    pub other_names: Vec<OtherName>,
+    pub other_names: Vec<ClinvarOtherName>,
     /// These are the single-letter representations of the protein change.
     pub protein_changes: Vec<String>,
     /// List of HGVS expressions.
-    pub hgvs_expressions: Vec<HgvsExpression>,
+    pub hgvs_expressions: Vec<ClinvarHgvsExpression>,
     /// Aggregated classifications.
-    pub classifications: Option<AggregateClassificationSet>,
+    pub classifications: Option<ClinvarAggregateClassificationSet>,
     /// List of xrefs.
-    pub xrefs: Vec<Xref>,
+    pub xrefs: Vec<ClinvarXref>,
     /// List of comments.
-    pub comments: Vec<Comment>,
+    pub comments: Vec<ClinvarComment>,
     /// List of functional consequences.
-    pub functional_consequences: Vec<FunctionalConsequence>,
+    pub functional_consequences: Vec<ClinvarFunctionalConsequence>,
     /// Allele frequencies.
-    pub allele_frequencies: Vec<AlleleFrequency>,
+    pub allele_frequencies: Vec<ClinvarAlleleFrequency>,
     /// Global minor allele frequencies.
-    pub global_minor_allele_frequency: Option<GlobalMinorAlleleFrequency>,
+    pub global_minor_allele_frequency: Option<ClinvarGlobalMinorAlleleFrequency>,
     /// Allele ID.
     pub allele_id: i64,
     /// Variation ID.
     pub variation_id: i64,
 }
 
-impl TryFrom<pbs::clinvar_data::clinvar_public::Allele> for Allele {
+impl TryFrom<pbs::clinvar_data::clinvar_public::Allele> for ClinvarAllele {
     type Error = anyhow::Error;
 
     fn try_from(value: pbs::clinvar_data::clinvar_public::Allele) -> Result<Self, Self::Error> {
@@ -4099,7 +4223,7 @@ impl TryFrom<pbs::clinvar_data::clinvar_public::Allele> for Allele {
             genes: value
                 .genes
                 .into_iter()
-                .map(AlleleGene::try_from)
+                .map(ClinvarAlleleGene::try_from)
                 .collect::<Result<Vec<_>, _>>()?,
             name: value.name,
             canonical_spdi: value.canonical_spdi,
@@ -4107,46 +4231,46 @@ impl TryFrom<pbs::clinvar_data::clinvar_public::Allele> for Allele {
             locations: value
                 .locations
                 .into_iter()
-                .map(Location::try_from)
+                .map(ClinvarLocation::try_from)
                 .collect::<Result<Vec<_>, _>>()?,
             other_names: value
                 .other_names
                 .into_iter()
-                .map(OtherName::try_from)
+                .map(ClinvarOtherName::try_from)
                 .collect::<Result<Vec<_>, _>>()?,
             protein_changes: value.protein_changes,
             hgvs_expressions: value
                 .hgvs_expressions
                 .into_iter()
-                .map(HgvsExpression::try_from)
+                .map(ClinvarHgvsExpression::try_from)
                 .collect::<Result<Vec<_>, _>>()?,
             classifications: value
                 .classifications
-                .map(AggregateClassificationSet::try_from)
+                .map(ClinvarAggregateClassificationSet::try_from)
                 .transpose()?,
             xrefs: value
                 .xrefs
                 .into_iter()
-                .map(Xref::try_from)
+                .map(ClinvarXref::try_from)
                 .collect::<Result<Vec<_>, _>>()?,
             comments: value
                 .comments
                 .into_iter()
-                .map(Comment::try_from)
+                .map(ClinvarComment::try_from)
                 .collect::<Result<Vec<_>, _>>()?,
             functional_consequences: value
                 .functional_consequences
                 .into_iter()
-                .map(FunctionalConsequence::try_from)
+                .map(ClinvarFunctionalConsequence::try_from)
                 .collect::<Result<Vec<_>, _>>()?,
             allele_frequencies: value
                 .allele_frequencies
                 .into_iter()
-                .map(AlleleFrequency::from)
+                .map(ClinvarAlleleFrequency::from)
                 .collect(),
             global_minor_allele_frequency: value
                 .global_minor_allele_frequency
-                .map(GlobalMinorAlleleFrequency::from),
+                .map(ClinvarGlobalMinorAlleleFrequency::from),
             allele_id: value.allele_id,
             variation_id: value.variation_id,
         })
@@ -4157,15 +4281,15 @@ impl TryFrom<pbs::clinvar_data::clinvar_public::Allele> for Allele {
 ///
 /// nested elements
 #[derive(Clone, Debug, serde::Serialize, serde::Deserialize, utoipa::ToSchema)]
-pub struct AlleleGene {
+pub struct ClinvarAlleleGene {
     /// Gene's locations.
-    pub locations: Vec<Location>,
+    pub locations: Vec<ClinvarLocation>,
     /// OMIM ID.
     pub omims: Vec<u64>,
     /// Haploinsuffiency.
-    pub haploinsufficiency: Option<DosageSensitivity>,
+    pub haploinsufficiency: Option<ClinvarDosageSensitivity>,
     /// Triplosensitivity.
-    pub triplosensitivity: Option<DosageSensitivity>,
+    pub triplosensitivity: Option<ClinvarDosageSensitivity>,
     /// Used to set key words for retrieval or
     /// display about a gene, such as genes listed by the
     /// ACMG guidelines.
@@ -4181,10 +4305,10 @@ pub struct AlleleGene {
     /// Source of gene (calculated or submitted).
     pub source: String,
     /// Relationship between gene and variant.
-    pub relationship_type: Option<GeneVariantRelationship>,
+    pub relationship_type: Option<ClinvarGeneVariantRelationship>,
 }
 
-impl TryFrom<pbs::clinvar_data::clinvar_public::allele::Gene> for AlleleGene {
+impl TryFrom<pbs::clinvar_data::clinvar_public::allele::Gene> for ClinvarAlleleGene {
     type Error = anyhow::Error;
 
     fn try_from(
@@ -4194,16 +4318,16 @@ impl TryFrom<pbs::clinvar_data::clinvar_public::allele::Gene> for AlleleGene {
             locations: value
                 .locations
                 .into_iter()
-                .map(Location::try_from)
+                .map(ClinvarLocation::try_from)
                 .collect::<Result<Vec<_>, _>>()?,
             omims: value.omims,
             haploinsufficiency: value
                 .haploinsufficiency
-                .map(DosageSensitivity::try_from)
+                .map(ClinvarDosageSensitivity::try_from)
                 .transpose()?,
             triplosensitivity: value
                 .triplosensitivity
-                .map(DosageSensitivity::try_from)
+                .map(ClinvarDosageSensitivity::try_from)
                 .transpose()?,
             properties: value.properties,
             symbol: value.symbol,
@@ -4214,7 +4338,7 @@ impl TryFrom<pbs::clinvar_data::clinvar_public::allele::Gene> for AlleleGene {
             relationship_type: value
                 .relationship_type
                 .map(|x| {
-                    crate::server::run::clinvar_data::GeneVariantRelationship::try_from(
+                    crate::server::run::clinvar_data::ClinvarGeneVariantRelationship::try_from(
                         pbs::clinvar_data::clinvar_public::GeneVariantRelationship::try_from(x)?,
                     )
                 })
@@ -4224,7 +4348,7 @@ impl TryFrom<pbs::clinvar_data::clinvar_public::allele::Gene> for AlleleGene {
 }
 /// Local type for allele frequency.
 #[derive(Clone, Debug, serde::Serialize, serde::Deserialize, utoipa::ToSchema)]
-pub struct AlleleFrequency {
+pub struct ClinvarAlleleFrequency {
     /// Value.
     pub value: f64,
     /// Source.
@@ -4233,7 +4357,7 @@ pub struct AlleleFrequency {
     pub url: Option<String>,
 }
 
-impl From<pbs::clinvar_data::clinvar_public::allele::AlleleFrequency> for AlleleFrequency {
+impl From<pbs::clinvar_data::clinvar_public::allele::AlleleFrequency> for ClinvarAlleleFrequency {
     fn from(value: pbs::clinvar_data::clinvar_public::allele::AlleleFrequency) -> Self {
         Self {
             value: value.value,
@@ -4244,7 +4368,7 @@ impl From<pbs::clinvar_data::clinvar_public::allele::AlleleFrequency> for Allele
 }
 /// Local type for GlobalMinorAlleleFrequency.
 #[derive(Clone, Debug, serde::Serialize, serde::Deserialize, utoipa::ToSchema)]
-pub struct GlobalMinorAlleleFrequency {
+pub struct ClinvarGlobalMinorAlleleFrequency {
     /// Value.
     pub value: f64,
     /// Source.
@@ -4256,7 +4380,7 @@ pub struct GlobalMinorAlleleFrequency {
 }
 
 impl From<pbs::clinvar_data::clinvar_public::allele::GlobalMinorAlleleFrequency>
-    for GlobalMinorAlleleFrequency
+    for ClinvarGlobalMinorAlleleFrequency
 {
     fn from(value: pbs::clinvar_data::clinvar_public::allele::GlobalMinorAlleleFrequency) -> Self {
         Self {
@@ -4270,14 +4394,14 @@ impl From<pbs::clinvar_data::clinvar_public::allele::GlobalMinorAlleleFrequency>
 
 /// Local type for allele name.
 #[derive(Clone, Debug, serde::Serialize, serde::Deserialize, utoipa::ToSchema)]
-pub struct AlleleName {
+pub struct ClinvarAlleleName {
     /// The name's value.
     pub value: String,
     /// The name's type.
     pub r#type: Option<String>,
 }
 
-impl From<pbs::clinvar_data::clinvar_public::allele::Name> for AlleleName {
+impl From<pbs::clinvar_data::clinvar_public::allele::Name> for ClinvarAlleleName {
     fn from(value: pbs::clinvar_data::clinvar_public::allele::Name) -> Self {
         Self {
             value: value.value,
@@ -4290,26 +4414,26 @@ impl From<pbs::clinvar_data::clinvar_public::allele::Name> for AlleleName {
 ///
 /// Corresponds to `typeHaplotype` in XSD
 #[derive(Clone, Debug, serde::Serialize, serde::Deserialize, utoipa::ToSchema)]
-pub struct Haplotype {
+pub struct ClinvarHaplotype {
     /// The list of alleles in the haplotype.
-    pub simple_alleles: Vec<Allele>,
+    pub simple_alleles: Vec<ClinvarAllele>,
     /// The preferred representation of the haplotype.
     pub name: String,
     /// The type of the haplotype.
-    pub variation_type: VariationType,
+    pub variation_type: ClinvarVariationType,
     /// Names other than 'preferred' used for the haplotype.
-    pub other_names: Vec<OtherName>,
+    pub other_names: Vec<ClinvarOtherName>,
     /// List of all the HGVS expressions valid for, or used to submit,
     /// a variant.
-    pub hgvs_expressions: Vec<HgvsExpression>,
+    pub hgvs_expressions: Vec<ClinvarHgvsExpression>,
     /// Classifications of the variant.
-    pub classifications: Option<AggregateClassificationSet>,
+    pub classifications: Option<ClinvarAggregateClassificationSet>,
     /// Functional consequences of the variant.
-    pub functional_consequences: Vec<FunctionalConsequence>,
+    pub functional_consequences: Vec<ClinvarFunctionalConsequence>,
     /// List of cross-references.
-    pub xrefs: Vec<Xref>,
+    pub xrefs: Vec<ClinvarXref>,
     /// List of comments.
-    pub comments: Vec<Comment>,
+    pub comments: Vec<ClinvarComment>,
     /// Variation ID.
     pub variation_id: i64,
     /// Number of copies.
@@ -4318,7 +4442,7 @@ pub struct Haplotype {
     pub number_of_chromosomes: Option<i32>,
 }
 
-impl TryFrom<pbs::clinvar_data::clinvar_public::Haplotype> for Haplotype {
+impl TryFrom<pbs::clinvar_data::clinvar_public::Haplotype> for ClinvarHaplotype {
     type Error = anyhow::Error;
 
     fn try_from(value: pbs::clinvar_data::clinvar_public::Haplotype) -> Result<Self, Self::Error> {
@@ -4326,40 +4450,40 @@ impl TryFrom<pbs::clinvar_data::clinvar_public::Haplotype> for Haplotype {
             simple_alleles: value
                 .simple_alleles
                 .into_iter()
-                .map(Allele::try_from)
+                .map(ClinvarAllele::try_from)
                 .collect::<Result<Vec<_>, _>>()?,
             name: value.name,
-            variation_type: VariationType::try_from(
+            variation_type: ClinvarVariationType::try_from(
                 pbs::clinvar_data::clinvar_public::VariationType::try_from(value.variation_type)?,
             )?,
             other_names: value
                 .other_names
                 .into_iter()
-                .map(OtherName::try_from)
+                .map(ClinvarOtherName::try_from)
                 .collect::<Result<Vec<_>, _>>()?,
             hgvs_expressions: value
                 .hgvs_expressions
                 .into_iter()
-                .map(HgvsExpression::try_from)
+                .map(ClinvarHgvsExpression::try_from)
                 .collect::<Result<Vec<_>, _>>()?,
             classifications: value
                 .classifications
-                .map(AggregateClassificationSet::try_from)
+                .map(ClinvarAggregateClassificationSet::try_from)
                 .transpose()?,
             functional_consequences: value
                 .functional_consequences
                 .into_iter()
-                .map(FunctionalConsequence::try_from)
+                .map(ClinvarFunctionalConsequence::try_from)
                 .collect::<Result<Vec<_>, _>>()?,
             xrefs: value
                 .xrefs
                 .into_iter()
-                .map(Xref::try_from)
+                .map(ClinvarXref::try_from)
                 .collect::<Result<Vec<_>, _>>()?,
             comments: value
                 .comments
                 .into_iter()
-                .map(Comment::try_from)
+                .map(ClinvarComment::try_from)
                 .collect::<Result<Vec<_>, _>>()?,
             variation_id: value.variation_id,
             number_of_copies: value.number_of_copies,
@@ -4372,50 +4496,56 @@ impl TryFrom<pbs::clinvar_data::clinvar_public::Haplotype> for Haplotype {
 /// classification, but are being reported for a complete representation of all alleles
 /// in ClinVar. Compare to ClassifiedRecord.
 #[derive(Clone, Debug, serde::Serialize, serde::Deserialize, utoipa::ToSchema)]
-pub struct IncludedRecord {
+pub struct ClinvarIncludedRecord {
     /// Simple allele; mutually exclusive with haplotype.
-    pub simple_allele: Option<Allele>,
+    pub simple_allele: Option<ClinvarAllele>,
     /// Haplotype; mutually exclusive with simple_allele.
-    pub haplotype: Option<Haplotype>,
+    pub haplotype: Option<ClinvarHaplotype>,
     /// Aggregate classification sets.
-    pub classifications: Option<AggregateClassificationSet>,
+    pub classifications: Option<ClinvarAggregateClassificationSet>,
     /// List of submitted records.
-    pub submitted_classifications: Vec<Scv>,
+    pub submitted_classifications: Vec<ClinvarScv>,
     /// Maintains the list of classified variants represented in
     /// this submission, although not submitted with an Classification
     /// independently.
-    pub classified_variations: Vec<ClassifiedVariation>,
+    pub classified_variations: Vec<ClinvarClassifiedVariation>,
     /// List of general citations.
-    pub general_citations: Vec<GeneralCitations>,
+    pub general_citations: Vec<ClinvarGeneralCitations>,
 }
 
-impl TryFrom<pbs::clinvar_data::clinvar_public::IncludedRecord> for IncludedRecord {
+impl TryFrom<pbs::clinvar_data::clinvar_public::IncludedRecord> for ClinvarIncludedRecord {
     type Error = anyhow::Error;
 
     fn try_from(
         value: pbs::clinvar_data::clinvar_public::IncludedRecord,
     ) -> Result<Self, Self::Error> {
         Ok(Self {
-            simple_allele: value.simple_allele.map(Allele::try_from).transpose()?,
-            haplotype: value.haplotype.map(Haplotype::try_from).transpose()?,
+            simple_allele: value
+                .simple_allele
+                .map(ClinvarAllele::try_from)
+                .transpose()?,
+            haplotype: value
+                .haplotype
+                .map(ClinvarHaplotype::try_from)
+                .transpose()?,
             classifications: value
                 .classifications
-                .map(AggregateClassificationSet::try_from)
+                .map(ClinvarAggregateClassificationSet::try_from)
                 .transpose()?,
             submitted_classifications: value
                 .submitted_classifications
                 .into_iter()
-                .map(Scv::try_from)
+                .map(ClinvarScv::try_from)
                 .collect::<Result<Vec<_>, _>>()?,
             classified_variations: value
                 .classified_variations
                 .into_iter()
-                .map(ClassifiedVariation::try_from)
+                .map(ClinvarClassifiedVariation::try_from)
                 .collect::<Result<Vec<_>, _>>()?,
             general_citations: value
                 .general_citations
                 .into_iter()
-                .map(GeneralCitations::try_from)
+                .map(ClinvarGeneralCitations::try_from)
                 .collect::<Result<Vec<_>, _>>()?,
         })
     }
@@ -4423,7 +4553,7 @@ impl TryFrom<pbs::clinvar_data::clinvar_public::IncludedRecord> for IncludedReco
 
 /// Local type for tag `ClassifiedVariation`.
 #[derive(Clone, Debug, serde::Serialize, serde::Deserialize, utoipa::ToSchema)]
-pub struct ClassifiedVariation {
+pub struct ClinvarClassifiedVariation {
     /// Variation ID.
     pub variation_id: i64,
     /// Optional accession.
@@ -4433,7 +4563,7 @@ pub struct ClassifiedVariation {
 }
 
 impl From<pbs::clinvar_data::clinvar_public::included_record::ClassifiedVariation>
-    for ClassifiedVariation
+    for ClinvarClassifiedVariation
 {
     fn from(
         value: pbs::clinvar_data::clinvar_public::included_record::ClassifiedVariation,
@@ -4452,39 +4582,39 @@ impl From<pbs::clinvar_data::clinvar_public::included_record::ClassifiedVariatio
 ///
 /// nested elements
 #[derive(Clone, Debug, serde::Serialize, serde::Deserialize, utoipa::ToSchema)]
-pub struct Genotype {
+pub struct ClinvarGenotype {
     /// Simple allele; mutually exclusive with `haplotype`.
-    pub simple_alleles: Vec<Allele>,
+    pub simple_alleles: Vec<ClinvarAllele>,
     /// Haplotype; mutually exclusive with `simple_allele`.
     ///
     /// Allows more than 2 haplotypes per genotype to support
     /// representation of ploidy.
-    pub haplotypes: Vec<Haplotype>,
+    pub haplotypes: Vec<ClinvarHaplotype>,
     /// Optional name.
     pub name: String,
     /// The variation type.
-    pub variation_type: VariationType,
+    pub variation_type: ClinvarVariationType,
     /// Names other than 'preferred' used for the Genotype.
-    pub other_names: Vec<OtherName>,
+    pub other_names: Vec<ClinvarOtherName>,
     /// HGVS descriptions.
-    pub hgvs_expressions: Vec<HgvsExpression>,
+    pub hgvs_expressions: Vec<ClinvarHgvsExpression>,
     /// Functional consequences.
-    pub functional_consequences: Vec<FunctionalConsequence>,
+    pub functional_consequences: Vec<ClinvarFunctionalConsequence>,
     /// Aggregated classifications.
-    pub classifications: Option<AggregateClassificationSet>,
+    pub classifications: Option<ClinvarAggregateClassificationSet>,
     /// List of xrefs.
-    pub xrefs: Vec<Xref>,
+    pub xrefs: Vec<ClinvarXref>,
     /// List of citations.
-    pub citations: Vec<Citation>,
+    pub citations: Vec<ClinvarCitation>,
     /// List of comments.
-    pub comments: Vec<Comment>,
+    pub comments: Vec<ClinvarComment>,
     /// Attributes.
-    pub attributes: Vec<AttributeSetElement>,
+    pub attributes: Vec<ClinvarAttributeSetElement>,
     /// Variation ID.
     pub variation_id: Option<i64>,
 }
 
-impl TryFrom<pbs::clinvar_data::clinvar_public::Genotype> for Genotype {
+impl TryFrom<pbs::clinvar_data::clinvar_public::Genotype> for ClinvarGenotype {
     type Error = anyhow::Error;
 
     fn try_from(value: pbs::clinvar_data::clinvar_public::Genotype) -> Result<Self, Self::Error> {
@@ -4492,55 +4622,55 @@ impl TryFrom<pbs::clinvar_data::clinvar_public::Genotype> for Genotype {
             simple_alleles: value
                 .simple_alleles
                 .into_iter()
-                .map(Allele::try_from)
+                .map(ClinvarAllele::try_from)
                 .collect::<Result<Vec<_>, _>>()?,
             haplotypes: value
                 .haplotypes
                 .into_iter()
-                .map(Haplotype::try_from)
+                .map(ClinvarHaplotype::try_from)
                 .collect::<Result<Vec<_>, _>>()?,
             name: value.name,
-            variation_type: VariationType::try_from(
+            variation_type: ClinvarVariationType::try_from(
                 pbs::clinvar_data::clinvar_public::VariationType::try_from(value.variation_type)?,
             )?,
             other_names: value
                 .other_names
                 .into_iter()
-                .map(OtherName::try_from)
+                .map(ClinvarOtherName::try_from)
                 .collect::<Result<Vec<_>, _>>()?,
             hgvs_expressions: value
                 .hgvs_expressions
                 .into_iter()
-                .map(HgvsExpression::try_from)
+                .map(ClinvarHgvsExpression::try_from)
                 .collect::<Result<Vec<_>, _>>()?,
             functional_consequences: value
                 .functional_consequences
                 .into_iter()
-                .map(FunctionalConsequence::try_from)
+                .map(ClinvarFunctionalConsequence::try_from)
                 .collect::<Result<Vec<_>, _>>()?,
             classifications: value
                 .classifications
-                .map(AggregateClassificationSet::try_from)
+                .map(ClinvarAggregateClassificationSet::try_from)
                 .transpose()?,
             xrefs: value
                 .xrefs
                 .into_iter()
-                .map(Xref::try_from)
+                .map(ClinvarXref::try_from)
                 .collect::<Result<Vec<_>, _>>()?,
             citations: value
                 .citations
                 .into_iter()
-                .map(Citation::try_from)
+                .map(ClinvarCitation::try_from)
                 .collect::<Result<Vec<_>, _>>()?,
             comments: value
                 .comments
                 .into_iter()
-                .map(Comment::try_from)
+                .map(ClinvarComment::try_from)
                 .collect::<Result<Vec<_>, _>>()?,
             attributes: value
                 .attributes
                 .into_iter()
-                .map(AttributeSetElement::try_from)
+                .map(ClinvarAttributeSetElement::try_from)
                 .collect::<Result<Vec<_>, _>>()?,
             variation_id: value.variation_id,
         })
@@ -4548,13 +4678,13 @@ impl TryFrom<pbs::clinvar_data::clinvar_public::Genotype> for Genotype {
 }
 /// Corresponds to "typeRCV" in XSD.
 #[derive(Clone, Debug, serde::Serialize, serde::Deserialize, utoipa::ToSchema)]
-pub struct RcvAccession {
+pub struct ClinvarRcvAccession {
     /// The list of classified conditions.
-    pub classified_condition_list: Option<RcvClassifiedConditionList>,
+    pub classified_condition_list: Option<ClinvarRcvClassifiedConditionList>,
     /// The list of RCV classifications.
-    pub rcv_classifications: Option<RcvClassifications>,
+    pub rcv_classifications: Option<ClinvarRcvClassifications>,
     /// The list of RCV accessions this record has replaced.
-    pub replaceds: Vec<RecordHistory>,
+    pub replaceds: Vec<ClinvarRecordHistory>,
     /// Optional title.
     pub title: Option<String>,
     /// Accession.
@@ -4563,7 +4693,7 @@ pub struct RcvAccession {
     pub version: i32,
 }
 
-impl TryFrom<pbs::clinvar_data::clinvar_public::RcvAccession> for RcvAccession {
+impl TryFrom<pbs::clinvar_data::clinvar_public::RcvAccession> for ClinvarRcvAccession {
     type Error = anyhow::Error;
 
     fn try_from(
@@ -4572,16 +4702,16 @@ impl TryFrom<pbs::clinvar_data::clinvar_public::RcvAccession> for RcvAccession {
         Ok(Self {
             classified_condition_list: value
                 .classified_condition_list
-                .map(RcvClassifiedConditionList::try_from)
+                .map(ClinvarRcvClassifiedConditionList::try_from)
                 .transpose()?,
             rcv_classifications: value
                 .rcv_classifications
-                .map(RcvClassifications::try_from)
+                .map(ClinvarRcvClassifications::try_from)
                 .transpose()?,
             replaceds: value
                 .replaceds
                 .into_iter()
-                .map(RecordHistory::try_from)
+                .map(ClinvarRecordHistory::try_from)
                 .collect::<Result<Vec<_>, _>>()?,
             title: value.title,
             accession: value.accession,
@@ -4594,15 +4724,15 @@ impl TryFrom<pbs::clinvar_data::clinvar_public::RcvAccession> for RcvAccession {
 ///
 /// nested elements
 #[derive(Clone, Debug, serde::Serialize, serde::Deserialize, utoipa::ToSchema)]
-pub struct RcvClassifiedConditionList {
+pub struct ClinvarRcvClassifiedConditionList {
     /// List of interpreted conditions.
-    pub classified_conditions: Vec<ClassifiedCondition>,
+    pub classified_conditions: Vec<ClinvarClassifiedCondition>,
     /// Trait set ID.
     pub trait_set_id: Option<i64>,
 }
 
 impl TryFrom<pbs::clinvar_data::clinvar_public::rcv_accession::ClassifiedConditionList>
-    for RcvClassifiedConditionList
+    for ClinvarRcvClassifiedConditionList
 {
     type Error = anyhow::Error;
 
@@ -4613,7 +4743,7 @@ impl TryFrom<pbs::clinvar_data::clinvar_public::rcv_accession::ClassifiedConditi
             classified_conditions: value
                 .classified_conditions
                 .into_iter()
-                .map(ClassifiedCondition::try_from)
+                .map(ClinvarClassifiedCondition::try_from)
                 .collect::<Result<Vec<_>, _>>()?,
             trait_set_id: value.trait_set_id,
         })
@@ -4625,17 +4755,17 @@ impl TryFrom<pbs::clinvar_data::clinvar_public::rcv_accession::ClassifiedConditi
 /// The aggregate review status based on
 /// all germline submissions for this record.
 #[derive(Clone, Debug, serde::Serialize, serde::Deserialize, utoipa::ToSchema)]
-pub struct RcvGermlineClassification {
+pub struct ClinvarRcvGermlineClassification {
     /// The aggregate review status based on
     /// all somatic clinical impact submissions for this
     /// record.
-    pub review_status: AggregateGermlineReviewStatus,
+    pub review_status: ClinvarAggregateGermlineReviewStatus,
     /// The oncogenicity description.
-    pub description: Option<RcvGermlineClassificationDescription>,
+    pub description: Option<ClinvarRcvGermlineClassificationDescription>,
 }
 
 impl TryFrom<pbs::clinvar_data::clinvar_public::rcv_accession::GermlineClassification>
-    for RcvGermlineClassification
+    for ClinvarRcvGermlineClassification
 {
     type Error = anyhow::Error;
 
@@ -4643,14 +4773,14 @@ impl TryFrom<pbs::clinvar_data::clinvar_public::rcv_accession::GermlineClassific
         value: pbs::clinvar_data::clinvar_public::rcv_accession::GermlineClassification,
     ) -> Result<Self, Self::Error> {
         Ok(Self {
-            review_status: AggregateGermlineReviewStatus::try_from(
+            review_status: ClinvarAggregateGermlineReviewStatus::try_from(
                 pbs::clinvar_data::clinvar_public::AggregateGermlineReviewStatus::try_from(
                     value.review_status,
                 )?,
             )?,
             description: value
                 .description
-                .map(RcvGermlineClassificationDescription::try_from)
+                .map(ClinvarRcvGermlineClassificationDescription::try_from)
                 .transpose()?,
         })
     }
@@ -4658,7 +4788,7 @@ impl TryFrom<pbs::clinvar_data::clinvar_public::rcv_accession::GermlineClassific
 
 /// Local type for Description.
 #[derive(Clone, Debug, serde::Serialize, serde::Deserialize, utoipa::ToSchema)]
-pub struct RcvGermlineClassificationDescription {
+pub struct ClinvarRcvGermlineClassificationDescription {
     /// The description.
     pub value: String,
     /// The date of the description.
@@ -4668,7 +4798,7 @@ pub struct RcvGermlineClassificationDescription {
 }
 
 impl TryFrom<pbs::clinvar_data::clinvar_public::rcv_accession::germline_classification::Description>
-    for RcvGermlineClassificationDescription
+    for ClinvarRcvGermlineClassificationDescription
 {
     type Error = anyhow::Error;
 
@@ -4692,17 +4822,17 @@ impl TryFrom<pbs::clinvar_data::clinvar_public::rcv_accession::germline_classifi
 /// all somatic clinical impact submissions for this
 /// record.
 #[derive(Clone, Debug, serde::Serialize, serde::Deserialize, utoipa::ToSchema)]
-pub struct RcvAccessionSomaticClinicalImpact {
+pub struct ClinvarRcvAccessionSomaticClinicalImpact {
     /// The aggregate review status based on
     /// all somatic clinical impact submissions for this
     /// record.
-    pub review_status: AggregateSomaticClinicalImpactReviewStatus,
+    pub review_status: ClinvarAggregateSomaticClinicalImpactReviewStatus,
     /// The oncogenicity description.
-    pub descriptions: Vec<RcvSomaticClinicalImpactDescription>,
+    pub descriptions: Vec<ClinvarRcvSomaticClinicalImpactDescription>,
 }
 
 impl TryFrom<pbs::clinvar_data::clinvar_public::rcv_accession::SomaticClinicalImpact>
-    for RcvAccessionSomaticClinicalImpact
+    for ClinvarRcvAccessionSomaticClinicalImpact
 {
     type Error = anyhow::Error;
 
@@ -4710,19 +4840,19 @@ impl TryFrom<pbs::clinvar_data::clinvar_public::rcv_accession::SomaticClinicalIm
         value: pbs::clinvar_data::clinvar_public::rcv_accession::SomaticClinicalImpact,
     ) -> Result<Self, Self::Error> {
         Ok(Self {
-            review_status: AggregateSomaticClinicalImpactReviewStatus::try_from(
+            review_status: ClinvarAggregateSomaticClinicalImpactReviewStatus::try_from(
                 pbs::clinvar_data::clinvar_public::AggregateSomaticClinicalImpactReviewStatus::try_from(
                     value.review_status
                 )?
             )?,
-            descriptions: value.descriptions.into_iter().map(RcvSomaticClinicalImpactDescription::try_from).collect::<Result<Vec<_>, _>>()?,
+            descriptions: value.descriptions.into_iter().map(ClinvarRcvSomaticClinicalImpactDescription::try_from).collect::<Result<Vec<_>, _>>()?,
         })
     }
 }
 
 /// Local type for Description.
 #[derive(Clone, Debug, serde::Serialize, serde::Deserialize, utoipa::ToSchema)]
-pub struct RcvSomaticClinicalImpactDescription {
+pub struct ClinvarRcvSomaticClinicalImpactDescription {
     /// The description.
     pub value: String,
     /// Clinical impact assertion type.
@@ -4736,7 +4866,7 @@ pub struct RcvSomaticClinicalImpactDescription {
 }
 
 impl TryFrom<pbs::clinvar_data::clinvar_public::rcv_accession::somatic_clinical_impact::Description>
-    for RcvSomaticClinicalImpactDescription
+    for ClinvarRcvSomaticClinicalImpactDescription
 {
     type Error = anyhow::Error;
 
@@ -4758,16 +4888,16 @@ impl TryFrom<pbs::clinvar_data::clinvar_public::rcv_accession::somatic_clinical_
 
 /// Local type for OncogenicityClassification.
 #[derive(Clone, Debug, serde::Serialize, serde::Deserialize, utoipa::ToSchema)]
-pub struct RcvOncogenicityClassification {
+pub struct ClinvarRcvOncogenicityClassification {
     /// The aggregate review status based on
     /// all oncogenic submissions for this record.
-    pub review_status: AggregateGermlineReviewStatus,
+    pub review_status: ClinvarAggregateGermlineReviewStatus,
     /// The oncogenicity description.
-    pub description: Option<RcvOncogenicityDescription>,
+    pub description: Option<ClinvarRcvOncogenicityDescription>,
 }
 
 impl TryFrom<pbs::clinvar_data::clinvar_public::rcv_accession::OncogenicityClassification>
-    for RcvOncogenicityClassification
+    for ClinvarRcvOncogenicityClassification
 {
     type Error = anyhow::Error;
 
@@ -4775,21 +4905,21 @@ impl TryFrom<pbs::clinvar_data::clinvar_public::rcv_accession::OncogenicityClass
         value: pbs::clinvar_data::clinvar_public::rcv_accession::OncogenicityClassification,
     ) -> Result<Self, Self::Error> {
         Ok(Self {
-            review_status: AggregateGermlineReviewStatus::try_from(
+            review_status: ClinvarAggregateGermlineReviewStatus::try_from(
                 pbs::clinvar_data::clinvar_public::AggregateGermlineReviewStatus::try_from(
                     value.review_status,
                 )?,
             )?,
             description: value
                 .description
-                .map(RcvOncogenicityDescription::try_from)
+                .map(ClinvarRcvOncogenicityDescription::try_from)
                 .transpose()?,
         })
     }
 }
 /// Local type for Description.
 #[derive(Clone, Debug, serde::Serialize, serde::Deserialize, utoipa::ToSchema)]
-pub struct RcvOncogenicityDescription {
+pub struct ClinvarRcvOncogenicityDescription {
     /// The description.
     pub value: String,
     /// The date of the description.
@@ -4801,7 +4931,7 @@ pub struct RcvOncogenicityDescription {
 impl
     TryFrom<
         pbs::clinvar_data::clinvar_public::rcv_accession::oncogenicity_classification::Description,
-    > for RcvOncogenicityDescription
+    > for ClinvarRcvOncogenicityDescription
 {
     type Error = anyhow::Error;
 
@@ -4821,17 +4951,17 @@ impl
 
 /// Local type for RCV classifications.
 #[derive(Clone, Debug, serde::Serialize, serde::Deserialize, utoipa::ToSchema)]
-pub struct RcvClassifications {
+pub struct ClinvarRcvClassifications {
     /// Germline classification.
-    pub germline_classification: Option<RcvGermlineClassification>,
+    pub germline_classification: Option<ClinvarRcvGermlineClassification>,
     /// Somatic clinical impact.
-    pub somatic_clinical_impact: Option<RcvAccessionSomaticClinicalImpact>,
+    pub somatic_clinical_impact: Option<ClinvarRcvAccessionSomaticClinicalImpact>,
     /// Oncogenicity classification.
-    pub oncogenicity_classification: Option<RcvOncogenicityClassification>,
+    pub oncogenicity_classification: Option<ClinvarRcvOncogenicityClassification>,
 }
 
 impl TryFrom<pbs::clinvar_data::clinvar_public::rcv_accession::RcvClassifications>
-    for RcvClassifications
+    for ClinvarRcvClassifications
 {
     type Error = anyhow::Error;
 
@@ -4841,15 +4971,15 @@ impl TryFrom<pbs::clinvar_data::clinvar_public::rcv_accession::RcvClassification
         Ok(Self {
             germline_classification: value
                 .germline_classification
-                .map(RcvGermlineClassification::try_from)
+                .map(ClinvarRcvGermlineClassification::try_from)
                 .transpose()?,
             somatic_clinical_impact: value
                 .somatic_clinical_impact
-                .map(RcvAccessionSomaticClinicalImpact::try_from)
+                .map(ClinvarRcvAccessionSomaticClinicalImpact::try_from)
                 .transpose()?,
             oncogenicity_classification: value
                 .oncogenicity_classification
-                .map(RcvOncogenicityClassification::try_from)
+                .map(ClinvarRcvOncogenicityClassification::try_from)
                 .transpose()?,
         })
     }
@@ -4860,28 +4990,28 @@ impl TryFrom<pbs::clinvar_data::clinvar_public::rcv_accession::RcvClassification
 /// information about variants that are part of another submission, but for which
 /// ClinVar has *not* received a submission specific to that variant independently.
 #[derive(Clone, Debug, serde::Serialize, serde::Deserialize, utoipa::ToSchema)]
-pub struct ClassifiedRecord {
+pub struct ClinvarClassifiedRecord {
     /// Describes a single sequence change relative to a
     /// contiguous region of a chromosome or the mitochondrion.
     ///
     /// Mutually exclusive with `haplotype` and `genotype`.
-    pub simple_allele: Option<Allele>,
+    pub simple_allele: Option<ClinvarAllele>,
     /// Describes multiple sequence changes on one of the
     /// chromosomes of a homologous pair or on the mitochondrion.
     ///
     /// Mutually exclusive with `simple_allele` and `genotype`.
-    pub haplotype: Option<Haplotype>,
+    pub haplotype: Option<ClinvarHaplotype>,
     /// Describes the combination of sequence changes on each
     /// chromosome of a homologous pair.
     ///
     /// Mutually exclusive with `simple_allele` and `haplotype`.
-    pub genotype: Option<Genotype>,
+    pub genotype: Option<ClinvarGenotype>,
     /// List of RCV records.
-    pub rcv_list: Option<RcvList>,
+    pub rcv_list: Option<ClinvarRcvList>,
     /// List of classifications.
-    pub classifications: Option<AggregateClassificationSet>,
+    pub classifications: Option<ClinvarAggregateClassificationSet>,
     /// List of clinical assertions.
-    pub clinical_assertions: Vec<ClinicalAssertion>,
+    pub clinical_assertions: Vec<ClinvarClinicalAssertion>,
     /// This element is used to report how each user-submitted
     /// trait name was mapped to a MedGen CUI identifier and a preferred name.
     /// The structure may be used in the future to report, when a trait is
@@ -4892,47 +5022,53 @@ pub struct ClassifiedRecord {
     /// and MappingValue is the submitted name of the trait. ClinicalAssertionID
     /// is an integer identifier that corresponds 1:1 to the SCV assigned to the
     /// submission.
-    pub trait_mappings: Vec<RcvTraitMapping>,
+    pub trait_mappings: Vec<ClinvarRcvTraitMapping>,
     /// List of deleted SCVs.
-    pub deleted_scvs: Vec<DeletedScv>,
+    pub deleted_scvs: Vec<ClinvarDeletedScv>,
     /// List of general citations.
-    pub general_citations: Vec<GeneralCitations>,
+    pub general_citations: Vec<ClinvarGeneralCitations>,
 }
 
-impl TryFrom<pbs::clinvar_data::clinvar_public::ClassifiedRecord> for ClassifiedRecord {
+impl TryFrom<pbs::clinvar_data::clinvar_public::ClassifiedRecord> for ClinvarClassifiedRecord {
     type Error = anyhow::Error;
 
     fn try_from(
         value: pbs::clinvar_data::clinvar_public::ClassifiedRecord,
     ) -> Result<Self, Self::Error> {
         Ok(Self {
-            simple_allele: value.simple_allele.map(Allele::try_from).transpose()?,
-            haplotype: value.haplotype.map(Haplotype::try_from).transpose()?,
-            genotype: value.genotype.map(Genotype::try_from).transpose()?,
-            rcv_list: value.rcv_list.map(RcvList::try_from).transpose()?,
+            simple_allele: value
+                .simple_allele
+                .map(ClinvarAllele::try_from)
+                .transpose()?,
+            haplotype: value
+                .haplotype
+                .map(ClinvarHaplotype::try_from)
+                .transpose()?,
+            genotype: value.genotype.map(ClinvarGenotype::try_from).transpose()?,
+            rcv_list: value.rcv_list.map(ClinvarRcvList::try_from).transpose()?,
             classifications: value
                 .classifications
-                .map(AggregateClassificationSet::try_from)
+                .map(ClinvarAggregateClassificationSet::try_from)
                 .transpose()?,
             clinical_assertions: value
                 .clinical_assertions
                 .into_iter()
-                .map(ClinicalAssertion::try_from)
+                .map(ClinvarClinicalAssertion::try_from)
                 .collect::<Result<Vec<_>, _>>()?,
             trait_mappings: value
                 .trait_mappings
                 .into_iter()
-                .map(RcvTraitMapping::try_from)
+                .map(ClinvarRcvTraitMapping::try_from)
                 .collect::<Result<Vec<_>, _>>()?,
             deleted_scvs: value
                 .deleted_scvs
                 .into_iter()
-                .map(DeletedScv::try_from)
+                .map(ClinvarDeletedScv::try_from)
                 .collect::<Result<Vec<_>, _>>()?,
             general_citations: value
                 .general_citations
                 .into_iter()
-                .map(GeneralCitations::try_from)
+                .map(ClinvarGeneralCitations::try_from)
                 .collect::<Result<Vec<_>, _>>()?,
         })
     }
@@ -4940,16 +5076,16 @@ impl TryFrom<pbs::clinvar_data::clinvar_public::ClassifiedRecord> for Classified
 
 /// Local type for tag `RCVList`.
 #[derive(Clone, Debug, serde::Serialize, serde::Deserialize, utoipa::ToSchema)]
-pub struct RcvList {
+pub struct ClinvarRcvList {
     /// The RCV record.
-    pub rcv_accessions: Vec<RcvAccession>,
+    pub rcv_accessions: Vec<ClinvarRcvAccession>,
     /// The number of submissions (SCV accessions) referencing the VariationID.
     pub submission_count: Option<i32>,
     /// The number of idependent observations.
     pub independent_observations: Option<i32>,
 }
 
-impl TryFrom<pbs::clinvar_data::clinvar_public::classified_record::RcvList> for RcvList {
+impl TryFrom<pbs::clinvar_data::clinvar_public::classified_record::RcvList> for ClinvarRcvList {
     type Error = anyhow::Error;
 
     fn try_from(
@@ -4959,7 +5095,7 @@ impl TryFrom<pbs::clinvar_data::clinvar_public::classified_record::RcvList> for 
             rcv_accessions: value
                 .rcv_accessions
                 .into_iter()
-                .map(RcvAccession::try_from)
+                .map(ClinvarRcvAccession::try_from)
                 .collect::<Result<Vec<_>, _>>()?,
             submission_count: value.submission_count,
             independent_observations: value.independent_observations,
@@ -4969,15 +5105,15 @@ impl TryFrom<pbs::clinvar_data::clinvar_public::classified_record::RcvList> for 
 
 /// Local type for the tag `TraitMapping`.
 #[derive(Clone, Debug, serde::Serialize, serde::Deserialize, utoipa::ToSchema)]
-pub struct RcvTraitMapping {
+pub struct ClinvarRcvTraitMapping {
     /// nested elements
-    pub medgens: Vec<RcvTraitMappingMedgen>,
+    pub medgens: Vec<ClinvarRcvTraitMappingMedgen>,
     /// ID of clinical assertion.
     pub clinical_assertion_id: i64,
     /// The trait type.
     pub trait_type: String,
     /// The mapping type.
-    pub mapping_type: RcvTraitMappingType,
+    pub mapping_type: ClinvarRcvTraitMappingType,
     /// The mapping value.
     pub mapping_value: String,
     /// The mapping reference.
@@ -4985,7 +5121,7 @@ pub struct RcvTraitMapping {
 }
 
 impl TryFrom<pbs::clinvar_data::clinvar_public::classified_record::TraitMapping>
-    for RcvTraitMapping
+    for ClinvarRcvTraitMapping
 {
     type Error = anyhow::Error;
 
@@ -4996,11 +5132,11 @@ impl TryFrom<pbs::clinvar_data::clinvar_public::classified_record::TraitMapping>
             medgens: value
                 .medgens
                 .into_iter()
-                .map(RcvTraitMappingMedgen::from)
+                .map(ClinvarRcvTraitMappingMedgen::from)
                 .collect(),
             clinical_assertion_id: value.clinical_assertion_id,
             trait_type: value.trait_type,
-            mapping_type: RcvTraitMappingType::try_from(
+            mapping_type: ClinvarRcvTraitMappingType::try_from(
                 pbs::clinvar_data::clinvar_public::classified_record::MappingType::try_from(
                     value.mapping_type,
                 )?,
@@ -5013,7 +5149,7 @@ impl TryFrom<pbs::clinvar_data::clinvar_public::classified_record::TraitMapping>
 
 /// Local type for the tag "MedGen"
 #[derive(Clone, Debug, serde::Serialize, serde::Deserialize, utoipa::ToSchema)]
-pub struct RcvTraitMappingMedgen {
+pub struct ClinvarRcvTraitMappingMedgen {
     /// Name.
     pub name: String,
     /// CUI.
@@ -5021,7 +5157,7 @@ pub struct RcvTraitMappingMedgen {
 }
 
 impl From<pbs::clinvar_data::clinvar_public::classified_record::trait_mapping::Medgen>
-    for RcvTraitMappingMedgen
+    for ClinvarRcvTraitMappingMedgen
 {
     fn from(
         value: pbs::clinvar_data::clinvar_public::classified_record::trait_mapping::Medgen,
@@ -5045,9 +5181,13 @@ impl From<pbs::clinvar_data::clinvar_public::classified_record::trait_mapping::M
     Ord,
     serde::Serialize,
     serde::Deserialize,
+    strum::Display,
+    strum::EnumString,
     utoipa::ToSchema,
 )]
-pub enum RcvTraitMappingType {
+#[serde(rename_all = "snake_case")]
+#[strum(serialize_all = "snake_case")]
+pub enum ClinvarRcvTraitMappingType {
     /// corresponds to "Name"
     Name,
     /// corresponds to "Xref"
@@ -5055,7 +5195,7 @@ pub enum RcvTraitMappingType {
 }
 
 impl TryFrom<pbs::clinvar_data::clinvar_public::classified_record::MappingType>
-    for RcvTraitMappingType
+    for ClinvarRcvTraitMappingType
 {
     type Error = anyhow::Error;
 
@@ -5080,7 +5220,7 @@ impl TryFrom<pbs::clinvar_data::clinvar_public::classified_record::MappingType>
 ///
 /// Type for the `<VariationArchive>` type.
 #[derive(Clone, Debug, serde::Serialize, serde::Deserialize, utoipa::ToSchema)]
-pub struct VariationArchive {
+pub struct ClinvarVariationArchive {
     /// Numeric variation ID.
     pub variation_id: i64,
     /// This is ClinVar's name for the variant.  ClinVar uses this term in
@@ -5110,17 +5250,17 @@ pub struct VariationArchive {
     /// Number of submissions in record.
     pub number_of_submissions: i32,
     /// Record type.
-    pub record_type: VariationArchiveRecordType,
+    pub record_type: ClinvarVariationArchiveRecordType,
     /// The record's status.
-    pub record_status: VariationArchiveRecordStatus,
+    pub record_status: ClinvarVariationArchiveRecordStatus,
     /// Pointer to the replacing record; optional.
-    pub replaced_by: Option<RecordHistory>,
+    pub replaced_by: Option<ClinvarRecordHistory>,
     /// The list of VCV accessions this record has replaced.
-    pub replaceds: Vec<RecordHistory>,
+    pub replaceds: Vec<ClinvarRecordHistory>,
     /// Comment on the record; optional.
-    pub comment: Option<Comment>,
+    pub comment: Option<ClinvarComment>,
     /// Specification of the species.
-    pub species: Option<Species>,
+    pub species: Option<ClinvarSpecies>,
     /// This element describes the classification of a single
     /// allele, haplotype, or genotype based on all submissions to ClinVar. This
     /// differs from the element IncludedRecord, which describes simple alleles
@@ -5130,17 +5270,17 @@ pub struct VariationArchive {
     /// submitters providing the classifications, and all supported evidence.
     ///
     /// NB: mutually exclusive with `included_record`.
-    pub classified_record: Option<ClassifiedRecord>,
+    pub classified_record: Option<ClinvarClassifiedRecord>,
     /// This element describes a single allele or haplotype
     /// included in submissions to ClinVar, but for which no explicit
     /// classification was submitted. It also references the submissions and the
     /// Classified records that include them.
     ///
     /// NB: mutually exclusive with `classified_record`.
-    pub included_record: Option<IncludedRecord>,
+    pub included_record: Option<ClinvarIncludedRecord>,
 }
 
-impl TryFrom<pbs::clinvar_data::clinvar_public::VariationArchive> for VariationArchive {
+impl TryFrom<pbs::clinvar_data::clinvar_public::VariationArchive> for ClinvarVariationArchive {
     type Error = anyhow::Error;
 
     fn try_from(
@@ -5166,12 +5306,12 @@ impl TryFrom<pbs::clinvar_data::clinvar_public::VariationArchive> for VariationA
             version: value.version,
             number_of_submitters: value.number_of_submitters,
             number_of_submissions: value.number_of_submissions,
-            record_type: VariationArchiveRecordType::try_from(
+            record_type: ClinvarVariationArchiveRecordType::try_from(
                 pbs::clinvar_data::clinvar_public::variation_archive::RecordType::try_from(
                     value.record_type,
                 )?,
             )?,
-            record_status: VariationArchiveRecordStatus::try_from(
+            record_status: ClinvarVariationArchiveRecordStatus::try_from(
                 pbs::clinvar_data::clinvar_public::variation_archive::RecordStatus::try_from(
                     value.record_status,
                 )?,
@@ -5202,9 +5342,13 @@ impl TryFrom<pbs::clinvar_data::clinvar_public::VariationArchive> for VariationA
     Ord,
     serde::Serialize,
     serde::Deserialize,
+    strum::Display,
+    strum::EnumString,
     utoipa::ToSchema,
 )]
-pub enum VariationArchiveRecordType {
+#[serde(rename_all = "snake_case")]
+#[strum(serialize_all = "snake_case")]
+pub enum ClinvarVariationArchiveRecordType {
     /// corresponds to "included"
     Included,
     /// corresponds to "classified"
@@ -5212,7 +5356,7 @@ pub enum VariationArchiveRecordType {
 }
 
 impl TryFrom<pbs::clinvar_data::clinvar_public::variation_archive::RecordType>
-    for VariationArchiveRecordType
+    for ClinvarVariationArchiveRecordType
 {
     type Error = anyhow::Error;
 
@@ -5221,10 +5365,10 @@ impl TryFrom<pbs::clinvar_data::clinvar_public::variation_archive::RecordType>
     ) -> Result<Self, Self::Error> {
         Ok(match value {
             pbs::clinvar_data::clinvar_public::variation_archive::RecordType::Included => {
-                VariationArchiveRecordType::Included
+                ClinvarVariationArchiveRecordType::Included
             }
             pbs::clinvar_data::clinvar_public::variation_archive::RecordType::Classified => {
-                VariationArchiveRecordType::Classified
+                ClinvarVariationArchiveRecordType::Classified
             }
             _ => anyhow::bail!("Unknown variation_archive::RecordType: {:?}", value),
         })
@@ -5243,9 +5387,13 @@ impl TryFrom<pbs::clinvar_data::clinvar_public::variation_archive::RecordType>
     Ord,
     serde::Serialize,
     serde::Deserialize,
+    strum::Display,
+    strum::EnumString,
     utoipa::ToSchema,
 )]
-pub enum VariationArchiveRecordStatus {
+#[serde(rename_all = "snake_case")]
+#[strum(serialize_all = "snake_case")]
+pub enum ClinvarVariationArchiveRecordStatus {
     /// corresponds to "current"
     Current,
     /// corresponds to "previous"
@@ -5257,7 +5405,7 @@ pub enum VariationArchiveRecordStatus {
 }
 
 impl TryFrom<pbs::clinvar_data::clinvar_public::variation_archive::RecordStatus>
-    for VariationArchiveRecordStatus
+    for ClinvarVariationArchiveRecordStatus
 {
     type Error = anyhow::Error;
 
@@ -5266,16 +5414,16 @@ impl TryFrom<pbs::clinvar_data::clinvar_public::variation_archive::RecordStatus>
     ) -> Result<Self, Self::Error> {
         Ok(match value {
             pbs::clinvar_data::clinvar_public::variation_archive::RecordStatus::Current => {
-                VariationArchiveRecordStatus::Current
+                ClinvarVariationArchiveRecordStatus::Current
             }
             pbs::clinvar_data::clinvar_public::variation_archive::RecordStatus::Previous => {
-                VariationArchiveRecordStatus::Previous
+                ClinvarVariationArchiveRecordStatus::Previous
             }
             pbs::clinvar_data::clinvar_public::variation_archive::RecordStatus::Replaced => {
-                VariationArchiveRecordStatus::Replaced
+                ClinvarVariationArchiveRecordStatus::Replaced
             }
             pbs::clinvar_data::clinvar_public::variation_archive::RecordStatus::Deleted => {
-                VariationArchiveRecordStatus::Deleted
+                ClinvarVariationArchiveRecordStatus::Deleted
             }
             _ => anyhow::bail!("Unknown variation_archive::RecordStatus: {:?}", value),
         })
@@ -5292,7 +5440,7 @@ pub struct ClinvarVariationRelease {
     /// The current release.
     pub release_date: Option<chrono::DateTime<chrono::Utc>>,
     /// List of `<VariationArchive>` tags.
-    pub variation_archives: Vec<VariationArchive>,
+    pub variation_archives: Vec<ClinvarVariationArchive>,
 }
 
 impl TryFrom<pbs::clinvar_data::clinvar_public::ClinvarVariationRelease>
@@ -5331,9 +5479,13 @@ impl TryFrom<pbs::clinvar_data::clinvar_public::ClinvarVariationRelease>
     Ord,
     serde::Serialize,
     serde::Deserialize,
+    strum::Display,
+    strum::EnumString,
     utoipa::ToSchema,
 )]
-pub enum GeneVariantRelationship {
+#[serde(rename_all = "snake_case")]
+#[strum(serialize_all = "snake_case")]
+pub enum ClinvarGeneVariantRelationship {
     /// corresponds to "variant within gene"
     VariantWithinGene,
     /// corresponds to "gene overlapped by variant" and
@@ -5354,7 +5506,7 @@ pub enum GeneVariantRelationship {
 }
 
 impl TryFrom<pbs::clinvar_data::clinvar_public::GeneVariantRelationship>
-    for GeneVariantRelationship
+    for ClinvarGeneVariantRelationship
 {
     type Error = anyhow::Error;
 
@@ -5363,25 +5515,25 @@ impl TryFrom<pbs::clinvar_data::clinvar_public::GeneVariantRelationship>
     ) -> Result<Self, Self::Error> {
         Ok(match value {
             pbs::clinvar_data::clinvar_public::GeneVariantRelationship::VariantWithinGene => {
-                GeneVariantRelationship::VariantWithinGene
+                ClinvarGeneVariantRelationship::VariantWithinGene
             }
             pbs::clinvar_data::clinvar_public::GeneVariantRelationship::GeneOverlappedByVariant => {
-                GeneVariantRelationship::GeneOverlappedByVariant
+                ClinvarGeneVariantRelationship::GeneOverlappedByVariant
             }
             pbs::clinvar_data::clinvar_public::GeneVariantRelationship::NearGeneUpstream => {
-                GeneVariantRelationship::NearGeneUpstream
+                ClinvarGeneVariantRelationship::NearGeneUpstream
             }
             pbs::clinvar_data::clinvar_public::GeneVariantRelationship::NearGeneDownstream => {
-                GeneVariantRelationship::NearGeneDownstream
+                ClinvarGeneVariantRelationship::NearGeneDownstream
             }
             pbs::clinvar_data::clinvar_public::GeneVariantRelationship::AssertedButNotComputed => {
-                GeneVariantRelationship::AssertedButNotComputed
+                ClinvarGeneVariantRelationship::AssertedButNotComputed
             }
             pbs::clinvar_data::clinvar_public::GeneVariantRelationship::WithinMultipleGenesByOverlap => {
-                GeneVariantRelationship::WithinMultipleGenesByOverlap
+                ClinvarGeneVariantRelationship::WithinMultipleGenesByOverlap
             }
             pbs::clinvar_data::clinvar_public::GeneVariantRelationship::WithinSingleGene => {
-                GeneVariantRelationship::WithinSingleGene
+                ClinvarGeneVariantRelationship::WithinSingleGene
             }
             _ => anyhow::bail!("Unknown GeneVariantRelationship: {:?}", value),
         })
@@ -5402,9 +5554,13 @@ impl TryFrom<pbs::clinvar_data::clinvar_public::GeneVariantRelationship>
     Ord,
     serde::Serialize,
     serde::Deserialize,
+    strum::Display,
+    strum::EnumString,
     utoipa::ToSchema,
 )]
-pub enum Severity {
+#[serde(rename_all = "snake_case")]
+#[strum(serialize_all = "snake_case")]
+pub enum ClinvarSeverity {
     /// corresponds to "mild"
     Mild,
     /// corresponds to "moderate"
@@ -5413,14 +5569,14 @@ pub enum Severity {
     Severe,
 }
 
-impl TryFrom<pbs::clinvar_data::clinvar_public::Severity> for Severity {
+impl TryFrom<pbs::clinvar_data::clinvar_public::Severity> for ClinvarSeverity {
     type Error = anyhow::Error;
 
     fn try_from(value: pbs::clinvar_data::clinvar_public::Severity) -> Result<Self, Self::Error> {
         Ok(match value {
-            pbs::clinvar_data::clinvar_public::Severity::Mild => Severity::Mild,
-            pbs::clinvar_data::clinvar_public::Severity::Moderate => Severity::Moderate,
-            pbs::clinvar_data::clinvar_public::Severity::Severe => Severity::Severe,
+            pbs::clinvar_data::clinvar_public::Severity::Mild => ClinvarSeverity::Mild,
+            pbs::clinvar_data::clinvar_public::Severity::Moderate => ClinvarSeverity::Moderate,
+            pbs::clinvar_data::clinvar_public::Severity::Severe => ClinvarSeverity::Severe,
             _ => anyhow::bail!("Unknown Severity: {:?}", value),
         })
     }
@@ -5440,9 +5596,13 @@ impl TryFrom<pbs::clinvar_data::clinvar_public::Severity> for Severity {
     Ord,
     serde::Serialize,
     serde::Deserialize,
+    strum::Display,
+    strum::EnumString,
     utoipa::ToSchema,
 )]
-pub enum Status {
+#[serde(rename_all = "snake_case")]
+#[strum(serialize_all = "snake_case")]
+pub enum ClinvarStatus {
     /// corresponds to "current"
     Current,
     /// corresponds to "completed and retired"
@@ -5463,22 +5623,24 @@ pub enum Status {
     UnderReview,
 }
 
-impl TryFrom<pbs::clinvar_data::clinvar_public::Status> for Status {
+impl TryFrom<pbs::clinvar_data::clinvar_public::Status> for ClinvarStatus {
     type Error = anyhow::Error;
 
     fn try_from(value: pbs::clinvar_data::clinvar_public::Status) -> Result<Self, Self::Error> {
         Ok(match value {
-            pbs::clinvar_data::clinvar_public::Status::Current => Status::Current,
+            pbs::clinvar_data::clinvar_public::Status::Current => ClinvarStatus::Current,
             pbs::clinvar_data::clinvar_public::Status::CompletedAndRetired => {
-                Status::CompletedAndRetired
+                ClinvarStatus::CompletedAndRetired
             }
-            pbs::clinvar_data::clinvar_public::Status::Delete => Status::Delete,
-            pbs::clinvar_data::clinvar_public::Status::InDevelopment => Status::InDevelopment,
-            pbs::clinvar_data::clinvar_public::Status::Reclassified => Status::Reclassified,
-            pbs::clinvar_data::clinvar_public::Status::Reject => Status::Reject,
-            pbs::clinvar_data::clinvar_public::Status::Secondary => Status::Secondary,
-            pbs::clinvar_data::clinvar_public::Status::Suppressed => Status::Suppressed,
-            pbs::clinvar_data::clinvar_public::Status::UnderReview => Status::UnderReview,
+            pbs::clinvar_data::clinvar_public::Status::Delete => ClinvarStatus::Delete,
+            pbs::clinvar_data::clinvar_public::Status::InDevelopment => {
+                ClinvarStatus::InDevelopment
+            }
+            pbs::clinvar_data::clinvar_public::Status::Reclassified => ClinvarStatus::Reclassified,
+            pbs::clinvar_data::clinvar_public::Status::Reject => ClinvarStatus::Reject,
+            pbs::clinvar_data::clinvar_public::Status::Secondary => ClinvarStatus::Secondary,
+            pbs::clinvar_data::clinvar_public::Status::Suppressed => ClinvarStatus::Suppressed,
+            pbs::clinvar_data::clinvar_public::Status::UnderReview => ClinvarStatus::UnderReview,
             _ => anyhow::bail!("Unknown Status: {:?}", value),
         })
     }
@@ -5498,9 +5660,13 @@ impl TryFrom<pbs::clinvar_data::clinvar_public::Status> for Status {
     Ord,
     serde::Serialize,
     serde::Deserialize,
+    strum::Display,
+    strum::EnumString,
     utoipa::ToSchema,
 )]
-pub enum SubmitterReviewStatus {
+#[serde(rename_all = "snake_case")]
+#[strum(serialize_all = "snake_case")]
+pub enum ClinvarSubmitterReviewStatus {
     /// corresponds to "no classification provided"
     NoClassificationProvided,
     /// corresponds to "no assertion criteria provided"
@@ -5527,25 +5693,27 @@ pub enum SubmitterReviewStatus {
     ClassifiedByMultipleSubmitters,
 }
 
-impl TryFrom<pbs::clinvar_data::clinvar_public::SubmitterReviewStatus> for SubmitterReviewStatus {
+impl TryFrom<pbs::clinvar_data::clinvar_public::SubmitterReviewStatus>
+    for ClinvarSubmitterReviewStatus
+{
     type Error = anyhow::Error;
 
     fn try_from(
         value: pbs::clinvar_data::clinvar_public::SubmitterReviewStatus,
     ) -> Result<Self, Self::Error> {
         Ok(match value {
-            pbs::clinvar_data::clinvar_public::SubmitterReviewStatus::NoClassificationProvided => SubmitterReviewStatus::NoClassificationProvided,
-            pbs::clinvar_data::clinvar_public::SubmitterReviewStatus::NoAssertionCriteriaProvided => SubmitterReviewStatus::NoAssertionCriteriaProvided,
-            pbs::clinvar_data::clinvar_public::SubmitterReviewStatus::CriteriaProvidedSingleSubmitter => SubmitterReviewStatus::CriteriaProvidedSingleSubmitter,
-            pbs::clinvar_data::clinvar_public::SubmitterReviewStatus::ReviewedByExpertPanel => SubmitterReviewStatus::ReviewedByExpertPanel,
-            pbs::clinvar_data::clinvar_public::SubmitterReviewStatus::PracticeGuideline => SubmitterReviewStatus::PracticeGuideline,
-            pbs::clinvar_data::clinvar_public::SubmitterReviewStatus::FlaggedSubmission => SubmitterReviewStatus::FlaggedSubmission,
-            pbs::clinvar_data::clinvar_public::SubmitterReviewStatus::CriteriaProvidedMultipleSubmittersNoConflicts => SubmitterReviewStatus::CriteriaProvidedMultipleSubmittersNoConflicts,
-            pbs::clinvar_data::clinvar_public::SubmitterReviewStatus::CriteriaProvidedConflictingClassifications => SubmitterReviewStatus::CriteriaProvidedConflictingClassifications,
-            pbs::clinvar_data::clinvar_public::SubmitterReviewStatus::ClassifiedBySingleSubmitter => SubmitterReviewStatus::ClassifiedBySingleSubmitter,
-            pbs::clinvar_data::clinvar_public::SubmitterReviewStatus::ReviewedByProfessionalSociety => SubmitterReviewStatus::ReviewedByProfessionalSociety,
-            pbs::clinvar_data::clinvar_public::SubmitterReviewStatus::NotClassifiedBySubmitter => SubmitterReviewStatus::NotClassifiedBySubmitter,
-            pbs::clinvar_data::clinvar_public::SubmitterReviewStatus::ClassifiedByMultipleSubmitters => SubmitterReviewStatus::ClassifiedByMultipleSubmitters,
+            pbs::clinvar_data::clinvar_public::SubmitterReviewStatus::NoClassificationProvided => ClinvarSubmitterReviewStatus::NoClassificationProvided,
+            pbs::clinvar_data::clinvar_public::SubmitterReviewStatus::NoAssertionCriteriaProvided => ClinvarSubmitterReviewStatus::NoAssertionCriteriaProvided,
+            pbs::clinvar_data::clinvar_public::SubmitterReviewStatus::CriteriaProvidedSingleSubmitter => ClinvarSubmitterReviewStatus::CriteriaProvidedSingleSubmitter,
+            pbs::clinvar_data::clinvar_public::SubmitterReviewStatus::ReviewedByExpertPanel => ClinvarSubmitterReviewStatus::ReviewedByExpertPanel,
+            pbs::clinvar_data::clinvar_public::SubmitterReviewStatus::PracticeGuideline => ClinvarSubmitterReviewStatus::PracticeGuideline,
+            pbs::clinvar_data::clinvar_public::SubmitterReviewStatus::FlaggedSubmission => ClinvarSubmitterReviewStatus::FlaggedSubmission,
+            pbs::clinvar_data::clinvar_public::SubmitterReviewStatus::CriteriaProvidedMultipleSubmittersNoConflicts => ClinvarSubmitterReviewStatus::CriteriaProvidedMultipleSubmittersNoConflicts,
+            pbs::clinvar_data::clinvar_public::SubmitterReviewStatus::CriteriaProvidedConflictingClassifications => ClinvarSubmitterReviewStatus::CriteriaProvidedConflictingClassifications,
+            pbs::clinvar_data::clinvar_public::SubmitterReviewStatus::ClassifiedBySingleSubmitter => ClinvarSubmitterReviewStatus::ClassifiedBySingleSubmitter,
+            pbs::clinvar_data::clinvar_public::SubmitterReviewStatus::ReviewedByProfessionalSociety => ClinvarSubmitterReviewStatus::ReviewedByProfessionalSociety,
+            pbs::clinvar_data::clinvar_public::SubmitterReviewStatus::NotClassifiedBySubmitter => ClinvarSubmitterReviewStatus::NotClassifiedBySubmitter,
+            pbs::clinvar_data::clinvar_public::SubmitterReviewStatus::ClassifiedByMultipleSubmitters => ClinvarSubmitterReviewStatus::ClassifiedByMultipleSubmitters,
             _ => anyhow::bail!("Unknown SubmitterReviewStatus: {:?}", value),
         })
     }
@@ -5563,9 +5731,13 @@ impl TryFrom<pbs::clinvar_data::clinvar_public::SubmitterReviewStatus> for Submi
     Ord,
     serde::Serialize,
     serde::Deserialize,
+    strum::Display,
+    strum::EnumString,
     utoipa::ToSchema,
 )]
-pub enum Zygosity {
+#[serde(rename_all = "snake_case")]
+#[strum(serialize_all = "snake_case")]
+pub enum ClinvarZygosity {
     /// corresponds to "Homozygote"
     Homozygote,
     /// corresponds to "SingleHeterozygote"
@@ -5578,20 +5750,22 @@ pub enum Zygosity {
     NotProvided,
 }
 
-impl TryFrom<pbs::clinvar_data::clinvar_public::Zygosity> for Zygosity {
+impl TryFrom<pbs::clinvar_data::clinvar_public::Zygosity> for ClinvarZygosity {
     type Error = anyhow::Error;
 
     fn try_from(value: pbs::clinvar_data::clinvar_public::Zygosity) -> Result<Self, Self::Error> {
         Ok(match value {
-            pbs::clinvar_data::clinvar_public::Zygosity::Homozygote => Zygosity::Homozygote,
+            pbs::clinvar_data::clinvar_public::Zygosity::Homozygote => ClinvarZygosity::Homozygote,
             pbs::clinvar_data::clinvar_public::Zygosity::SingleHeterozygote => {
-                Zygosity::SingleHeterozygote
+                ClinvarZygosity::SingleHeterozygote
             }
             pbs::clinvar_data::clinvar_public::Zygosity::CompoundHeterozygote => {
-                Zygosity::CompoundHeterozygote
+                ClinvarZygosity::CompoundHeterozygote
             }
-            pbs::clinvar_data::clinvar_public::Zygosity::Hemizygote => Zygosity::Hemizygote,
-            pbs::clinvar_data::clinvar_public::Zygosity::NotProvided => Zygosity::NotProvided,
+            pbs::clinvar_data::clinvar_public::Zygosity::Hemizygote => ClinvarZygosity::Hemizygote,
+            pbs::clinvar_data::clinvar_public::Zygosity::NotProvided => {
+                ClinvarZygosity::NotProvided
+            }
             _ => anyhow::bail!("Unknown Zygosity: {:?}", value),
         })
     }
@@ -5609,9 +5783,13 @@ impl TryFrom<pbs::clinvar_data::clinvar_public::Zygosity> for Zygosity {
     Ord,
     serde::Serialize,
     serde::Deserialize,
+    strum::Display,
+    strum::EnumString,
     utoipa::ToSchema,
 )]
-pub enum Assertion {
+#[serde(rename_all = "snake_case")]
+#[strum(serialize_all = "snake_case")]
+pub enum ClinvarAssertion {
     /// corresponds to "variation to disease"
     VariationToDisease,
     /// corresponds to "variation to included disease"
@@ -5626,28 +5804,28 @@ pub enum Assertion {
     VariantToNamedProtein,
 }
 
-impl TryFrom<pbs::clinvar_data::clinvar_public::Assertion> for Assertion {
+impl TryFrom<pbs::clinvar_data::clinvar_public::Assertion> for ClinvarAssertion {
     type Error = anyhow::Error;
 
     fn try_from(value: pbs::clinvar_data::clinvar_public::Assertion) -> Result<Self, Self::Error> {
         Ok(match value {
             pbs::clinvar_data::clinvar_public::Assertion::VariationToDisease => {
-                Assertion::VariationToDisease
+                ClinvarAssertion::VariationToDisease
             }
             pbs::clinvar_data::clinvar_public::Assertion::VariationToIncludedDisease => {
-                Assertion::VariationToIncludedDisease
+                ClinvarAssertion::VariationToIncludedDisease
             }
             pbs::clinvar_data::clinvar_public::Assertion::VariationInModifierGeneToDisease => {
-                Assertion::VariationInModifierGeneToDisease
+                ClinvarAssertion::VariationInModifierGeneToDisease
             }
             pbs::clinvar_data::clinvar_public::Assertion::ConfersSensitivity => {
-                Assertion::ConfersSensitivity
+                ClinvarAssertion::ConfersSensitivity
             }
             pbs::clinvar_data::clinvar_public::Assertion::ConfersResistance => {
-                Assertion::ConfersResistance
+                ClinvarAssertion::ConfersResistance
             }
             pbs::clinvar_data::clinvar_public::Assertion::VariantToNamedProtein => {
-                Assertion::VariantToNamedProtein
+                ClinvarAssertion::VariantToNamedProtein
             }
             _ => anyhow::bail!("Unknown Assertion: {:?}", value),
         })
@@ -5666,9 +5844,13 @@ impl TryFrom<pbs::clinvar_data::clinvar_public::Assertion> for Assertion {
     Ord,
     serde::Serialize,
     serde::Deserialize,
+    strum::Display,
+    strum::EnumString,
     utoipa::ToSchema,
 )]
-pub enum AggregateGermlineReviewStatus {
+#[serde(rename_all = "snake_case")]
+#[strum(serialize_all = "snake_case")]
+pub enum ClinvarAggregateGermlineReviewStatus {
     /// corresponds to "no classification provided"
     NoClassificationProvided,
     /// corresponds to "no assertion criteria provided"
@@ -5690,7 +5872,7 @@ pub enum AggregateGermlineReviewStatus {
 }
 
 impl TryFrom<pbs::clinvar_data::clinvar_public::AggregateGermlineReviewStatus>
-    for AggregateGermlineReviewStatus
+    for ClinvarAggregateGermlineReviewStatus
 {
     type Error = anyhow::Error;
 
@@ -5699,31 +5881,31 @@ impl TryFrom<pbs::clinvar_data::clinvar_public::AggregateGermlineReviewStatus>
     ) -> Result<Self, Self::Error> {
         Ok(match value {
             pbs::clinvar_data::clinvar_public::AggregateGermlineReviewStatus::NoClassificationProvided => {
-                AggregateGermlineReviewStatus::NoClassificationProvided
+                ClinvarAggregateGermlineReviewStatus::NoClassificationProvided
             }
             pbs::clinvar_data::clinvar_public::AggregateGermlineReviewStatus::NoAssertionCriteriaProvided => {
-                AggregateGermlineReviewStatus::NoAssertionCriteriaProvided
+                ClinvarAggregateGermlineReviewStatus::NoAssertionCriteriaProvided
             }
             pbs::clinvar_data::clinvar_public::AggregateGermlineReviewStatus::CriteriaProvidedSingleSubmitter => {
-                AggregateGermlineReviewStatus::CriteriaProvidedSingleSubmitter
+                ClinvarAggregateGermlineReviewStatus::CriteriaProvidedSingleSubmitter
             }
             pbs::clinvar_data::clinvar_public::AggregateGermlineReviewStatus::CriteriaProvidedMultipleSubmittersNoConflicts => {
-                AggregateGermlineReviewStatus::CriteriaProvidedMultipleSubmittersNoConflicts
+                ClinvarAggregateGermlineReviewStatus::CriteriaProvidedMultipleSubmittersNoConflicts
             }
             pbs::clinvar_data::clinvar_public::AggregateGermlineReviewStatus::CriteriaProvidedConflictingClassifications => {
-                AggregateGermlineReviewStatus::CriteriaProvidedConflictingClassifications
+                ClinvarAggregateGermlineReviewStatus::CriteriaProvidedConflictingClassifications
             }
             pbs::clinvar_data::clinvar_public::AggregateGermlineReviewStatus::ReviewedByExpertPanel => {
-                AggregateGermlineReviewStatus::ReviewedByExpertPanel
+                ClinvarAggregateGermlineReviewStatus::ReviewedByExpertPanel
             }
             pbs::clinvar_data::clinvar_public::AggregateGermlineReviewStatus::PracticeGuideline => {
-                AggregateGermlineReviewStatus::PracticeGuideline
+                ClinvarAggregateGermlineReviewStatus::PracticeGuideline
             }
             pbs::clinvar_data::clinvar_public::AggregateGermlineReviewStatus::NoClassificationsFromUnflaggedRecords => {
-                AggregateGermlineReviewStatus::NoClassificationsFromUnflaggedRecords
+                ClinvarAggregateGermlineReviewStatus::NoClassificationsFromUnflaggedRecords
             }
             pbs::clinvar_data::clinvar_public::AggregateGermlineReviewStatus::NoClassificationForTheSingleVariant => {
-                AggregateGermlineReviewStatus::NoClassificationForTheSingleVariant
+                ClinvarAggregateGermlineReviewStatus::NoClassificationForTheSingleVariant
             }
             _ => anyhow::bail!("Unknown AggregateGermlineReviewStatus: {:?}", value),
         })
@@ -5742,9 +5924,13 @@ impl TryFrom<pbs::clinvar_data::clinvar_public::AggregateGermlineReviewStatus>
     Ord,
     serde::Serialize,
     serde::Deserialize,
+    strum::Display,
+    strum::EnumString,
     utoipa::ToSchema,
 )]
-pub enum AggregateSomaticClinicalImpactReviewStatus {
+#[serde(rename_all = "snake_case")]
+#[strum(serialize_all = "snake_case")]
+pub enum ClinvarAggregateSomaticClinicalImpactReviewStatus {
     /// corresponds to "no classification provided"
     NoClassificationProvided,
     /// corresponds to "no assertion criteria provided"
@@ -5764,7 +5950,7 @@ pub enum AggregateSomaticClinicalImpactReviewStatus {
 }
 
 impl TryFrom<pbs::clinvar_data::clinvar_public::AggregateSomaticClinicalImpactReviewStatus>
-    for AggregateSomaticClinicalImpactReviewStatus
+    for ClinvarAggregateSomaticClinicalImpactReviewStatus
 {
     type Error = anyhow::Error;
 
@@ -5773,28 +5959,28 @@ impl TryFrom<pbs::clinvar_data::clinvar_public::AggregateSomaticClinicalImpactRe
     ) -> Result<Self, Self::Error> {
         Ok(match value {
             pbs::clinvar_data::clinvar_public::AggregateSomaticClinicalImpactReviewStatus::NoClassificationProvided => {
-                AggregateSomaticClinicalImpactReviewStatus::NoClassificationProvided
+                ClinvarAggregateSomaticClinicalImpactReviewStatus::NoClassificationProvided
             }
             pbs::clinvar_data::clinvar_public::AggregateSomaticClinicalImpactReviewStatus::NoAssertionCriteriaProvided => {
-                AggregateSomaticClinicalImpactReviewStatus::NoAssertionCriteriaProvided
+                ClinvarAggregateSomaticClinicalImpactReviewStatus::NoAssertionCriteriaProvided
             }
             pbs::clinvar_data::clinvar_public::AggregateSomaticClinicalImpactReviewStatus::CriteriaProvidedSingleSubmitter => {
-                AggregateSomaticClinicalImpactReviewStatus::CriteriaProvidedSingleSubmitter
+                ClinvarAggregateSomaticClinicalImpactReviewStatus::CriteriaProvidedSingleSubmitter
             }
             pbs::clinvar_data::clinvar_public::AggregateSomaticClinicalImpactReviewStatus::CriteriaProvidedMultipleSubmitters => {
-                AggregateSomaticClinicalImpactReviewStatus::CriteriaProvidedMultipleSubmitters
+                ClinvarAggregateSomaticClinicalImpactReviewStatus::CriteriaProvidedMultipleSubmitters
             }
             pbs::clinvar_data::clinvar_public::AggregateSomaticClinicalImpactReviewStatus::ReviewedByExpertPanel => {
-                AggregateSomaticClinicalImpactReviewStatus::ReviewedByExpertPanel
+                ClinvarAggregateSomaticClinicalImpactReviewStatus::ReviewedByExpertPanel
             }
             pbs::clinvar_data::clinvar_public::AggregateSomaticClinicalImpactReviewStatus::PracticeGuideline => {
-                AggregateSomaticClinicalImpactReviewStatus::PracticeGuideline
+                ClinvarAggregateSomaticClinicalImpactReviewStatus::PracticeGuideline
             }
             pbs::clinvar_data::clinvar_public::AggregateSomaticClinicalImpactReviewStatus::NoClassificationsFromUnflaggedRecords => {
-                AggregateSomaticClinicalImpactReviewStatus::NoClassificationsFromUnflaggedRecords
+                ClinvarAggregateSomaticClinicalImpactReviewStatus::NoClassificationsFromUnflaggedRecords
             }
             pbs::clinvar_data::clinvar_public::AggregateSomaticClinicalImpactReviewStatus::NoClassificationForTheSingleVariant => {
-                AggregateSomaticClinicalImpactReviewStatus::NoClassificationForTheSingleVariant
+                ClinvarAggregateSomaticClinicalImpactReviewStatus::NoClassificationForTheSingleVariant
             }
             _ => anyhow::bail!("Unknown AggregateSomaticClinicalImpactReviewStatus: {:?}", value),
         })
@@ -5813,9 +5999,13 @@ impl TryFrom<pbs::clinvar_data::clinvar_public::AggregateSomaticClinicalImpactRe
     Ord,
     serde::Serialize,
     serde::Deserialize,
+    strum::Display,
+    strum::EnumString,
     utoipa::ToSchema,
 )]
-pub enum AggregateOncogenicityReviewStatus {
+#[serde(rename_all = "snake_case")]
+#[strum(serialize_all = "snake_case")]
+pub enum ClinvarAggregateOncogenicityReviewStatus {
     /// corresponds to "no classification provided"
     NoClassificationProvided,
     /// corresponds to "no assertion criteria provided"
@@ -5837,7 +6027,7 @@ pub enum AggregateOncogenicityReviewStatus {
 }
 
 impl TryFrom<pbs::clinvar_data::clinvar_public::AggregateOncogenicityReviewStatus>
-    for AggregateOncogenicityReviewStatus
+    for ClinvarAggregateOncogenicityReviewStatus
 {
     type Error = anyhow::Error;
 
@@ -5846,31 +6036,31 @@ impl TryFrom<pbs::clinvar_data::clinvar_public::AggregateOncogenicityReviewStatu
     ) -> Result<Self, Self::Error> {
         Ok(match value {
             pbs::clinvar_data::clinvar_public::AggregateOncogenicityReviewStatus::NoClassificationProvided => {
-                AggregateOncogenicityReviewStatus::NoClassificationProvided
+                ClinvarAggregateOncogenicityReviewStatus::NoClassificationProvided
             }
             pbs::clinvar_data::clinvar_public::AggregateOncogenicityReviewStatus::NoAssertionCriteriaProvided => {
-                AggregateOncogenicityReviewStatus::NoAssertionCriteriaProvided
+                ClinvarAggregateOncogenicityReviewStatus::NoAssertionCriteriaProvided
             }
             pbs::clinvar_data::clinvar_public::AggregateOncogenicityReviewStatus::CriteriaProvidedSingleSubmitter => {
-                AggregateOncogenicityReviewStatus::CriteriaProvidedSingleSubmitter
+                ClinvarAggregateOncogenicityReviewStatus::CriteriaProvidedSingleSubmitter
             }
             pbs::clinvar_data::clinvar_public::AggregateOncogenicityReviewStatus::CriteriaProvidedMultipleSubmittersNoConflicts => {
-                AggregateOncogenicityReviewStatus::CriteriaProvidedMultipleSubmittersNoConflicts
+                ClinvarAggregateOncogenicityReviewStatus::CriteriaProvidedMultipleSubmittersNoConflicts
             }
             pbs::clinvar_data::clinvar_public::AggregateOncogenicityReviewStatus::CriteriaProvidedConflictingClassifications => {
-                AggregateOncogenicityReviewStatus::CriteriaProvidedConflictingClassifications
+                ClinvarAggregateOncogenicityReviewStatus::CriteriaProvidedConflictingClassifications
             }
             pbs::clinvar_data::clinvar_public::AggregateOncogenicityReviewStatus::ReviewedByExpertPanel => {
-                AggregateOncogenicityReviewStatus::ReviewedByExpertPanel
+                ClinvarAggregateOncogenicityReviewStatus::ReviewedByExpertPanel
             }
             pbs::clinvar_data::clinvar_public::AggregateOncogenicityReviewStatus::PracticeGuideline => {
-                AggregateOncogenicityReviewStatus::PracticeGuideline
+                ClinvarAggregateOncogenicityReviewStatus::PracticeGuideline
             }
             pbs::clinvar_data::clinvar_public::AggregateOncogenicityReviewStatus::NoClassificationsFromUnflaggedRecords => {
-                AggregateOncogenicityReviewStatus::NoClassificationsFromUnflaggedRecords
+                ClinvarAggregateOncogenicityReviewStatus::NoClassificationsFromUnflaggedRecords
             }
             pbs::clinvar_data::clinvar_public::AggregateOncogenicityReviewStatus::NoClassificationForTheSingleVariant => {
-                AggregateOncogenicityReviewStatus::NoClassificationForTheSingleVariant
+                ClinvarAggregateOncogenicityReviewStatus::NoClassificationForTheSingleVariant
             }
             _ => anyhow::bail!("Unknown AggregateGermlineReviewStatus: {:?}", value),
         })
@@ -5889,9 +6079,13 @@ impl TryFrom<pbs::clinvar_data::clinvar_public::AggregateOncogenicityReviewStatu
     Ord,
     serde::Serialize,
     serde::Deserialize,
+    strum::Display,
+    strum::EnumString,
     utoipa::ToSchema,
 )]
-pub enum Origin {
+#[serde(rename_all = "snake_case")]
+#[strum(serialize_all = "snake_case")]
+pub enum ClinvarOrigin {
     /// corresponds to "germline"
     Germline,
     /// corresponds to "somatic"
@@ -5922,28 +6116,30 @@ pub enum Origin {
     ExperimentallyGenerated,
 }
 
-impl TryFrom<pbs::clinvar_data::clinvar_public::Origin> for Origin {
+impl TryFrom<pbs::clinvar_data::clinvar_public::Origin> for ClinvarOrigin {
     type Error = anyhow::Error;
 
     fn try_from(value: pbs::clinvar_data::clinvar_public::Origin) -> Result<Self, Self::Error> {
         Ok(match value {
-            pbs::clinvar_data::clinvar_public::Origin::Germline => Origin::Germline,
-            pbs::clinvar_data::clinvar_public::Origin::Somatic => Origin::Somatic,
-            pbs::clinvar_data::clinvar_public::Origin::DeNovo => Origin::DeNovo,
-            pbs::clinvar_data::clinvar_public::Origin::NotProvided => Origin::NotProvided,
-            pbs::clinvar_data::clinvar_public::Origin::Inherited => Origin::Inherited,
-            pbs::clinvar_data::clinvar_public::Origin::Maternal => Origin::Maternal,
-            pbs::clinvar_data::clinvar_public::Origin::Paternal => Origin::Paternal,
-            pbs::clinvar_data::clinvar_public::Origin::Uniparental => Origin::Uniparental,
-            pbs::clinvar_data::clinvar_public::Origin::Biparental => Origin::Biparental,
-            pbs::clinvar_data::clinvar_public::Origin::NotReported => Origin::NotReported,
+            pbs::clinvar_data::clinvar_public::Origin::Germline => ClinvarOrigin::Germline,
+            pbs::clinvar_data::clinvar_public::Origin::Somatic => ClinvarOrigin::Somatic,
+            pbs::clinvar_data::clinvar_public::Origin::DeNovo => ClinvarOrigin::DeNovo,
+            pbs::clinvar_data::clinvar_public::Origin::NotProvided => ClinvarOrigin::NotProvided,
+            pbs::clinvar_data::clinvar_public::Origin::Inherited => ClinvarOrigin::Inherited,
+            pbs::clinvar_data::clinvar_public::Origin::Maternal => ClinvarOrigin::Maternal,
+            pbs::clinvar_data::clinvar_public::Origin::Paternal => ClinvarOrigin::Paternal,
+            pbs::clinvar_data::clinvar_public::Origin::Uniparental => ClinvarOrigin::Uniparental,
+            pbs::clinvar_data::clinvar_public::Origin::Biparental => ClinvarOrigin::Biparental,
+            pbs::clinvar_data::clinvar_public::Origin::NotReported => ClinvarOrigin::NotReported,
             pbs::clinvar_data::clinvar_public::Origin::TestedInconclusive => {
-                Origin::TestedInconclusive
+                ClinvarOrigin::TestedInconclusive
             }
-            pbs::clinvar_data::clinvar_public::Origin::Unknown => Origin::Unknown,
-            pbs::clinvar_data::clinvar_public::Origin::NotApplicable => Origin::NotApplicable,
+            pbs::clinvar_data::clinvar_public::Origin::Unknown => ClinvarOrigin::Unknown,
+            pbs::clinvar_data::clinvar_public::Origin::NotApplicable => {
+                ClinvarOrigin::NotApplicable
+            }
             pbs::clinvar_data::clinvar_public::Origin::ExperimentallyGenerated => {
-                Origin::ExperimentallyGenerated
+                ClinvarOrigin::ExperimentallyGenerated
             }
             _ => anyhow::bail!("Unknown Origin: {:?}", value),
         })
@@ -5962,9 +6158,13 @@ impl TryFrom<pbs::clinvar_data::clinvar_public::Origin> for Origin {
     Ord,
     serde::Serialize,
     serde::Deserialize,
+    strum::Display,
+    strum::EnumString,
     utoipa::ToSchema,
 )]
-pub enum Chromosome {
+#[serde(rename_all = "snake_case")]
+#[strum(serialize_all = "snake_case")]
+pub enum ClinvarChromosome {
     /// corresponds to "1"
     Chromosome1,
     /// corresponds to "2"
@@ -6021,38 +6221,82 @@ pub enum Chromosome {
     Un,
 }
 
-impl TryFrom<pbs::clinvar_data::clinvar_public::Chromosome> for Chromosome {
+impl TryFrom<pbs::clinvar_data::clinvar_public::Chromosome> for ClinvarChromosome {
     type Error = anyhow::Error;
 
     fn try_from(value: pbs::clinvar_data::clinvar_public::Chromosome) -> Result<Self, Self::Error> {
         Ok(match value {
-            pbs::clinvar_data::clinvar_public::Chromosome::Chromosome1 => Chromosome::Chromosome1,
-            pbs::clinvar_data::clinvar_public::Chromosome::Chromosome2 => Chromosome::Chromosome2,
-            pbs::clinvar_data::clinvar_public::Chromosome::Chromosome3 => Chromosome::Chromosome3,
-            pbs::clinvar_data::clinvar_public::Chromosome::Chromosome4 => Chromosome::Chromosome4,
-            pbs::clinvar_data::clinvar_public::Chromosome::Chromosome5 => Chromosome::Chromosome5,
-            pbs::clinvar_data::clinvar_public::Chromosome::Chromosome6 => Chromosome::Chromosome6,
-            pbs::clinvar_data::clinvar_public::Chromosome::Chromosome7 => Chromosome::Chromosome7,
-            pbs::clinvar_data::clinvar_public::Chromosome::Chromosome8 => Chromosome::Chromosome8,
-            pbs::clinvar_data::clinvar_public::Chromosome::Chromosome9 => Chromosome::Chromosome9,
-            pbs::clinvar_data::clinvar_public::Chromosome::Chromosome10 => Chromosome::Chromosome10,
-            pbs::clinvar_data::clinvar_public::Chromosome::Chromosome11 => Chromosome::Chromosome11,
-            pbs::clinvar_data::clinvar_public::Chromosome::Chromosome12 => Chromosome::Chromosome12,
-            pbs::clinvar_data::clinvar_public::Chromosome::Chromosome13 => Chromosome::Chromosome13,
-            pbs::clinvar_data::clinvar_public::Chromosome::Chromosome14 => Chromosome::Chromosome14,
-            pbs::clinvar_data::clinvar_public::Chromosome::Chromosome15 => Chromosome::Chromosome15,
-            pbs::clinvar_data::clinvar_public::Chromosome::Chromosome16 => Chromosome::Chromosome16,
-            pbs::clinvar_data::clinvar_public::Chromosome::Chromosome17 => Chromosome::Chromosome17,
-            pbs::clinvar_data::clinvar_public::Chromosome::Chromosome18 => Chromosome::Chromosome18,
-            pbs::clinvar_data::clinvar_public::Chromosome::Chromosome19 => Chromosome::Chromosome19,
-            pbs::clinvar_data::clinvar_public::Chromosome::Chromosome20 => Chromosome::Chromosome20,
-            pbs::clinvar_data::clinvar_public::Chromosome::Chromosome21 => Chromosome::Chromosome21,
-            pbs::clinvar_data::clinvar_public::Chromosome::Chromosome22 => Chromosome::Chromosome22,
-            pbs::clinvar_data::clinvar_public::Chromosome::X => Chromosome::X,
-            pbs::clinvar_data::clinvar_public::Chromosome::Y => Chromosome::Y,
-            pbs::clinvar_data::clinvar_public::Chromosome::Mt => Chromosome::Mt,
-            pbs::clinvar_data::clinvar_public::Chromosome::Par => Chromosome::Par,
-            pbs::clinvar_data::clinvar_public::Chromosome::Un => Chromosome::Un,
+            pbs::clinvar_data::clinvar_public::Chromosome::Chromosome1 => {
+                ClinvarChromosome::Chromosome1
+            }
+            pbs::clinvar_data::clinvar_public::Chromosome::Chromosome2 => {
+                ClinvarChromosome::Chromosome2
+            }
+            pbs::clinvar_data::clinvar_public::Chromosome::Chromosome3 => {
+                ClinvarChromosome::Chromosome3
+            }
+            pbs::clinvar_data::clinvar_public::Chromosome::Chromosome4 => {
+                ClinvarChromosome::Chromosome4
+            }
+            pbs::clinvar_data::clinvar_public::Chromosome::Chromosome5 => {
+                ClinvarChromosome::Chromosome5
+            }
+            pbs::clinvar_data::clinvar_public::Chromosome::Chromosome6 => {
+                ClinvarChromosome::Chromosome6
+            }
+            pbs::clinvar_data::clinvar_public::Chromosome::Chromosome7 => {
+                ClinvarChromosome::Chromosome7
+            }
+            pbs::clinvar_data::clinvar_public::Chromosome::Chromosome8 => {
+                ClinvarChromosome::Chromosome8
+            }
+            pbs::clinvar_data::clinvar_public::Chromosome::Chromosome9 => {
+                ClinvarChromosome::Chromosome9
+            }
+            pbs::clinvar_data::clinvar_public::Chromosome::Chromosome10 => {
+                ClinvarChromosome::Chromosome10
+            }
+            pbs::clinvar_data::clinvar_public::Chromosome::Chromosome11 => {
+                ClinvarChromosome::Chromosome11
+            }
+            pbs::clinvar_data::clinvar_public::Chromosome::Chromosome12 => {
+                ClinvarChromosome::Chromosome12
+            }
+            pbs::clinvar_data::clinvar_public::Chromosome::Chromosome13 => {
+                ClinvarChromosome::Chromosome13
+            }
+            pbs::clinvar_data::clinvar_public::Chromosome::Chromosome14 => {
+                ClinvarChromosome::Chromosome14
+            }
+            pbs::clinvar_data::clinvar_public::Chromosome::Chromosome15 => {
+                ClinvarChromosome::Chromosome15
+            }
+            pbs::clinvar_data::clinvar_public::Chromosome::Chromosome16 => {
+                ClinvarChromosome::Chromosome16
+            }
+            pbs::clinvar_data::clinvar_public::Chromosome::Chromosome17 => {
+                ClinvarChromosome::Chromosome17
+            }
+            pbs::clinvar_data::clinvar_public::Chromosome::Chromosome18 => {
+                ClinvarChromosome::Chromosome18
+            }
+            pbs::clinvar_data::clinvar_public::Chromosome::Chromosome19 => {
+                ClinvarChromosome::Chromosome19
+            }
+            pbs::clinvar_data::clinvar_public::Chromosome::Chromosome20 => {
+                ClinvarChromosome::Chromosome20
+            }
+            pbs::clinvar_data::clinvar_public::Chromosome::Chromosome21 => {
+                ClinvarChromosome::Chromosome21
+            }
+            pbs::clinvar_data::clinvar_public::Chromosome::Chromosome22 => {
+                ClinvarChromosome::Chromosome22
+            }
+            pbs::clinvar_data::clinvar_public::Chromosome::X => ClinvarChromosome::X,
+            pbs::clinvar_data::clinvar_public::Chromosome::Y => ClinvarChromosome::Y,
+            pbs::clinvar_data::clinvar_public::Chromosome::Mt => ClinvarChromosome::Mt,
+            pbs::clinvar_data::clinvar_public::Chromosome::Par => ClinvarChromosome::Par,
+            pbs::clinvar_data::clinvar_public::Chromosome::Un => ClinvarChromosome::Un,
             _ => anyhow::bail!("Unknown Chromosome: {:?}", value),
         })
     }
@@ -6070,9 +6314,13 @@ impl TryFrom<pbs::clinvar_data::clinvar_public::Chromosome> for Chromosome {
     Ord,
     serde::Serialize,
     serde::Deserialize,
+    strum::Display,
+    strum::EnumString,
     utoipa::ToSchema,
 )]
-pub enum CommentType {
+#[serde(rename_all = "snake_case")]
+#[strum(serialize_all = "snake_case")]
+pub enum ClinvarCommentType {
     /// corresponds to "public"
     Public,
     /// corresponds to "ConvertedByNCBI"
@@ -6097,34 +6345,34 @@ pub enum CommentType {
     FlaggedComment,
 }
 
-impl TryFrom<pbs::clinvar_data::clinvar_public::CommentType> for CommentType {
+impl TryFrom<pbs::clinvar_data::clinvar_public::CommentType> for ClinvarCommentType {
     type Error = anyhow::Error;
 
     fn try_from(
         value: pbs::clinvar_data::clinvar_public::CommentType,
     ) -> Result<Self, Self::Error> {
         Ok(match value {
-            pbs::clinvar_data::clinvar_public::CommentType::Public => CommentType::Public,
-            pbs::clinvar_data::clinvar_public::CommentType::ConvertedByNcb => CommentType::ConvertedByNcb,
-            pbs::clinvar_data::clinvar_public::CommentType::MissingFromAssembly => CommentType::MissingFromAssembly,
+            pbs::clinvar_data::clinvar_public::CommentType::Public => ClinvarCommentType::Public,
+            pbs::clinvar_data::clinvar_public::CommentType::ConvertedByNcb => ClinvarCommentType::ConvertedByNcb,
+            pbs::clinvar_data::clinvar_public::CommentType::MissingFromAssembly => ClinvarCommentType::MissingFromAssembly,
             pbs::clinvar_data::clinvar_public::CommentType::GenomicLocationNotEstablished => {
-                CommentType::GenomicLocationNotEstablished
+                ClinvarCommentType::GenomicLocationNotEstablished
             }
             pbs::clinvar_data::clinvar_public::CommentType::LocationOnGenomeAndProductNotAligned => {
-                CommentType::LocationOnGenomeAndProductNotAligned
+                ClinvarCommentType::LocationOnGenomeAndProductNotAligned
             }
-            pbs::clinvar_data::clinvar_public::CommentType::DeletionComment => CommentType::DeletionComment,
-            pbs::clinvar_data::clinvar_public::CommentType::MergeComment => CommentType::MergeComment,
+            pbs::clinvar_data::clinvar_public::CommentType::DeletionComment => ClinvarCommentType::DeletionComment,
+            pbs::clinvar_data::clinvar_public::CommentType::MergeComment => ClinvarCommentType::MergeComment,
             pbs::clinvar_data::clinvar_public::CommentType::AssemblySpecificAlleleDefinition => {
-                CommentType::AssemblySpecificAlleleDefinition
+                ClinvarCommentType::AssemblySpecificAlleleDefinition
             }
             pbs::clinvar_data::clinvar_public::CommentType::AlignmentGapMakesAppearInconsistent => {
-                CommentType::AlignmentGapMakesAppearInconsistent
+                ClinvarCommentType::AlignmentGapMakesAppearInconsistent
             }
             pbs::clinvar_data::clinvar_public::CommentType::ExplanationOfClassification => {
-                CommentType::ExplanationOfClassification
+                ClinvarCommentType::ExplanationOfClassification
             }
-            pbs::clinvar_data::clinvar_public::CommentType::FlaggedComment => CommentType::FlaggedComment,
+            pbs::clinvar_data::clinvar_public::CommentType::FlaggedComment => ClinvarCommentType::FlaggedComment,
             _ => anyhow::bail!("Unknown CommentType: {:?}", value),
         })
     }
@@ -6142,9 +6390,13 @@ impl TryFrom<pbs::clinvar_data::clinvar_public::CommentType> for CommentType {
     Ord,
     serde::Serialize,
     serde::Deserialize,
+    strum::Display,
+    strum::EnumString,
     utoipa::ToSchema,
 )]
-pub enum NucleotideSequence {
+#[serde(rename_all = "snake_case")]
+#[strum(serialize_all = "snake_case")]
+pub enum ClinvarNucleotideSequence {
     /// corresponds to "genomic, top-level"
     GenomicTopLevel,
     /// corresponds to "genomic, RefSeqGene"
@@ -6159,7 +6411,7 @@ pub enum NucleotideSequence {
     Protein,
 }
 
-impl TryFrom<pbs::clinvar_data::clinvar_public::NucleotideSequence> for NucleotideSequence {
+impl TryFrom<pbs::clinvar_data::clinvar_public::NucleotideSequence> for ClinvarNucleotideSequence {
     type Error = anyhow::Error;
 
     fn try_from(
@@ -6167,22 +6419,22 @@ impl TryFrom<pbs::clinvar_data::clinvar_public::NucleotideSequence> for Nucleoti
     ) -> Result<Self, Self::Error> {
         Ok(match value {
             pbs::clinvar_data::clinvar_public::NucleotideSequence::GenomicTopLevel => {
-                NucleotideSequence::GenomicTopLevel
+                ClinvarNucleotideSequence::GenomicTopLevel
             }
             pbs::clinvar_data::clinvar_public::NucleotideSequence::GenomicRefSeqGene => {
-                NucleotideSequence::GenomicRefSeqGene
+                ClinvarNucleotideSequence::GenomicRefSeqGene
             }
             pbs::clinvar_data::clinvar_public::NucleotideSequence::Genomic => {
-                NucleotideSequence::Genomic
+                ClinvarNucleotideSequence::Genomic
             }
             pbs::clinvar_data::clinvar_public::NucleotideSequence::Coding => {
-                NucleotideSequence::Coding
+                ClinvarNucleotideSequence::Coding
             }
             pbs::clinvar_data::clinvar_public::NucleotideSequence::NonCoding => {
-                NucleotideSequence::NonCoding
+                ClinvarNucleotideSequence::NonCoding
             }
             pbs::clinvar_data::clinvar_public::NucleotideSequence::Protein => {
-                NucleotideSequence::Protein
+                ClinvarNucleotideSequence::Protein
             }
             _ => anyhow::bail!("Unknown NucleotideSequence: {:?}", value),
         })
@@ -6201,21 +6453,27 @@ impl TryFrom<pbs::clinvar_data::clinvar_public::NucleotideSequence> for Nucleoti
     Ord,
     serde::Serialize,
     serde::Deserialize,
+    strum::Display,
+    strum::EnumString,
     utoipa::ToSchema,
 )]
-pub enum ProteinSequence {
+#[serde(rename_all = "snake_case")]
+#[strum(serialize_all = "snake_case")]
+pub enum ClinvarProteinSequence {
     /// corresponds to "protein"
     Protein,
 }
 
-impl TryFrom<pbs::clinvar_data::clinvar_public::ProteinSequence> for ProteinSequence {
+impl TryFrom<pbs::clinvar_data::clinvar_public::ProteinSequence> for ClinvarProteinSequence {
     type Error = anyhow::Error;
 
     fn try_from(
         value: pbs::clinvar_data::clinvar_public::ProteinSequence,
     ) -> Result<Self, Self::Error> {
         Ok(match value {
-            pbs::clinvar_data::clinvar_public::ProteinSequence::Protein => ProteinSequence::Protein,
+            pbs::clinvar_data::clinvar_public::ProteinSequence::Protein => {
+                ClinvarProteinSequence::Protein
+            }
             _ => anyhow::bail!("Unknown ProteinSequence: {:?}", value),
         })
     }
@@ -6233,9 +6491,13 @@ impl TryFrom<pbs::clinvar_data::clinvar_public::ProteinSequence> for ProteinSequ
     Ord,
     serde::Serialize,
     serde::Deserialize,
+    strum::Display,
+    strum::EnumString,
     utoipa::ToSchema,
 )]
-pub enum PhenotypeSetType {
+#[serde(rename_all = "snake_case")]
+#[strum(serialize_all = "snake_case")]
+pub enum ClinvarPhenotypeSetType {
     /// corresponds to "Disease"
     Disease,
     /// corresponds to "DrugResponse"
@@ -6248,7 +6510,7 @@ pub enum PhenotypeSetType {
     TraitChoice,
 }
 
-impl TryFrom<pbs::clinvar_data::clinvar_public::PhenotypeSetType> for PhenotypeSetType {
+impl TryFrom<pbs::clinvar_data::clinvar_public::PhenotypeSetType> for ClinvarPhenotypeSetType {
     type Error = anyhow::Error;
 
     fn try_from(
@@ -6256,19 +6518,19 @@ impl TryFrom<pbs::clinvar_data::clinvar_public::PhenotypeSetType> for PhenotypeS
     ) -> Result<Self, Self::Error> {
         Ok(match value {
             pbs::clinvar_data::clinvar_public::PhenotypeSetType::Disease => {
-                PhenotypeSetType::Disease
+                ClinvarPhenotypeSetType::Disease
             }
             pbs::clinvar_data::clinvar_public::PhenotypeSetType::DrugResponse => {
-                PhenotypeSetType::DrugResponse
+                ClinvarPhenotypeSetType::DrugResponse
             }
             pbs::clinvar_data::clinvar_public::PhenotypeSetType::Finding => {
-                PhenotypeSetType::Finding
+                ClinvarPhenotypeSetType::Finding
             }
             pbs::clinvar_data::clinvar_public::PhenotypeSetType::PhenotypeInstruction => {
-                PhenotypeSetType::PhenotypeInstruction
+                ClinvarPhenotypeSetType::PhenotypeInstruction
             }
             pbs::clinvar_data::clinvar_public::PhenotypeSetType::TraitChoice => {
-                PhenotypeSetType::TraitChoice
+                ClinvarPhenotypeSetType::TraitChoice
             }
             _ => anyhow::bail!("Unknown PhenotypeSetType: {:?}", value),
         })
@@ -6287,9 +6549,13 @@ impl TryFrom<pbs::clinvar_data::clinvar_public::PhenotypeSetType> for PhenotypeS
     Ord,
     serde::Serialize,
     serde::Deserialize,
+    strum::Display,
+    strum::EnumString,
     utoipa::ToSchema,
 )]
-pub enum VariationType {
+#[serde(rename_all = "snake_case")]
+#[strum(serialize_all = "snake_case")]
+pub enum ClinvarVariationType {
     /// corresponds to "Diplotype"
     Diplotype,
     /// corresponds to "CompoundHeterozygote"
@@ -6298,19 +6564,21 @@ pub enum VariationType {
     DistinctChromosomes,
 }
 
-impl TryFrom<pbs::clinvar_data::clinvar_public::VariationType> for VariationType {
+impl TryFrom<pbs::clinvar_data::clinvar_public::VariationType> for ClinvarVariationType {
     type Error = anyhow::Error;
 
     fn try_from(
         value: pbs::clinvar_data::clinvar_public::VariationType,
     ) -> Result<Self, Self::Error> {
         Ok(match value {
-            pbs::clinvar_data::clinvar_public::VariationType::Diplotype => VariationType::Diplotype,
+            pbs::clinvar_data::clinvar_public::VariationType::Diplotype => {
+                ClinvarVariationType::Diplotype
+            }
             pbs::clinvar_data::clinvar_public::VariationType::CompoundHeterozygote => {
-                VariationType::CompoundHeterozygote
+                ClinvarVariationType::CompoundHeterozygote
             }
             pbs::clinvar_data::clinvar_public::VariationType::DistinctChromosomes => {
-                VariationType::DistinctChromosomes
+                ClinvarVariationType::DistinctChromosomes
             }
             _ => anyhow::bail!("Unknown VariationType: {:?}", value),
         })
@@ -6331,9 +6599,13 @@ impl TryFrom<pbs::clinvar_data::clinvar_public::VariationType> for VariationType
     Ord,
     serde::Serialize,
     serde::Deserialize,
+    strum::Display,
+    strum::EnumString,
     utoipa::ToSchema,
 )]
-pub enum EvidenceType {
+#[serde(rename_all = "snake_case")]
+#[strum(serialize_all = "snake_case")]
+pub enum ClinvarEvidenceType {
     /// corresponds to "Genetic"
     Genetic,
     /// corresponds to "Experimental"
@@ -6344,20 +6616,24 @@ pub enum EvidenceType {
     Computational,
 }
 
-impl TryFrom<pbs::clinvar_data::clinvar_public::EvidenceType> for EvidenceType {
+impl TryFrom<pbs::clinvar_data::clinvar_public::EvidenceType> for ClinvarEvidenceType {
     type Error = anyhow::Error;
 
     fn try_from(
         value: pbs::clinvar_data::clinvar_public::EvidenceType,
     ) -> Result<Self, Self::Error> {
         Ok(match value {
-            pbs::clinvar_data::clinvar_public::EvidenceType::Genetic => EvidenceType::Genetic,
-            pbs::clinvar_data::clinvar_public::EvidenceType::Experimental => {
-                EvidenceType::Experimental
+            pbs::clinvar_data::clinvar_public::EvidenceType::Genetic => {
+                ClinvarEvidenceType::Genetic
             }
-            pbs::clinvar_data::clinvar_public::EvidenceType::Population => EvidenceType::Population,
+            pbs::clinvar_data::clinvar_public::EvidenceType::Experimental => {
+                ClinvarEvidenceType::Experimental
+            }
+            pbs::clinvar_data::clinvar_public::EvidenceType::Population => {
+                ClinvarEvidenceType::Population
+            }
             pbs::clinvar_data::clinvar_public::EvidenceType::Computational => {
-                EvidenceType::Computational
+                ClinvarEvidenceType::Computational
             }
             _ => anyhow::bail!("Unknown EvidenceType: {:?}", value),
         })
@@ -6378,9 +6654,13 @@ impl TryFrom<pbs::clinvar_data::clinvar_public::EvidenceType> for EvidenceType {
     Ord,
     serde::Serialize,
     serde::Deserialize,
+    strum::Display,
+    strum::EnumString,
     utoipa::ToSchema,
 )]
-pub enum MethodListType {
+#[serde(rename_all = "snake_case")]
+#[strum(serialize_all = "snake_case")]
+pub enum ClinvarMethodListType {
     /// corresponds to "literature only"
     LiteratureOnly,
     /// corresponds to "reference population"
@@ -6405,7 +6685,7 @@ pub enum MethodListType {
     PhenotypingOnly,
 }
 
-impl TryFrom<pbs::clinvar_data::clinvar_public::MethodListType> for MethodListType {
+impl TryFrom<pbs::clinvar_data::clinvar_public::MethodListType> for ClinvarMethodListType {
     type Error = anyhow::Error;
 
     fn try_from(
@@ -6413,29 +6693,37 @@ impl TryFrom<pbs::clinvar_data::clinvar_public::MethodListType> for MethodListTy
     ) -> Result<Self, Self::Error> {
         Ok(match value {
             pbs::clinvar_data::clinvar_public::MethodListType::LiteratureOnly => {
-                MethodListType::LiteratureOnly
+                ClinvarMethodListType::LiteratureOnly
             }
             pbs::clinvar_data::clinvar_public::MethodListType::ReferencePopulation => {
-                MethodListType::ReferencePopulation
+                ClinvarMethodListType::ReferencePopulation
             }
             pbs::clinvar_data::clinvar_public::MethodListType::CaseControl => {
-                MethodListType::CaseControl
+                ClinvarMethodListType::CaseControl
             }
             pbs::clinvar_data::clinvar_public::MethodListType::ClinicalTesting => {
-                MethodListType::ClinicalTesting
+                ClinvarMethodListType::ClinicalTesting
             }
-            pbs::clinvar_data::clinvar_public::MethodListType::InVitro => MethodListType::InVitro,
-            pbs::clinvar_data::clinvar_public::MethodListType::InVivo => MethodListType::InVivo,
-            pbs::clinvar_data::clinvar_public::MethodListType::Research => MethodListType::Research,
-            pbs::clinvar_data::clinvar_public::MethodListType::Curation => MethodListType::Curation,
+            pbs::clinvar_data::clinvar_public::MethodListType::InVitro => {
+                ClinvarMethodListType::InVitro
+            }
+            pbs::clinvar_data::clinvar_public::MethodListType::InVivo => {
+                ClinvarMethodListType::InVivo
+            }
+            pbs::clinvar_data::clinvar_public::MethodListType::Research => {
+                ClinvarMethodListType::Research
+            }
+            pbs::clinvar_data::clinvar_public::MethodListType::Curation => {
+                ClinvarMethodListType::Curation
+            }
             pbs::clinvar_data::clinvar_public::MethodListType::NotProvided => {
-                MethodListType::NotProvided
+                ClinvarMethodListType::NotProvided
             }
             pbs::clinvar_data::clinvar_public::MethodListType::ProviderInterpretation => {
-                MethodListType::ProviderInterpretation
+                ClinvarMethodListType::ProviderInterpretation
             }
             pbs::clinvar_data::clinvar_public::MethodListType::PhenotypingOnly => {
-                MethodListType::PhenotypingOnly
+                ClinvarMethodListType::PhenotypingOnly
             }
             _ => anyhow::bail!("Unknown MethodListType: {:?}", value),
         })
@@ -6454,9 +6742,13 @@ impl TryFrom<pbs::clinvar_data::clinvar_public::MethodListType> for MethodListTy
     Ord,
     serde::Serialize,
     serde::Deserialize,
+    strum::Display,
+    strum::EnumString,
     utoipa::ToSchema,
 )]
-pub enum HgvsType {
+#[serde(rename_all = "snake_case")]
+#[strum(serialize_all = "snake_case")]
+pub enum ClinvarHgvsType {
     /// corresponds to "coding"
     Coding,
     /// corresponds to "genomic"
@@ -6469,18 +6761,18 @@ pub enum HgvsType {
     Protein,
 }
 
-impl TryFrom<pbs::clinvar_data::clinvar_public::HgvsType> for HgvsType {
+impl TryFrom<pbs::clinvar_data::clinvar_public::HgvsType> for ClinvarHgvsType {
     type Error = anyhow::Error;
 
     fn try_from(value: pbs::clinvar_data::clinvar_public::HgvsType) -> Result<Self, Self::Error> {
         Ok(match value {
-            pbs::clinvar_data::clinvar_public::HgvsType::Coding => HgvsType::Coding,
-            pbs::clinvar_data::clinvar_public::HgvsType::Genomic => HgvsType::Genomic,
+            pbs::clinvar_data::clinvar_public::HgvsType::Coding => ClinvarHgvsType::Coding,
+            pbs::clinvar_data::clinvar_public::HgvsType::Genomic => ClinvarHgvsType::Genomic,
             pbs::clinvar_data::clinvar_public::HgvsType::GenomicTopLevel => {
-                HgvsType::GenomicTopLevel
+                ClinvarHgvsType::GenomicTopLevel
             }
-            pbs::clinvar_data::clinvar_public::HgvsType::NonCoding => HgvsType::NonCoding,
-            pbs::clinvar_data::clinvar_public::HgvsType::Protein => HgvsType::Protein,
+            pbs::clinvar_data::clinvar_public::HgvsType::NonCoding => ClinvarHgvsType::NonCoding,
+            pbs::clinvar_data::clinvar_public::HgvsType::Protein => ClinvarHgvsType::Protein,
             _ => anyhow::bail!("Unknown HgvsType: {:?}", value),
         })
     }
@@ -6498,9 +6790,13 @@ impl TryFrom<pbs::clinvar_data::clinvar_public::HgvsType> for HgvsType {
     Ord,
     serde::Serialize,
     serde::Deserialize,
+    strum::Display,
+    strum::EnumString,
     utoipa::ToSchema,
 )]
-pub enum ClinicalFeaturesAffectedStatusType {
+#[serde(rename_all = "snake_case")]
+#[strum(serialize_all = "snake_case")]
+pub enum ClinvarClinicalFeaturesAffectedStatusType {
     /// corresponds to "present"
     Present,
     /// corresponds to "absent"
@@ -6510,7 +6806,7 @@ pub enum ClinicalFeaturesAffectedStatusType {
 }
 
 impl TryFrom<pbs::clinvar_data::clinvar_public::ClinicalFeaturesAffectedStatusType>
-    for ClinicalFeaturesAffectedStatusType
+    for ClinvarClinicalFeaturesAffectedStatusType
 {
     type Error = anyhow::Error;
 
@@ -6519,13 +6815,13 @@ impl TryFrom<pbs::clinvar_data::clinvar_public::ClinicalFeaturesAffectedStatusTy
     ) -> Result<Self, Self::Error> {
         Ok(match value {
             pbs::clinvar_data::clinvar_public::ClinicalFeaturesAffectedStatusType::Present => {
-                ClinicalFeaturesAffectedStatusType::Present
+                ClinvarClinicalFeaturesAffectedStatusType::Present
             }
             pbs::clinvar_data::clinvar_public::ClinicalFeaturesAffectedStatusType::Absent => {
-                ClinicalFeaturesAffectedStatusType::Absent
+                ClinvarClinicalFeaturesAffectedStatusType::Absent
             }
             pbs::clinvar_data::clinvar_public::ClinicalFeaturesAffectedStatusType::NotTested => {
-                ClinicalFeaturesAffectedStatusType::NotTested
+                ClinvarClinicalFeaturesAffectedStatusType::NotTested
             }
             _ => anyhow::bail!("Unknown ClinicalFeaturesAffectedStatusType: {:?}", value),
         })
@@ -6544,9 +6840,13 @@ impl TryFrom<pbs::clinvar_data::clinvar_public::ClinicalFeaturesAffectedStatusTy
     Ord,
     serde::Serialize,
     serde::Deserialize,
+    strum::Display,
+    strum::EnumString,
     utoipa::ToSchema,
 )]
-pub enum HaploVariationType {
+#[serde(rename_all = "snake_case")]
+#[strum(serialize_all = "snake_case")]
+pub enum ClinvarHaploVariationType {
     /// corresponds to "Haplotype"
     Haplotype,
     /// corresponds to "Haplotype, single variant"
@@ -6559,21 +6859,21 @@ pub enum HaploVariationType {
     HaplotypeDefinedBySingleVariant,
 }
 
-impl TryFrom<pbs::clinvar_data::clinvar_public::HaploVariationType> for HaploVariationType {
+impl TryFrom<pbs::clinvar_data::clinvar_public::HaploVariationType> for ClinvarHaploVariationType {
     type Error = anyhow::Error;
 
     fn try_from(
         value: pbs::clinvar_data::clinvar_public::HaploVariationType,
     ) -> Result<Self, Self::Error> {
         Ok(match value {
-            pbs::clinvar_data::clinvar_public::HaploVariationType::Haplotype => HaploVariationType::Haplotype,
+            pbs::clinvar_data::clinvar_public::HaploVariationType::Haplotype => ClinvarHaploVariationType::Haplotype,
             pbs::clinvar_data::clinvar_public::HaploVariationType::HaplotypeSingleVariant => {
-                HaploVariationType::HaplotypeSingleVariant
+                ClinvarHaploVariationType::HaplotypeSingleVariant
             }
-            pbs::clinvar_data::clinvar_public::HaploVariationType::Variation => HaploVariationType::Variation,
-            pbs::clinvar_data::clinvar_public::HaploVariationType::PhaseUnknown => HaploVariationType::PhaseUnknown,
+            pbs::clinvar_data::clinvar_public::HaploVariationType::Variation => ClinvarHaploVariationType::Variation,
+            pbs::clinvar_data::clinvar_public::HaploVariationType::PhaseUnknown => ClinvarHaploVariationType::PhaseUnknown,
             pbs::clinvar_data::clinvar_public::HaploVariationType::HaplotypeDefinedBySingleVariant => {
-                HaploVariationType::HaplotypeDefinedBySingleVariant
+                ClinvarHaploVariationType::HaplotypeDefinedBySingleVariant
             }
             _ => anyhow::bail!("Unknown HaploVariationType: {:?}", value),
         })
@@ -6582,14 +6882,14 @@ impl TryFrom<pbs::clinvar_data::clinvar_public::HaploVariationType> for HaploVar
 
 /// Accession with version.
 #[derive(Clone, Debug, serde::Serialize, serde::Deserialize, utoipa::ToSchema)]
-pub struct VersionedAccession {
+pub struct ClinvarVersionedAccession {
     /// The accession.
     pub accession: String,
     /// The version.
     pub version: i32,
 }
 
-impl From<pbs::clinvar_data::extracted_vars::VersionedAccession> for VersionedAccession {
+impl From<pbs::clinvar_data::extracted_vars::VersionedAccession> for ClinvarVersionedAccession {
     fn from(value: pbs::clinvar_data::extracted_vars::VersionedAccession) -> Self {
         Self {
             accession: value.accession,
@@ -6599,16 +6899,16 @@ impl From<pbs::clinvar_data::extracted_vars::VersionedAccession> for VersionedAc
 }
 /// Protocol buffer for storing essential information of one RCV.
 #[derive(Clone, Debug, serde::Serialize, serde::Deserialize, utoipa::ToSchema)]
-pub struct ExtractedRcvRecord {
+pub struct ClinvarExtractedRcvRecord {
     /// The accession.
-    pub accession: Option<VersionedAccession>,
+    pub accession: Option<ClinvarVersionedAccession>,
     /// Title of RCV.
     pub title: String,
     /// Classifications (thinned out).
-    pub classifications: Option<RcvClassifications>,
+    pub classifications: Option<ClinvarRcvClassifications>,
 }
 
-impl TryFrom<pbs::clinvar_data::extracted_vars::ExtractedRcvRecord> for ExtractedRcvRecord {
+impl TryFrom<pbs::clinvar_data::extracted_vars::ExtractedRcvRecord> for ClinvarExtractedRcvRecord {
     type Error = anyhow::Error;
 
     fn try_from(
@@ -6617,38 +6917,38 @@ impl TryFrom<pbs::clinvar_data::extracted_vars::ExtractedRcvRecord> for Extracte
         Ok(Self {
             accession: value
                 .accession
-                .map(VersionedAccession::try_from)
+                .map(ClinvarVersionedAccession::try_from)
                 .transpose()?,
             title: value.title,
             classifications: value
                 .classifications
-                .map(RcvClassifications::try_from)
+                .map(ClinvarRcvClassifications::try_from)
                 .transpose()?,
         })
     }
 }
 /// Protocol buffer for storing essential information of one VCV.
 #[derive(Clone, Debug, serde::Serialize, serde::Deserialize, utoipa::ToSchema)]
-pub struct ExtractedVcvRecord {
+pub struct ClinvarExtractedVcvRecord {
     /// The accession.
-    pub accession: Option<VersionedAccession>,
+    pub accession: Option<ClinvarVersionedAccession>,
     /// List of aggregated RCVs.
-    pub rcvs: Vec<ExtractedRcvRecord>,
+    pub rcvs: Vec<ClinvarExtractedRcvRecord>,
     /// Name of VCV.
     pub name: String,
     /// The type of the variant.
-    pub variation_type: ExtractedVariationType,
+    pub variation_type: ClinvarExtractedVariationType,
     /// Classifications (thinned out).
-    pub classifications: Option<AggregateClassificationSet>,
+    pub classifications: Option<ClinvarAggregateClassificationSet>,
     /// Clinical assertions (thinned out),
-    pub clinical_assertions: Vec<ClinicalAssertion>,
+    pub clinical_assertions: Vec<ClinvarClinicalAssertion>,
     /// The sequence location on one reference.
-    pub sequence_location: Option<SequenceLocation>,
+    pub sequence_location: Option<ClinvarSequenceLocation>,
     /// List of HGNC IDs.
     pub hgnc_ids: Vec<String>,
 }
 
-impl TryFrom<pbs::clinvar_data::extracted_vars::ExtractedVcvRecord> for ExtractedVcvRecord {
+impl TryFrom<pbs::clinvar_data::extracted_vars::ExtractedVcvRecord> for ClinvarExtractedVcvRecord {
     type Error = anyhow::Error;
 
     fn try_from(
@@ -6657,29 +6957,29 @@ impl TryFrom<pbs::clinvar_data::extracted_vars::ExtractedVcvRecord> for Extracte
         Ok(Self {
             accession: value
                 .accession
-                .map(VersionedAccession::try_from)
+                .map(ClinvarVersionedAccession::try_from)
                 .transpose()?,
             rcvs: value
                 .rcvs
                 .into_iter()
-                .map(ExtractedRcvRecord::try_from)
+                .map(ClinvarExtractedRcvRecord::try_from)
                 .collect::<Result<_, _>>()?,
             name: value.name,
-            variation_type: ExtractedVariationType::try_from(
+            variation_type: ClinvarExtractedVariationType::try_from(
                 pbs::clinvar_data::extracted_vars::VariationType::try_from(value.variation_type)?,
             )?,
             classifications: value
                 .classifications
-                .map(AggregateClassificationSet::try_from)
+                .map(ClinvarAggregateClassificationSet::try_from)
                 .transpose()?,
             clinical_assertions: value
                 .clinical_assertions
                 .into_iter()
-                .map(ClinicalAssertion::try_from)
+                .map(ClinvarClinicalAssertion::try_from)
                 .collect::<Result<_, _>>()?,
             sequence_location: value
                 .sequence_location
-                .map(SequenceLocation::try_from)
+                .map(ClinvarSequenceLocation::try_from)
                 .transpose()?,
             hgnc_ids: value.hgnc_ids,
         })
@@ -6702,8 +7002,9 @@ impl TryFrom<pbs::clinvar_data::extracted_vars::ExtractedVcvRecord> for Extracte
     strum::EnumString,
     utoipa::ToSchema,
 )]
+#[serde(rename_all = "snake_case")]
 #[strum(serialize_all = "snake_case")]
-pub enum ExtractedVariationType {
+pub enum ClinvarExtractedVariationType {
     /// Corresponds to "insertion".
     Insertion,
     /// Corresponds to "deletion".
@@ -6732,7 +7033,7 @@ pub enum ExtractedVariationType {
     Other,
 }
 
-impl TryFrom<pbs::clinvar_data::extracted_vars::VariationType> for ExtractedVariationType {
+impl TryFrom<pbs::clinvar_data::extracted_vars::VariationType> for ClinvarExtractedVariationType {
     type Error = anyhow::Error;
 
     fn try_from(
@@ -6740,85 +7041,89 @@ impl TryFrom<pbs::clinvar_data::extracted_vars::VariationType> for ExtractedVari
     ) -> Result<Self, Self::Error> {
         Ok(match value {
             pbs::clinvar_data::extracted_vars::VariationType::Insertion => {
-                ExtractedVariationType::Insertion
+                ClinvarExtractedVariationType::Insertion
             }
             pbs::clinvar_data::extracted_vars::VariationType::Deletion => {
-                ExtractedVariationType::Deletion
+                ClinvarExtractedVariationType::Deletion
             }
-            pbs::clinvar_data::extracted_vars::VariationType::Snv => ExtractedVariationType::Snv,
+            pbs::clinvar_data::extracted_vars::VariationType::Snv => {
+                ClinvarExtractedVariationType::Snv
+            }
             pbs::clinvar_data::extracted_vars::VariationType::Indel => {
-                ExtractedVariationType::Indel
+                ClinvarExtractedVariationType::Indel
             }
             pbs::clinvar_data::extracted_vars::VariationType::Duplication => {
-                ExtractedVariationType::Duplication
+                ClinvarExtractedVariationType::Duplication
             }
             pbs::clinvar_data::extracted_vars::VariationType::TandemDuplication => {
-                ExtractedVariationType::TandemDuplication
+                ClinvarExtractedVariationType::TandemDuplication
             }
             pbs::clinvar_data::extracted_vars::VariationType::StructuralVariant => {
-                ExtractedVariationType::StructuralVariant
+                ClinvarExtractedVariationType::StructuralVariant
             }
             pbs::clinvar_data::extracted_vars::VariationType::CopyNumberGain => {
-                ExtractedVariationType::CopyNumberGain
+                ClinvarExtractedVariationType::CopyNumberGain
             }
             pbs::clinvar_data::extracted_vars::VariationType::CopyNumberLoss => {
-                ExtractedVariationType::CopyNumberLoss
+                ClinvarExtractedVariationType::CopyNumberLoss
             }
             pbs::clinvar_data::extracted_vars::VariationType::ProteinOnly => {
-                ExtractedVariationType::ProteinOnly
+                ClinvarExtractedVariationType::ProteinOnly
             }
             pbs::clinvar_data::extracted_vars::VariationType::Microsatellite => {
-                ExtractedVariationType::Microsatellite
+                ClinvarExtractedVariationType::Microsatellite
             }
             pbs::clinvar_data::extracted_vars::VariationType::Inversion => {
-                ExtractedVariationType::Inversion
+                ClinvarExtractedVariationType::Inversion
             }
             pbs::clinvar_data::extracted_vars::VariationType::Other => {
-                ExtractedVariationType::Other
+                ClinvarExtractedVariationType::Other
             }
             _ => anyhow::bail!("Invalid variation type {:?}", value),
         })
     }
 }
 
-impl Into<pbs::clinvar_data::extracted_vars::VariationType> for ExtractedVariationType {
+impl Into<pbs::clinvar_data::extracted_vars::VariationType> for ClinvarExtractedVariationType {
     fn into(self) -> pbs::clinvar_data::extracted_vars::VariationType {
         match self {
-            ExtractedVariationType::Insertion => {
+            ClinvarExtractedVariationType::Insertion => {
                 pbs::clinvar_data::extracted_vars::VariationType::Insertion
             }
-            ExtractedVariationType::Deletion => {
+            ClinvarExtractedVariationType::Deletion => {
                 pbs::clinvar_data::extracted_vars::VariationType::Deletion
             }
-            ExtractedVariationType::Snv => pbs::clinvar_data::extracted_vars::VariationType::Snv,
-            ExtractedVariationType::Indel => {
+            ClinvarExtractedVariationType::Snv => {
+                pbs::clinvar_data::extracted_vars::VariationType::Snv
+            }
+            ClinvarExtractedVariationType::Indel => {
                 pbs::clinvar_data::extracted_vars::VariationType::Indel
             }
-            ExtractedVariationType::Duplication => {
+            ClinvarExtractedVariationType::Duplication => {
                 pbs::clinvar_data::extracted_vars::VariationType::Duplication
             }
-            ExtractedVariationType::TandemDuplication => {
+            ClinvarExtractedVariationType::TandemDuplication => {
                 pbs::clinvar_data::extracted_vars::VariationType::TandemDuplication
             }
-            ExtractedVariationType::StructuralVariant => {
+            ClinvarExtractedVariationType::StructuralVariant => {
                 pbs::clinvar_data::extracted_vars::VariationType::StructuralVariant
             }
-            ExtractedVariationType::CopyNumberGain => {
+            ClinvarExtractedVariationType::CopyNumberGain => {
                 pbs::clinvar_data::extracted_vars::VariationType::CopyNumberGain
             }
-            ExtractedVariationType::CopyNumberLoss => {
+            ClinvarExtractedVariationType::CopyNumberLoss => {
                 pbs::clinvar_data::extracted_vars::VariationType::CopyNumberLoss
             }
-            ExtractedVariationType::ProteinOnly => {
+            ClinvarExtractedVariationType::ProteinOnly => {
                 pbs::clinvar_data::extracted_vars::VariationType::ProteinOnly
             }
-            ExtractedVariationType::Microsatellite => {
+            ClinvarExtractedVariationType::Microsatellite => {
                 pbs::clinvar_data::extracted_vars::VariationType::Microsatellite
             }
-            ExtractedVariationType::Inversion => {
+            ClinvarExtractedVariationType::Inversion => {
                 pbs::clinvar_data::extracted_vars::VariationType::Inversion
             }
-            ExtractedVariationType::Other => {
+            ClinvarExtractedVariationType::Other => {
                 pbs::clinvar_data::extracted_vars::VariationType::Other
             }
         }

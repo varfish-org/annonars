@@ -13,7 +13,7 @@ use super::error::CustomError;
 use serde_with::{formats::CommaSeparator, StringWithSeparator};
 
 use crate::pbs::clinvar_data::extracted_vars::VariationType as PbVariationType;
-use crate::server::run::clinvar_data::ExtractedVariationType;
+use crate::server::run::clinvar_data::ClinvarExtractedVariationType;
 
 /// The default page size to use.
 const DEFAULT_PAGE_SIZE: u32 = 100;
@@ -214,8 +214,10 @@ pub(crate) struct StrucvarsClinvarQuery {
     /// 1-based stop postion.
     pub stop: u32,
     /// Optionally, the variant types.
-    #[serde_as(as = "Option<StringWithSeparator::<CommaSeparator, ExtractedVariationType>>")]
-    pub variation_types: Option<Vec<ExtractedVariationType>>,
+    #[serde_as(
+        as = "Option<StringWithSeparator::<CommaSeparator, ClinvarExtractedVariationType>>"
+    )]
+    pub variation_types: Option<Vec<ClinvarExtractedVariationType>>,
     /// Optionally, minimal overlap.
     pub min_overlap: Option<f64>,
     /// Optional 1-based page number.
@@ -243,20 +245,20 @@ impl Into<Request> for StrucvarsClinvarQuery {
 
 /// Module with response information.
 pub mod response {
-    use crate::server::run::clinvar_data::ExtractedVcvRecord;
+    use crate::server::run::clinvar_data::ClinvarExtractedVcvRecord;
 
     /// Information on one response record.
     #[derive(
         Debug, Clone, serde::Serialize, serde::Deserialize, utoipa::ToSchema, utoipa::ToResponse,
     )]
-    pub struct ResponseRecord {
+    pub struct StrucvarsClinvarResponseRecord {
         /// The record.
-        pub record: Option<ExtractedVcvRecord>,
+        pub record: Option<ClinvarExtractedVcvRecord>,
         /// The reciprocal overlap with the query.
         pub overlap: f64,
     }
 
-    impl TryFrom<crate::pbs::clinvar::sv::ResponseRecord> for ResponseRecord {
+    impl TryFrom<crate::pbs::clinvar::sv::ResponseRecord> for StrucvarsClinvarResponseRecord {
         type Error = anyhow::Error;
 
         fn try_from(value: crate::pbs::clinvar::sv::ResponseRecord) -> Result<Self, Self::Error> {
@@ -299,7 +301,7 @@ pub mod response {
     )]
     pub struct StrucvarsClinvarResponse {
         /// The records in this page.
-        pub records: Vec<ResponseRecord>,
+        pub records: Vec<StrucvarsClinvarResponseRecord>,
         /// Pagination information.
         pub page_info: StrucvarsClinvarPageInfo,
     }

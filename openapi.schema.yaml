@@ -111,6 +111,93 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/CustomError'
+  /api/v1/strucvars/clinvar/query:
+    get:
+      tags:
+      - clinvar_sv
+      summary: Endpoint for querying ClinVar SV annotations.
+      operationId: strucvarsClinvarQuery
+      parameters:
+      - name: genome_release
+        in: query
+        description: Genome release specification.
+        required: true
+        schema:
+          $ref: '#/components/schemas/GenomeRelease'
+      - name: chromosome
+        in: query
+        description: Chromosome name.
+        required: true
+        schema:
+          type: string
+      - name: start
+        in: query
+        description: 1-based start position.
+        required: true
+        schema:
+          type: integer
+          format: int32
+          minimum: 0
+      - name: stop
+        in: query
+        description: 1-based stop postion.
+        required: true
+        schema:
+          type: integer
+          format: int32
+          minimum: 0
+      - name: variation_types
+        in: query
+        description: Optionally, the variant types.
+        required: false
+        schema:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/ClinvarExtractedVariationType'
+      - name: min_overlap
+        in: query
+        description: Optionally, minimal overlap.
+        required: false
+        schema:
+          type:
+          - number
+          - 'null'
+          format: double
+      - name: page_no
+        in: query
+        description: Optional 1-based page number.
+        required: false
+        schema:
+          type:
+          - integer
+          - 'null'
+          format: int32
+          minimum: 0
+      - name: page_size
+        in: query
+        description: Optional page size.
+        required: false
+        schema:
+          type:
+          - integer
+          - 'null'
+          format: int32
+          minimum: 0
+      responses:
+        '200':
+          description: Clinvar strucvars information.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StrucvarsClinvarResponse'
+        '500':
+          description: Internal server error.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CustomError'
   /api/v1/versionsInfo:
     get:
       tags:
@@ -148,6 +235,4109 @@ components:
       - helixmtdb
       - ucsc_conservation
       - clinvar
+    ClinvarAccession:
+      type: object
+      description: Local type for `ClinVarAccession`
+      required:
+      - accession
+      - version
+      properties:
+        accession:
+          type: string
+          description: Accession.
+        version:
+          type: integer
+          format: int32
+          description: Version.
+        submitter_identifiers:
+          oneOf:
+          - type: 'null'
+          - $ref: '#/components/schemas/ClinvarSubmitterIdentifiers'
+            description: The submitter's identifier.
+        date_updated:
+          type:
+          - string
+          - 'null'
+          format: date-time
+          description: |-
+            The date that the latest update to the submitted
+            record (SCV) became public in ClinVar.
+        date_created:
+          type:
+          - string
+          - 'null'
+          format: date-time
+          description: |-
+            DateCreated is the date when the record first became
+            public in ClinVar.
+    ClinvarAffectedStatus:
+      type: string
+      description: Local enumeration for the affected status.
+      enum:
+      - yes
+      - no
+      - not_provided
+      - unknown
+      - not_applicable
+    ClinvarAge:
+      type: object
+      description: Local type for an age.
+      required:
+      - value
+      - unit
+      - type
+      properties:
+        value:
+          type: integer
+          format: int32
+          description: The age value.
+        unit:
+          $ref: '#/components/schemas/ClinvarAgeUnit'
+          description: The age unit.
+        type:
+          $ref: '#/components/schemas/ClinvarAgeType'
+          description: The age type.
+    ClinvarAgeType:
+      type: string
+      description: Local enumeration for an age type.
+      enum:
+      - minimum
+      - maximum
+      - single
+    ClinvarAgeUnit:
+      type: string
+      description: Local enumeration for an age unit.
+      enum:
+      - days
+      - weeks
+      - months
+      - years
+      - weeks_gestation
+      - months_gestation
+    ClinvarAggregateClassificationSet:
+      type: object
+      description: |-
+        Used to bundle different types of Classifications (germline,
+        oncogenic, somatic clinical impact) ; Supports summary as
+        well as submission details.
+
+        NB: called "typeAggregateClassificationSet" in XSD.
+      properties:
+        germline_classification:
+          oneOf:
+          - type: 'null'
+          - $ref: '#/components/schemas/ClinvarAggregatedGermlineClassification'
+            description: The aggregate germline classification.
+        somatic_clinical_impact:
+          oneOf:
+          - type: 'null'
+          - $ref: '#/components/schemas/ClinvarAggregatedSomaticClinicalImpact'
+            description: The aggregate somatic clinical impact.
+        oncogenicity_classification:
+          oneOf:
+          - type: 'null'
+          - $ref: '#/components/schemas/ClinvarAggregatedOncogenicityClassification'
+            description: The aggregate oncogenicity classification.
+    ClinvarAggregateGermlineReviewStatus:
+      type: string
+      description: Enumeration describing aggregate germline review status value.
+      enum:
+      - no_classification_provided
+      - no_assertion_criteria_provided
+      - criteria_provided_single_submitter
+      - criteria_provided_multiple_submitters_no_conflicts
+      - criteria_provided_conflicting_classifications
+      - reviewed_by_expert_panel
+      - practice_guideline
+      - no_classifications_from_unflagged_records
+      - no_classification_for_the_single_variant
+    ClinvarAggregateOncogenicityReviewStatus:
+      type: string
+      description: Enumeration describing aggregate oncogenicity review status value.
+      enum:
+      - no_classification_provided
+      - no_assertion_criteria_provided
+      - criteria_provided_single_submitter
+      - criteria_provided_multiple_submitters_no_conflicts
+      - criteria_provided_conflicting_classifications
+      - reviewed_by_expert_panel
+      - practice_guideline
+      - no_classifications_from_unflagged_records
+      - no_classification_for_the_single_variant
+    ClinvarAggregateSomaticClinicalImpactReviewStatus:
+      type: string
+      description: Enumeration describing aggregate somatic clinical impact review status value.
+      enum:
+      - no_classification_provided
+      - no_assertion_criteria_provided
+      - criteria_provided_single_submitter
+      - criteria_provided_multiple_submitters
+      - reviewed_by_expert_panel
+      - practice_guideline
+      - no_classifications_from_unflagged_records
+      - no_classification_for_the_single_variant
+    ClinvarAggregatedGermlineClassification:
+      type: object
+      description: |-
+        Aggregated germline classification info.
+
+        Corresponds to ``typeAggregatedGermlineClassification`` in XSD.
+
+        nested elements
+      required:
+      - review_status
+      - xrefs
+      - citations
+      - comments
+      - history_records
+      - conditions
+      properties:
+        review_status:
+          $ref: '#/components/schemas/ClinvarAggregateGermlineReviewStatus'
+          description: |-
+            The aggregate review status based on all germline submissions
+            for this record.
+        description:
+          type:
+          - string
+          - 'null'
+          description: |
+            We are not providing an enumeration for the values we report
+            for germline classification within the xsd. Details are in
+            <https://github.com/ncbi/clinvar/ClassificationOnClinVar.md>
+        explanation:
+          oneOf:
+          - type: 'null'
+          - $ref: '#/components/schemas/ClinvarComment'
+            description: |-
+              Explanation is used only when the description is 'conflicting
+              data from submitters' The element summarizes the conflict.
+        xrefs:
+          type: array
+          items:
+            $ref: '#/components/schemas/ClinvarXref'
+          description: List of xrefs.
+        citations:
+          type: array
+          items:
+            $ref: '#/components/schemas/ClinvarCitation'
+          description: List of citations.
+        comments:
+          type: array
+          items:
+            $ref: '#/components/schemas/ClinvarComment'
+          description: List of comments.
+        history_records:
+          type: array
+          items:
+            $ref: '#/components/schemas/ClinvarDescriptionHistory'
+          description: History information.
+        conditions:
+          type: array
+          items:
+            $ref: '#/components/schemas/ClinvarTraitSet'
+          description: List of conditions.
+        date_last_evaluated:
+          type:
+          - string
+          - 'null'
+          format: date-time
+          description: Date of last evaluation.
+        date_created:
+          type:
+          - string
+          - 'null'
+          format: date-time
+          description: Date of creation.
+        most_recent_submission:
+          type:
+          - string
+          - 'null'
+          format: date-time
+          description: Date of most recent submission.
+        number_of_submitters:
+          type:
+          - integer
+          - 'null'
+          format: int32
+          description: Number of submitters.
+        number_of_submissions:
+          type:
+          - integer
+          - 'null'
+          format: int32
+          description: Number of submissions.
+    ClinvarAggregatedOncogenicityClassification:
+      type: object
+      description: |-
+        Aggregated oncogenicity classification info.
+
+        nested elements
+      required:
+      - review_status
+      - xrefs
+      - citations
+      - comments
+      - history_records
+      - conditions
+      properties:
+        review_status:
+          $ref: '#/components/schemas/ClinvarAggregateOncogenicityReviewStatus'
+          description: |-
+            The aggregate review status based on all somatic clinical
+            impact submissions for this record.
+        description:
+          type:
+          - string
+          - 'null'
+          description: |-
+            We are not providing an enumeration for the values we report
+            for somatic clinical impact classification within the xsd. Details are in
+            <https://github.com/ncbi/clinvar/ClassificationOnClinVar.md>
+        xrefs:
+          type: array
+          items:
+            $ref: '#/components/schemas/ClinvarXref'
+          description: List of xrefs.
+        citations:
+          type: array
+          items:
+            $ref: '#/components/schemas/ClinvarCitation'
+          description: List of citations.
+        comments:
+          type: array
+          items:
+            $ref: '#/components/schemas/ClinvarComment'
+          description: List of comments.
+        history_records:
+          type: array
+          items:
+            $ref: '#/components/schemas/ClinvarDescriptionHistory'
+          description: History information.
+        conditions:
+          type: array
+          items:
+            $ref: '#/components/schemas/ClinvarTraitSet'
+          description: List of conditions.
+        date_last_evaluated:
+          type:
+          - string
+          - 'null'
+          format: date-time
+          description: Date of last evaluation.
+        date_created:
+          type:
+          - string
+          - 'null'
+          format: date-time
+          description: Date of creation.
+        most_recent_submission:
+          type:
+          - string
+          - 'null'
+          format: date-time
+          description: Date of most recent submission.
+        number_of_submitters:
+          type:
+          - integer
+          - 'null'
+          format: int32
+          description: Number of submitters.
+        number_of_submissions:
+          type:
+          - integer
+          - 'null'
+          format: int32
+          description: Number of submissions.
+    ClinvarAggregatedSomaticClinicalImpact:
+      type: object
+      description: |-
+        Aggregated somatic clinical impact info.
+
+        nested elements
+      required:
+      - review_status
+      - xrefs
+      - citations
+      - comments
+      - history_records
+      - conditions
+      properties:
+        review_status:
+          $ref: '#/components/schemas/ClinvarAggregateSomaticClinicalImpactReviewStatus'
+          description: |-
+            The aggregate review status based on all somatic clinical
+            impact submissions for this record.
+        description:
+          type:
+          - string
+          - 'null'
+          description: |-
+            We are not providing an enumeration for the values we report
+            for somatic clinical impact classification within the xsd. Details are in
+            <https://github.com/ncbi/clinvar/ClassificationOnClinVar.md>
+        xrefs:
+          type: array
+          items:
+            $ref: '#/components/schemas/ClinvarXref'
+          description: List of xrefs.
+        citations:
+          type: array
+          items:
+            $ref: '#/components/schemas/ClinvarCitation'
+          description: List of citations.
+        comments:
+          type: array
+          items:
+            $ref: '#/components/schemas/ClinvarComment'
+          description: List of comments.
+        history_records:
+          type: array
+          items:
+            $ref: '#/components/schemas/ClinvarDescriptionHistory'
+          description: History information.
+        conditions:
+          type: array
+          items:
+            $ref: '#/components/schemas/ClinvarTraitSet'
+          description: List of conditions.
+        date_last_evaluated:
+          type:
+          - string
+          - 'null'
+          format: date-time
+          description: Date of last evaluation.
+        date_created:
+          type:
+          - string
+          - 'null'
+          format: date-time
+          description: Date of creation.
+        most_recent_submission:
+          type:
+          - string
+          - 'null'
+          format: date-time
+          description: Date of most recent submission.
+        number_of_submitters:
+          type:
+          - integer
+          - 'null'
+          format: int32
+          description: Number of submitters.
+        number_of_submissions:
+          type:
+          - integer
+          - 'null'
+          format: int32
+          description: Number of submissions.
+    ClinvarAllele:
+      type: object
+      description: |-
+        This is a record per variant (Measure/@ID,AlleleID).
+
+        Corresponds to "typeAllele" in XSD.
+      required:
+      - genes
+      - name
+      - variant_types
+      - locations
+      - other_names
+      - protein_changes
+      - hgvs_expressions
+      - xrefs
+      - comments
+      - functional_consequences
+      - allele_frequencies
+      - allele_id
+      - variation_id
+      properties:
+        genes:
+          type: array
+          items:
+            $ref: '#/components/schemas/ClinvarAlleleGene'
+          description: Gene list.
+        name:
+          type: string
+          description: Name.
+        canonical_spdi:
+          type:
+          - string
+          - 'null'
+          description: Canonical SPDI.
+        variant_types:
+          type: array
+          items:
+            type: string
+          description: Variant type(s).
+        locations:
+          type: array
+          items:
+            $ref: '#/components/schemas/ClinvarLocation'
+          description: Location.
+        other_names:
+          type: array
+          items:
+            $ref: '#/components/schemas/ClinvarOtherName'
+          description: List of other names.
+        protein_changes:
+          type: array
+          items:
+            type: string
+          description: These are the single-letter representations of the protein change.
+        hgvs_expressions:
+          type: array
+          items:
+            $ref: '#/components/schemas/ClinvarHgvsExpression'
+          description: List of HGVS expressions.
+        classifications:
+          oneOf:
+          - type: 'null'
+          - $ref: '#/components/schemas/ClinvarAggregateClassificationSet'
+            description: Aggregated classifications.
+        xrefs:
+          type: array
+          items:
+            $ref: '#/components/schemas/ClinvarXref'
+          description: List of xrefs.
+        comments:
+          type: array
+          items:
+            $ref: '#/components/schemas/ClinvarComment'
+          description: List of comments.
+        functional_consequences:
+          type: array
+          items:
+            $ref: '#/components/schemas/ClinvarFunctionalConsequence'
+          description: List of functional consequences.
+        allele_frequencies:
+          type: array
+          items:
+            $ref: '#/components/schemas/ClinvarAlleleFrequency'
+          description: Allele frequencies.
+        global_minor_allele_frequency:
+          oneOf:
+          - type: 'null'
+          - $ref: '#/components/schemas/ClinvarGlobalMinorAlleleFrequency'
+            description: Global minor allele frequencies.
+        allele_id:
+          type: integer
+          format: int64
+          description: Allele ID.
+        variation_id:
+          type: integer
+          format: int64
+          description: Variation ID.
+    ClinvarAlleleDescription:
+      type: object
+      description: |-
+        This is to be used within co-occurrence set.
+
+        Corresponds to `typeAlleleDescr` in XSD.
+      required:
+      - name
+      properties:
+        name:
+          type: string
+          description: The name of the allele.
+        relative_orientation:
+          oneOf:
+          - type: 'null'
+          - $ref: '#/components/schemas/ClinvarRelativeOrientation'
+            description: |-
+              Optional relative orientation.
+
+              NB: Unused in XML
+        zygosity:
+          oneOf:
+          - type: 'null'
+          - $ref: '#/components/schemas/ClinvarZygosity'
+            description: Optional zygosity.
+        clinical_significance:
+          oneOf:
+          - type: 'null'
+          - $ref: '#/components/schemas/ClinvarClinicalSignificance'
+            description: |-
+              Optional clinical significance.
+
+              Corresponds to `ClinicalSignificanceType` in XSD.
+    ClinvarAlleleFrequency:
+      type: object
+      description: Local type for allele frequency.
+      required:
+      - value
+      - source
+      properties:
+        value:
+          type: number
+          format: double
+          description: Value.
+        source:
+          type: string
+          description: Source.
+        url:
+          type:
+          - string
+          - 'null'
+          description: URL.
+    ClinvarAlleleGene:
+      type: object
+      description: |-
+        Local type for Gene.
+
+        nested elements
+      required:
+      - locations
+      - omims
+      - properties
+      - full_name
+      - gene_id
+      - source
+      properties:
+        locations:
+          type: array
+          items:
+            $ref: '#/components/schemas/ClinvarLocation'
+          description: Gene's locations.
+        omims:
+          type: array
+          items:
+            type: integer
+            format: int64
+            minimum: 0
+          description: OMIM ID.
+        haploinsufficiency:
+          oneOf:
+          - type: 'null'
+          - $ref: '#/components/schemas/ClinvarDosageSensitivity'
+            description: Haploinsuffiency.
+        triplosensitivity:
+          oneOf:
+          - type: 'null'
+          - $ref: '#/components/schemas/ClinvarDosageSensitivity'
+            description: Triplosensitivity.
+        properties:
+          type: array
+          items:
+            type: string
+          description: |-
+            Used to set key words for retrieval or
+            display about a gene, such as genes listed by the
+            ACMG guidelines.
+        symbol:
+          type:
+          - string
+          - 'null'
+          description: Optional gene symbol.
+        full_name:
+          type: string
+          description: Full gene name.
+        gene_id:
+          type: integer
+          format: int64
+          description: Gene ID.
+        hgnc_id:
+          type:
+          - string
+          - 'null'
+          description: Optional HGNC ID.
+        source:
+          type: string
+          description: Source of gene (calculated or submitted).
+        relationship_type:
+          oneOf:
+          - type: 'null'
+          - $ref: '#/components/schemas/ClinvarGeneVariantRelationship'
+            description: Relationship between gene and variant.
+    ClinvarAlleleName:
+      type: object
+      description: Local type for allele name.
+      required:
+      - value
+      properties:
+        value:
+          type: string
+          description: The name's value.
+        type:
+          type:
+          - string
+          - 'null'
+          description: The name's type.
+    ClinvarAlleleScv:
+      type: object
+      description: |-
+        This is a record per variant (Measure/@ID,AlleleID) as submitted for
+        accessioning in an SCV.
+
+        Corresponds to "typeAlleleSCV" in XSD.
+      required:
+      - genes
+      - other_names
+      - protein_changes
+      - xrefs
+      - citations
+      - comments
+      - molecular_consequences
+      - functional_consequences
+      - attributes
+      properties:
+        genes:
+          type: array
+          items:
+            $ref: '#/components/schemas/ClinvarAlleleScvGene'
+          description: |-
+            0 to many genes (and related data ) related to the allele
+            being reported.
+        name:
+          oneOf:
+          - type: 'null'
+          - $ref: '#/components/schemas/ClinvarOtherName'
+            description: Name provided by the submitter.
+        variant_type:
+          type:
+          - string
+          - 'null'
+          description: Variant type.
+        location:
+          oneOf:
+          - type: 'null'
+          - $ref: '#/components/schemas/ClinvarLocation'
+            description: Location.
+        other_names:
+          type: array
+          items:
+            $ref: '#/components/schemas/ClinvarOtherName'
+          description: List of other names.
+        protein_changes:
+          type: array
+          items:
+            type: string
+          description: |-
+            Single letter representation of the amino acid change and its
+            location.
+        xrefs:
+          type: array
+          items:
+            $ref: '#/components/schemas/ClinvarXref'
+          description: List of xrefs.
+        citations:
+          type: array
+          items:
+            $ref: '#/components/schemas/ClinvarCitation'
+          description: List of citations.
+        comments:
+          type: array
+          items:
+            $ref: '#/components/schemas/ClinvarComment'
+          description: List of comments.
+        molecular_consequences:
+          type: array
+          items:
+            $ref: '#/components/schemas/ClinvarMolecularConsequence'
+          description: |-
+            Currently redundant with the MolecularConsequence element of
+            the HGVS element?
+        functional_consequences:
+          type: array
+          items:
+            $ref: '#/components/schemas/ClinvarFunctionalConsequence'
+          description: Functional consequences.
+        attributes:
+          type: array
+          items:
+            $ref: '#/components/schemas/ClinvarAttributeSetElement'
+          description: Attributes.
+        allele_id:
+          type:
+          - integer
+          - 'null'
+          format: int64
+          description: Allele ID.
+    ClinvarAlleleScvGene:
+      type: object
+      description: |-
+        Local type for Gene.
+
+        nested elements
+      required:
+      - properties
+      - xrefs
+      properties:
+        name:
+          type:
+          - string
+          - 'null'
+          description: Gene name.
+        properties:
+          type: array
+          items:
+            type: string
+          description: |-
+            Used to set key words for retrieval or
+            display about a gene, such as genes listed by the
+            ACMG guidelines.
+        xrefs:
+          type: array
+          items:
+            $ref: '#/components/schemas/ClinvarXref'
+          description: |-
+            Used for gene specific identifiers
+            such as MIM number, Gene ID, HGNC ID, etc.
+        symbol:
+          type:
+          - string
+          - 'null'
+          description: Optional gene symbol.
+        relationship_type:
+          oneOf:
+          - type: 'null'
+          - $ref: '#/components/schemas/ClinvarGeneVariantRelationship'
+            description: Relationship between gene and variant.
+    ClinvarAssemblyStatus:
+      type: string
+      description: Local enum for the assembly status.
+      enum:
+      - current
+      - previous
+    ClinvarAssertion:
+      type: string
+      description: Enumeration describing assertion type attributes.
+      enum:
+      - variation_to_disease
+      - variation_to_included_disease
+      - variation_in_modifier_gene_to_disease
+      - confers_sensitivity
+      - confers_resistance
+      - variant_to_named_protein
+    ClinvarAttribute:
+      type: object
+      description: Extend the BaseAttribute with a `type` field.
+      required:
+      - type
+      properties:
+        base:
+          oneOf:
+          - type: 'null'
+          - $ref: '#/components/schemas/ClinvarBaseAttribute'
+            description: The base value.
+        type:
+          type: string
+          description: The type of the attribute.
+    ClinvarAttributeSetElement:
+      type: object
+      description: |-
+        Common type for an entry in a set of attributes.
+
+        Called ``typeAttributeSet`` in XSD.
+      required:
+      - xrefs
+      - citations
+      - comments
+      properties:
+        attribute:
+          oneOf:
+          - type: 'null'
+          - $ref: '#/components/schemas/ClinvarAttribute'
+            description: The attribute value.
+        xrefs:
+          type: array
+          items:
+            $ref: '#/components/schemas/ClinvarXref'
+          description: List of xrefs.
+        citations:
+          type: array
+          items:
+            $ref: '#/components/schemas/ClinvarCitation'
+          description: List of citations.
+        comments:
+          type: array
+          items:
+            $ref: '#/components/schemas/ClinvarComment'
+          description: List of comments.
+    ClinvarAttributeSetElementType:
+      type: string
+      description: Local enum for types.
+      enum:
+      - mode_of_inheritance
+      - penetrance
+      - age_of_onset
+      - severity
+      - classification_history
+      - severity_description
+      - assertion_method
+    ClinvarBaseAttribute:
+      type: object
+      description: |-
+        The attribute is a general element to represent a defined set of data
+        qualified by an enumerated set of types. For each attribute element, the value will
+        be a character string and is optional. Source shall be used to store identifiers for
+        supplied data from source other than the submitter (e.g. SequenceOntology). The data
+        submitted where Type="variation" shall be validated against sequence_alternation in
+        Sequence Ontology <http://www.sequenceontology.org/.> This is to be a generic version
+        of AttributeType and should be used with extension when it is used to specify Type
+        and its enumerations.
+      properties:
+        value:
+          type:
+          - string
+          - 'null'
+          description: The attribute's value; can be empty.
+        integer_value:
+          type:
+          - integer
+          - 'null'
+          format: int64
+          description: The optional integer value.
+        date_value:
+          type:
+          - string
+          - 'null'
+          format: date-time
+          description: The optional date value.
+    ClinvarChromosome:
+      type: string
+      description: Enumeration describing chromosome.
+      enum:
+      - chromosome1
+      - chromosome2
+      - chromosome3
+      - chromosome4
+      - chromosome5
+      - chromosome6
+      - chromosome7
+      - chromosome8
+      - chromosome9
+      - chromosome10
+      - chromosome11
+      - chromosome12
+      - chromosome13
+      - chromosome14
+      - chromosome15
+      - chromosome16
+      - chromosome17
+      - chromosome18
+      - chromosome19
+      - chromosome20
+      - chromosome21
+      - chromosome22
+      - x
+      - y
+      - mt
+      - par
+      - un
+    ClinvarCitation:
+      type: object
+      description: Description of a citation.
+      required:
+      - ids
+      properties:
+        ids:
+          type: array
+          items:
+            $ref: '#/components/schemas/ClinvarIdType'
+          description: Optional list of IDs.
+        url:
+          type:
+          - string
+          - 'null'
+          description: Optional URL.
+        citation_text:
+          type:
+          - string
+          - 'null'
+          description: Optional citation text.
+        type:
+          type:
+          - string
+          - 'null'
+          description: |-
+            This maintained distinct from publication types in PubMed and
+            established by GTR curators.  The default is 'general'.
+        abbrev:
+          type:
+          - string
+          - 'null'
+          description: Corresponds to the abbreviation reported by GTR.
+    ClinvarClassificationScore:
+      type: object
+      description: Classification score description.
+      required:
+      - value
+      properties:
+        value:
+          type: number
+          format: double
+          description: The score's value.
+        type:
+          type:
+          - string
+          - 'null'
+          description: The score's type; optional.
+    ClinvarClassificationScv:
+      type: object
+      description: |-
+        Report classification of a variant for a SCV.
+
+        Corresponds to `ClassificationTypeSCV` in XSD.
+      required:
+      - review_status
+      - classification_scores
+      - xrefs
+      - citations
+      - comments
+      properties:
+        review_status:
+          $ref: '#/components/schemas/ClinvarSubmitterReviewStatus'
+          description: The field's review status.
+        germline_classification:
+          type:
+          - string
+          - 'null'
+          description: |-
+            The germline classification; mutually exlusive with `somatic_clinical_impact`
+            and `oncogenicity_classification`.
+        somatic_clinical_impact:
+          oneOf:
+          - type: 'null'
+          - $ref: '#/components/schemas/ClinvarClassificationScvSomaticClinicalImpact'
+            description: |-
+              Information on the clinical impact; mutually exlusive with `germline_classification`
+              and `oncogenicity_classification`.
+        oncogenicity_classification:
+          type:
+          - string
+          - 'null'
+          description: |-
+            The oncogenicity classification; mutually exlusive with `germline_classification`
+            and `oncogenicity_classification`.
+        explanation_of_classification:
+          type:
+          - string
+          - 'null'
+          description: Optional explanation of classification.
+        classification_scores:
+          type: array
+          items:
+            $ref: '#/components/schemas/ClinvarClassificationScore'
+          description: List of classification scores.
+        xrefs:
+          type: array
+          items:
+            $ref: '#/components/schemas/ClinvarXref'
+          description: List of xrefs.
+        citations:
+          type: array
+          items:
+            $ref: '#/components/schemas/ClinvarCitation'
+          description: List of citations.
+        comments:
+          type: array
+          items:
+            $ref: '#/components/schemas/ClinvarComment'
+          description: List of comments.
+        date_last_evaluated:
+          type:
+          - string
+          - 'null'
+          format: date-time
+          description: Date of last evaluation.
+    ClinvarClassificationScvSomaticClinicalImpact:
+      type: object
+      description: Clinical impact of a somatic variatn.
+      required:
+      - value
+      properties:
+        value:
+          type: string
+          description: The somatic clinical impact value.
+        clinical_impact_assertion_type:
+          type:
+          - string
+          - 'null'
+          description: Type of the clinical impact assertion.
+        clinical_impact_clinical_significance:
+          type:
+          - string
+          - 'null'
+          description: Clinical impact significance.
+        drug_for_therapeutic_assertion:
+          type:
+          - string
+          - 'null'
+          description: Name of the drug for the therapeutic assertion.
+    ClinvarClassifiedCondition:
+      type: object
+      description: |-
+        Interpreted condition for an RCV record.
+
+        Corresponds to `typeRCVInterpretedCondition` in XSD.
+      required:
+      - value
+      properties:
+        value:
+          type: string
+          description: Condition value.
+        db:
+          type:
+          - string
+          - 'null'
+          description: Database name.
+        id:
+          type:
+          - string
+          - 'null'
+          description: Identifier in database.
+    ClinvarClassifiedRecord:
+      type: object
+      description: |-
+        This element is restricted to variation records for which an explicit
+        classification was submitted.  Compare to IncludedRecord, which provides aggregate
+        information about variants that are part of another submission, but for which
+        ClinVar has *not* received a submission specific to that variant independently.
+      required:
+      - clinical_assertions
+      - trait_mappings
+      - deleted_scvs
+      - general_citations
+      properties:
+        simple_allele:
+          oneOf:
+          - type: 'null'
+          - $ref: '#/components/schemas/ClinvarAllele'
+            description: |-
+              Describes a single sequence change relative to a
+              contiguous region of a chromosome or the mitochondrion.
+
+              Mutually exclusive with `haplotype` and `genotype`.
+        haplotype:
+          oneOf:
+          - type: 'null'
+          - $ref: '#/components/schemas/ClinvarHaplotype'
+            description: |-
+              Describes multiple sequence changes on one of the
+              chromosomes of a homologous pair or on the mitochondrion.
+
+              Mutually exclusive with `simple_allele` and `genotype`.
+        genotype:
+          oneOf:
+          - type: 'null'
+          - $ref: '#/components/schemas/ClinvarGenotype'
+            description: |-
+              Describes the combination of sequence changes on each
+              chromosome of a homologous pair.
+
+              Mutually exclusive with `simple_allele` and `haplotype`.
+        rcv_list:
+          oneOf:
+          - type: 'null'
+          - $ref: '#/components/schemas/ClinvarRcvList'
+            description: List of RCV records.
+        classifications:
+          oneOf:
+          - type: 'null'
+          - $ref: '#/components/schemas/ClinvarAggregateClassificationSet'
+            description: List of classifications.
+        clinical_assertions:
+          type: array
+          items:
+            $ref: '#/components/schemas/ClinvarClinicalAssertion'
+          description: List of clinical assertions.
+        trait_mappings:
+          type: array
+          items:
+            $ref: '#/components/schemas/ClinvarRcvTraitMapping'
+          description: |-
+            This element is used to report how each user-submitted
+            trait name was mapped to a MedGen CUI identifier and a preferred name.
+            The structure may be used in the future to report, when a trait is
+            identified by a source's identifier (e.g. MIM number), the preferred
+            name used by that source at the time of submission. For MappingType
+            XRef, MappingRef is the database name and MappingValue is the database's
+            identifier. For MappingType Name, MappingRef is Alternate or Preferred,
+            and MappingValue is the submitted name of the trait. ClinicalAssertionID
+            is an integer identifier that corresponds 1:1 to the SCV assigned to the
+            submission.
+        deleted_scvs:
+          type: array
+          items:
+            $ref: '#/components/schemas/ClinvarDeletedScv'
+          description: List of deleted SCVs.
+        general_citations:
+          type: array
+          items:
+            $ref: '#/components/schemas/ClinvarGeneralCitations'
+          description: List of general citations.
+    ClinvarClassifiedVariation:
+      type: object
+      description: Local type for tag `ClassifiedVariation`.
+      required:
+      - variation_id
+      - version
+      properties:
+        variation_id:
+          type: integer
+          format: int64
+          description: Variation ID.
+        accession:
+          type:
+          - string
+          - 'null'
+          description: Optional accession.
+        version:
+          type: integer
+          format: int32
+          description: Version.
+    ClinvarClinicalAssertion:
+      type: object
+      description: |-
+        A clinical assertion as submitted (SCV record).
+
+        Corresponds to `MeasureTraitType` in XSD and `<ClinicalAssertion>` in XML
+      required:
+      - additional_submitters
+      - record_status
+      - replaces
+      - replaceds
+      - assertion
+      - attributes
+      - observed_ins
+      - citations
+      - comments
+      - submission_names
+      properties:
+        clinvar_submission_id:
+          oneOf:
+          - type: 'null'
+          - $ref: '#/components/schemas/ClinvarSubmissionId'
+            description: The ClinVar submission ID.
+        clinvar_accession:
+          oneOf:
+          - type: 'null'
+          - $ref: '#/components/schemas/ClinvarAccession'
+            description: The ClinVar SCV accessions.
+        additional_submitters:
+          type: array
+          items:
+            $ref: '#/components/schemas/ClinvarSubmitter'
+          description: Optional list of additional submitters.
+        record_status:
+          $ref: '#/components/schemas/ClinvarClinicalAssertionRecordStatus'
+          description: Record status.
+        replaces:
+          type: array
+          items:
+            type: string
+          description: Replaces; mutually exclusive with replaceds
+        replaceds:
+          type: array
+          items:
+            $ref: '#/components/schemas/ClinvarClinicalAssertionRecordHistory'
+          description: Replaced list; mutually exclusive with replaces
+        classifications:
+          oneOf:
+          - type: 'null'
+          - $ref: '#/components/schemas/ClinvarClassificationScv'
+            description: SCV classification.
+        assertion:
+          $ref: '#/components/schemas/ClinvarAssertion'
+          description: The assertion.
+        attributes:
+          type: array
+          items:
+            $ref: '#/components/schemas/ClinvarClinicalAssertionAttributeSetElement'
+          description: Attributes.
+        observed_ins:
+          type: array
+          items:
+            $ref: '#/components/schemas/ClinvarObservedIn'
+          description: Observed in.
+        simple_allele:
+          oneOf:
+          - type: 'null'
+          - $ref: '#/components/schemas/ClinvarAlleleScv'
+            description: Allele in SCV; mutually exclusive with haplotype/genotype.
+        haplotype:
+          oneOf:
+          - type: 'null'
+          - $ref: '#/components/schemas/ClinvarHaplotypeScv'
+            description: Haplotype in SCV; mutually exclusive with allele/genotype.
+        genotype:
+          oneOf:
+          - type: 'null'
+          - $ref: '#/components/schemas/ClinvarGenotypeScv'
+            description: Genotype in SCV; mutually exclusive with allele/haplotype.
+        trait_set:
+          oneOf:
+          - type: 'null'
+          - $ref: '#/components/schemas/ClinvarTraitSet'
+            description: The trait set.
+        citations:
+          type: array
+          items:
+            $ref: '#/components/schemas/ClinvarCitation'
+          description: List of citations.
+        study_name:
+          type:
+          - string
+          - 'null'
+          description: Optional study name.
+        study_description:
+          type:
+          - string
+          - 'null'
+          description: Optional study description.
+        comments:
+          type: array
+          items:
+            $ref: '#/components/schemas/ClinvarComment'
+          description: List of comments.
+        submission_names:
+          type: array
+          items:
+            type: string
+          description: List of submissions.
+        date_created:
+          type:
+          - string
+          - 'null'
+          format: date-time
+          description: Date of creation.
+        date_last_updated:
+          type:
+          - string
+          - 'null'
+          format: date-time
+          description: Date of creation.
+        submission_date:
+          type:
+          - string
+          - 'null'
+          format: date-time
+          description: Date of creation.
+        id:
+          type:
+          - integer
+          - 'null'
+          format: int64
+          description: ID.
+          minimum: 0
+        fda_recognized_database:
+          type:
+          - boolean
+          - 'null'
+          description: Whether it is an FDA recognized database.
+    ClinvarClinicalAssertionAttributeSetElement:
+      type: object
+      description: Local type for attribute set.
+      required:
+      - type
+      - xrefs
+      - citations
+      - comments
+      properties:
+        attribute:
+          oneOf:
+          - type: 'null'
+          - $ref: '#/components/schemas/ClinvarBaseAttribute'
+            description: The base value.
+        type:
+          $ref: '#/components/schemas/ClinvarAttributeSetElementType'
+          description: The type of the attribute.
+        xrefs:
+          type: array
+          items:
+            $ref: '#/components/schemas/ClinvarXref'
+          description: List of xrefs.
+        citations:
+          type: array
+          items:
+            $ref: '#/components/schemas/ClinvarCitation'
+          description: List of citations.
+        comments:
+          type: array
+          items:
+            $ref: '#/components/schemas/ClinvarComment'
+          description: List of comments.
+    ClinvarClinicalAssertionRecordHistory:
+      type: object
+      description: |-
+        Inside ClinicalAssertion, a structure to support reporting of an
+        accession, its version, the date its status changed, and text describing that
+        change.
+
+        Corresponds to `typeClinicalAssertionRecordHistory` in XSD.
+      required:
+      - accession
+      properties:
+        comment:
+          oneOf:
+          - type: 'null'
+          - $ref: '#/components/schemas/ClinvarComment'
+            description: Optional comment.
+        accession:
+          type: string
+          description: Accession.
+        version:
+          type:
+          - integer
+          - 'null'
+          format: int32
+          description: Optional version.
+        date_changed:
+          type:
+          - string
+          - 'null'
+          format: date-time
+          description: Date of the record.
+    ClinvarClinicalAssertionRecordStatus:
+      type: string
+      description: Local enum for record status.
+      enum:
+      - current
+      - replaced
+      - removed
+    ClinvarClinicalFeaturesAffectedStatusType:
+      type: string
+      description: Enumeration describing clinical features affected status.
+      enum:
+      - present
+      - absent
+      - not_tested
+    ClinvarClinicalSignificance:
+      type: object
+      description: |-
+        Describes the clinical significance of a variant.
+
+        Corresponds to `ClinicalSignificanceType` in XSD.
+
+        contained elements
+      required:
+      - xrefs
+      - citations
+      - comments
+      properties:
+        review_status:
+          oneOf:
+          - type: 'null'
+          - $ref: '#/components/schemas/ClinvarSubmitterReviewStatus'
+            description: The optional review status.
+        description:
+          type:
+          - string
+          - 'null'
+          description: |-
+            Structure used to support old data of AlleleDescriptionSet
+            within Co-occurenceSet.
+
+            NB: unused in XML
+        explanation:
+          oneOf:
+          - type: 'null'
+          - $ref: '#/components/schemas/ClinvarComment'
+            description: |-
+              Optional explanatory comment.
+
+              Explanation is used only when the description is 'conflicting
+              data from submitters' The element summarizes the conflict.
+
+              NB: unused in XML
+        xrefs:
+          type: array
+          items:
+            $ref: '#/components/schemas/ClinvarXref'
+          description: Optional list of xrefs.
+        citations:
+          type: array
+          items:
+            $ref: '#/components/schemas/ClinvarCitation'
+          description: Optional list of citations.
+        comments:
+          type: array
+          items:
+            $ref: '#/components/schemas/ClinvarComment'
+          description: Optional list of comments.
+        date_last_evaluated:
+          type:
+          - string
+          - 'null'
+          format: date-time
+          description: |-
+            Date of last evaluation.
+
+            NB: unused in XML
+    ClinvarComment:
+      type: object
+      description: |-
+        A structure to support reporting unformatted content, with type and
+        source specified.
+      required:
+      - value
+      properties:
+        value:
+          type: string
+          description: The comment's value.
+        data_source:
+          type:
+          - string
+          - 'null'
+          description: The optional comment data source.
+        type:
+          oneOf:
+          - type: 'null'
+          - $ref: '#/components/schemas/ClinvarCommentType'
+            description: The comment's type.
+    ClinvarCommentType:
+      type: string
+      description: Enumeration describing comment type.
+      enum:
+      - public
+      - converted_by_ncb
+      - missing_from_assembly
+      - genomic_location_not_established
+      - location_on_genome_and_product_not_aligned
+      - deletion_comment
+      - merge_comment
+      - assembly_specific_allele_definition
+      - alignment_gap_makes_appear_inconsistent
+      - explanation_of_classification
+      - flagged_comment
+    ClinvarCooccurrence:
+      type: object
+      description: This refers to the zygosity of the variant being asserted.
+      required:
+      - allele_descriptions
+      properties:
+        zygosity:
+          oneOf:
+          - type: 'null'
+          - $ref: '#/components/schemas/ClinvarZygosity'
+            description: Optional zygosity.
+        allele_descriptions:
+          type: array
+          items:
+            $ref: '#/components/schemas/ClinvarAlleleDescription'
+          description: The allele descriptions.
+        count:
+          type:
+          - integer
+          - 'null'
+          format: int32
+          description: The optional count.
+    ClinvarDeletedScv:
+      type: object
+      description: |-
+        A structure to support reporting of an accession, its version, the
+        date it was deleted and a free-text summary of why it was deleted.
+
+        Corresponds to `typeDeletedSCV`.
+      required:
+      - accession
+      - version
+      properties:
+        accession:
+          type: string
+          description: The accession.
+        version:
+          type: integer
+          format: int32
+          description: The version.
+        date_deleted:
+          type:
+          - string
+          - 'null'
+          format: date-time
+          description: The date of deletion.
+    ClinvarDescriptionHistory:
+      type: object
+      description: |-
+        Description of the history of a record.
+
+        Called ``typeDescriptionHistory`` in XSD.
+      required:
+      - description
+      properties:
+        description:
+          type: string
+          description: The pathogenicity description.
+        dated:
+          type:
+          - string
+          - 'null'
+          format: date-time
+          description: The date of the description.
+    ClinvarDosageSensitivity:
+      type: object
+      description: |-
+        Haploinsufficiency/Triplosensitivity of gene.
+
+        nested elements
+      required:
+      - value
+      properties:
+        value:
+          type: string
+          description: Value.
+        last_evaluated:
+          type:
+          - string
+          - 'null'
+          format: date-time
+          description: Optional last evaluated date.
+        clingen:
+          type:
+          - string
+          - 'null'
+          description: URL to ClinGen.
+    ClinvarEvidenceType:
+      type: string
+      description: |-
+        Enumeration describing evidence type.
+
+        Corresponds to "EvidenceType" in XSD.
+      enum:
+      - genetic
+      - experimental
+      - population
+      - computational
+    ClinvarExtractedRcvRecord:
+      type: object
+      description: Protocol buffer for storing essential information of one RCV.
+      required:
+      - title
+      properties:
+        accession:
+          oneOf:
+          - type: 'null'
+          - $ref: '#/components/schemas/ClinvarVersionedAccession'
+            description: The accession.
+        title:
+          type: string
+          description: Title of RCV.
+        classifications:
+          oneOf:
+          - type: 'null'
+          - $ref: '#/components/schemas/ClinvarRcvClassifications'
+            description: Classifications (thinned out).
+    ClinvarExtractedVariationType:
+      type: string
+      description: Enumeration for the type of the variant.
+      enum:
+      - insertion
+      - deletion
+      - snv
+      - indel
+      - duplication
+      - tandem_duplication
+      - structural_variant
+      - copy_number_gain
+      - copy_number_loss
+      - protein_only
+      - microsatellite
+      - inversion
+      - other
+    ClinvarExtractedVcvRecord:
+      type: object
+      description: Protocol buffer for storing essential information of one VCV.
+      required:
+      - rcvs
+      - name
+      - variation_type
+      - clinical_assertions
+      - hgnc_ids
+      properties:
+        accession:
+          oneOf:
+          - type: 'null'
+          - $ref: '#/components/schemas/ClinvarVersionedAccession'
+            description: The accession.
+        rcvs:
+          type: array
+          items:
+            $ref: '#/components/schemas/ClinvarExtractedRcvRecord'
+          description: List of aggregated RCVs.
+        name:
+          type: string
+          description: Name of VCV.
+        variation_type:
+          $ref: '#/components/schemas/ClinvarExtractedVariationType'
+          description: The type of the variant.
+        classifications:
+          oneOf:
+          - type: 'null'
+          - $ref: '#/components/schemas/ClinvarAggregateClassificationSet'
+            description: Classifications (thinned out).
+        clinical_assertions:
+          type: array
+          items:
+            $ref: '#/components/schemas/ClinvarClinicalAssertion'
+          description: Clinical assertions (thinned out),
+        sequence_location:
+          oneOf:
+          - type: 'null'
+          - $ref: '#/components/schemas/ClinvarSequenceLocation'
+            description: The sequence location on one reference.
+        hgnc_ids:
+          type: array
+          items:
+            type: string
+          description: List of HGNC IDs.
+    ClinvarFamilyData:
+      type: object
+      description: |-
+        Structure to describe attributes of any family data in an observation.
+        If the details of the number of families and the de-identified pedigree id are not
+        available, use FamilyHistory to describe what type of family data is available. Can
+        also be used to report 'Yes' or 'No' if there are no more details.
+
+        Corresponds to "FamilyInfo" in XSD.
+
+        nested elements
+      properties:
+        family_history:
+          type:
+          - string
+          - 'null'
+          description: Optional family history.
+        num_families:
+          type:
+          - integer
+          - 'null'
+          format: int32
+          description: Number of families.
+        num_families_with_variant:
+          type:
+          - integer
+          - 'null'
+          format: int32
+          description: Number of families with variant.
+        num_families_with_segregation_observed:
+          type:
+          - integer
+          - 'null'
+          format: int32
+          description: Number of families with segregation observed.
+        pedigree_id:
+          type:
+          - string
+          - 'null'
+          description: Pedigree ID.
+        segregation_observed:
+          type:
+          - string
+          - 'null'
+          description: Segregation oberved (yes, no, number)
+    ClinvarFunctionalConsequence:
+      type: object
+      description: |-
+        Description of a functional consequence.
+
+        Corresponds to `typeFunctionalConsequence` in XSD.
+
+        nested elements
+      required:
+      - xrefs
+      - citations
+      - comments
+      - value
+      properties:
+        xrefs:
+          type: array
+          items:
+            $ref: '#/components/schemas/ClinvarXref'
+          description: List of xrefs.
+        citations:
+          type: array
+          items:
+            $ref: '#/components/schemas/ClinvarCitation'
+          description: List of citations.
+        comments:
+          type: array
+          items:
+            $ref: '#/components/schemas/ClinvarComment'
+          description: List of comments.
+        value:
+          type: string
+          description: Value of functional consequence.
+    ClinvarGender:
+      type: string
+      description: Local enumeration for gender.
+      enum:
+      - male
+      - female
+      - mixed
+    ClinvarGeneVariantRelationship:
+      type: string
+      description: |-
+        Enumeration describing connection between genes and variants.
+
+        Corresponds to XSD type "GeneVariantRelationship".
+      enum:
+      - variant_within_gene
+      - gene_overlapped_by_variant
+      - near_gene_upstream
+      - near_gene_downstream
+      - asserted_but_not_computed
+      - within_multiple_genes_by_overlap
+      - within_single_gene
+    ClinvarGeneralCitations:
+      type: object
+      description: Type for the tag `GeneralCitations`.
+      required:
+      - xrefs
+      - citations
+      properties:
+        xrefs:
+          type: array
+          items:
+            $ref: '#/components/schemas/ClinvarXref'
+          description: List of xrefs.
+        citations:
+          type: array
+          items:
+            $ref: '#/components/schemas/ClinvarCitation'
+          description: List of citations.
+    ClinvarGenericSetElement:
+      type: object
+      description: |-
+        Entry in an element set.
+
+        Called ``SetElementSetType`` in XSD.
+      required:
+      - value
+      - type
+      - citations
+      - xrefs
+      - comments
+      properties:
+        value:
+          type: string
+          description: The element's value.
+        type:
+          type: string
+          description: The element's type.
+        citations:
+          type: array
+          items:
+            $ref: '#/components/schemas/ClinvarCitation'
+          description: List of citations.
+        xrefs:
+          type: array
+          items:
+            $ref: '#/components/schemas/ClinvarXref'
+          description: List of xrefs.
+        comments:
+          type: array
+          items:
+            $ref: '#/components/schemas/ClinvarComment'
+          description: List of comments.
+    ClinvarGenotype:
+      type: object
+      description: |-
+        Used to report genotypes, be they simple or complex diplotypes.
+
+        Corresponds to "typeGenotype" in XSD.
+
+        nested elements
+      required:
+      - simple_alleles
+      - haplotypes
+      - name
+      - variation_type
+      - other_names
+      - hgvs_expressions
+      - functional_consequences
+      - xrefs
+      - citations
+      - comments
+      - attributes
+      properties:
+        simple_alleles:
+          type: array
+          items:
+            $ref: '#/components/schemas/ClinvarAllele'
+          description: Simple allele; mutually exclusive with `haplotype`.
+        haplotypes:
+          type: array
+          items:
+            $ref: '#/components/schemas/ClinvarHaplotype'
+          description: |-
+            Haplotype; mutually exclusive with `simple_allele`.
+
+            Allows more than 2 haplotypes per genotype to support
+            representation of ploidy.
+        name:
+          type: string
+          description: Optional name.
+        variation_type:
+          $ref: '#/components/schemas/ClinvarVariationType'
+          description: The variation type.
+        other_names:
+          type: array
+          items:
+            $ref: '#/components/schemas/ClinvarOtherName'
+          description: Names other than 'preferred' used for the Genotype.
+        hgvs_expressions:
+          type: array
+          items:
+            $ref: '#/components/schemas/ClinvarHgvsExpression'
+          description: HGVS descriptions.
+        functional_consequences:
+          type: array
+          items:
+            $ref: '#/components/schemas/ClinvarFunctionalConsequence'
+          description: Functional consequences.
+        classifications:
+          oneOf:
+          - type: 'null'
+          - $ref: '#/components/schemas/ClinvarAggregateClassificationSet'
+            description: Aggregated classifications.
+        xrefs:
+          type: array
+          items:
+            $ref: '#/components/schemas/ClinvarXref'
+          description: List of xrefs.
+        citations:
+          type: array
+          items:
+            $ref: '#/components/schemas/ClinvarCitation'
+          description: List of citations.
+        comments:
+          type: array
+          items:
+            $ref: '#/components/schemas/ClinvarComment'
+          description: List of comments.
+        attributes:
+          type: array
+          items:
+            $ref: '#/components/schemas/ClinvarAttributeSetElement'
+          description: Attributes.
+        variation_id:
+          type:
+          - integer
+          - 'null'
+          format: int64
+          description: Variation ID.
+    ClinvarGenotypeScv:
+      type: object
+      description: |-
+        Used to report genotypes, be they simple or complex diplotypes.
+
+        Corresponds to "typeGenotypeSCV" in XSD.
+
+        nested elements
+      required:
+      - simple_alleles
+      - haplotypes
+      - other_names
+      - variation_type
+      - functional_consequences
+      - attributes
+      - citations
+      - xrefs
+      - comments
+      properties:
+        simple_alleles:
+          type: array
+          items:
+            $ref: '#/components/schemas/ClinvarAlleleScv'
+          description: Simple alleles; mutually exclusive with `haplotypes`.
+        haplotypes:
+          type: array
+          items:
+            $ref: '#/components/schemas/ClinvarHaplotypeScv'
+          description: |-
+            Haplotype; mutually exclusive with `simple_alleles`.
+
+            Allows more than 2 haplotypes per genotype to support
+            representation of ploidy.
+        name:
+          type:
+          - string
+          - 'null'
+          description: Optional name.
+        other_names:
+          type: array
+          items:
+            $ref: '#/components/schemas/ClinvarOtherName'
+          description: Other names used for the genotype.
+        variation_type:
+          $ref: '#/components/schemas/ClinvarVariationType'
+          description: The variation type.
+        functional_consequences:
+          type: array
+          items:
+            $ref: '#/components/schemas/ClinvarFunctionalConsequence'
+          description: Functional consequences.
+        attributes:
+          type: array
+          items:
+            $ref: '#/components/schemas/ClinvarAttributeSetElement'
+          description: Attributes.
+        citations:
+          type: array
+          items:
+            $ref: '#/components/schemas/ClinvarCitation'
+          description: List of citations.
+        xrefs:
+          type: array
+          items:
+            $ref: '#/components/schemas/ClinvarXref'
+          description: List of xrefs.
+        comments:
+          type: array
+          items:
+            $ref: '#/components/schemas/ClinvarComment'
+          description: List of comments.
+        variation_id:
+          type:
+          - integer
+          - 'null'
+          format: int64
+          description: Variation ID.
+    ClinvarGlobalMinorAlleleFrequency:
+      type: object
+      description: Local type for GlobalMinorAlleleFrequency.
+      required:
+      - value
+      - source
+      properties:
+        value:
+          type: number
+          format: double
+          description: Value.
+        source:
+          type: string
+          description: Source.
+        minor_allele:
+          type:
+          - string
+          - 'null'
+          description: Minor allele.
+        url:
+          type:
+          - string
+          - 'null'
+          description: URL.
+    ClinvarHaploVariationType:
+      type: string
+      description: Enumeration describing haplotype variation types.
+      enum:
+      - haplotype
+      - haplotype_single_variant
+      - variation
+      - phase_unknown
+      - haplotype_defined_by_single_variant
+    ClinvarHaplotype:
+      type: object
+      description: |-
+        This is a record of one or more simple alleles on the same chromosome
+        molecule.
+
+        Corresponds to `typeHaplotype` in XSD
+      required:
+      - simple_alleles
+      - name
+      - variation_type
+      - other_names
+      - hgvs_expressions
+      - functional_consequences
+      - xrefs
+      - comments
+      - variation_id
+      properties:
+        simple_alleles:
+          type: array
+          items:
+            $ref: '#/components/schemas/ClinvarAllele'
+          description: The list of alleles in the haplotype.
+        name:
+          type: string
+          description: The preferred representation of the haplotype.
+        variation_type:
+          $ref: '#/components/schemas/ClinvarVariationType'
+          description: The type of the haplotype.
+        other_names:
+          type: array
+          items:
+            $ref: '#/components/schemas/ClinvarOtherName'
+          description: Names other than 'preferred' used for the haplotype.
+        hgvs_expressions:
+          type: array
+          items:
+            $ref: '#/components/schemas/ClinvarHgvsExpression'
+          description: |-
+            List of all the HGVS expressions valid for, or used to submit,
+            a variant.
+        classifications:
+          oneOf:
+          - type: 'null'
+          - $ref: '#/components/schemas/ClinvarAggregateClassificationSet'
+            description: Classifications of the variant.
+        functional_consequences:
+          type: array
+          items:
+            $ref: '#/components/schemas/ClinvarFunctionalConsequence'
+          description: Functional consequences of the variant.
+        xrefs:
+          type: array
+          items:
+            $ref: '#/components/schemas/ClinvarXref'
+          description: List of cross-references.
+        comments:
+          type: array
+          items:
+            $ref: '#/components/schemas/ClinvarComment'
+          description: List of comments.
+        variation_id:
+          type: integer
+          format: int64
+          description: Variation ID.
+        number_of_copies:
+          type:
+          - integer
+          - 'null'
+          format: int32
+          description: Number of copies.
+        number_of_chromosomes:
+          type:
+          - integer
+          - 'null'
+          format: int32
+          description: Number of chromosomes.
+    ClinvarHaplotypeScv:
+      type: object
+      description: |-
+        This is a record of a haplotype in SCV.
+
+        Corresponds to `typeHaplotypeSCV` in XSD.
+      required:
+      - simple_alleles
+      - other_names
+      - functional_consequences
+      - attributes
+      - citations
+      - xrefs
+      - comments
+      properties:
+        simple_alleles:
+          type: array
+          items:
+            $ref: '#/components/schemas/ClinvarAlleleScv'
+          description: The list of alleles in the haplotype.
+        name:
+          type:
+          - string
+          - 'null'
+          description: The preferred representation of the haplotype.
+        other_names:
+          type: array
+          items:
+            $ref: '#/components/schemas/ClinvarOtherName'
+          description: Names other than 'preferred' used for the haplotype.
+        classifications:
+          oneOf:
+          - type: 'null'
+          - $ref: '#/components/schemas/ClinvarAggregateClassificationSet'
+            description: Classification of the variant.
+        functional_consequences:
+          type: array
+          items:
+            $ref: '#/components/schemas/ClinvarFunctionalConsequence'
+          description: Functional consequences of the variant.
+        attributes:
+          type: array
+          items:
+            $ref: '#/components/schemas/ClinvarAttributeSetElement'
+          description: List of attributes.
+        citations:
+          type: array
+          items:
+            $ref: '#/components/schemas/ClinvarCitation'
+          description: List of citations.
+        xrefs:
+          type: array
+          items:
+            $ref: '#/components/schemas/ClinvarXref'
+          description: List of cross-references.
+        comments:
+          type: array
+          items:
+            $ref: '#/components/schemas/ClinvarComment'
+          description: List of comments.
+        variation_id:
+          type:
+          - integer
+          - 'null'
+          format: int64
+          description: Variation ID.
+        number_of_copies:
+          type:
+          - integer
+          - 'null'
+          format: int32
+          description: Number of copies.
+        number_of_chromosomes:
+          type:
+          - integer
+          - 'null'
+          format: int32
+          description: Number of chromosomes.
+    ClinvarHgvsExpression:
+      type: object
+      description: |-
+        A structure to represent an HGVS expression for a nucleotide sequence
+        variant, along with the predicted protein change and the predicted molecular
+        consequence. Also used to represent only the protein change if that is all that has
+        been reported.
+
+        Corresponds to `typeHVSExpression` in XSD.
+
+        nested elements
+      required:
+      - molecular_consequences
+      - type
+      properties:
+        nucleotide_expression:
+          oneOf:
+          - type: 'null'
+          - $ref: '#/components/schemas/ClinvarHgvsNucleotideExpression'
+            description: Optional nucleotide sequence expression.
+        protein_expression:
+          oneOf:
+          - type: 'null'
+          - $ref: '#/components/schemas/ClinvarHgvsProteinExpression'
+            description: Optional protein sequence expression.
+        molecular_consequences:
+          type: array
+          items:
+            $ref: '#/components/schemas/ClinvarXref'
+          description: List of molecular consequences.
+        type:
+          $ref: '#/components/schemas/ClinvarHgvsType'
+          description: Type of HGVS expression.
+        assembly:
+          type:
+          - string
+          - 'null'
+          description: Optional assembly.
+    ClinvarHgvsNucleotideExpression:
+      type: object
+      description: |-
+        Description of a nucleotide sequence expression.
+
+        Corresponds to `typeNucleotideSequenceExpression`
+      required:
+      - expression
+      properties:
+        expression:
+          type: string
+          description: The expression values.
+        sequence_type:
+          oneOf:
+          - type: 'null'
+          - $ref: '#/components/schemas/ClinvarNucleotideSequence'
+            description: The type of the nucleotide sequence.
+        sequence_accession_version:
+          type:
+          - string
+          - 'null'
+          description: Optional sequence accession version.
+        sequence_accession:
+          type:
+          - string
+          - 'null'
+          description: Optional sequence accession.
+        sequence_version:
+          type:
+          - integer
+          - 'null'
+          format: int32
+          description: Optional sequence version.
+        change:
+          type:
+          - string
+          - 'null'
+          description: Optional description of the change.
+        assembly:
+          type:
+          - string
+          - 'null'
+          description: Optional assembly information.
+        submitted:
+          type:
+          - string
+          - 'null'
+          description: Optional submission information.
+        mane_select:
+          type:
+          - boolean
+          - 'null'
+          description: Optional MANE Select flag.
+        mane_plus_clinical:
+          type:
+          - boolean
+          - 'null'
+          description: Optional MANE Plus Clinical flag.
+    ClinvarHgvsProteinExpression:
+      type: object
+      description: |-
+        Description of a protein sequence expression.
+
+        Corresponds to `typeProteinSequenceExpression` in XSD.
+      required:
+      - expression
+      properties:
+        expression:
+          type: string
+          description: The expression values.
+        sequence_accession_version:
+          type:
+          - string
+          - 'null'
+          description: Optional sequence accession version.
+        sequence_accession:
+          type:
+          - string
+          - 'null'
+          description: Optional sequence accession.
+        sequence_version:
+          type:
+          - integer
+          - 'null'
+          format: int32
+          description: Optional sequence version.
+        change:
+          type:
+          - string
+          - 'null'
+          description: Optional description of the change.
+    ClinvarHgvsType:
+      type: string
+      description: Enumeration describing HGVS types.
+      enum:
+      - coding
+      - genomic
+      - genomic_top_level
+      - non_coding
+      - protein
+    ClinvarIdType:
+      type: object
+      description: Local ID with source.
+      required:
+      - value
+      - source
+      properties:
+        value:
+          type: string
+          description: The citation's value.
+        source:
+          type: string
+          description: If there is an identifier, what database provides it.
+    ClinvarIncludedRecord:
+      type: object
+      description: |-
+        This element is used for alleles that were not directly part of a
+        submission but were part of a complex submission. They have no direct submitted
+        classification, but are being reported for a complete representation of all alleles
+        in ClinVar. Compare to ClassifiedRecord.
+      required:
+      - submitted_classifications
+      - classified_variations
+      - general_citations
+      properties:
+        simple_allele:
+          oneOf:
+          - type: 'null'
+          - $ref: '#/components/schemas/ClinvarAllele'
+            description: Simple allele; mutually exclusive with haplotype.
+        haplotype:
+          oneOf:
+          - type: 'null'
+          - $ref: '#/components/schemas/ClinvarHaplotype'
+            description: Haplotype; mutually exclusive with simple_allele.
+        classifications:
+          oneOf:
+          - type: 'null'
+          - $ref: '#/components/schemas/ClinvarAggregateClassificationSet'
+            description: Aggregate classification sets.
+        submitted_classifications:
+          type: array
+          items:
+            $ref: '#/components/schemas/ClinvarScv'
+          description: List of submitted records.
+        classified_variations:
+          type: array
+          items:
+            $ref: '#/components/schemas/ClinvarClassifiedVariation'
+          description: |-
+            Maintains the list of classified variants represented in
+            this submission, although not submitted with an Classification
+            independently.
+        general_citations:
+          type: array
+          items:
+            $ref: '#/components/schemas/ClinvarGeneralCitations'
+          description: List of general citations.
+    ClinvarIndication:
+      type: object
+      description: |-
+        Describes an indication.
+
+        NB: Called "IndicationType" in the XSD.
+      required:
+      - traits
+      - names
+      - attributes
+      - xrefs
+      - citations
+      - comments
+      - type
+      properties:
+        traits:
+          type: array
+          items:
+            $ref: '#/components/schemas/ClinvarTrait'
+          description: Represents the value for the test indication as a name of a trait.
+        names:
+          type: array
+          items:
+            $ref: '#/components/schemas/ClinvarGenericSetElement'
+          description: List of names.
+        attributes:
+          type: array
+          items:
+            $ref: '#/components/schemas/ClinvarAttributeSetElement'
+          description: List of attributes.
+        xrefs:
+          type: array
+          items:
+            $ref: '#/components/schemas/ClinvarXref'
+          description: List of xrefs.
+        citations:
+          type: array
+          items:
+            $ref: '#/components/schemas/ClinvarCitation'
+          description: List of citations.
+        comments:
+          type: array
+          items:
+            $ref: '#/components/schemas/ClinvarComment'
+          description: List of comments.
+        type:
+          $ref: '#/components/schemas/ClinvarIndicationType'
+          description: The type of indication.
+    ClinvarIndicationType:
+      type: string
+      description: Enumeration for the indication type.
+      enum:
+      - indication
+    ClinvarLocation:
+      type: object
+      description: |-
+        There can be multiple types of location, and the locations may have
+        identifiers in other databases.
+
+        Corresponds to `typeLocation` in XSD.
+      required:
+      - cytogenetic_locations
+      - sequence_locations
+      - gene_locations
+      - xrefs
+      properties:
+        cytogenetic_locations:
+          type: array
+          items:
+            type: string
+          description: |-
+            Cytogenetic location is maintained independent of sequence
+            location, and can be submitted or computed from the sequence location.
+
+            Between 0 and 4 entries.
+        sequence_locations:
+          type: array
+          items:
+            $ref: '#/components/schemas/ClinvarSequenceLocation'
+          description: |-
+            Location on a defined sequence, with reference and alternate
+            allele, and start /stop values depending on the specificity with which the
+            variant location is known. The number system of offset 1, and
+            right-justified to be consistent with HGVS location data.
+        gene_locations:
+          type: array
+          items:
+            type: string
+          description: The location of the variant relative to features within the gene.
+        xrefs:
+          type: array
+          items:
+            $ref: '#/components/schemas/ClinvarXref'
+          description: List of xrefs.
+    ClinvarMethod:
+      type: object
+      description: |-
+        Details of a method used to generate variant calls or predict/report
+        functional consequence. The name of the platform should represent a sequencer or an
+        array, e.g. sequencing or array , e.g. capillary, 454, Helicos, Solexa, SOLiD. This
+        structure should also be used if the method is 'Curation'.
+
+        Corresponds to `MethodType` in XSD.
+      required:
+      - citations
+      - xrefs
+      - software
+      - method_type
+      - method_attributes
+      - obs_method_attributes
+      properties:
+        name_platform:
+          type:
+          - string
+          - 'null'
+          description: Platform name.
+        type_platform:
+          type:
+          - string
+          - 'null'
+          description: Platform type.
+        purpose:
+          type:
+          - string
+          - 'null'
+          description: Method purpose.
+        result_type:
+          oneOf:
+          - type: 'null'
+          - $ref: '#/components/schemas/ClinvarResultType'
+            description: Method result type.
+        min_reported:
+          type:
+          - string
+          - 'null'
+          description: Smallest reported.
+        max_reported:
+          type:
+          - string
+          - 'null'
+          description: Largest reported.
+        reference_standard:
+          type:
+          - string
+          - 'null'
+          description: Reference standard.
+        citations:
+          type: array
+          items:
+            $ref: '#/components/schemas/ClinvarCitation'
+          description: List of citations.
+        xrefs:
+          type: array
+          items:
+            $ref: '#/components/schemas/ClinvarXref'
+          description: List of xrefs.
+        description:
+          type:
+          - string
+          - 'null'
+          description: |-
+            Free text to enrich the description of the method and to
+            provide information not captured in specific fields.
+        software:
+          type: array
+          items:
+            $ref: '#/components/schemas/ClinvarSoftware'
+          description: List of softwares used.
+        source_type:
+          oneOf:
+          - type: 'null'
+          - $ref: '#/components/schemas/ClinvarMethodSourceType'
+            description: Source type.
+        method_type:
+          $ref: '#/components/schemas/ClinvarMethodListType'
+          description: Method type.
+        method_attributes:
+          type: array
+          items:
+            $ref: '#/components/schemas/ClinvarMethodAttribute'
+          description: Method attribute.
+        obs_method_attributes:
+          type: array
+          items:
+            $ref: '#/components/schemas/ClinvarObsMethodAttribute'
+          description: |-
+            ObsMethodAttribute is used to indicate an attribute specific
+            to a particular method in conjunction with a particular observation .
+    ClinvarMethodAttribute:
+      type: object
+      description: Local type for method attribute.
+      required:
+      - type
+      properties:
+        base:
+          oneOf:
+          - type: 'null'
+          - $ref: '#/components/schemas/ClinvarBaseAttribute'
+            description: The base value.
+        type:
+          $ref: '#/components/schemas/ClinvarMethodAttributeType'
+          description: The attribute type.
+    ClinvarMethodAttributeType:
+      type: string
+      description: Local enumeration of attribute type.
+      enum:
+      - location
+      - controls_appropriate
+      - method_appropriate
+      - test_name
+      - struct_var_method_type
+      - probe_accession
+    ClinvarMethodListType:
+      type: string
+      description: |-
+        Enumeration describing method list.
+
+        Corresponds to "MethodListType" in XSD.
+      enum:
+      - literature_only
+      - reference_population
+      - case_control
+      - clinical_testing
+      - in_vitro
+      - in_vivo
+      - research
+      - curation
+      - not_provided
+      - provider_interpretation
+      - phenotyping_only
+    ClinvarMethodSourceType:
+      type: string
+      description: Local enumeration for SourceType.
+      enum:
+      - submitter_generated
+      - data_mining
+      - data_review
+    ClinvarMethodType:
+      type: string
+      description: Local enum for the method type.
+      enum:
+      - literature_only
+      - reference_population
+      - case_control
+      - clinical_testing
+      - in_vitro
+      - in_vivo
+      - inferred_from_source
+      - research
+    ClinvarMolecularConsequence:
+      type: object
+      description: |-
+        Local type for MolecularConsequence.
+
+        nested elements
+      required:
+      - xrefs
+      - citations
+      - comments
+      - function
+      properties:
+        xrefs:
+          type: array
+          items:
+            $ref: '#/components/schemas/ClinvarXref'
+          description: Xref list.
+        citations:
+          type: array
+          items:
+            $ref: '#/components/schemas/ClinvarCitation'
+          description: Citation list.
+        comments:
+          type: array
+          items:
+            $ref: '#/components/schemas/ClinvarComment'
+          description: Comment list.
+        rs:
+          type:
+          - integer
+          - 'null'
+          format: int64
+          description: RS id.
+        hgvs:
+          type:
+          - string
+          - 'null'
+          description: Optional HGVS expression.
+        so_id:
+          type:
+          - string
+          - 'null'
+          description: Optional SO id.
+        function:
+          type: string
+          description: Function.
+    ClinvarNucleotideSequence:
+      type: string
+      description: Enumeration describing nucleotide sequence.
+      enum:
+      - genomic_top_level
+      - genomic_ref_seq_gene
+      - genomic
+      - coding
+      - non_coding
+      - protein
+    ClinvarObsMethodAttribute:
+      type: object
+      description: Local type for observation method attribute.
+      required:
+      - type
+      - comments
+      properties:
+        base:
+          oneOf:
+          - type: 'null'
+          - $ref: '#/components/schemas/ClinvarBaseAttribute'
+            description: The base value.
+        type:
+          $ref: '#/components/schemas/ClinvarObsMethodAttributeType'
+          description: The attribute type.
+        comments:
+          type: array
+          items:
+            $ref: '#/components/schemas/ClinvarComment'
+          description: Optional comments.
+    ClinvarObsMethodAttributeType:
+      type: string
+      description: Local enumeration for attribute type.
+      enum:
+      - method_result
+      - testing_laboratory
+    ClinvarObservedData:
+      type: object
+      description: |-
+        This is an AttributeSet, there will be 1 attribute supported
+        by optional citations, xrefs and comment. There must be at least one
+        ObservedData Set, but can be any number. For each ObservedData set the
+        Attribute will be either decimal or string depending on type. The value will
+        be stored here, but decimals will be entered to the database as a string.
+      required:
+      - attributes
+      - citations
+      - xrefs
+      - comments
+      properties:
+        attributes:
+          type: array
+          items:
+            $ref: '#/components/schemas/ClinvarObservedDataAttribute'
+          description: Attributes.
+        severity:
+          oneOf:
+          - type: 'null'
+          - $ref: '#/components/schemas/ClinvarSeverity'
+            description: Severity.
+        citations:
+          type: array
+          items:
+            $ref: '#/components/schemas/ClinvarCitation'
+          description: Citation list.
+        xrefs:
+          type: array
+          items:
+            $ref: '#/components/schemas/ClinvarXref'
+          description: Xref list.
+        comments:
+          type: array
+          items:
+            $ref: '#/components/schemas/ClinvarComment'
+          description: Comment list.
+    ClinvarObservedDataAttribute:
+      type: object
+      description: Local struct for attributes based on `BaseAttribute`.
+      required:
+      - type
+      properties:
+        base:
+          oneOf:
+          - type: 'null'
+          - $ref: '#/components/schemas/ClinvarBaseAttribute'
+            description: base
+        type:
+          $ref: '#/components/schemas/ClinvarObservedDataAttributeType'
+          description: type
+    ClinvarObservedDataAttributeType:
+      type: string
+      description: Local enum for the observed data type.
+      enum:
+      - description
+      - variant_alleles
+      - subjects_with_variant
+      - subjects_with_different_causative_variant
+      - variant_chromosomes
+      - independent_observations
+      - single_heterozygous
+      - compound_heterozygous
+      - homozygous
+      - hemizygous
+      - number_mosaic
+      - observed_unspecified
+      - allele_frequency
+      - secondary_finding
+      - genotype_and_moi_consistent
+      - unaffected_family_member_with_causative_variant
+      - het_parent_transmit_normal_allele
+      - cosegregating_families
+      - informative_meioses
+      - sample_local_id
+      - sample_variant_id
+      - family_history
+      - num_families_with_variant
+      - num_families_with_segregation_observed
+      - segregation_observed
+    ClinvarObservedIn:
+      type: object
+      description: |-
+        Documents in what populations or samples an allele or genotype has
+        been observed relative to the described trait. Summary observations can be
+        registered per submitted assertion, grouped by common citation, study type, origin,
+        ethnicity, tissue, cell line, and species data. Not all options are valid per study
+        type, but these will not be validated in the xsd.
+
+        Corresponds to `ObservationSet` in XSD.
+      required:
+      - observed_data
+      - cooccurrence_sets
+      - citations
+      - xrefs
+      - comments
+      properties:
+        sample:
+          oneOf:
+          - type: 'null'
+          - $ref: '#/components/schemas/ClinvarSample'
+            description: Sample.
+        observed_data:
+          type: array
+          items:
+            $ref: '#/components/schemas/ClinvarObservedData'
+          description: Observed data.
+        cooccurrence_sets:
+          type: array
+          items:
+            $ref: '#/components/schemas/ClinvarCooccurrence'
+          description: Co-occurence set.
+        trait_set:
+          oneOf:
+          - type: 'null'
+          - $ref: '#/components/schemas/ClinvarTraitSet'
+            description: TraitSet.
+        citations:
+          type: array
+          items:
+            $ref: '#/components/schemas/ClinvarCitation'
+          description: Citation list.
+        xrefs:
+          type: array
+          items:
+            $ref: '#/components/schemas/ClinvarXref'
+          description: Xref list.
+        comments:
+          type: array
+          items:
+            $ref: '#/components/schemas/ClinvarComment'
+          description: Comment list.
+    ClinvarOrigin:
+      type: string
+      description: Enumeration describing origin.
+      enum:
+      - germline
+      - somatic
+      - de_novo
+      - not_provided
+      - inherited
+      - maternal
+      - paternal
+      - uniparental
+      - biparental
+      - not_reported
+      - tested_inconclusive
+      - unknown
+      - not_applicable
+      - experimentally_generated
+    ClinvarOtherName:
+      type: object
+      description: |-
+        A name with an optional type.
+
+        Corresponds to `typeNames` in XSD.
+      required:
+      - value
+      properties:
+        value:
+          type: string
+          description: The name's value.
+        type:
+          type:
+          - string
+          - 'null'
+          description: The name's type.
+    ClinvarPhenotypeSetType:
+      type: string
+      description: Enumeration describing phenotype set.
+      enum:
+      - disease
+      - drug_response
+      - finding
+      - phenotype_instruction
+      - trait_choice
+    ClinvarProteinSequence:
+      type: string
+      description: Enumeration describing protein sequence.
+      enum:
+      - protein
+    ClinvarRcvAccession:
+      type: object
+      description: Corresponds to "typeRCV" in XSD.
+      required:
+      - replaceds
+      - accession
+      - version
+      properties:
+        classified_condition_list:
+          oneOf:
+          - type: 'null'
+          - $ref: '#/components/schemas/ClinvarRcvClassifiedConditionList'
+            description: The list of classified conditions.
+        rcv_classifications:
+          oneOf:
+          - type: 'null'
+          - $ref: '#/components/schemas/ClinvarRcvClassifications'
+            description: The list of RCV classifications.
+        replaceds:
+          type: array
+          items:
+            $ref: '#/components/schemas/ClinvarRecordHistory'
+          description: The list of RCV accessions this record has replaced.
+        title:
+          type:
+          - string
+          - 'null'
+          description: Optional title.
+        accession:
+          type: string
+          description: Accession.
+        version:
+          type: integer
+          format: int32
+          description: Version.
+    ClinvarRcvAccessionSomaticClinicalImpact:
+      type: object
+      description: |-
+        Local type for SomaticClinicalImpact.
+
+        The aggregate review status based on
+        all somatic clinical impact submissions for this
+        record.
+      required:
+      - review_status
+      - descriptions
+      properties:
+        review_status:
+          $ref: '#/components/schemas/ClinvarAggregateSomaticClinicalImpactReviewStatus'
+          description: |-
+            The aggregate review status based on
+            all somatic clinical impact submissions for this
+            record.
+        descriptions:
+          type: array
+          items:
+            $ref: '#/components/schemas/ClinvarRcvSomaticClinicalImpactDescription'
+          description: The oncogenicity description.
+    ClinvarRcvClassifications:
+      type: object
+      description: Local type for RCV classifications.
+      properties:
+        germline_classification:
+          oneOf:
+          - type: 'null'
+          - $ref: '#/components/schemas/ClinvarRcvGermlineClassification'
+            description: Germline classification.
+        somatic_clinical_impact:
+          oneOf:
+          - type: 'null'
+          - $ref: '#/components/schemas/ClinvarRcvAccessionSomaticClinicalImpact'
+            description: Somatic clinical impact.
+        oncogenicity_classification:
+          oneOf:
+          - type: 'null'
+          - $ref: '#/components/schemas/ClinvarRcvOncogenicityClassification'
+            description: Oncogenicity classification.
+    ClinvarRcvClassifiedConditionList:
+      type: object
+      description: |-
+        Local type for ClassifiedConditionList.
+
+        nested elements
+      required:
+      - classified_conditions
+      properties:
+        classified_conditions:
+          type: array
+          items:
+            $ref: '#/components/schemas/ClinvarClassifiedCondition'
+          description: List of interpreted conditions.
+        trait_set_id:
+          type:
+          - integer
+          - 'null'
+          format: int64
+          description: Trait set ID.
+    ClinvarRcvGermlineClassification:
+      type: object
+      description: |-
+        Local type for GermlineClassification.
+
+        The aggregate review status based on
+        all germline submissions for this record.
+      required:
+      - review_status
+      properties:
+        review_status:
+          $ref: '#/components/schemas/ClinvarAggregateGermlineReviewStatus'
+          description: |-
+            The aggregate review status based on
+            all somatic clinical impact submissions for this
+            record.
+        description:
+          oneOf:
+          - type: 'null'
+          - $ref: '#/components/schemas/ClinvarRcvGermlineClassificationDescription'
+            description: The oncogenicity description.
+    ClinvarRcvGermlineClassificationDescription:
+      type: object
+      description: Local type for Description.
+      required:
+      - value
+      properties:
+        value:
+          type: string
+          description: The description.
+        date_last_evaluated:
+          type:
+          - string
+          - 'null'
+          format: date-time
+          description: The date of the description.
+        submission_count:
+          type:
+          - integer
+          - 'null'
+          format: int32
+          description: The number of submissions.
+          minimum: 0
+    ClinvarRcvList:
+      type: object
+      description: Local type for tag `RCVList`.
+      required:
+      - rcv_accessions
+      properties:
+        rcv_accessions:
+          type: array
+          items:
+            $ref: '#/components/schemas/ClinvarRcvAccession'
+          description: The RCV record.
+        submission_count:
+          type:
+          - integer
+          - 'null'
+          format: int32
+          description: The number of submissions (SCV accessions) referencing the VariationID.
+        independent_observations:
+          type:
+          - integer
+          - 'null'
+          format: int32
+          description: The number of idependent observations.
+    ClinvarRcvOncogenicityClassification:
+      type: object
+      description: Local type for OncogenicityClassification.
+      required:
+      - review_status
+      properties:
+        review_status:
+          $ref: '#/components/schemas/ClinvarAggregateGermlineReviewStatus'
+          description: |-
+            The aggregate review status based on
+            all oncogenic submissions for this record.
+        description:
+          oneOf:
+          - type: 'null'
+          - $ref: '#/components/schemas/ClinvarRcvOncogenicityDescription'
+            description: The oncogenicity description.
+    ClinvarRcvOncogenicityDescription:
+      type: object
+      description: Local type for Description.
+      required:
+      - value
+      properties:
+        value:
+          type: string
+          description: The description.
+        date_last_evaluated:
+          type:
+          - string
+          - 'null'
+          format: date-time
+          description: The date of the description.
+        submission_count:
+          type:
+          - integer
+          - 'null'
+          format: int32
+          description: The number of submissions.
+          minimum: 0
+    ClinvarRcvSomaticClinicalImpactDescription:
+      type: object
+      description: Local type for Description.
+      required:
+      - value
+      properties:
+        value:
+          type: string
+          description: The description.
+        clinical_impact_assertion_type:
+          type:
+          - string
+          - 'null'
+          description: Clinical impact assertion type.
+        clinical_impact_clinical_significance:
+          type:
+          - string
+          - 'null'
+          description: Clinical impact significance
+        date_last_evaluated:
+          type:
+          - string
+          - 'null'
+          format: date-time
+          description: The date of the description.
+        submission_count:
+          type:
+          - integer
+          - 'null'
+          format: int32
+          description: The number of submissions.
+          minimum: 0
+    ClinvarRcvTraitMapping:
+      type: object
+      description: Local type for the tag `TraitMapping`.
+      required:
+      - medgens
+      - clinical_assertion_id
+      - trait_type
+      - mapping_type
+      - mapping_value
+      - mapping_ref
+      properties:
+        medgens:
+          type: array
+          items:
+            $ref: '#/components/schemas/ClinvarRcvTraitMappingMedgen'
+          description: nested elements
+        clinical_assertion_id:
+          type: integer
+          format: int64
+          description: ID of clinical assertion.
+        trait_type:
+          type: string
+          description: The trait type.
+        mapping_type:
+          $ref: '#/components/schemas/ClinvarRcvTraitMappingType'
+          description: The mapping type.
+        mapping_value:
+          type: string
+          description: The mapping value.
+        mapping_ref:
+          type: string
+          description: The mapping reference.
+    ClinvarRcvTraitMappingMedgen:
+      type: object
+      description: Local type for the tag "MedGen"
+      required:
+      - name
+      - cui
+      properties:
+        name:
+          type: string
+          description: Name.
+        cui:
+          type: string
+          description: CUI.
+    ClinvarRcvTraitMappingType:
+      type: string
+      description: Local type for the attribute `@MappingType`.
+      enum:
+      - name
+      - xref
+    ClinvarRecordHistory:
+      type: object
+      description: |-
+        A structure to support reporting of an accession, its version, the
+        date its status changed, and text describing that change.
+
+        Corresponds to `typeRecordHistory` in XSD.
+
+        nested elements
+      required:
+      - accession
+      - version
+      properties:
+        comment:
+          oneOf:
+          - type: 'null'
+          - $ref: '#/components/schemas/ClinvarComment'
+            description: Optional comment on the history record.
+        accession:
+          type: string
+          description: The accession.
+        version:
+          type: integer
+          format: int32
+          description: The version.
+        date_changed:
+          type:
+          - string
+          - 'null'
+          format: date-time
+          description: The date the record.
+        variation_id:
+          type:
+          - integer
+          - 'null'
+          format: int64
+          description: |-
+            Attribute @VaritionID is only populated for VCV, where @Accession
+            is like VCV000000009
+    ClinvarRelativeOrientation:
+      type: string
+      description: |-
+        Enumeration for relative orientation.
+
+        NB: unused in XML
+      enum:
+      - cis
+      - trans
+      - unknown
+    ClinvarResultType:
+      type: string
+      description: Local enumeration for result types.
+      enum:
+      - number_of_occurrences
+      - p_value
+      - odds_ratio
+      - variant_call
+    ClinvarSample:
+      type: object
+      description: |-
+        Description of a sample.
+
+        Corresponds to `typeSample` in XSD.
+      required:
+      - ages
+      - citations
+      - xrefs
+      - comments
+      properties:
+        sample_description:
+          oneOf:
+          - type: 'null'
+          - $ref: '#/components/schemas/ClinvarSampleDescription'
+            description: The sample description.
+        origin:
+          oneOf:
+          - type: 'null'
+          - $ref: '#/components/schemas/ClinvarOrigin'
+            description: The sample origin.
+        ethnicity:
+          type:
+          - string
+          - 'null'
+          description: Sample ethnicity.
+        geographic_origin:
+          type:
+          - string
+          - 'null'
+          description: Sample geographic origin.
+        tissue:
+          type:
+          - string
+          - 'null'
+          description: Sample tissue.
+        somatic_variant_in_normal_tissue:
+          oneOf:
+          - type: 'null'
+          - $ref: '#/components/schemas/ClinvarSomaticVariantInNormalTissue'
+            description: Presence of variant in normal tissue.
+        somatic_variant_allele_fraction:
+          type:
+          - string
+          - 'null'
+          description: Somatic variant allele fraction.
+        cell_line:
+          type:
+          - string
+          - 'null'
+          description: Cell line name.
+        species:
+          oneOf:
+          - type: 'null'
+          - $ref: '#/components/schemas/ClinvarSpecies'
+            description: Species.
+        ages:
+          type: array
+          items:
+            $ref: '#/components/schemas/ClinvarAge'
+          description: Age (range), max. size of 2.
+        strain:
+          type:
+          - string
+          - 'null'
+          description: Strain.
+        affected_status:
+          oneOf:
+          - type: 'null'
+          - $ref: '#/components/schemas/ClinvarAffectedStatus'
+            description: Affected status.
+        numer_tested:
+          type:
+          - integer
+          - 'null'
+          format: int32
+          description: Denominator, total individuals included in this observation set.
+        number_males:
+          type:
+          - integer
+          - 'null'
+          format: int32
+          description: Denominator, total males included in this observation set.
+        number_females:
+          type:
+          - integer
+          - 'null'
+          format: int32
+          description: Denominator, total females included in this observation set.
+        number_chr_tested:
+          type:
+          - integer
+          - 'null'
+          format: int32
+          description: |-
+            Denominator, total number chromosomes tested. Number affected
+            and unaffected are captured in the element NumberObserved.
+        gender:
+          oneOf:
+          - type: 'null'
+          - $ref: '#/components/schemas/ClinvarGender'
+            description: |-
+              Gender should be used ONLY if explicit values are not
+              available for number of males or females, and there is a need to indicate
+              that the genders in the sample are known.
+        family_data:
+          oneOf:
+          - type: 'null'
+          - $ref: '#/components/schemas/ClinvarFamilyData'
+            description: Family information.
+        proband:
+          type:
+          - string
+          - 'null'
+          description: Optional proband ID.
+        indication:
+          oneOf:
+          - type: 'null'
+          - $ref: '#/components/schemas/ClinvarIndication'
+            description: Optional indication.
+        citations:
+          type: array
+          items:
+            $ref: '#/components/schemas/ClinvarCitation'
+          description: List of citations.
+        xrefs:
+          type: array
+          items:
+            $ref: '#/components/schemas/ClinvarXref'
+          description: List of xrefs.
+        comments:
+          type: array
+          items:
+            $ref: '#/components/schemas/ClinvarComment'
+          description: List of comments.
+        source_type:
+          oneOf:
+          - type: 'null'
+          - $ref: '#/components/schemas/ClinvarSampleSourceType'
+            description: Source type.
+    ClinvarSampleDescription:
+      type: object
+      description: Local type for sample description.
+      properties:
+        description:
+          oneOf:
+          - type: 'null'
+          - $ref: '#/components/schemas/ClinvarComment'
+            description: Description of sample.
+        citation:
+          oneOf:
+          - type: 'null'
+          - $ref: '#/components/schemas/ClinvarCitation'
+            description: Citation.
+    ClinvarSampleSourceType:
+      type: string
+      description: Local enumeration for SourceType.
+      enum:
+      - submitter_generated
+      - data_mining
+    ClinvarScv:
+      type: object
+      description: |-
+        Description of a SCV.
+
+        Corresponds to "typeSCV" in XSD.
+      required:
+      - accession
+      - version
+      properties:
+        title:
+          type:
+          - string
+          - 'null'
+          description: Optional title.
+        accession:
+          type: string
+          description: Accession.
+        version:
+          type: integer
+          format: int32
+          description: Version.
+    ClinvarSequenceLocation:
+      type: object
+      description: Local type for sequence location.
+      required:
+      - assembly
+      - chr
+      properties:
+        for_display:
+          type:
+          - boolean
+          - 'null'
+          description: forDisplay value.
+        assembly:
+          type: string
+          description: Name of assembly.
+        chr:
+          $ref: '#/components/schemas/ClinvarChromosome'
+          description: Chromosomeof variant.
+        accession:
+          type:
+          - string
+          - 'null'
+          description: Optional chromosome accession.
+        outer_start:
+          type:
+          - integer
+          - 'null'
+          format: int32
+          description: Outer start position.
+          minimum: 0
+        inner_start:
+          type:
+          - integer
+          - 'null'
+          format: int32
+          description: Inner start position.
+          minimum: 0
+        start:
+          type:
+          - integer
+          - 'null'
+          format: int32
+          description: Start position.
+          minimum: 0
+        stop:
+          type:
+          - integer
+          - 'null'
+          format: int32
+          description: Stop position.
+          minimum: 0
+        inner_stop:
+          type:
+          - integer
+          - 'null'
+          format: int32
+          description: Inner stop position.
+          minimum: 0
+        outer_stop:
+          type:
+          - integer
+          - 'null'
+          format: int32
+          description: Outer stop position.
+          minimum: 0
+        display_start:
+          type:
+          - integer
+          - 'null'
+          format: int32
+          description: Display start position.
+          minimum: 0
+        display_stop:
+          type:
+          - integer
+          - 'null'
+          format: int32
+          description: Display stop position.
+          minimum: 0
+        strand:
+          type:
+          - string
+          - 'null'
+          description: Strand.
+        variant_length:
+          type:
+          - integer
+          - 'null'
+          format: int32
+          description: Variant length.
+          minimum: 0
+        reference_allele:
+          type:
+          - string
+          - 'null'
+          description: Reference allele.
+        alternate_allele:
+          type:
+          - string
+          - 'null'
+          description: Alternate allele.
+        assembly_accession_version:
+          type:
+          - string
+          - 'null'
+          description: Assembly accession version.
+        assembly_status:
+          oneOf:
+          - type: 'null'
+          - $ref: '#/components/schemas/ClinvarAssemblyStatus'
+            description: Assembly status.
+        position_vcf:
+          type:
+          - integer
+          - 'null'
+          format: int32
+          description: Position in VCF.
+          minimum: 0
+        reference_allele_vcf:
+          type:
+          - string
+          - 'null'
+          description: Reference allele in VCF.
+        alternate_allele_vcf:
+          type:
+          - string
+          - 'null'
+          description: Alternate allele in VCF.
+        for_display_length:
+          type:
+          - integer
+          - 'null'
+          format: int32
+          description: For display length.
+          minimum: 0
+    ClinvarSeverity:
+      type: string
+      description: |-
+        Enumeration describing severity.
+
+        Corresponds to XSD type "typeSeverity"
+      enum:
+      - mild
+      - moderate
+      - severe
+    ClinvarSoftware:
+      type: object
+      description: Description of a software.
+      required:
+      - name
+      properties:
+        name:
+          type: string
+          description: Name of the software.
+        version:
+          type:
+          - string
+          - 'null'
+          description: Version of the software; optional.
+        purpose:
+          type:
+          - string
+          - 'null'
+          description: Purpose of the software; optional.
+    ClinvarSomaticVariantInNormalTissue:
+      type: string
+      description: Local enumeration for presence in normal tissue.
+      enum:
+      - present
+      - absent
+      - not_tested
+    ClinvarSpecies:
+      type: object
+      description: Definition of a species.
+      required:
+      - name
+      properties:
+        name:
+          type: string
+          description: Name of the species.
+        taxonomy_id:
+          type:
+          - integer
+          - 'null'
+          format: int32
+          description: Optional taxonomy ID.
+    ClinvarStatus:
+      type: string
+      description: |-
+        Enumeration describing status.
+
+        Corresponds to `typeStatus` in XSD.
+      enum:
+      - current
+      - completed_and_retired
+      - delete
+      - in_development
+      - reclassified
+      - reject
+      - secondary
+      - suppressed
+      - under_review
+    ClinvarSubmissionId:
+      type: object
+      description: Local type for ClinVarSubmissionID.
+      required:
+      - local_key
+      properties:
+        local_key:
+          type: string
+          description: |-
+            The identifier provided by the submitter to facilitate
+            identification of records corresponding to their submissions. If not
+            provided by a submitter, NCBI generates one. If provided by
+            submitter, that is represented in localKeyIsSubmitted.
+        title:
+          type:
+          - string
+          - 'null'
+          description: Optional title.
+        local_key_is_submitted:
+          type:
+          - boolean
+          - 'null'
+          description: Optional indication whether local key has been submitted.
+        submitted_assembly:
+          type:
+          - string
+          - 'null'
+          description: Optional assembly of submission.
+    ClinvarSubmitter:
+      type: object
+      description: |-
+        A structure to support reporting the name of a submitter, its
+        organization id, and its abbreviation and type.
+      required:
+      - type
+      properties:
+        submitter_identifiers:
+          oneOf:
+          - type: 'null'
+          - $ref: '#/components/schemas/ClinvarSubmitterIdentifiers'
+            description: The submitter's identifier.
+        type:
+          $ref: '#/components/schemas/ClinvarSubmitterType'
+          description: The submitter type.
+    ClinvarSubmitterIdentifiers:
+      type: object
+      description: |-
+        Set of attributes for the primary submitter. Any addtional submitters
+        are captured in the AdditionalSubmitters element.
+      required:
+      - submitter_name
+      - org_id
+      - org_category
+      properties:
+        submitter_name:
+          type: string
+          description: Name of submitter.
+        org_id:
+          type: integer
+          format: int64
+          description: Organization ID.
+        org_category:
+          type: string
+          description: Organization category.
+        org_abbreviation:
+          type:
+          - string
+          - 'null'
+          description: Organization abbreviation; optional.
+    ClinvarSubmitterReviewStatus:
+      type: string
+      description: |-
+        Enumeration describing submitter review status.
+
+        Corresponds to `typeSubmitterReviewStatusValue` in XSD.
+      enum:
+      - no_classification_provided
+      - no_assertion_criteria_provided
+      - criteria_provided_single_submitter
+      - reviewed_by_expert_panel
+      - practice_guideline
+      - flagged_submission
+      - criteria_provided_multiple_submitters_no_conflicts
+      - criteria_provided_conflicting_classifications
+      - classified_by_single_submitter
+      - reviewed_by_professional_society
+      - not_classified_by_submitter
+      - classified_by_multiple_submitters
+    ClinvarSubmitterType:
+      type: string
+      description: Enumeration of submitter kind.
+      enum:
+      - primary
+      - secondary
+      - behalf
+    ClinvarTrait:
+      type: object
+      description: Type to describe traits in various places.
+      required:
+      - names
+      - symbols
+      - attributes
+      - trait_relationships
+      - citations
+      - xrefs
+      - comments
+      - sources
+      properties:
+        names:
+          type: array
+          items:
+            $ref: '#/components/schemas/ClinvarGenericSetElement'
+          description: names
+        symbols:
+          type: array
+          items:
+            $ref: '#/components/schemas/ClinvarGenericSetElement'
+          description: symbols
+        attributes:
+          type: array
+          items:
+            $ref: '#/components/schemas/ClinvarAttributeSetElement'
+          description: attributes
+        trait_relationships:
+          type: array
+          items:
+            $ref: '#/components/schemas/ClinvarTraitRelationship'
+          description: Trait relationships
+        citations:
+          type: array
+          items:
+            $ref: '#/components/schemas/ClinvarCitation'
+          description: Citation list.
+        xrefs:
+          type: array
+          items:
+            $ref: '#/components/schemas/ClinvarXref'
+          description: Xref list.
+        comments:
+          type: array
+          items:
+            $ref: '#/components/schemas/ClinvarComment'
+          description: Comment list.
+        sources:
+          type: array
+          items:
+            type: string
+          description: Sources
+    ClinvarTraitRelationship:
+      type: object
+      description: Local type for trait relationship.
+      required:
+      - names
+      - citations
+      - xrefs
+      - comments
+      - sources
+      - type
+      properties:
+        names:
+          type: array
+          items:
+            $ref: '#/components/schemas/ClinvarGenericSetElement'
+          description: Name(s) of the trait.
+        citations:
+          type: array
+          items:
+            $ref: '#/components/schemas/ClinvarCitation'
+          description: Citation list.
+        xrefs:
+          type: array
+          items:
+            $ref: '#/components/schemas/ClinvarXref'
+          description: Xref list.
+        comments:
+          type: array
+          items:
+            $ref: '#/components/schemas/ClinvarComment'
+          description: Comment list.
+        sources:
+          type: array
+          items:
+            type: string
+          description: Sources
+        type:
+          $ref: '#/components/schemas/ClinvarTraitRelationshipType'
+          description: Trait type.
+    ClinvarTraitRelationshipType:
+      type: string
+      description: |-
+        Local enumeration for trait types.
+
+        NB: only DrugResponseAndDisease is used in the XML.
+      enum:
+      - phenotype
+      - subphenotype
+      - drug_response_and_disease
+      - co_occuring_condition
+      - finding_member
+    ClinvarTraitSet:
+      type: object
+      description: |-
+        A set of ``Trait`` objects.
+
+        NB: Called "ClinAsserTraitSetType" in the XSD.
+      required:
+      - traits
+      - names
+      - symbols
+      - attributes
+      - xrefs
+      - citations
+      - comments
+      - type
+      properties:
+        traits:
+          type: array
+          items:
+            $ref: '#/components/schemas/ClinvarTrait'
+          description: The traits.
+        names:
+          type: array
+          items:
+            $ref: '#/components/schemas/ClinvarGenericSetElement'
+          description: The names.
+        symbols:
+          type: array
+          items:
+            $ref: '#/components/schemas/ClinvarGenericSetElement'
+          description: The symbols.
+        attributes:
+          type: array
+          items:
+            $ref: '#/components/schemas/ClinvarAttributeSetElement'
+          description: The attributes.
+        xrefs:
+          type: array
+          items:
+            $ref: '#/components/schemas/ClinvarXref'
+          description: List of xrefs.
+        citations:
+          type: array
+          items:
+            $ref: '#/components/schemas/ClinvarCitation'
+          description: List of citations.
+        comments:
+          type: array
+          items:
+            $ref: '#/components/schemas/ClinvarComment'
+          description: List of comments.
+        type:
+          $ref: '#/components/schemas/ClinvarTraitSetType'
+          description: The type.
+        date_last_evaluated:
+          type:
+          - string
+          - 'null'
+          format: date-time
+          description: Date of last evaluation.
+        id:
+          type:
+          - integer
+          - 'null'
+          format: int64
+          description: ID.
+        contributes_to_aggregate_classification:
+          type:
+          - boolean
+          - 'null'
+          description: Whether contributes to aggregate classification.
+        lower_level_of_evidence:
+          type:
+          - boolean
+          - 'null'
+          description: Lower level of evidence.
+        multiple_condition_explanation:
+          type:
+          - string
+          - 'null'
+          description: Explanation of or multiple conditions.
+    ClinvarTraitSetType:
+      type: string
+      description: Local type.
+      enum:
+      - disease
+      - drug_response
+      - finding
+      - phenotype_instruction
+      - trait_choice
+    ClinvarVariationArchive:
+      type: object
+      description: |-
+        This element groups the set of data specific to a VariationArchive
+        record, namely the summary data of what has been submitted about a
+        VariationID AND for Classified records only, the content each
+        submission (SCV) provided.
+
+        Type for the `<VariationArchive>` type.
+      required:
+      - variation_id
+      - variation_name
+      - variation_type
+      - accession
+      - version
+      - number_of_submitters
+      - number_of_submissions
+      - record_type
+      - record_status
+      - replaceds
+      properties:
+        variation_id:
+          type: integer
+          format: int64
+          description: Numeric variation ID.
+        variation_name:
+          type: string
+          description: |-
+            This is ClinVar's name for the variant.  ClinVar uses this term in
+            its web displays
+        variation_type:
+          type: string
+          description: Type of the variant.
+        date_created:
+          type:
+          - string
+          - 'null'
+          format: date-time
+          description: |-
+            DateCreated is the date when the record first became public in
+            ClinVar.
+        date_last_updated:
+          type:
+          - string
+          - 'null'
+          format: date-time
+          description: |-
+            The date the record was last updated in the public database. The
+            update may be a change to one of the submitted records (SCVs) or
+            annotation added to the aggregate record by NCBI staff. This date
+            is independent of a version change; annotated added by NCBI may
+            change without representing a change in the version.
+        most_recent_submission:
+          type:
+          - string
+          - 'null'
+          format: date-time
+          description: |-
+            This date is of the most recent submitted record (SCV) for the
+            VCV; it may reflect a new submitted record or an update to a submitted record.
+        accession:
+          type: string
+          description: |-
+            Accession assigned to the variant, or set of variants, that was
+            Classified
+        version:
+          type: integer
+          format: int32
+          description: Version of record and suffix for accession.
+        number_of_submitters:
+          type: integer
+          format: int32
+          description: Number of submitters in record.
+        number_of_submissions:
+          type: integer
+          format: int32
+          description: Number of submissions in record.
+        record_type:
+          $ref: '#/components/schemas/ClinvarVariationArchiveRecordType'
+          description: Record type.
+        record_status:
+          $ref: '#/components/schemas/ClinvarVariationArchiveRecordStatus'
+          description: The record's status.
+        replaced_by:
+          oneOf:
+          - type: 'null'
+          - $ref: '#/components/schemas/ClinvarRecordHistory'
+            description: Pointer to the replacing record; optional.
+        replaceds:
+          type: array
+          items:
+            $ref: '#/components/schemas/ClinvarRecordHistory'
+          description: The list of VCV accessions this record has replaced.
+        comment:
+          oneOf:
+          - type: 'null'
+          - $ref: '#/components/schemas/ClinvarComment'
+            description: Comment on the record; optional.
+        species:
+          oneOf:
+          - type: 'null'
+          - $ref: '#/components/schemas/ClinvarSpecies'
+            description: Specification of the species.
+        classified_record:
+          oneOf:
+          - type: 'null'
+          - $ref: '#/components/schemas/ClinvarClassifiedRecord'
+            description: |-
+              This element describes the classification of a single
+              allele, haplotype, or genotype based on all submissions to ClinVar. This
+              differs from the element IncludedRecord, which describes simple alleles
+              or haplotypes, referenced in ClassifiedRecord, but for which no explicit
+              classification was submitted. Once that variation is described, details
+              are added about the phenotypes being classified, the classification, the
+              submitters providing the classifications, and all supported evidence.
+
+              NB: mutually exclusive with `included_record`.
+        included_record:
+          oneOf:
+          - type: 'null'
+          - $ref: '#/components/schemas/ClinvarIncludedRecord'
+            description: |-
+              This element describes a single allele or haplotype
+              included in submissions to ClinVar, but for which no explicit
+              classification was submitted. It also references the submissions and the
+              Classified records that include them.
+
+              NB: mutually exclusive with `classified_record`.
+    ClinvarVariationArchiveRecordStatus:
+      type: string
+      description: Enumeration for `@RecordStatus`.
+      enum:
+      - current
+      - previous
+      - replaced
+      - deleted
+    ClinvarVariationArchiveRecordType:
+      type: string
+      description: Enumeration for `@RecordType`.
+      enum:
+      - included
+      - classified
+    ClinvarVariationRelease:
+      type: object
+      description: |-
+        The element to group each VariationArchive element in the release
+
+        Type for the `<ClinVarVariationRelease>` tag.
+
+        attributes
+      required:
+      - variation_archives
+      properties:
+        release_date:
+          type:
+          - string
+          - 'null'
+          format: date-time
+          description: The current release.
+        variation_archives:
+          type: array
+          items:
+            $ref: '#/components/schemas/ClinvarVariationArchive'
+          description: List of `<VariationArchive>` tags.
+    ClinvarVariationType:
+      type: string
+      description: Enumeration describing variation type.
+      enum:
+      - diplotype
+      - compound_heterozygote
+      - distinct_chromosomes
+    ClinvarVersionedAccession:
+      type: object
+      description: Accession with version.
+      required:
+      - accession
+      - version
+      properties:
+        accession:
+          type: string
+          description: The accession.
+        version:
+          type: integer
+          format: int32
+          description: The version.
+    ClinvarXref:
+      type: object
+      description: |-
+        This structure is used to represent how an object described in the
+        submission relates to objects in other databases.
+      required:
+      - db
+      - id
+      properties:
+        db:
+          type: string
+          description: |-
+            The name of the database. When there is an overlap with sequence
+            databases, that name is used.
+        id:
+          type: string
+          description: |-
+            The identifier used by the database. Being exported as a string
+            even though internally the database has rules for defining which datases use
+            integer identifers.
+        type:
+          type:
+          - string
+          - 'null'
+          description: |-
+            Used to differentiate between different types of identifiers that
+            a database may provide.
+        url:
+          type:
+          - string
+          - 'null'
+          description: Optional URL to the database entry.
+        status:
+          oneOf:
+          - type: 'null'
+          - $ref: '#/components/schemas/ClinvarStatus'
+            description: The status; defaults to "current".
+    ClinvarZygosity:
+      type: string
+      description: Enumeration describing zygosity.
+      enum:
+      - homozygote
+      - single_heterozygote
+      - compound_heterozygote
+      - hemizygote
+      - not_provided
     CustomError:
       type: object
       description: Custom error type for the Actix server.
@@ -2344,6 +6534,117 @@ components:
         data:
           $ref: '#/components/schemas/GeneNames'
           description: The result.
+    StrucvarsClinvarPageInfo:
+      type: object
+      description: Information regarding the pagination.
+      required:
+      - total
+      - per_page
+      - current_page
+      - total_pages
+      properties:
+        total:
+          type: integer
+          format: int32
+          description: The total number of records.
+          minimum: 0
+        per_page:
+          type: integer
+          format: int32
+          description: The number of records per page.
+          minimum: 0
+        current_page:
+          type: integer
+          format: int32
+          description: The current page number.
+          minimum: 0
+        total_pages:
+          type: integer
+          format: int32
+          description: The total number of pages.
+          minimum: 0
+    StrucvarsClinvarQuery:
+      type: object
+      description: Query of the `/api/v1/strucvars/clinvar-annos/query` endpoint.
+      required:
+      - genome_release
+      - chromosome
+      - start
+      - stop
+      properties:
+        genome_release:
+          $ref: '#/components/schemas/GenomeRelease'
+          description: Genome release specification.
+        chromosome:
+          type: string
+          description: Chromosome name.
+        start:
+          type: integer
+          format: int32
+          description: 1-based start position.
+          minimum: 0
+        stop:
+          type: integer
+          format: int32
+          description: 1-based stop postion.
+          minimum: 0
+        variation_types:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/ClinvarExtractedVariationType'
+          description: Optionally, the variant types.
+        min_overlap:
+          type:
+          - number
+          - 'null'
+          format: double
+          description: Optionally, minimal overlap.
+        page_no:
+          type:
+          - integer
+          - 'null'
+          format: int32
+          description: Optional 1-based page number.
+          minimum: 0
+        page_size:
+          type:
+          - integer
+          - 'null'
+          format: int32
+          description: Optional page size.
+          minimum: 0
+    StrucvarsClinvarResponse:
+      type: object
+      description: Response of the `/api/v1/strucvars/clinvar-annos/query` endpoint.
+      required:
+      - records
+      - page_info
+      properties:
+        records:
+          type: array
+          items:
+            $ref: '#/components/schemas/StrucvarsClinvarResponseRecord'
+          description: The records in this page.
+        page_info:
+          $ref: '#/components/schemas/StrucvarsClinvarPageInfo'
+          description: Pagination information.
+    StrucvarsClinvarResponseRecord:
+      type: object
+      description: Information on one response record.
+      required:
+      - overlap
+      properties:
+        record:
+          oneOf:
+          - type: 'null'
+          - $ref: '#/components/schemas/ClinvarExtractedVcvRecord'
+            description: The record.
+        overlap:
+          type: number
+          format: double
+          description: The reciprocal overlap with the query.
     VersionsAnnotationInfo:
       type: object
       description: Version information for one database.
