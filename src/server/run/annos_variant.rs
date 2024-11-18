@@ -10,7 +10,7 @@ use strum::IntoEnumIterator;
 
 use crate::{
     common::{keys, version},
-    server::run::AnnoDb,
+    server::run::{fetch::fetch_pos_protobuf, AnnoDb},
 };
 
 use super::error::CustomError;
@@ -266,6 +266,95 @@ async fn handle(
 pub mod response {
     use crate::server::run::clinvar_data::ClinvarExtractedVcvRecord;
 
+    /// A HelixMtDb record.
+    #[derive(Debug, Default, Clone, serde::Serialize, serde::Deserialize, utoipa::ToSchema)]
+    pub struct HelixMtDbRecord {
+        /// Chromosome name.
+        pub chrom: String,
+        /// 1-based start position.
+        pub pos: i32,
+        /// Reference allele.
+        pub ref_allele: String,
+        /// / Alternate allele.
+        pub alt_allele: String,
+        /// Total number of individuals.
+        pub num_total: i32,
+        /// Number of homoplasmic carriers.
+        pub num_het: i32,
+        /// Number of heteroplasmic carriers.
+        pub num_hom: i32,
+        /// Feature type.
+        pub feature_type: String,
+        /// Gene name.
+        pub gene_name: String,
+    }
+
+    impl Into<HelixMtDbRecord> for crate::pbs::helixmtdb::Record {
+        fn into(self) -> HelixMtDbRecord {
+            HelixMtDbRecord {
+                chrom: self.chrom,
+                pos: self.pos,
+                ref_allele: self.ref_allele,
+                alt_allele: self.alt_allele,
+                num_total: self.num_total,
+                num_het: self.num_het,
+                num_hom: self.num_hom,
+                feature_type: self.feature_type,
+                gene_name: self.gene_name,
+            }
+        }
+    }
+
+    /// A UCSC conservation record.
+    #[derive(Debug, Default, Clone, serde::Serialize, serde::Deserialize, utoipa::ToSchema)]
+    pub struct UcscConservationRecord {
+        /// Chromosome name.
+        pub chrom: String,
+        /// 1-based, inclusive start position.
+        pub start: i32,
+        /// 1-based, inclusive stop position.
+        pub stop: i32,
+        /// HGNC identifier.
+        pub hgnc_id: String,
+        /// ENST identifier.
+        pub enst_id: String,
+        /// Exon number (1-based).
+        pub exon_num: i32,
+        /// Exon count.
+        pub exon_count: i32,
+        /// Alignment.
+        pub alignment: String,
+    }
+
+    impl From<crate::pbs::cons::Record> for UcscConservationRecord {
+        fn from(value: crate::pbs::cons::Record) -> Self {
+            UcscConservationRecord {
+                chrom: value.chrom,
+                start: value.start,
+                stop: value.stop,
+                hgnc_id: value.hgnc_id,
+                enst_id: value.enst_id,
+                exon_num: value.exon_num,
+                exon_count: value.exon_count,
+                alignment: value.alignment,
+            }
+        }
+    }
+
+    /// List of `Record`s.
+    #[derive(Debug, Default, Clone, serde::Serialize, serde::Deserialize, utoipa::ToSchema)]
+    pub struct UcscConservationRecordList {
+        /// The records in the list.
+        pub records: Vec<UcscConservationRecord>,
+    }
+
+    impl From<crate::pbs::cons::RecordList> for UcscConservationRecordList {
+        fn from(value: crate::pbs::cons::RecordList) -> Self {
+            UcscConservationRecordList {
+                records: value.records.into_iter().map(Into::into).collect(),
+            }
+        }
+    }
     /// List of `ClinvarExtractedVcvRecord`s.
     #[derive(Debug, Default, Clone, serde::Serialize, serde::Deserialize, utoipa::ToSchema)]
     pub struct ExtractedVcvRecordList {
@@ -307,9 +396,9 @@ pub mod response {
         /// Annotations from gnomAD-genomes.
         pub gnomad_genomes: Option<bool>,
         /// Annotations from HelixMTdb.
-        pub helixmtdb: Option<bool>,
+        pub helixmtdb: Option<HelixMtDbRecord>,
         /// Annotations from UCSC conservation.
-        pub ucsc_conservation: Option<bool>,
+        pub ucsc_conservation: Option<UcscConservationRecordList>,
         /// Minimal extracted data from ClinVar.
         pub clinvar: Option<ExtractedVcvRecordList>,
     }
@@ -355,7 +444,7 @@ pub async fn handle_with_openapi(
             CustomError::new(anyhow::anyhow!("problem getting genome release: {}", e))
         })?;
 
-    let mut result = SeqvarsAnnoResponseRecord {
+    let result = SeqvarsAnnoResponseRecord {
         // cadd: Option<bool>,
         // dbsnp: Option<bool>,
         // dbnsfp: Option<bool>,
@@ -363,8 +452,39 @@ pub async fn handle_with_openapi(
         // gnomad_mtdna: Option<bool>,
         // gnomad_exomes: Option<bool>,
         // gnomad_genomes: Option<bool>,
-        // helixmtdb: Option<bool>,
-        // ucsc_conservation: Option<bool>,
+        helixmtdb: data.annos[genome_release][AnnoDb::Helixmtdb]
+            .as_ref()
+            .map(|db| {
+                Ok(fetch_var_protobuf::<crate::pbs::helixmtdb::Record>(
+                    &db.data,
+                    AnnoDb::Helixmtdb.cf_name(),
+                    query.clone().into_inner().into(),
+                )?
+                .map(Into::into))
+            })
+            .transpose()?
+            .flatten(),
+        ucsc_conservation: data.annos[genome_release][AnnoDb::UcscConservation]
+            .as_ref()
+            .map(|db| {
+                let start: keys::Pos = query.clone().into_inner().into();
+                let start = keys::Pos {
+                    chrom: start.chrom,
+                    pos: start.pos - 2,
+                };
+                let stop = query.clone().into_inner().into();
+                Ok(fetch_pos_protobuf::<crate::pbs::cons::RecordList>(
+                    &db.data,
+                    AnnoDb::Clinvar.cf_name(),
+                    start,
+                    stop,
+                )?
+                .into_iter()
+                .next()
+                .map(Into::into))
+            })
+            .transpose()?
+            .flatten(),
         clinvar: data.annos[genome_release][AnnoDb::Clinvar]
             .as_ref()
             .map(|db| {

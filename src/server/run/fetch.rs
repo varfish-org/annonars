@@ -115,6 +115,51 @@ where
     Ok(Some(serde_json::Value::Array(result)))
 }
 
+/// Function to fetch prost Message from a position database.
+pub fn fetch_pos_protobuf<T>(
+    db: &rocksdb::DBWithThreadMode<rocksdb::MultiThreaded>,
+    cf_name: &str,
+    start: keys::Pos,
+    stop: keys::Pos,
+) -> Result<Vec<T>, CustomError>
+where
+    T: prost::Message + serde::Serialize + Default,
+{
+    let stop = crate::common::keys::Pos {
+        chrom: stop.chrom.clone(),
+        pos: stop.pos,
+    };
+
+    let cf_data = db.cf_handle(cf_name).unwrap();
+    let mut iter = db.raw_iterator_cf(&cf_data);
+    let start: Vec<u8> = start.into();
+    iter.seek(&start);
+
+    let mut result = Vec::new();
+    while iter.valid() {
+        if let Some(raw_value) = iter.value() {
+            let iter_key = iter.key().unwrap();
+            let iter_pos: crate::common::keys::Pos = iter_key.into();
+
+            if iter_pos.chrom != stop.chrom || iter_pos.pos > stop.pos {
+                break;
+            }
+
+            result.push(prost::Message::decode(raw_value).map_err(|e| {
+                CustomError::new(anyhow::anyhow!(
+                    "problem decoding protobuf from database (cf_name={}): {}",
+                    cf_name,
+                    e
+                ))
+            })?);
+
+            iter.next();
+        }
+    }
+
+    Ok(result)
+}
+
 /// Function to fetch a crate::tsv record from a database by variant.
 pub fn fetch_var_tsv_json(
     db: &rocksdb::DBWithThreadMode<rocksdb::MultiThreaded>,
