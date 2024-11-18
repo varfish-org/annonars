@@ -40,6 +40,7 @@ pub mod openapi {
         common::cli::GenomeRelease,
         server::run::clinvar_data::*,
         server::run::clinvar_sv::{self, response::*, StrucvarsClinvarQuery},
+        server::run::genes_clinvar::{self, response::*, GenesClinvarQuery},
         server::run::genes_info::{self, response::*},
         server::run::genes_lookup::{self, GenesLookupResponse, GenesLookupResultEntry},
         server::run::genes_search::{
@@ -58,6 +59,7 @@ pub mod openapi {
         paths(
             versions::handle,
             clinvar_sv::handle_with_openapi,
+            genes_clinvar::handle_with_openapi,
             genes_info::handle_with_openapi,
             genes_lookup::handle_with_openapi,
             genes_search::handle_with_openapi
@@ -123,6 +125,15 @@ pub mod openapi {
             GeneNames,
             GenesLookupResponse,
             GenesLookupResultEntry,
+            GenesClinvarQuery,
+            GenesExtractedVariantsPerRelease,
+            GenesCoarseClinsigFrequencyCounts,
+            GenesGeneImpact,
+            GenesImpactCounts,
+            GenesGeneImpactCounts,
+            GenesClinvarPerGeneRecord,
+            GenesClinvarResponseEntry,
+            GenesClinvarResponse,
             StrucvarsClinvarQuery,
             StrucvarsClinvarPageInfo,
             StrucvarsClinvarResponseRecord,
