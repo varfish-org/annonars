@@ -9,6 +9,36 @@ info:
     name: Apache-2.0
   version: 0.41.3
 paths:
+  /api/v1/genes/clinvar:
+    get:
+      tags:
+      - genes_clinvar
+      summary: Query for ClinVar information for one or more genes.
+      operationId: genesClinvar
+      parameters:
+      - name: hgnc_id
+        in: query
+        description: The HGNC IDs to search for.
+        required: false
+        schema:
+          type:
+          - array
+          - 'null'
+          items:
+            type: string
+      responses:
+        '200':
+          description: Per-gene ClinVar information.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GenesClinvarResponse'
+        '500':
+          description: Internal server error.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CustomError'
   /api/v1/genes/info:
     get:
       tags:
@@ -4485,6 +4515,94 @@ components:
       - NoEvidenceAvailable
       - Recessive
       - Unlikely
+    GenesClinvarPerGeneRecord:
+      type: object
+      description: ClinVar detailed information per gene.
+      required:
+      - per_release_vars
+      properties:
+        per_impact_counts:
+          oneOf:
+          - type: 'null'
+          - $ref: '#/components/schemas/GenesGeneImpactCounts'
+            description: Counts of variants per impact
+        per_freq_counts:
+          oneOf:
+          - type: 'null'
+          - $ref: '#/components/schemas/GenesCoarseClinsigFrequencyCounts'
+            description: Counts of variants per impact / frequency
+        per_release_vars:
+          type: array
+          items:
+            $ref: '#/components/schemas/GenesExtractedVariantsPerRelease'
+          description: Variants for the given gene.
+    GenesClinvarQuery:
+      type: object
+      description: Parameters for `handle`.
+      properties:
+        hgnc_id:
+          type:
+          - array
+          - 'null'
+          items:
+            type: string
+          description: The HGNC IDs to search for.
+    GenesClinvarResponse:
+      type: object
+      description: Result for `handle_with_openapi`.
+      required:
+      - genes
+      properties:
+        genes:
+          type: array
+          items:
+            $ref: '#/components/schemas/GenesClinvarResponseEntry'
+          description: The resulting per-gene ClinVar information.
+    GenesClinvarResponseEntry:
+      type: object
+      description: One entry in the result.
+      required:
+      - hgnc_id
+      - record
+      properties:
+        hgnc_id:
+          type: string
+          description: HGNC ID of the gene.
+        record:
+          $ref: '#/components/schemas/GenesClinvarPerGeneRecord'
+          description: The resulting per-gene record.
+    GenesCoarseClinsigFrequencyCounts:
+      type: object
+      required:
+      - hgnc_id
+      - pathogenic_counts
+      - uncertain_counts
+      - benign_counts
+      properties:
+        hgnc_id:
+          type: string
+          description: The gene HGNC ID.
+        pathogenic_counts:
+          type: array
+          items:
+            type: integer
+            format: int32
+            minimum: 0
+          description: The counts for (likely) pathogenic.
+        uncertain_counts:
+          type: array
+          items:
+            type: integer
+            format: int32
+            minimum: 0
+          description: The counts for uncertain significance.
+        benign_counts:
+          type: array
+          items:
+            type: integer
+            format: int32
+            minimum: 0
+          description: The counts for (likely) benign.
     GenesConditionsRecord:
       type: object
       description: Record from the integrated conditions computation.
@@ -5283,6 +5401,22 @@ components:
       - Gene
       - Str
       - Region
+    GenesExtractedVariantsPerRelease:
+      type: object
+      description: Extracted variants per release.
+      required:
+      - variants
+      properties:
+        release:
+          type:
+          - string
+          - 'null'
+          description: Release version.
+        variants:
+          type: array
+          items:
+            $ref: '#/components/schemas/ClinvarExtractedVcvRecord'
+          description: Variants per gene.
     GenesFields:
       type: string
       description: The allowed fields to search in.
@@ -5326,6 +5460,42 @@ components:
         confidence:
           $ref: '#/components/schemas/GenesDiseaseAssociationEntryConfidenceLevel'
           description: The gene-disease association confidence level.
+    GenesGeneImpact:
+      type: string
+      description: Enumeration with the variant consequence.
+      enum:
+      - Unspecified
+      - ThreePrimeUtrVariant
+      - FivePrimeUtrVariant
+      - DownstreamTranscriptVariant
+      - FrameshiftVariant
+      - InframeIndel
+      - StartLost
+      - IntronVariant
+      - MissenseVariant
+      - NonCodingTranscriptVariant
+      - StopGained
+      - NoSequenceAlteration
+      - SpliceAcceptorVariant
+      - SpliceDonorVariant
+      - StopLost
+      - SynonymousVariant
+      - UpstreamTranscriptVariant
+    GenesGeneImpactCounts:
+      type: object
+      description: Entry for storing counts of `GeneImpact` and `ClinicalSignificance`.
+      required:
+      - hgnc_id
+      - impact_counts
+      properties:
+        hgnc_id:
+          type: string
+          description: The gene HGNC ID.
+        impact_counts:
+          type: array
+          items:
+            $ref: '#/components/schemas/GenesImpactCounts'
+          description: The impact counts.
     GenesGeneInfoRecord:
       type: object
       description: Information about a gene.
@@ -6079,6 +6249,45 @@ components:
       enum:
       - Approved
       - Withdrawn
+    GenesImpactCounts:
+      type: object
+      description: Stores the counts for a gene impact.
+      required:
+      - gene_impact
+      - count_benign
+      - count_likely_benign
+      - count_uncertain_significance
+      - count_likely_pathogenic
+      - count_pathogenic
+      properties:
+        gene_impact:
+          $ref: '#/components/schemas/GenesGeneImpact'
+          description: The gene impact.
+        count_benign:
+          type: integer
+          format: int32
+          description: The counts for the benign impact.
+          minimum: 0
+        count_likely_benign:
+          type: integer
+          format: int32
+          description: The counts for the likely benign impact.
+          minimum: 0
+        count_uncertain_significance:
+          type: integer
+          format: int32
+          description: The counts for the uncertain significance impact.
+          minimum: 0
+        count_likely_pathogenic:
+          type: integer
+          format: int32
+          description: The counts for the likely pathogenic impact.
+          minimum: 0
+        count_pathogenic:
+          type: integer
+          format: int32
+          description: The counts for the pathogenic impact.
+          minimum: 0
     GenesInfoResponse:
       type: object
       description: Query response for `handle_with_openapi()`.

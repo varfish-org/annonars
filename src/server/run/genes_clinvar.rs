@@ -420,14 +420,14 @@ use response::*;
 /// Query for ClinVar information for one or more genes.
 #[utoipa::path(
     get,
-    operation_id = "genesInfo",
+    operation_id = "genesClinvar",
     params(GenesClinvarQuery),
     responses(
         (status = 200, description = "Per-gene ClinVar information.", body = GenesClinvarResponse),
         (status = 500, description = "Internal server error.", body = CustomError)
     )
 )]
-#[get("/api/v1/genes/info")]
+#[get("/api/v1/genes/clinvar")]
 async fn handle_with_openapi(
     data: Data<crate::server::run::WebServerData>,
     _path: Path<()>,
