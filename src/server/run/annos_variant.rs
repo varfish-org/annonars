@@ -1002,9 +1002,11 @@ pub mod response {
         pub depth_info: Option<Gnomad2DepthInfo>,
     }
 
-    impl From<pbs::gnomad::gnomad2::Record> for Gnomad2Record {
-        fn from(value: pbs::gnomad::gnomad2::Record) -> Self {
-            Gnomad2Record {
+    impl TryFrom<pbs::gnomad::gnomad2::Record> for Gnomad2Record {
+        type Error = anyhow::Error;
+
+        fn try_from(value: pbs::gnomad::gnomad2::Record) -> Result<Self, anyhow::Error> {
+            Ok(Gnomad2Record {
                 chrom: value.chrom,
                 pos: value.pos,
                 ref_allele: value.ref_allele,
@@ -1025,7 +1027,7 @@ pub mod response {
                 quality_info: value.quality_info.map(Into::into),
                 age_info: value.age_info.map(Into::into),
                 depth_info: value.depth_info.map(Into::into),
-            }
+            })
         }
     }
 
@@ -1901,6 +1903,264 @@ pub mod response {
                 lof_flags: value.lof_flags,
                 lof_info: value.lof_info,
             }
+        }
+    }
+
+    /// Store details on variant effect predictions.
+    #[derive(
+        Debug,
+        Default,
+        Clone,
+        serde::Serialize,
+        serde::Deserialize,
+        utoipa::ToSchema,
+        utoipa::ToResponse,
+    )]
+    pub struct Gnomad4EffectInfo {
+        /// Pangolin's largest delta score across 2 splicing consequences, which reflects the probability of the variant being splice-altering">
+        pub pangolin_largest_ds: Option<f32>,
+        /// Base-wise conservation score across the 241 placental mammals in the Zoonomia project. Score ranges from -20 to 9.28, and reflects acceleration (faster evolution than expected under neutral drift, assigned negative scores) as well as conservation (slower than expected evolution, assigned positive scores).">
+        pub phylop: Option<f32>,
+        /// Score that predicts the possible impact of an amino acid substitution on the structure and function of a human protein, ranging from 0.0 (tolerated) to 1.0 (deleterious).  We prioritize max scores for MANE Select transcripts where possible and otherwise report a score for the canonical transcript.">
+        pub polyphen_max: Option<f32>,
+        /// The maximum REVEL score at a site's MANE Select or canonical transcript. It's an ensemble score for predicting the pathogenicity of missense variants (based on 13 other variant predictors). Scores ranges from 0 to 1. Variants with higher scores are predicted to be more likely to be deleterious.">
+        pub revel_max: Option<f32>,
+        /// Score reflecting the scaled probability of the amino acid substitution being tolerated, ranging from 0 to 1. Scores below 0.05 are predicted to impact protein function. We prioritize max scores for MANE Select transcripts where possible and otherwise report a score for the canonical transcript.">
+        pub sift_max: Option<f32>,
+        /// Illumina's SpliceAI max delta score; interpreted as the probability of the variant being splice-altering.">
+        pub spliceai_ds_max: Option<f32>,
+        /// Raw CADD scores are interpretable as the extent to which the annotation profile for a given variant suggests that the variant is likely to be 'observed' (negative values) vs 'simulated' (positive values). Larger values are more deleterious.
+        pub cadd_raw: Option<f32>,
+        /// Cadd Phred-like scores ('scaled C-scores') ranging from 1 to 99, based on the rank of each variant relative to all possible 8.6 billion substitutions in the human reference genome. Larger values are more deleterious.
+        pub cadd_phred: Option<f32>,
+    }
+
+    impl From<pbs::gnomad::gnomad4::EffectInfo> for Gnomad4EffectInfo {
+        fn from(value: pbs::gnomad::gnomad4::EffectInfo) -> Self {
+            Gnomad4EffectInfo {
+                pangolin_largest_ds: value.pangolin_largest_ds,
+                phylop: value.phylop,
+                polyphen_max: value.polyphen_max,
+                revel_max: value.revel_max,
+                sift_max: value.sift_max,
+                spliceai_ds_max: value.spliceai_ds_max,
+                cadd_raw: value.cadd_raw,
+                cadd_phred: value.cadd_phred,
+            }
+        }
+    }
+
+    /// Store the allele counts for the given sub cohort in the given ancestry group.
+    #[derive(
+        Debug,
+        Default,
+        Clone,
+        serde::Serialize,
+        serde::Deserialize,
+        utoipa::ToSchema,
+        utoipa::ToResponse,
+    )]
+    pub struct Gnomad4AncestryGroupAlleleCounts {
+        /// Name of the ancestry group.
+        pub ancestry_group: String,
+        /// The overall allele counts and the one by sex.
+        pub counts: Option<Gnomad3AlleleCountsBySex>,
+        /// The filtering allele frequency (using Poisson 95% CI).
+        pub faf95: Option<f32>,
+        /// The filtering allele frequency (using Poisson 99% CI).
+        pub faf99: Option<f32>,
+        /// The filtering allele frequency for XX samples (using Poisson 95% CI).
+        pub faf95_xx: Option<f32>,
+        /// The filtering allele frequency for XX samples (using Poisson 99% CI).
+        pub faf99_xx: Option<f32>,
+        /// The filtering allele frequency for XY samples (using Poisson 95% CI).
+        pub faf95_xy: Option<f32>,
+        /// The filtering allele frequency for XY samples (using Poisson 99% CI).
+        pub faf99_xy: Option<f32>,
+    }
+
+    impl From<pbs::gnomad::gnomad4::AncestryGroupAlleleCounts> for Gnomad4AncestryGroupAlleleCounts {
+        fn from(value: pbs::gnomad::gnomad4::AncestryGroupAlleleCounts) -> Self {
+            Gnomad4AncestryGroupAlleleCounts {
+                ancestry_group: value.ancestry_group,
+                counts: value.counts.map(Into::into),
+                faf95: value.faf95,
+                faf99: value.faf99,
+                faf95_xx: value.faf95_xx,
+                faf99_xx: value.faf99_xx,
+                faf95_xy: value.faf95_xy,
+                faf99_xy: value.faf99_xy,
+            }
+        }
+    }
+
+    /// Store the allele counts for the given cohort.
+    #[derive(
+        Debug,
+        Default,
+        Clone,
+        serde::Serialize,
+        serde::Deserialize,
+        utoipa::ToSchema,
+        utoipa::ToResponse,
+    )]
+    pub struct Gnomad4CohortAlleleCounts {
+        /// Name of the cohort.
+        pub cohort: Option<String>,
+        /// Allele counts for each population.
+        pub by_ancestry_group: Vec<Gnomad4AncestryGroupAlleleCounts>,
+        /// Allele counts by sex.
+        pub by_sex: Option<Gnomad3AlleleCountsBySex>,
+        /// Raw allele counts.
+        pub raw: Option<Gnomad3AlleleCounts>,
+        /// The ancestry group with maximum AF.
+        pub grpmax: Option<String>,
+        /// Maximum allele frequency across ancestry groups.
+        pub af_grpmax: Option<f32>,
+        /// Allele count in ancestry group with maximum AF.
+        pub ac_grpmax: Option<i32>,
+        /// Total number of alleles in ancestry group with maximum AF.
+        pub an_grpmax: Option<i32>,
+        /// Total number of homozygous individuals in ancestry group with maximum AF.
+        pub nhomalt_grpmax: Option<i32>,
+    }
+
+    impl From<pbs::gnomad::gnomad4::CohortAlleleCounts> for Gnomad4CohortAlleleCounts {
+        fn from(value: pbs::gnomad::gnomad4::CohortAlleleCounts) -> Self {
+            Gnomad4CohortAlleleCounts {
+                cohort: value.cohort,
+                by_ancestry_group: value
+                    .by_ancestry_group
+                    .into_iter()
+                    .map(Into::into)
+                    .collect(),
+                by_sex: value.by_sex.map(Into::into),
+                raw: value.raw.map(Into::into),
+                grpmax: value.grpmax,
+                af_grpmax: value.af_grpmax,
+                ac_grpmax: value.ac_grpmax,
+                an_grpmax: value.an_grpmax,
+                nhomalt_grpmax: value.nhomalt_grpmax,
+            }
+        }
+    }
+
+    /// VRS information
+    #[derive(
+        Debug,
+        Default,
+        Clone,
+        serde::Serialize,
+        serde::Deserialize,
+        utoipa::ToSchema,
+        utoipa::ToResponse,
+    )]
+    pub struct Gnomad4VrsInfo {
+        /// The computed identifiers for the GA4GH VRS Alleles corresponding to the values in the REF and ALT fields
+        pub allele_ids: Vec<String>,
+        /// Interresidue coordinates used as the location ends for the GA4GH VRS Alleles corresponding to the values in the REF and ALT fields
+        pub ends: Vec<i32>,
+        /// Interresidue coordinates used as the location starts for the GA4GH VRS Alleles corresponding to the values in the REF and ALT fields
+        pub starts: Vec<i32>,
+        /// The literal sequence states used for the GA4GH VRS Alleles corresponding to the values in the REF and ALT fields
+        pub states: Vec<String>,
+    }
+
+    impl From<pbs::gnomad::gnomad4::VrsInfo> for Gnomad4VrsInfo {
+        fn from(value: pbs::gnomad::gnomad4::VrsInfo) -> Self {
+            Gnomad4VrsInfo {
+                allele_ids: value.allele_ids,
+                ends: value.ends,
+                starts: value.starts,
+                states: value.states,
+            }
+        }
+    }
+
+    /// Protocol buffer for the gnomAD-nuclear VCF record.
+    ///
+    /// The more specialized fields from the INFO column are stored in separate, optional fields such
+    /// that we don't end up with a humongous message.
+    #[derive(
+        Debug,
+        Default,
+        Clone,
+        serde::Serialize,
+        serde::Deserialize,
+        utoipa::ToSchema,
+        utoipa::ToResponse,
+    )]
+    pub struct Gnomad4Record {
+        /// Chromosome name.
+        pub chrom: String,
+        /// 1-based start position.
+        pub pos: i32,
+        /// Reference allele.
+        pub ref_allele: String,
+        /// Alternate allele.
+        pub alt_allele: String,
+        /// Site-level filters.
+        pub filters: Vec<Gnomad3Filter>,
+        /// VEP annotation records.
+        pub vep: Vec<Gnomad4Vep>,
+        /// Variant allele counts in the different cohorts and population.
+        ///
+        /// The populations in gnomAD v4 are: empty for global, "joint" for exome+genomes.
+        pub allele_counts: Vec<Gnomad4CohortAlleleCounts>,
+        /// Variant (on sex chromosome) falls outside a pseudoautosomal region
+        pub nonpar: bool,
+        /// All samples are heterozygous for the variant
+        pub only_het: bool,
+        /// Variant falls outside of Broad exome capture regions (exomes only).
+        pub outside_broad_capture_region: bool,
+        /// Variant falls outside of UK Biobank exome capture regions(exomes only).
+        pub outside_ukb_capture_region: bool,
+        /// Variant was a callset-wide doubleton that was present only in two siblings (i.e., a singleton amongst unrelated samples in cohort) (exomes only).
+        pub sibling_singleton: bool,
+        /// Information on variant scores.
+        pub effect_info: Option<Gnomad4EffectInfo>,
+        /// Variant-related information details.
+        pub variant_info: Option<Gnomad3VariantInfo>,
+        /// Summary information for variant quality interpretation.
+        pub quality_info: Option<Gnomad3QualityInfo>,
+        /// Age-related information.
+        pub age_info: Option<Gnomad3AgeInfo>,
+        /// Depth of coverage-related information.
+        pub depth_info: Option<Gnomad3DepthInfo>,
+        /// VRS infos.
+        pub vrs_info: Option<Gnomad4VrsInfo>,
+    }
+
+    impl TryFrom<pbs::gnomad::gnomad4::Record> for Gnomad4Record {
+        type Error = anyhow::Error;
+
+        fn try_from(value: pbs::gnomad::gnomad4::Record) -> Result<Self, Self::Error> {
+            Ok(Gnomad4Record {
+                chrom: value.chrom,
+                pos: value.pos,
+                ref_allele: value.ref_allele,
+                alt_allele: value.alt_allele,
+                filters: value
+                    .filters
+                    .into_iter()
+                    .map(|filter| {
+                        Gnomad3Filter::try_from(pbs::gnomad::gnomad3::Filter::try_from(filter)?)
+                    })
+                    .collect::<Result<Vec<_>, _>>()?,
+                vep: value.vep.into_iter().map(Into::into).collect(),
+                allele_counts: value.allele_counts.into_iter().map(Into::into).collect(),
+                nonpar: value.nonpar,
+                only_het: value.only_het,
+                outside_broad_capture_region: value.outside_broad_capture_region,
+                outside_ukb_capture_region: value.outside_ukb_capture_region,
+                sibling_singleton: value.sibling_singleton,
+                effect_info: value.effect_info.map(Into::into),
+                variant_info: value.variant_info.map(Into::into),
+                quality_info: value.quality_info.map(Into::into),
+                age_info: value.age_info.map(Into::into),
+                depth_info: value.depth_info.map(Into::into),
+                vrs_info: value.vrs_info.map(Into::into),
+            })
         }
     }
 
