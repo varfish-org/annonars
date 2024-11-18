@@ -4,8 +4,8 @@ use crate::common::keys;
 
 use super::error::CustomError;
 
-/// Function to fetch prost Message from a variant database.
-pub fn fetch_var_protobuf<T>(
+/// Function to fetch prost Message from a variant database into JSOn.
+pub fn fetch_var_protobuf_json<T>(
     db: &rocksdb::DBWithThreadMode<rocksdb::MultiThreaded>,
     cf_name: &str,
     key: keys::Var,
@@ -37,8 +37,38 @@ where
         .transpose()
 }
 
+/// Function to fetch prost Message from a variant database.
+pub fn fetch_var_protobuf<T>(
+    db: &rocksdb::DBWithThreadMode<rocksdb::MultiThreaded>,
+    cf_name: &str,
+    key: keys::Var,
+) -> Result<Option<T>, CustomError>
+where
+    T: prost::Message + serde::Serialize + Default,
+{
+    let cf_data = db
+        .cf_handle(cf_name)
+        .unwrap_or_else(|| panic!("unknown column family: {}", cf_name));
+    let key: Vec<u8> = key.into();
+
+    let raw_data = db
+        .get_cf(&cf_data, key)
+        .map_err(|e| CustomError::new(anyhow::anyhow!("problem querying database: {}", e)))?;
+    raw_data
+        .map(|raw_data| {
+            prost::Message::decode(&raw_data[..]).map_err(|e| {
+                CustomError::new(anyhow::anyhow!(
+                    "problem decoding protobuf from database (cf_name={}): {}",
+                    cf_name,
+                    e
+                ))
+            })
+        })
+        .transpose()
+}
+
 /// Function to fetch prost Message from a position database.
-pub fn fetch_pos_protobuf<T>(
+pub fn fetch_pos_protobuf_json<T>(
     db: &rocksdb::DBWithThreadMode<rocksdb::MultiThreaded>,
     cf_name: &str,
     start: keys::Pos,
@@ -187,6 +217,7 @@ pub fn fetch_pos_tsv_json(
 
     fetch_tsv_json_prepare_result(Some(values), db_schema)
 }
+
 /// Helper function for `fetch_*_tsv_json`.
 pub fn fetch_tsv_json_prepare_result(
     values: Option<Vec<serde_json::Value>>,
