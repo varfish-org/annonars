@@ -2689,18 +2689,18 @@ pub mod response {
         pub gene_name: String,
     }
 
-    impl Into<HelixMtDbRecord> for crate::pbs::helixmtdb::Record {
-        fn into(self) -> HelixMtDbRecord {
+    impl From<crate::pbs::helixmtdb::Record> for HelixMtDbRecord {
+        fn from(val: crate::pbs::helixmtdb::Record) -> Self {
             HelixMtDbRecord {
-                chrom: self.chrom,
-                pos: self.pos,
-                ref_allele: self.ref_allele,
-                alt_allele: self.alt_allele,
-                num_total: self.num_total,
-                num_het: self.num_het,
-                num_hom: self.num_hom,
-                feature_type: self.feature_type,
-                gene_name: self.gene_name,
+                chrom: val.chrom,
+                pos: val.pos,
+                ref_allele: val.ref_allele,
+                alt_allele: val.alt_allele,
+                num_total: val.num_total,
+                num_het: val.num_het,
+                num_hom: val.num_hom,
+                feature_type: val.feature_type,
+                gene_name: val.gene_name,
             }
         }
     }
@@ -2919,7 +2919,7 @@ pub async fn handle_with_openapi(
                 )?
                 .map(TryInto::<GnomadMtdnaRecord>::try_into)
                 .transpose()
-                .map_err(|e| CustomError::new(e))
+                .map_err(CustomError::new)
             })
             .transpose()?
             .flatten()
@@ -2969,7 +2969,7 @@ pub async fn handle_with_openapi(
                 )?
                 .map(TryInto::<ExtractedVcvRecordList>::try_into)
                 .transpose()
-                .map_err(|e| CustomError::new(e))
+                .map_err(CustomError::new)
             })
             .transpose()?
             .flatten(),

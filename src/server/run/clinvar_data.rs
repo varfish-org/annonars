@@ -7084,9 +7084,9 @@ impl TryFrom<pbs::clinvar_data::extracted_vars::VariationType> for ClinvarExtrac
     }
 }
 
-impl Into<pbs::clinvar_data::extracted_vars::VariationType> for ClinvarExtractedVariationType {
-    fn into(self) -> pbs::clinvar_data::extracted_vars::VariationType {
-        match self {
+impl From<ClinvarExtractedVariationType> for pbs::clinvar_data::extracted_vars::VariationType {
+    fn from(val: ClinvarExtractedVariationType) -> Self {
+        match val {
             ClinvarExtractedVariationType::Insertion => {
                 pbs::clinvar_data::extracted_vars::VariationType::Insertion
             }
