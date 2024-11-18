@@ -4398,6 +4398,33 @@ components:
       properties:
         err:
           type: string
+    DbsnpRecord:
+      type: object
+      description: A record corresponding to dbSNP VCF.
+      required:
+      - chrom
+      - pos
+      - ref_allele
+      - alt_allele
+      - rs_id
+      properties:
+        chrom:
+          type: string
+          description: Chromosome name.
+        pos:
+          type: integer
+          format: int32
+          description: 1-based start position.
+        ref_allele:
+          type: string
+          description: Reference allele.
+        alt_allele:
+          type: string
+          description: Alternate allele.
+        rs_id:
+          type: integer
+          format: int32
+          description: The rs ID.
     ExtractedVcvRecordList:
       type: object
       description: List of `ClinvarExtractedVcvRecord`s.
@@ -6827,24 +6854,33 @@ components:
       properties:
         cadd:
           type:
-          - boolean
+          - object
           - 'null'
           description: Annotations from CADD (TSV annotation file).
+          additionalProperties: {}
+          propertyNames:
+            type: string
         dbsnp:
-          type:
-          - boolean
-          - 'null'
-          description: Annotations from dbSNP.
+          oneOf:
+          - type: 'null'
+          - $ref: '#/components/schemas/DbsnpRecord'
+            description: Annotations from dbSNP.
         dbnsfp:
           type:
-          - boolean
+          - object
           - 'null'
           description: Annotations from dbNSFP (TSV annotation file).
+          additionalProperties: {}
+          propertyNames:
+            type: string
         dbscsnv:
           type:
-          - boolean
+          - object
           - 'null'
           description: Annotations from dbscSNV.
+          additionalProperties: {}
+          propertyNames:
+            type: string
         gnomad_mtdna:
           type:
           - boolean

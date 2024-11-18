@@ -266,6 +266,33 @@ async fn handle(
 pub mod response {
     use crate::server::run::clinvar_data::ClinvarExtractedVcvRecord;
 
+    /// A record corresponding to dbSNP VCF.
+    #[derive(Debug, Default, Clone, serde::Serialize, serde::Deserialize, utoipa::ToSchema)]
+    pub struct DbsnpRecord {
+        /// Chromosome name.
+        pub chrom: String,
+        /// 1-based start position.
+        pub pos: i32,
+        /// Reference allele.
+        pub ref_allele: String,
+        /// Alternate allele.
+        pub alt_allele: String,
+        /// The rs ID.
+        pub rs_id: i32,
+    }
+
+    impl From<crate::pbs::dbsnp::Record> for DbsnpRecord {
+        fn from(value: crate::pbs::dbsnp::Record) -> Self {
+            DbsnpRecord {
+                chrom: value.chrom,
+                pos: value.pos,
+                ref_allele: value.ref_allele,
+                alt_allele: value.alt_allele,
+                rs_id: value.rs_id,
+            }
+        }
+    }
+
     /// A HelixMtDb record.
     #[derive(Debug, Default, Clone, serde::Serialize, serde::Deserialize, utoipa::ToSchema)]
     pub struct HelixMtDbRecord {
@@ -382,13 +409,13 @@ pub mod response {
     #[derive(Debug, Default, Clone, serde::Serialize, serde::Deserialize, utoipa::ToSchema)]
     pub struct SeqvarsAnnoResponseRecord {
         /// Annotations from CADD (TSV annotation file).
-        pub cadd: Option<bool>,
+        pub cadd: Option<indexmap::IndexMap<String, serde_json::Value>>,
         /// Annotations from dbSNP.
-        pub dbsnp: Option<bool>,
+        pub dbsnp: Option<DbsnpRecord>,
         /// Annotations from dbNSFP (TSV annotation file).
-        pub dbnsfp: Option<bool>,
+        pub dbnsfp: Option<indexmap::IndexMap<String, serde_json::Value>>,
         /// Annotations from dbscSNV.
-        pub dbscsnv: Option<bool>,
+        pub dbscsnv: Option<indexmap::IndexMap<String, serde_json::Value>>,
         /// Annotations from gnomAD-mtDNA.
         pub gnomad_mtdna: Option<bool>,
         /// Annotations from gnomAD-exomes.
@@ -444,11 +471,71 @@ pub async fn handle_with_openapi(
             CustomError::new(anyhow::anyhow!("problem getting genome release: {}", e))
         })?;
 
+    fn json_value_to_indexmap(
+        value: serde_json::Value,
+    ) -> Result<indexmap::IndexMap<String, serde_json::Value>, CustomError> {
+        value
+            .as_object()
+            .map(|v| {
+                Ok(v.iter()
+                    .map(|(k, v)| (k.clone(), v.clone()))
+                    .collect::<indexmap::IndexMap<_, _>>())
+            })
+            .unwrap_or_else(|| Err(CustomError::new(anyhow::anyhow!("expected object"))))
+    }
+
     let result = SeqvarsAnnoResponseRecord {
-        // cadd: Option<bool>,
-        // dbsnp: Option<bool>,
-        // dbnsfp: Option<bool>,
-        // dbscsnv: Option<bool>,
+        cadd: data.annos[genome_release][AnnoDb::Cadd]
+            .as_ref()
+            .map(|db| {
+                fetch_var_tsv_json(
+                    &db.data,
+                    AnnoDb::Cadd.cf_name(),
+                    query.clone().into_inner().into(),
+                )
+            })
+            .transpose()?
+            .flatten()
+            .map(json_value_to_indexmap)
+            .transpose()?,
+        dbsnp: data.annos[genome_release][AnnoDb::Dbsnp]
+            .as_ref()
+            .map(|db| {
+                fetch_var_protobuf::<crate::dbsnp::pbs::Record>(
+                    &db.data,
+                    AnnoDb::Dbsnp.cf_name(),
+                    query.clone().into_inner().into(),
+                )
+            })
+            .transpose()?
+            .flatten()
+            .map(Into::into),
+        dbnsfp: data.annos[genome_release][AnnoDb::Dbnsfp]
+            .as_ref()
+            .map(|db| {
+                fetch_var_tsv_json(
+                    &db.data,
+                    AnnoDb::Cadd.cf_name(),
+                    query.clone().into_inner().into(),
+                )
+            })
+            .transpose()?
+            .flatten()
+            .map(json_value_to_indexmap)
+            .transpose()?,
+        dbscsnv: data.annos[genome_release][AnnoDb::Dbscsnv]
+            .as_ref()
+            .map(|db| {
+                fetch_var_tsv_json(
+                    &db.data,
+                    AnnoDb::Cadd.cf_name(),
+                    query.clone().into_inner().into(),
+                )
+            })
+            .transpose()?
+            .flatten()
+            .map(json_value_to_indexmap)
+            .transpose()?,
         // gnomad_mtdna: Option<bool>,
         // gnomad_exomes: Option<bool>,
         // gnomad_genomes: Option<bool>,
