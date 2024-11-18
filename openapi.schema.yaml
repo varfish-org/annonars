@@ -6789,6 +6789,737 @@ components:
       enum:
       - grch37
       - grch38
+    Gnomad3Vep:
+      type: object
+      description: Protocol buffer for the gnomAD-nuclear VEP predictions.
+      required:
+      - allele
+      - consequence
+      - impact
+      - symbol
+      - gene
+      - feature_type
+      - feature
+      - feature_biotype
+      - domains
+      properties:
+        allele:
+          type: string
+          description: Allele of record.
+        consequence:
+          type: string
+          description: Consequence, e.g., `"missense_variant"`.
+        impact:
+          type: string
+          description: Impact, e.g., `"MODERATE"`.
+        symbol:
+          type: string
+          description: Gene symbol, e.g., `"PCSK9"`.
+        gene:
+          type: string
+          description: Gene ID, `e.g., "ENSG00000169174"`.
+        feature_type:
+          type: string
+          description: Feature type, e.g., `"Transcript"`.
+        feature:
+          type: string
+          description: Feature ID, e.g., `"ENST00000302118"`.
+        feature_biotype:
+          type: string
+          description: Feature biotype, e.g., `"protein_coding"`.
+        exon:
+          type:
+          - string
+          - 'null'
+          description: Ranked exon number, e.g., `"1/4"`.
+        intron:
+          type:
+          - string
+          - 'null'
+          description: Ranked intron number, e.g., `"1/4"`.
+        hgvsc:
+          type:
+          - string
+          - 'null'
+          description: cDNA position, e.g., `"ENST00000302118.5:c.89C>G"`.
+        hgvsp:
+          type:
+          - string
+          - 'null'
+          description: Protein position, e.g., `"ENSP00000302118.5:p.Thr30Arg"`.
+        cdna_position:
+          type:
+          - string
+          - 'null'
+          description: cDNA position, e.g., `"89/1863"`.
+        cds_position:
+          type:
+          - string
+          - 'null'
+          description: CDS position, e.g., `"89/1863"`.
+        protein_position:
+          type:
+          - string
+          - 'null'
+          description: Protein position, e.g., `"30/620"`.
+        amino_acids:
+          type:
+          - string
+          - 'null'
+          description: Amino acids, e.g., `"T/R"`.
+        codons:
+          type:
+          - string
+          - 'null'
+          description: Codons, e.g., `"gCg/gGg"`.
+        dbsnp_id:
+          type:
+          - string
+          - 'null'
+          description: |-
+            TODO: actually is optional int32 allele_num = 18;
+            dbSNP ID, e.g., `"rs28942080"`.
+        distance:
+          type:
+          - string
+          - 'null'
+          description: Distance output of VEP.
+        strand:
+          type:
+          - string
+          - 'null'
+          description: Strand, e.g., `"1"`.
+        variant_class:
+          type:
+          - string
+          - 'null'
+          description: Variant class, e.g., `"SNV"`.
+        minimised:
+          type:
+          - string
+          - 'null'
+          description: Minimised output of VEP.
+        symbol_source:
+          type:
+          - string
+          - 'null'
+          description: Symbol source, e.g., `"HGNC"`.
+        hgnc_id:
+          type:
+          - string
+          - 'null'
+          description: HGNC ID, e.g., `"HGNC:8706"`.
+        canonical:
+          type:
+          - boolean
+          - 'null'
+          description: Whether this is the canonical transcript.
+        tsl:
+          type:
+          - integer
+          - 'null'
+          format: int32
+          description: Transcript support level, e.g., `"1"`.
+        appris:
+          type:
+          - string
+          - 'null'
+          description: APPRIS annotation, e.g. `"P1"`.
+        ccds:
+          type:
+          - string
+          - 'null'
+          description: CCDS ID, e.g., `"CCDS30547.1"`.
+        ensp:
+          type:
+          - string
+          - 'null'
+          description: Ensembl protein ID, e.g., `"ENSP00000302118"`.
+        swissprot:
+          type:
+          - string
+          - 'null'
+          description: SwissProt ID, e.g., `"P04114"`.
+        trembl:
+          type:
+          - string
+          - 'null'
+          description: TREMBL ID, e.g., `"Q5T4W7"`.
+        uniparc:
+          type:
+          - string
+          - 'null'
+          description: UniParc ID, e.g., `"UPI000002D4B2"`.
+        gene_pheno:
+          type:
+          - string
+          - 'null'
+          description: Gene phenotype from VEP.
+        sift:
+          oneOf:
+          - type: 'null'
+          - $ref: '#/components/schemas/VepCommonPrediction'
+            description: SIFT prediction, e.g., `"tolerated(0.06)"`.
+        polyphen:
+          oneOf:
+          - type: 'null'
+          - $ref: '#/components/schemas/VepCommonPrediction'
+            description: PolyPhen prediction, e.g., `"benign(0.001)"`.
+        domains:
+          type: array
+          items:
+            $ref: '#/components/schemas/VepCommonDomain'
+          description: Protein domains, e.g., `\[["2p4e", "ENSP_mappings"\], \["2qtw", "ENSP_mappings"]\]`.
+        hgvs_offset:
+          type:
+          - string
+          - 'null'
+          description: HGVS offset.
+        motif_name:
+          type:
+          - string
+          - 'null'
+          description: Motif name.
+        motif_pos:
+          type:
+          - string
+          - 'null'
+          description: Motif name.
+        high_inf_pos:
+          type:
+          - string
+          - 'null'
+          description: '"high inf pos" from VEP.'
+        motif_score_change:
+          type:
+          - string
+          - 'null'
+          description: Motif score change.
+        lof:
+          type:
+          - string
+          - 'null'
+          description: Loss of function prediction.
+        lof_filter:
+          type:
+          - string
+          - 'null'
+          description: Loss of function filter.
+        lof_flags:
+          type:
+          - string
+          - 'null'
+          description: Loss of function flags.
+        lof_info:
+          type:
+          - string
+          - 'null'
+          description: Loss of function info.
+    GnomadMtdnaAgeInfo:
+      type: object
+      description: Encapsulate VCF INFO fields related to age.
+      required:
+      - age_hist_hom_bin_freq
+      - age_hist_het_bin_freq
+      properties:
+        age_hist_hom_bin_freq:
+          type: array
+          items:
+            type: integer
+            format: int32
+          description: |-
+            Histogram of ages of individuals with a homoplasmic variant; bin edges are: [30.0, 35.0,
+            40.0, 45.0, 50.0, 55.0, 60.0, 65.0, 70.0, 75.0, 80.0].
+        age_hist_hom_n_smaller:
+          type:
+          - integer
+          - 'null'
+          format: int32
+          description: |-
+            Count of age values falling below lowest histogram bin edge for individuals with a
+            homoplasmic variant.
+        age_hist_hom_n_larger:
+          type:
+          - integer
+          - 'null'
+          format: int32
+          description: |-
+            Count of age values falling above highest histogram bin edge for individuals with a
+            homoplasmic variant.
+        age_hist_het_bin_freq:
+          type: array
+          items:
+            type: integer
+            format: int32
+          description: |-
+            Histogram of ages of individuals with a heteroplasmic variant; bin edges are: [30.0, 35.0,
+            40.0, 45.0, 50.0, 55.0, 60.0, 65.0, 70.0, 75.0, 80.0]
+        age_hist_het_n_smaller:
+          type:
+          - integer
+          - 'null'
+          format: int32
+          description: |-
+            Count of age values falling below lowest histogram bin edge for individuals with a
+            heteroplasmic variant.
+        age_hist_het_n_larger:
+          type:
+          - integer
+          - 'null'
+          format: int32
+          description: |-
+            Count of age values falling above highest histogram bin edge for individuals with a
+            heteroplasmic variant.
+    GnomadMtdnaDepthInfo:
+      type: object
+      description: Encapsulate VCF INFO fields related to depth.
+      required:
+      - dp_hist_all_bin_freq
+      - dp_hist_alt_bin_freq
+      properties:
+        dp_hist_all_n_larger:
+          type:
+          - integer
+          - 'null'
+          format: int32
+          description: Count of dp values falling above highest histogram bin edge for all individuals.
+        dp_hist_alt_n_larger:
+          type:
+          - integer
+          - 'null'
+          format: int32
+          description: |-
+            Count of dp values falling above highest histogram bin edge for individuals with the
+            alternative allele
+        dp_hist_all_bin_freq:
+          type: array
+          items:
+            type: integer
+            format: int32
+          description: |-
+            Histogram of dp values for all individuals; bin edges are: [0.0, 200.0, 400.0, 600.0, 800.0,
+            1000.0, 1200.0, 1400.0, 1600.0, 1800.0, 2000.0]
+        dp_hist_alt_bin_freq:
+          type: array
+          items:
+            type: integer
+            format: int32
+          description: |-
+            Histogram of dp values for individuals with the alternative allele; bin edges are: [0.0,
+            200.0, 400.0, 600.0, 800.0, 1000.0, 1200.0, 1400.0, 1600.0, 1800.0, 2000.0]
+    GnomadMtdnaFilter:
+      type: string
+      description: Protocol buffer enum for site-level filters.
+      enum:
+      - artifact_prone_site
+      - indel_stack
+      - no_pass_genotype
+    GnomadMtdnaFilterHistograms:
+      type: object
+      description: Encapsulate VCF INFO fields related to filter failure histograms.
+      required:
+      - base_qual_hist
+      - position_hist
+      - strand_bias_hist
+      - weak_evidence_hist
+      - contamination_hist
+      properties:
+        base_qual_hist:
+          type: array
+          items:
+            type: integer
+            format: int32
+          description: |-
+            Histogram of number of individuals failing the base_qual filter (alternate allele median base
+            quality) across heteroplasmy levels, bin edges are: [0.0, 0.1, 0.2, 0.30000000000000004, 0.4,
+            0.5, 0.6000000000000001, 0.7000000000000001, 0.8, 0.9, 1.0]
+        position_hist:
+          type: array
+          items:
+            type: integer
+            format: int32
+          description: |-
+            Histogram of number of individuals failing the position filter (median distance of alternate
+            variants from end of reads) across heteroplasmy levels, bin edges are: [0.0, 0.1, 0.2, 0.
+            30000000000000004, 0.4, 0.5, 0.6000000000000001, 0.7000000000000001, 0.8, 0.9, 1.0]
+        strand_bias_hist:
+          type: array
+          items:
+            type: integer
+            format: int32
+          description: |-
+            Histogram of number of individuals failing the strand_bias filter (evidence for alternate
+            allele comes from one read direction only) across heteroplasmy levels, bin edges are: [0.0,
+            0.1, 0.2, 0.30000000000000004, 0.4, 0.5, 0.6000000000000001, 0.7000000000000001, 0.8, 0.9,
+            1.0]
+        weak_evidence_hist:
+          type: array
+          items:
+            type: integer
+            format: int32
+          description: |-
+            Histogram of number of individuals failing the weak_evidence filter (mutation does not meet
+            likelihood threshold) across heteroplasmy levels, bin edges are: [0.0, 0.1, 0.2,
+            0.30000000000000004, 0.4, 0.5, 0.6000000000000001, 0.7000000000000001, 0.8, 0.9, 1.0]
+        contamination_hist:
+          type: array
+          items:
+            type: integer
+            format: int32
+          description: |-
+            Histogram of number of individuals failing the contamination filter across heteroplasmy
+            levels, bin edges are: [0.0, 0.1, 0.2, 0.30000000000000004, 0.4, 0.5, 0.6000000000000001,
+            0.7000000000000001, 0.8, 0.9, 1.0]
+    GnomadMtdnaHaplogroupInfo:
+      type: object
+      description: Encapsulate VCF INFO fields related to haplogroups.
+      required:
+      - hap_defining_variant
+      - hap_an
+      - hap_ac_het
+      - hap_ac_hom
+      - hap_af_het
+      - hap_af_hom
+      - hap_hl_hist
+      - hap_faf_hom
+      properties:
+        hap_defining_variant:
+          type: boolean
+          description: Present if variant is present as a haplogroup defining variant in PhyloTree build 17.
+        hap_an:
+          type: array
+          items:
+            type: integer
+            format: int32
+          description: |-
+            List of overall allele number for each haplogroup, haplogroup order: ['A', 'B', 'C', 'D',
+            'E', 'F', 'G', 'H', 'HV', 'I', 'J', 'K', 'L0', 'L1', 'L2', 'L3', 'L4', 'L5', 'M', 'N', 'P',
+            'R', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z']
+        hap_ac_het:
+          type: array
+          items:
+            type: integer
+            format: int32
+          description: |-
+            List of AC_het for each haplogroup, haplogroup order: ['A', 'B', 'C', 'D', 'E', 'F', 'G',
+            'H', 'HV', 'I', 'J', 'K', 'L0', 'L1', 'L2', 'L3', 'L4', 'L5', 'M', 'N', 'P', 'R', 'T', 'U',
+            'V', 'W', 'X', 'Y', 'Z']
+        hap_ac_hom:
+          type: array
+          items:
+            type: integer
+            format: int32
+          description: |-
+            List of AC_hom for each haplogroup, haplogroup order: ['A', 'B', 'C', 'D', 'E', 'F', 'G',
+            'H', 'HV', 'I', 'J', 'K', 'L0', 'L1', 'L2', 'L3', 'L4', 'L5', 'M', 'N', 'P', 'R', 'T', 'U',
+            'V', 'W', 'X', 'Y', 'Z']
+        hap_af_het:
+          type: array
+          items:
+            type: number
+            format: float
+          description: |-
+            List of AF_het for each haplogroup, haplogroup order: ['A', 'B', 'C', 'D', 'E', 'F', 'G',
+            'H', 'HV', 'I', 'J', 'K', 'L0', 'L1', 'L2', 'L3', 'L4', 'L5', 'M', 'N', 'P', 'R', 'T', 'U',
+            'V', 'W', 'X', 'Y', 'Z']
+        hap_af_hom:
+          type: array
+          items:
+            type: number
+            format: float
+          description: |-
+            List of AF_hom for each haplogroup, haplogroup order: ['A', 'B', 'C', 'D', 'E', 'F', 'G',
+            'H', 'HV', 'I', 'J', 'K', 'L0', 'L1', 'L2', 'L3', 'L4', 'L5', 'M', 'N', 'P', 'R', 'T', 'U',
+            'V', 'W', 'X', 'Y', 'Z']
+        hap_hl_hist:
+          type: array
+          items:
+            type: integer
+            format: int32
+          description: |-
+            Histogram of heteroplasmy levels for each haplogroup; bin edges are: [0.0, 0.1, 0.2,
+            0.30000000000000004, 0.4, 0.5, 0.6000000000000001, 0.7000000000000001, 0.8, 0.9, 1.0],
+            haplogroup order: ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'HV', 'I', 'J', 'K', 'L0', 'L1',
+            'L2', 'L3', 'L4', 'L5', 'M', 'N', 'P', 'R', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z']
+
+            Note that we encode this by concatenating all lists here because of limitations in
+            protocolbuffers (no native nested repeated fields).
+        hap_faf_hom:
+          type: array
+          items:
+            type: number
+            format: float
+          description: |-
+            List of filtering allele frequency for each haplogroup restricted to homoplasmic variants,
+            haplogroup order: ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'HV', 'I', 'J', 'K', 'L0', 'L1',
+            'L2', 'L3', 'L4', 'L5', 'M', 'N', 'P', 'R', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z']
+        hapmax_af_hom:
+          type:
+          - string
+          - 'null'
+          description: Haplogroup with maximum AF_hom.
+        hapmax_af_het:
+          type:
+          - string
+          - 'null'
+          description: Haplogroup with maximum AF_het.
+        faf_hapmax_hom:
+          type:
+          - number
+          - 'null'
+          format: float
+          description: Maximum filtering allele frequency across haplogroups restricted to homoplasmic variants.
+    GnomadMtdnaHeteroplasmyInfo:
+      type: object
+      description: Encapsulate VCF INFO fields related to heteroplasmy levels.
+      required:
+      - heteroplasmy_below_min_het_threshold_hist
+      - hl_hist
+      - common_low_heteroplasmy
+      - max_hl
+      properties:
+        heteroplasmy_below_min_het_threshold_hist:
+          type: array
+          items:
+            type: integer
+            format: int32
+          description: |-
+            Histogram of number of individuals with a heteroplasmy level below 0.1, bin edges are: [0.0,
+            0.1, 0.2, 0.30000000000000004, 0.4, 0.5, 0.6000000000000001, 0.7000000000000001, 0.8, 0.9,
+            1.0]
+        hl_hist:
+          type: array
+          items:
+            type: integer
+            format: int32
+          description: |-
+            Histogram of heteroplasmy levels; bin edges are: [0.0, 0.1, 0.2, 0.30000000000000004, 0.4,
+            0.5, 0.6000000000000001, 0.7000000000000001, 0.8, 0.9, 1.0].
+        common_low_heteroplasmy:
+          type: boolean
+          description: |-
+            Present if variant is found at an overall frequency of .001 across all samples with a
+            heteroplasmy level > 0 and < 0.50 (includes variants <0.01 heteroplasmy which are
+            subsequently filtered)
+        max_hl:
+          type: number
+          format: float
+          description: Maximum heteroplasmy level observed among all samples for that variant.
+    GnomadMtdnaPopulationInfo:
+      type: object
+      description: Encapsulate VCF INFO fields related to populations.
+      required:
+      - pop_an
+      - pop_ac_het
+      - pop_ac_hom
+      - pop_af_hom
+      - pop_af_het
+      - pop_hl_hist
+      properties:
+        pop_an:
+          type: array
+          items:
+            type: integer
+            format: int32
+          description: |-
+            List of overall allele number for each population, population order: ['afr', 'ami', 'amr',
+            'asj', 'eas', 'fin', 'nfe', 'oth', 'sas', 'mid']
+        pop_ac_het:
+          type: array
+          items:
+            type: integer
+            format: int32
+          description: |-
+            List of AC_het for each population, population order: ['afr', 'ami', 'amr', 'asj', 'eas',
+            'fin', 'nfe', 'oth', 'sas', 'mid']
+        pop_ac_hom:
+          type: array
+          items:
+            type: integer
+            format: int32
+          description: |-
+            List of AC_hom for each population, population order: ['afr', 'ami', 'amr', 'asj', 'eas',
+            'fin', 'nfe', 'oth', 'sas', 'mid']
+        pop_af_hom:
+          type: array
+          items:
+            type: number
+            format: float
+          description: |-
+            List of AF_hom for each population, population order: ['afr', 'ami', 'amr', 'asj', 'eas',
+            'fin', 'nfe', 'oth', 'sas', 'mid']
+        pop_af_het:
+          type: array
+          items:
+            type: number
+            format: float
+          description: |-
+            List of AF_het for each population, population order: ['afr', 'ami', 'amr', 'asj', 'eas',
+            'fin', 'nfe', 'oth', 'sas', 'mid']
+        pop_hl_hist:
+          type: array
+          items:
+            type: integer
+            format: int32
+          description: |-
+            Histogram of heteroplasmy levels for each population; bin edges are: [0.0, 0.1, 0.2,
+            0.30000000000000004, 0.4, 0.5, 0.6000000000000001, 0.7000000000000001, 0.8, 0.9, 1.0],
+            population order: \['afr', 'ami', 'amr', 'asj', 'eas', 'fin', 'nfe', 'oth', 'sas', 'mid'\]
+
+            Note that we encode this by concatenating all lists here because of limitations in
+            protocolbuffers (no native nested repeated fields).
+    GnomadMtdnaQualityInfo:
+      type: object
+      description: Encapsulate VCF INFO fields related to quality.
+      properties:
+        dp_mean:
+          type:
+          - number
+          - 'null'
+          format: float
+          description: Mean depth across all individuals for the site.
+        mq_mean:
+          type:
+          - number
+          - 'null'
+          format: float
+          description: Mean MMQ (median mapping quality) across individuals with a variant for the site.
+        tlod_mean:
+          type:
+          - number
+          - 'null'
+          format: float
+          description: |-
+            Mean TLOD (Log 10 likelihood ratio score of variant existing versus not existing) across
+            individuals with a variant for the site.
+    GnomadMtdnaRecord:
+      type: object
+      description: |-
+        Protocol buffer for the gnomAD-mtDNA VCF record.
+
+        The more specialized fields from the INFO column are stored in separate, optional fields such
+        that we don't end up with a humongous message.
+      required:
+      - chrom
+      - pos
+      - ref_allele
+      - alt_allele
+      - variant_collapsed
+      - excluded_ac
+      - an
+      - ac_hom
+      - ac_het
+      - af_hom
+      - af_het
+      - filters
+      - vep
+      properties:
+        chrom:
+          type: string
+          description: Chromosome name.
+        pos:
+          type: integer
+          format: int32
+          description: 1-based start position.
+        ref_allele:
+          type: string
+          description: Reference allele.
+        alt_allele:
+          type: string
+          description: Alternate allele.
+        variant_collapsed:
+          type: string
+          description: Variant in format of RefPosAlt
+        excluded_ac:
+          type: integer
+          format: int32
+          description: Excluded allele count (number of individuals in which the variant was filtered out).
+        an:
+          type: integer
+          format: int32
+          description: Overall allele number (number of samples with non-missing genotype).
+        ac_hom:
+          type: integer
+          format: int32
+          description: Allele count restricted to variants with a heteroplasmy level >= 0.95.
+        ac_het:
+          type: integer
+          format: int32
+          description: Allele count restricted to variants with a heteroplasmy level >= 0.10 and < 0.95.
+        af_hom:
+          type: number
+          format: float
+          description: Allele frequency restricted to variants with a heteroplasmy level >= 0.95.
+        af_het:
+          type: number
+          format: float
+          description: Allele frequency restricted to variants with a heteroplasmy level >= 0.10 and < 0.95.
+        filters:
+          type: array
+          items:
+            $ref: '#/components/schemas/GnomadMtdnaFilter'
+          description: Site-level filters.
+        mitotip_score:
+          type:
+          - number
+          - 'null'
+          format: float
+          description: MitoTip raw score
+        mitotip_trna_prediction:
+          type:
+          - string
+          - 'null'
+          description: MitoTip score interpretation
+        pon_mt_trna_prediction:
+          type:
+          - string
+          - 'null'
+          description: tRNA pathogenicity classification from PON-mt-tRNA
+        pon_ml_probability_of_pathogenicity:
+          type:
+          - string
+          - 'null'
+          description: tRNA ML_probability_of_pathogenicity from PON-mt-tRNA
+        vep:
+          type: array
+          items:
+            $ref: '#/components/schemas/Gnomad3Vep'
+          description: VEP v3 annotation records.
+        quality_info:
+          oneOf:
+          - type: 'null'
+          - $ref: '#/components/schemas/GnomadMtdnaQualityInfo'
+            description: Summary information for variant quality interpretation.
+        heteroplasmy_info:
+          oneOf:
+          - type: 'null'
+          - $ref: '#/components/schemas/GnomadMtdnaHeteroplasmyInfo'
+            description: Information related to heteroplasmy levels.
+        filter_histograms:
+          oneOf:
+          - type: 'null'
+          - $ref: '#/components/schemas/GnomadMtdnaFilterHistograms'
+            description: Histograms related to variant quality filters.
+        population_info:
+          oneOf:
+          - type: 'null'
+          - $ref: '#/components/schemas/GnomadMtdnaPopulationInfo'
+            description: Population-related information.
+        haplogroup_info:
+          oneOf:
+          - type: 'null'
+          - $ref: '#/components/schemas/GnomadMtdnaHaplogroupInfo'
+            description: Haplogroup-related information.
+        age_info:
+          oneOf:
+          - type: 'null'
+          - $ref: '#/components/schemas/GnomadMtdnaAgeInfo'
+            description: Age-related information.
+        depth_info:
+          oneOf:
+          - type: 'null'
+          - $ref: '#/components/schemas/GnomadMtdnaDepthInfo'
+            description: Depth of coverage-related information.
     HelixMtDbRecord:
       type: object
       description: A HelixMtDb record.
@@ -6882,10 +7613,10 @@ components:
           propertyNames:
             type: string
         gnomad_mtdna:
-          type:
-          - boolean
-          - 'null'
-          description: Annotations from gnomAD-mtDNA.
+          oneOf:
+          - type: 'null'
+          - $ref: '#/components/schemas/GnomadMtdnaRecord'
+            description: Annotations from gnomAD-mtDNA.
         gnomad_exomes:
           type:
           - boolean
@@ -7113,6 +7844,33 @@ components:
           items:
             $ref: '#/components/schemas/UcscConservationRecord'
           description: The records in the list.
+    VepCommonDomain:
+      type: object
+      description: Protocol buffer for `Vep.domains`
+      required:
+      - id
+      - source
+      properties:
+        id:
+          type: string
+          description: Domain ID.
+        source:
+          type: string
+          description: Domain source.
+    VepCommonPrediction:
+      type: object
+      description: Store the scoring of a prediction.
+      required:
+      - prediction
+      - score
+      properties:
+        prediction:
+          type: string
+          description: Prediction.
+        score:
+          type: number
+          format: float
+          description: Score.
     VersionsAnnotationInfo:
       type: object
       description: Version information for one database.
