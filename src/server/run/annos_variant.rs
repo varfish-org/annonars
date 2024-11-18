@@ -2792,9 +2792,9 @@ pub mod response {
         /// Annotations from gnomAD-mtDNA.
         pub gnomad_mtdna: Option<GnomadMtdnaRecord>,
         /// Annotations from gnomAD-exomes.
-        pub gnomad_exomes: Option<bool>,
+        pub gnomad_exomes: Option<GnomadRecord>,
         /// Annotations from gnomAD-genomes.
-        pub gnomad_genomes: Option<bool>,
+        pub gnomad_genomes: Option<GnomadRecord>,
         /// Annotations from HelixMTdb.
         pub helixmtdb: Option<HelixMtDbRecord>,
         /// Annotations from UCSC conservation.
