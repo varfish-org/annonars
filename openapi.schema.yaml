@@ -42,27 +42,49 @@ paths:
   /api/v1/genes/info:
     get:
       tags:
-      - genes_info
-      summary: Query for annotations for one or more genes.
-      operationId: genesInfo
+      - annos_variant
+      summary: Query for annotations for a single variant.
+      operationId: seqvarsAnosQuery
       parameters:
-      - name: hgnc_id
+      - name: genome_release
         in: query
-        description: The HGNC IDs to search for.
-        required: false
+        description: Genome release specification.
+        required: true
         schema:
-          type:
-          - array
-          - 'null'
-          items:
-            type: string
+          type: string
+      - name: chromosome
+        in: query
+        description: Chromosome name.
+        required: true
+        schema:
+          type: string
+      - name: pos
+        in: query
+        description: 1-based position for VCF-style variant.
+        required: true
+        schema:
+          type: integer
+          format: int32
+          minimum: 0
+      - name: reference
+        in: query
+        description: Reference allele bases.
+        required: true
+        schema:
+          type: string
+      - name: alternative
+        in: query
+        description: Alterantive allele bases.
+        required: true
+        schema:
+          type: string
       responses:
         '200':
-          description: Per-gene information.
+          description: Annotation for a single variant.
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/GenesInfoResponse'
+                $ref: '#/components/schemas/SeqvarsAnnosResponse'
         '500':
           description: Internal server error.
           content:
@@ -4376,6 +4398,17 @@ components:
       properties:
         err:
           type: string
+    ExtractedVcvRecordList:
+      type: object
+      description: List of `ClinvarExtractedVcvRecord`s.
+      required:
+      - records
+      properties:
+        records:
+          type: array
+          items:
+            $ref: '#/components/schemas/ClinvarExtractedVcvRecord'
+          description: The list of VCV records that may share a global variant.
     GeneNames:
       type: object
       description: Identifier / name information for one gene.
@@ -6729,6 +6762,51 @@ components:
       enum:
       - grch37
       - grch38
+    HelixMtDbRecord:
+      type: object
+      description: A HelixMtDb record.
+      required:
+      - chrom
+      - pos
+      - ref_allele
+      - alt_allele
+      - num_total
+      - num_het
+      - num_hom
+      - feature_type
+      - gene_name
+      properties:
+        chrom:
+          type: string
+          description: Chromosome name.
+        pos:
+          type: integer
+          format: int32
+          description: 1-based start position.
+        ref_allele:
+          type: string
+          description: Reference allele.
+        alt_allele:
+          type: string
+          description: / Alternate allele.
+        num_total:
+          type: integer
+          format: int32
+          description: Total number of individuals.
+        num_het:
+          type: integer
+          format: int32
+          description: Number of homoplasmic carriers.
+        num_hom:
+          type: integer
+          format: int32
+          description: Number of heteroplasmic carriers.
+        feature_type:
+          type: string
+          description: Feature type.
+        gene_name:
+          type: string
+          description: Gene name.
     Scored:
       type: object
       description: A scored result.
@@ -6743,6 +6821,99 @@ components:
         data:
           $ref: '#/components/schemas/GeneNames'
           description: The result.
+    SeqvarsAnnoResponseRecord:
+      type: object
+      description: Annotation for a sinngle variant.
+      properties:
+        cadd:
+          type:
+          - boolean
+          - 'null'
+          description: Annotations from CADD (TSV annotation file).
+        dbsnp:
+          type:
+          - boolean
+          - 'null'
+          description: Annotations from dbSNP.
+        dbnsfp:
+          type:
+          - boolean
+          - 'null'
+          description: Annotations from dbNSFP (TSV annotation file).
+        dbscsnv:
+          type:
+          - boolean
+          - 'null'
+          description: Annotations from dbscSNV.
+        gnomad_mtdna:
+          type:
+          - boolean
+          - 'null'
+          description: Annotations from gnomAD-mtDNA.
+        gnomad_exomes:
+          type:
+          - boolean
+          - 'null'
+          description: Annotations from gnomAD-exomes.
+        gnomad_genomes:
+          type:
+          - boolean
+          - 'null'
+          description: Annotations from gnomAD-genomes.
+        helixmtdb:
+          oneOf:
+          - type: 'null'
+          - $ref: '#/components/schemas/HelixMtDbRecord'
+            description: Annotations from HelixMTdb.
+        ucsc_conservation:
+          oneOf:
+          - type: 'null'
+          - $ref: '#/components/schemas/UcscConservationRecordList'
+            description: Annotations from UCSC conservation.
+        clinvar:
+          oneOf:
+          - type: 'null'
+          - $ref: '#/components/schemas/ExtractedVcvRecordList'
+            description: Minimal extracted data from ClinVar.
+    SeqvarsAnnosQuery:
+      type: object
+      description: |-
+        Parameters for `variant_annos::handle`.
+
+        Defines a variant in VCF-style format with a genome release specification.
+      required:
+      - genome_release
+      - chromosome
+      - pos
+      - reference
+      - alternative
+      properties:
+        genome_release:
+          type: string
+          description: Genome release specification.
+        chromosome:
+          type: string
+          description: Chromosome name.
+        pos:
+          type: integer
+          format: int32
+          description: 1-based position for VCF-style variant.
+          minimum: 0
+        reference:
+          type: string
+          description: Reference allele bases.
+        alternative:
+          type: string
+          description: Alterantive allele bases.
+    SeqvarsAnnosResponse:
+      type: object
+      description: Query response for `handle_with_openapi()`.
+      required:
+      - result
+      properties:
+        result:
+          $ref: '#/components/schemas/SeqvarsAnnoResponseRecord'
+          description: The result records.
     StrucvarsClinvarPageInfo:
       type: object
       description: Information regarding the pagination.
@@ -6854,6 +7025,58 @@ components:
           type: number
           format: double
           description: The reciprocal overlap with the query.
+    UcscConservationRecord:
+      type: object
+      description: A UCSC conservation record.
+      required:
+      - chrom
+      - start
+      - stop
+      - hgnc_id
+      - enst_id
+      - exon_num
+      - exon_count
+      - alignment
+      properties:
+        chrom:
+          type: string
+          description: Chromosome name.
+        start:
+          type: integer
+          format: int32
+          description: 1-based, inclusive start position.
+        stop:
+          type: integer
+          format: int32
+          description: 1-based, inclusive stop position.
+        hgnc_id:
+          type: string
+          description: HGNC identifier.
+        enst_id:
+          type: string
+          description: ENST identifier.
+        exon_num:
+          type: integer
+          format: int32
+          description: Exon number (1-based).
+        exon_count:
+          type: integer
+          format: int32
+          description: Exon count.
+        alignment:
+          type: string
+          description: Alignment.
+    UcscConservationRecordList:
+      type: object
+      description: List of `Record`s.
+      required:
+      - records
+      properties:
+        records:
+          type: array
+          items:
+            $ref: '#/components/schemas/UcscConservationRecord'
+          description: The records in the list.
     VersionsAnnotationInfo:
       type: object
       description: Version information for one database.
