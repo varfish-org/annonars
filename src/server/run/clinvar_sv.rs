@@ -226,19 +226,19 @@ pub(crate) struct StrucvarsClinvarQuery {
     pub page_size: Option<u32>,
 }
 
-impl Into<Request> for StrucvarsClinvarQuery {
-    fn into(self) -> Request {
+impl From<StrucvarsClinvarQuery> for Request {
+    fn from(val: StrucvarsClinvarQuery) -> Self {
         Request {
-            genome_release: self.genome_release.to_string(),
-            chromosome: self.chromosome,
-            start: self.start,
-            stop: self.stop,
-            variation_types: self
+            genome_release: val.genome_release.to_string(),
+            chromosome: val.chromosome,
+            start: val.start,
+            stop: val.stop,
+            variation_types: val
                 .variation_types
                 .map(|v| v.into_iter().map(Into::into).collect()),
-            min_overlap: self.min_overlap,
-            page_no: self.page_no,
-            page_size: self.page_size,
+            min_overlap: val.min_overlap,
+            page_no: val.page_no,
+            page_size: val.page_size,
         }
     }
 }
@@ -344,16 +344,10 @@ async fn handle_with_openapi(
     query: web::Query<StrucvarsClinvarQuery>,
 ) -> actix_web::Result<Json<StrucvarsClinvarResponse>, CustomError> {
     Ok(Json(
-        handle_impl(
-            data,
-            path,
-            TryInto::<Request>::try_into(query.into_inner()).map_err(|e| {
-                CustomError::new(anyhow::anyhow!("Query conversion error: {:?}", e))
-            })?,
-        )
-        .await
-        .map_err(|e| CustomError::new(anyhow::anyhow!("Implementaion error: {:?}", e)))?
-        .try_into()
-        .map_err(|e| CustomError::new(anyhow::anyhow!("Response conversion error: {:?}", e)))?,
+        handle_impl(data, path, Into::<Request>::into(query.into_inner()))
+            .await
+            .map_err(|e| CustomError::new(anyhow::anyhow!("Implementaion error: {:?}", e)))?
+            .try_into()
+            .map_err(|e| CustomError::new(anyhow::anyhow!("Response conversion error: {:?}", e)))?,
     ))
 }

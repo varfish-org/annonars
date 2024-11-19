@@ -10,7 +10,7 @@ use strum::IntoEnumIterator;
 use crate::{
     common::{keys, version},
     server::{
-        run::fetch::{fetch_pos_protobuf, fetch_pos_tsv_json},
+        run::fetch::{fetch_pos_protobuf_json, fetch_pos_tsv_json},
         run::AnnoDb,
     },
 };
@@ -97,7 +97,9 @@ async fn handle(
                 data.annos[genome_release][anno_db]
                     .as_ref()
                     .map(|db| {
-                        fetch_pos_protobuf::<crate::pbs::clinvar::minimal::ExtractedVcvRecordList>(
+                        fetch_pos_protobuf_json::<
+                            crate::pbs::clinvar::minimal::ExtractedVcvRecordList,
+                        >(
                             &db.data,
                             anno_db.cf_name(),
                             query.start_pos(),
@@ -125,7 +127,7 @@ async fn handle(
                 data.annos[genome_release][anno_db]
                     .as_ref()
                     .map(|db| {
-                        fetch_pos_protobuf::<crate::dbsnp::pbs::Record>(
+                        fetch_pos_protobuf_json::<crate::dbsnp::pbs::Record>(
                             &db.data,
                             anno_db.cf_name(),
                             query.start_pos(),
@@ -139,7 +141,7 @@ async fn handle(
                 data.annos[genome_release][anno_db]
                     .as_ref()
                     .map(|db| {
-                        fetch_pos_protobuf::<crate::helixmtdb::pbs::Record>(
+                        fetch_pos_protobuf_json::<crate::helixmtdb::pbs::Record>(
                             &db.data,
                             anno_db.cf_name(),
                             query.start_pos(),
@@ -153,7 +155,7 @@ async fn handle(
                 data.annos[genome_release][anno_db]
                     .as_ref()
                     .map(|db| {
-                        fetch_pos_protobuf::<crate::pbs::gnomad::mtdna::Record>(
+                        fetch_pos_protobuf_json::<crate::pbs::gnomad::mtdna::Record>(
                             &db.data,
                             anno_db.cf_name(),
                             query.start_pos(),
@@ -175,14 +177,14 @@ async fn handle(
                             .expect("gnomAD must have db version");
 
                         if db_version.starts_with("2.") {
-                            fetch_pos_protobuf::<crate::pbs::gnomad::gnomad2::Record>(
+                            fetch_pos_protobuf_json::<crate::pbs::gnomad::gnomad2::Record>(
                                 &db.data,
                                 anno_db.cf_name(),
                                 query.start_pos(),
                                 query.stop_pos(),
                             )
                         } else if db_version.starts_with("4.") {
-                            fetch_pos_protobuf::<crate::pbs::gnomad::gnomad4::Record>(
+                            fetch_pos_protobuf_json::<crate::pbs::gnomad::gnomad4::Record>(
                                 &db.data,
                                 anno_db.cf_name(),
                                 query.start_pos(),
@@ -209,21 +211,21 @@ async fn handle(
                             .as_ref()
                             .expect("gnomAD must have db version");
                         if db_version.starts_with("2.") {
-                            fetch_pos_protobuf::<crate::pbs::gnomad::gnomad2::Record>(
+                            fetch_pos_protobuf_json::<crate::pbs::gnomad::gnomad2::Record>(
                                 &db.data,
                                 anno_db.cf_name(),
                                 query.start_pos(),
                                 query.stop_pos(),
                             )
                         } else if db_version.starts_with("3.") {
-                            fetch_pos_protobuf::<crate::pbs::gnomad::gnomad3::Record>(
+                            fetch_pos_protobuf_json::<crate::pbs::gnomad::gnomad3::Record>(
                                 &db.data,
                                 anno_db.cf_name(),
                                 query.start_pos(),
                                 query.stop_pos(),
                             )
                         } else if db_version.starts_with("4.") {
-                            fetch_pos_protobuf::<crate::pbs::gnomad::gnomad4::Record>(
+                            fetch_pos_protobuf_json::<crate::pbs::gnomad::gnomad4::Record>(
                                 &db.data,
                                 anno_db.cf_name(),
                                 query.start_pos(),
@@ -243,7 +245,7 @@ async fn handle(
                 data.annos[genome_release][anno_db]
                     .as_ref()
                     .map(|db| {
-                        fetch_pos_protobuf::<crate::pbs::cons::RecordList>(
+                        fetch_pos_protobuf_json::<crate::pbs::cons::RecordList>(
                             &db.data,
                             anno_db.cf_name(),
                             query.start_pos(),
