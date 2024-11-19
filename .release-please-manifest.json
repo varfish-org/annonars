@@ -1,0 +1,14 @@
+{
+  "packages": {
+    ".": {
+      "release-type": "rust",
+      "extra-files": [
+        {
+          "type": "generic",
+          "path": "openapi.schema.yaml"
+        }
+      ]
+    }
+  }
+}
+
