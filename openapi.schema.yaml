@@ -6789,6 +6789,1407 @@ components:
       enum:
       - grch37
       - grch38
+    Gnomad2AgeInfo:
+      type: object
+      description: Encapsulate VCF INFO fields related to age.
+      required:
+      - age_hist_hom_bin_freq
+      - age_hist_het_bin_freq
+      properties:
+        age_hist_hom_bin_freq:
+          type: array
+          items:
+            type: integer
+            format: int32
+          description: |-
+            Histogram of ages of individuals with a homoplasmic variant; bin edges are: [30.0, 35.0,
+            40.0, 45.0, 50.0, 55.0, 60.0, 65.0, 70.0, 75.0, 80.0].
+        age_hist_hom_n_smaller:
+          type:
+          - integer
+          - 'null'
+          format: int32
+          description: |-
+            Count of age values falling below lowest histogram bin edge for individuals with a
+            homoplasmic variant.
+        age_hist_hom_n_larger:
+          type:
+          - integer
+          - 'null'
+          format: int32
+          description: |-
+            Count of age values falling above highest histogram bin edge for individuals with a
+            homoplasmic variant.
+        age_hist_het_bin_freq:
+          type: array
+          items:
+            type: integer
+            format: int32
+          description: |-
+            Histogram of ages of individuals with a heteroplasmic variant; bin edges are: [30.0, 35.0,
+            40.0, 45.0, 50.0, 55.0, 60.0, 65.0, 70.0, 75.0, 80.0]
+        age_hist_het_n_smaller:
+          type:
+          - integer
+          - 'null'
+          format: int32
+          description: |-
+            Count of age values falling below lowest histogram bin edge for individuals with a
+            heteroplasmic variant.
+        age_hist_het_n_larger:
+          type:
+          - integer
+          - 'null'
+          format: int32
+          description: |-
+            Count of age values falling above highest histogram bin edge for individuals with a
+            heteroplasmic variant.
+    Gnomad2AlleleCounts:
+      type: object
+      description: Store the relevant allele counts and frequencies in a given sub cohort.
+      required:
+      - ac
+      - an
+      - nhomalt
+      - af
+      properties:
+        ac:
+          type: integer
+          format: int32
+          description: Number of alternate alleles in sub cohort.
+        an:
+          type: integer
+          format: int32
+          description: Total number of alleles in the sub cohort.
+        nhomalt:
+          type: integer
+          format: int32
+          description: Number of homozygous alternate alleles in the sub cohort.
+        af:
+          type: number
+          format: float
+          description: Alternate allele frequency in the sub cohort.
+    Gnomad2AlleleCountsBySex:
+      type: object
+      description: Store the allele counts for the given sub cohort and sub cohort factored by sex.
+      properties:
+        overall:
+          oneOf:
+          - type: 'null'
+          - $ref: '#/components/schemas/Gnomad2AlleleCounts'
+            description: Overall allele counts in the sub cohort.
+        xx:
+          oneOf:
+          - type: 'null'
+          - $ref: '#/components/schemas/Gnomad2AlleleCounts'
+            description: Allele counts in female/XX karyotype individuals of sub cohort.
+        xy:
+          oneOf:
+          - type: 'null'
+          - $ref: '#/components/schemas/Gnomad2AlleleCounts'
+            description: Allele counts in male/XY karyotype individuals of sub cohort.
+    Gnomad2CohortAlleleCounts:
+      type: object
+      description: Store the allele counts for the given cohort.
+      required:
+      - by_population
+      properties:
+        cohort:
+          type:
+          - string
+          - 'null'
+          description: Name of the cohort.
+        by_population:
+          type: array
+          items:
+            $ref: '#/components/schemas/Gnomad2PopulationAlleleCounts'
+          description: Allele counts for each population.
+        by_sex:
+          oneOf:
+          - type: 'null'
+          - $ref: '#/components/schemas/Gnomad2AlleleCountsBySex'
+            description: Allele counts by sex.
+        raw:
+          oneOf:
+          - type: 'null'
+          - $ref: '#/components/schemas/Gnomad2AlleleCounts'
+            description: Raw allele counts.
+        popmax:
+          type:
+          - string
+          - 'null'
+          description: The population with maximum AF.
+        af_popmax:
+          type:
+          - number
+          - 'null'
+          format: float
+          description: |-
+            Maximum allele frequency across populations (excluding samples of Ashkenazi, Finnish, and
+            indeterminate ancestry).
+        ac_popmax:
+          type:
+          - integer
+          - 'null'
+          format: int32
+          description: Allele count in population with maximum AF.
+        an_popmax:
+          type:
+          - integer
+          - 'null'
+          format: int32
+          description: Total number of alleles in population with maximum AF.
+        nhomalt_popmax:
+          type:
+          - integer
+          - 'null'
+          format: int32
+          description: Total number of homozygous individuals in population with maximum AF.
+    Gnomad2DepthInfo:
+      type: object
+      description: Encapsulate VCF INFO fields related to depth.
+      required:
+      - dp_hist_all_bin_freq
+      - dp_hist_alt_bin_freq
+      properties:
+        dp_hist_all_n_larger:
+          type:
+          - integer
+          - 'null'
+          format: int32
+          description: Count of dp values falling above highest histogram bin edge for all individuals.
+        dp_hist_alt_n_larger:
+          type:
+          - integer
+          - 'null'
+          format: int32
+          description: |-
+            Count of dp values falling above highest histogram bin edge for individuals with the
+            alternative allele
+        dp_hist_all_bin_freq:
+          type: array
+          items:
+            type: integer
+            format: int32
+          description: |-
+            Histogram of dp values for all individuals; bin edges are: [0.0, 200.0, 400.0, 600.0, 800.0,
+            1000.0, 1200.0, 1400.0, 1600.0, 1800.0, 2000.0]
+        dp_hist_alt_bin_freq:
+          type: array
+          items:
+            type: integer
+            format: int32
+          description: |-
+            Histogram of dp values for individuals with the alternative allele; bin edges are: [0.0,
+            200.0, 400.0, 600.0, 800.0, 1000.0, 1200.0, 1400.0, 1600.0, 1800.0, 2000.0]
+    Gnomad2Filter:
+      type: string
+      description: Protocol buffer enum for site-level filters.
+      enum:
+      - allele_count_is_zero
+      - inbreeding_coeff
+      - pass
+      - random_forest
+    Gnomad2LiftoverInfo:
+      type: object
+      description: Liftover related information.
+      required:
+      - reverse_complemented_alleles
+      - swapped_alleles
+      - original_alleles
+      properties:
+        reverse_complemented_alleles:
+          type: boolean
+          description: |-
+            The REF and the ALT alleles have been reverse complemented in liftover since the mapping from
+            the previous reference to the current one was on the negative strand.
+        swapped_alleles:
+          type: boolean
+          description: |-
+            The REF and the ALT alleles have been swapped in liftover due to changes in the reference. It
+            is possible that not all INFO annotations reflect this swap, and in the genotypes, only the
+            GT, PL, and AD fields have been modified. You should check the TAGS_TO_REVERSE parameter that
+            was used during the LiftOver to be sure.
+        original_alleles:
+          type: array
+          items:
+            type: string
+          description: |-
+            A list of the original alleles (including REF) of the variant prior to liftover.  If the
+            alleles were not changed during liftover, this attribute will be omitted.
+        original_contig:
+          type:
+          - string
+          - 'null'
+          description: The name of the source contig/chromosome prior to liftover.
+        original_start:
+          type:
+          - string
+          - 'null'
+          description: The position of the variant on the source contig prior to liftover.
+    Gnomad2PopulationAlleleCounts:
+      type: object
+      description: Store the allele counts for the given population.
+      required:
+      - population
+      properties:
+        population:
+          type: string
+          description: Name of the population.
+        counts:
+          oneOf:
+          - type: 'null'
+          - $ref: '#/components/schemas/Gnomad2AlleleCountsBySex'
+            description: The overall allele counts and the one by sex.
+        faf95:
+          type:
+          - number
+          - 'null'
+          format: float
+          description: The filtering allele frequency (using Poisson 95% CI).
+        faf99:
+          type:
+          - number
+          - 'null'
+          format: float
+          description: The filtering allele frequency (using Poisson 99% CI).
+    Gnomad2QualityInfo:
+      type: object
+      description: Encapsulate quality-related information.
+      required:
+      - vqsr_positive_train_site
+      - vqsr_negative_train_site
+      - segdup
+      - lcr
+      - decoy
+      - transmitted_singleton
+      properties:
+        fs:
+          type:
+          - number
+          - 'null'
+          format: float
+          description: Phred-scaled p-value of Fisher's exact test for strand bias.
+        inbreeding_coeff:
+          type:
+          - number
+          - 'null'
+          format: float
+          description: |-
+            Inbreeding coefficient as estimated from the genotype likelihoods per-sample when compared
+            against the Hardy-Weinberg expectation.
+        mq:
+          type:
+          - number
+          - 'null'
+          format: float
+          description: Root mean square of the mapping quality of reads across all samples.
+        mq_rank_sum:
+          type:
+          - number
+          - 'null'
+          format: float
+          description: Z-score from Wilcoxon rank sum test of alternate vs. reference read mapping qualities.
+        qd:
+          type:
+          - number
+          - 'null'
+          format: float
+          description: Variant call confidence normalized by depth of sample reads supporting a variant.
+        read_pos_rank_sum:
+          type:
+          - number
+          - 'null'
+          format: float
+          description: Z-score from Wilcoxon rank sum test of alternate vs. reference read position bias.
+        vqsr_positive_train_site:
+          type: boolean
+          description: Variant was used to build the positive training set of high-quality variants for VQSR.
+        vqsr_negative_train_site:
+          type: boolean
+          description: Variant was used to build the negative training set of low-quality variants for VQSR.
+        base_q_rank_sum:
+          type:
+          - number
+          - 'null'
+          format: float
+          description: Z-score from Wilcoxon rank sum test of alternate vs. reference base qualities.
+        clipping_rank_sum:
+          type:
+          - number
+          - 'null'
+          format: float
+          description: Z-score from Wilcoxon rank sum test of alternate vs. reference number of hard clipped bases.
+        sor:
+          type:
+          - number
+          - 'null'
+          format: float
+          description: Strand bias estimated by the symmetric odds ratio test
+        dp:
+          type:
+          - integer
+          - 'null'
+          format: int32
+          description: |-
+            Depth of informative coverage for each sample; reads with MQ=255 or with bad mates are
+            filtered.
+        vqslod:
+          type:
+          - number
+          - 'null'
+          format: float
+          description: |-
+            Log-odds ratio of being a true variant versus being a false positive under the trained VQSR
+            Gaussian mixture model.
+        vqsr_culprit:
+          type:
+          - string
+          - 'null'
+          description: Allele-specific worst-performing annotation in the VQSR Gaussian mixture model
+        segdup:
+          type: boolean
+          description: Variant falls within a segmental duplication region
+        lcr:
+          type: boolean
+          description: Variant falls within a low complexity region.
+        decoy:
+          type: boolean
+          description: Variant falls within a reference decoy region.
+        transmitted_singleton:
+          type: boolean
+          description: |-
+            Variant was a callset-wide doubleton that was transmitted within a family (i.e., a singleton
+            amongst unrelated sampes in cohort).
+        pab_max:
+          type:
+          - number
+          - 'null'
+          format: float
+          description: |-
+            Maximum p-value over callset for binomial test of observed allele balance for a heterozygous
+            genotype, given expectation of AB=0.5.
+    Gnomad2RandomForestInfo:
+      type: object
+      description: Random forest related information.
+      required:
+      - rf_tp_probability
+      - rf_positive_label
+      - rf_negative_label
+      - rf_train
+      properties:
+        rf_tp_probability:
+          type: number
+          format: float
+          description: Random forest prediction probability for a site being a true variant.
+        rf_positive_label:
+          type: boolean
+          description: Variant was labelled as a positive example for training of random forest model.
+        rf_negative_label:
+          type: boolean
+          description: Variant was labelled as a negative example for training of random forest model.
+        rf_label:
+          type:
+          - string
+          - 'null'
+          description: Random forest training label.
+        rf_train:
+          type: boolean
+          description: Variant was used in training random forest model.
+    Gnomad2Record:
+      type: object
+      description: |-
+        Protocol buffer for the gnomAD v2 VCF record.
+
+        The more specialized fields from the INFO column are stored in separate, optional fields such
+        that we don't end up with a humongous message.
+      required:
+      - chrom
+      - pos
+      - ref_allele
+      - alt_allele
+      - filters
+      - vep
+      - allele_counts
+      - nonpar
+      properties:
+        chrom:
+          type: string
+          description: Chromosome name.
+        pos:
+          type: integer
+          format: int32
+          description: 1-based start position.
+        ref_allele:
+          type: string
+          description: Reference allele.
+        alt_allele:
+          type: string
+          description: Alternate allele.
+        filters:
+          type: array
+          items:
+            $ref: '#/components/schemas/Gnomad2Filter'
+          description: Site-level filters.
+        vep:
+          type: array
+          items:
+            $ref: '#/components/schemas/Gnomad2Vep'
+          description: VEP annotation records.
+        allele_counts:
+          type: array
+          items:
+            $ref: '#/components/schemas/Gnomad2CohortAlleleCounts'
+          description: |-
+            Variant allele counts in the different cohorts and population.
+
+            The populations in gnomAD v2/3 are: empty for global, "controls", "non_cancer", "non_neuro",
+            and "non_topmed".
+        nonpar:
+          type: boolean
+          description: Variant (on sex chromosome) falls outside a pseudoautosomal region
+        liftover_info:
+          oneOf:
+          - type: 'null'
+          - $ref: '#/components/schemas/Gnomad2LiftoverInfo'
+            description: Information on lift-over from GRCh37 to GRCh38.
+        rf_info:
+          oneOf:
+          - type: 'null'
+          - $ref: '#/components/schemas/Gnomad2RandomForestInfo'
+            description: Random forest related information.
+        variant_info:
+          oneOf:
+          - type: 'null'
+          - $ref: '#/components/schemas/Gnomad2VariantInfo'
+            description: Variant-related information details.
+        quality_info:
+          oneOf:
+          - type: 'null'
+          - $ref: '#/components/schemas/Gnomad2QualityInfo'
+            description: Summary information for variant quality interpretation.
+        age_info:
+          oneOf:
+          - type: 'null'
+          - $ref: '#/components/schemas/Gnomad2AgeInfo'
+            description: Age-related information.
+        depth_info:
+          oneOf:
+          - type: 'null'
+          - $ref: '#/components/schemas/Gnomad2DepthInfo'
+            description: Depth of coverage-related information.
+    Gnomad2VariantInfo:
+      type: object
+      description: Variant type related information.
+      required:
+      - variant_type
+      - allele_type
+      - n_alt_alleles
+      - was_mixed
+      - has_star
+      properties:
+        variant_type:
+          type: string
+          description: Variant type (snv, indel, multi-snv, multi-indel, or mixed).
+        allele_type:
+          type: string
+          description: Allele type (snv, ins, del, or mixed).
+        n_alt_alleles:
+          type: integer
+          format: int32
+          description: Total number of alternate alleles observed at variant locus.
+        was_mixed:
+          type: boolean
+          description: Variant type was mixed.
+        has_star:
+          type: boolean
+          description: |-
+            Variant locus coincides with a spanning deletion (represented by a star) observed elsewhere
+            in the callset.
+    Gnomad2Vep:
+      type: object
+      description: Protocol buffer for the gnomAD-mtDNA VEP predictions.
+      required:
+      - allele
+      - consequence
+      - impact
+      - symbol
+      - gene
+      - feature_type
+      - feature
+      - feature_biotype
+      - canonical
+      - domains
+      properties:
+        allele:
+          type: string
+          description: Allele of record.
+        consequence:
+          type: string
+          description: Consequence, e.g., `"missense_variant"`.
+        impact:
+          type: string
+          description: Impact, e.g., `"MODERATE"`.
+        symbol:
+          type: string
+          description: Gene symbol, e.g., `"PCSK9"`.
+        gene:
+          type: string
+          description: Gene ID, `e.g., "ENSG00000169174"`.
+        feature_type:
+          type: string
+          description: Feature type, e.g., `"Transcript"`.
+        feature:
+          type: string
+          description: Feature ID, e.g., `"ENST00000302118"`.
+        feature_biotype:
+          type: string
+          description: Feature biotype, e.g., `"protein_coding"`.
+        exon:
+          type:
+          - string
+          - 'null'
+          description: Ranked exon number, e.g., `"1/4"`.
+        intron:
+          type:
+          - string
+          - 'null'
+          description: Ranked intron number, e.g., `"1/4"`.
+        hgvsc:
+          type:
+          - string
+          - 'null'
+          description: cDNA position, e.g., `"ENST00000302118.5:c.89C>G"`.
+        hgvsp:
+          type:
+          - string
+          - 'null'
+          description: Protein position, e.g., `"ENSP00000302118.5:p.Thr30Arg"`.
+        cdna_position:
+          type:
+          - string
+          - 'null'
+          description: cDNA position, e.g., `"89/1863"`.
+        cds_position:
+          type:
+          - string
+          - 'null'
+          description: CDS position, e.g., `"89/1863"`.
+        protein_position:
+          type:
+          - string
+          - 'null'
+          description: Protein position, e.g., `"30/620"`.
+        amino_acids:
+          type:
+          - string
+          - 'null'
+          description: Amino acids, e.g., `"T/R"`.
+        codons:
+          type:
+          - string
+          - 'null'
+          description: Codons, e.g., `"gCg/gGg"`.
+        existing_variation:
+          type:
+          - string
+          - 'null'
+          description: Existing variation info.
+        dbsnp_id:
+          type:
+          - string
+          - 'null'
+          description: dbSNP ID, e.g., `"rs28942080"`.
+        distance:
+          type:
+          - string
+          - 'null'
+          description: Distance output of VEP.
+        strand:
+          type:
+          - string
+          - 'null'
+          description: Strand, e.g., `"1"`.
+        flags:
+          type:
+          - string
+          - 'null'
+          description: Flags, e.g., `"cds_end_NF"`.
+        variant_class:
+          type:
+          - string
+          - 'null'
+          description: Variant class, e.g., `"SNV"`.
+        minimised:
+          type:
+          - string
+          - 'null'
+          description: Minimised output of VEP.
+        symbol_source:
+          type:
+          - string
+          - 'null'
+          description: Symbol source, e.g., `"HGNC"`.
+        hgnc_id:
+          type:
+          - string
+          - 'null'
+          description: HGNC ID, e.g., `"HGNC:8706"`.
+        canonical:
+          type: boolean
+          description: Whether this is the canonical transcript.
+        tsl:
+          type:
+          - integer
+          - 'null'
+          format: int32
+          description: Transcript support level, e.g., `"1"`.
+        appris:
+          type:
+          - string
+          - 'null'
+          description: APPRIS annotation, e.g. `"P1"`.
+        ccds:
+          type:
+          - string
+          - 'null'
+          description: CCDS ID, e.g., `"CCDS30547.1"`.
+        ensp:
+          type:
+          - string
+          - 'null'
+          description: Ensembl protein ID, e.g., `"ENSP00000302118"`.
+        swissprot:
+          type:
+          - string
+          - 'null'
+          description: SwissProt ID, e.g., `"P04114"`.
+        trembl:
+          type:
+          - string
+          - 'null'
+          description: TREMBL ID, e.g., `"Q5T4W7"`.
+        uniparc:
+          type:
+          - string
+          - 'null'
+          description: UniParc ID, e.g., `"UPI000002D4B2"`.
+        gene_pheno:
+          type:
+          - string
+          - 'null'
+          description: Gene phenotype from VEP.
+        sift:
+          oneOf:
+          - type: 'null'
+          - $ref: '#/components/schemas/VepCommonPrediction'
+            description: SIFT prediction, e.g., `"tolerated(0.06)"`.
+        polyphen:
+          oneOf:
+          - type: 'null'
+          - $ref: '#/components/schemas/VepCommonPrediction'
+            description: PolyPhen prediction, e.g., `"benign(0.001)"`.
+        domains:
+          type: array
+          items:
+            $ref: '#/components/schemas/VepCommonDomain'
+          description: Protein domains, e.g., `\[["2p4e", "ENSP_mappings"\], \["2qtw", "ENSP_mappings"]\]`.
+        hgvs_offset:
+          type:
+          - string
+          - 'null'
+          description: HGVS offset.
+        gmaf:
+          type:
+          - number
+          - 'null'
+          format: float
+          description: Overall minor allele frequency.
+        afr_maf:
+          type:
+          - number
+          - 'null'
+          format: float
+          description: Minor allele frequency in AFR population.
+        amr_maf:
+          type:
+          - number
+          - 'null'
+          format: float
+          description: Minor allele frequency in AMR population.
+        eas_maf:
+          type:
+          - number
+          - 'null'
+          format: float
+          description: Minor allele frequency in EAS population.
+        eur_maf:
+          type:
+          - number
+          - 'null'
+          format: float
+          description: Minor allele frequency in EUR population.
+        sas_maf:
+          type:
+          - number
+          - 'null'
+          format: float
+          description: Minor allele frequency in SAS population.
+        aa_maf:
+          type:
+          - number
+          - 'null'
+          format: float
+          description: Minor allele frequency in AA population.
+        ea_maf:
+          type:
+          - number
+          - 'null'
+          format: float
+          description: Minor allele frequency in EA population.
+        exac_maf:
+          type:
+          - number
+          - 'null'
+          format: float
+          description: Minor allele frequency in ExAC.
+        exac_adj_maf:
+          type:
+          - number
+          - 'null'
+          format: float
+          description: Minor allele frequency EXAC ADJ population.
+        exac_afr_maf:
+          type:
+          - number
+          - 'null'
+          format: float
+          description: Minor allele frequency in ExAC AFR population.
+        exac_amr_maf:
+          type:
+          - number
+          - 'null'
+          format: float
+          description: Minor allele frequency in ExAC AMR population.
+        exac_eas_maf:
+          type:
+          - number
+          - 'null'
+          format: float
+          description: Minor allele frequency in ExAC EAS population.
+        exac_fin_maf:
+          type:
+          - number
+          - 'null'
+          format: float
+          description: Minor allele frequency in ExAC FIN population.
+        exac_nfe_maf:
+          type:
+          - number
+          - 'null'
+          format: float
+          description: Minor allele frequency in ExAC NFE population.
+        exac_oth_maf:
+          type:
+          - number
+          - 'null'
+          format: float
+          description: Minor allele frequency in ExAC OTH population.
+        exac_sas_maf:
+          type:
+          - number
+          - 'null'
+          format: float
+          description: Minor allele frequency in ExAC SAS population.
+        clin_sig:
+          type:
+          - string
+          - 'null'
+          description: Clinical significance.
+        somatic:
+          type:
+          - string
+          - 'null'
+          description: Whether the variant is somatic.
+        pheno:
+          type:
+          - string
+          - 'null'
+          description: Phenotype.
+        pubmed:
+          type:
+          - string
+          - 'null'
+          description: Pubmed ID.
+        motif_name:
+          type:
+          - string
+          - 'null'
+          description: Motif name.
+        motif_pos:
+          type:
+          - string
+          - 'null'
+          description: Motif pos.
+        high_inf_pos:
+          type:
+          - string
+          - 'null'
+          description: '"high inf pos" from VEP.'
+        motif_score_change:
+          type:
+          - string
+          - 'null'
+          description: Motif score change.
+        lof:
+          type:
+          - string
+          - 'null'
+          description: Loss of function prediction.
+        lof_filter:
+          type:
+          - string
+          - 'null'
+          description: Loss of function filter.
+        lof_flags:
+          type:
+          - string
+          - 'null'
+          description: Loss of function flags.
+        lof_info:
+          type:
+          - string
+          - 'null'
+          description: Loss of function info.
+    Gnomad3AgeInfo:
+      type: object
+      description: Encapsulate VCF INFO fields related to age.
+      required:
+      - age_hist_hom_bin_freq
+      - age_hist_het_bin_freq
+      properties:
+        age_hist_hom_bin_freq:
+          type: array
+          items:
+            type: integer
+            format: int32
+          description: |-
+            Histogram of ages of individuals with a homoplasmic variant; bin edges are: [30.0, 35.0,
+            40.0, 45.0, 50.0, 55.0, 60.0, 65.0, 70.0, 75.0, 80.0].
+        age_hist_hom_n_smaller:
+          type:
+          - integer
+          - 'null'
+          format: int32
+          description: |-
+            Count of age values falling below lowest histogram bin edge for individuals with a
+            homoplasmic variant.
+        age_hist_hom_n_larger:
+          type:
+          - integer
+          - 'null'
+          format: int32
+          description: |-
+            Count of age values falling above highest histogram bin edge for individuals with a
+            homoplasmic variant.
+        age_hist_het_bin_freq:
+          type: array
+          items:
+            type: integer
+            format: int32
+          description: |-
+            Histogram of ages of individuals with a heteroplasmic variant; bin edges are: [30.0, 35.0,
+            40.0, 45.0, 50.0, 55.0, 60.0, 65.0, 70.0, 75.0, 80.0]
+        age_hist_het_n_smaller:
+          type:
+          - integer
+          - 'null'
+          format: int32
+          description: |-
+            Count of age values falling below lowest histogram bin edge for individuals with a
+            heteroplasmic variant.
+        age_hist_het_n_larger:
+          type:
+          - integer
+          - 'null'
+          format: int32
+          description: |-
+            Count of age values falling above highest histogram bin edge for individuals with a
+            heteroplasmic variant.
+    Gnomad3AlleleCounts:
+      type: object
+      description: Store the relevant allele counts and frequencies in a given sub cohort.
+      required:
+      - ac
+      - an
+      - nhomalt
+      - af
+      properties:
+        ac:
+          type: integer
+          format: int32
+          description: Number of alternate alleles in sub cohort.
+        an:
+          type: integer
+          format: int32
+          description: Total number of alleles in the sub cohort.
+        nhomalt:
+          type: integer
+          format: int32
+          description: Number of homozygous alternate alleles in the sub cohort.
+        af:
+          type: number
+          format: float
+          description: Alternate allele frequency in the sub cohort.
+    Gnomad3AlleleCountsBySex:
+      type: object
+      description: Store the allele counts for the given sub cohort and sub cohort factored by sex.
+      properties:
+        overall:
+          oneOf:
+          - type: 'null'
+          - $ref: '#/components/schemas/Gnomad3AlleleCounts'
+            description: Overall allele counts in the sub cohort.
+        xx:
+          oneOf:
+          - type: 'null'
+          - $ref: '#/components/schemas/Gnomad3AlleleCounts'
+            description: Allele counts in female/XX karyotype individuals of sub cohort.
+        xy:
+          oneOf:
+          - type: 'null'
+          - $ref: '#/components/schemas/Gnomad3AlleleCounts'
+            description: Allele counts in male/XY karyotype individuals of sub cohort.
+    Gnomad3CohortAlleleCounts:
+      type: object
+      description: Store the allele counts for the given cohort.
+      required:
+      - by_population
+      properties:
+        cohort:
+          type:
+          - string
+          - 'null'
+          description: Name of the cohort.
+        by_population:
+          type: array
+          items:
+            $ref: '#/components/schemas/Gnomad3PopulationAlleleCounts'
+          description: Allele counts for each population.
+        by_sex:
+          oneOf:
+          - type: 'null'
+          - $ref: '#/components/schemas/Gnomad3AlleleCountsBySex'
+            description: Allele counts by sex.
+        raw:
+          oneOf:
+          - type: 'null'
+          - $ref: '#/components/schemas/Gnomad3AlleleCounts'
+            description: Raw allele counts.
+        popmax:
+          type:
+          - string
+          - 'null'
+          description: The population with maximum AF.
+        af_popmax:
+          type:
+          - number
+          - 'null'
+          format: float
+          description: |-
+            Maximum allele frequency across populations (excluding samples of Ashkenazi, Finnish, and
+            indeterminate ancestry).
+        ac_popmax:
+          type:
+          - integer
+          - 'null'
+          format: int32
+          description: Allele count in population with maximum AF.
+        an_popmax:
+          type:
+          - integer
+          - 'null'
+          format: int32
+          description: Total number of alleles in population with maximum AF.
+        nhomalt_popmax:
+          type:
+          - integer
+          - 'null'
+          format: int32
+          description: Total number of homozygous individuals in population with maximum AF.
+    Gnomad3DepthInfo:
+      type: object
+      description: Encapsulate VCF INFO fields related to depth.
+      required:
+      - dp_hist_all_bin_freq
+      - dp_hist_alt_bin_freq
+      properties:
+        dp_hist_all_n_larger:
+          type:
+          - integer
+          - 'null'
+          format: int32
+          description: Count of dp values falling above highest histogram bin edge for all individuals.
+        dp_hist_alt_n_larger:
+          type:
+          - integer
+          - 'null'
+          format: int32
+          description: |-
+            Count of dp values falling above highest histogram bin edge for individuals with the
+            alternative allele
+        dp_hist_all_bin_freq:
+          type: array
+          items:
+            type: integer
+            format: int32
+          description: |-
+            Histogram of dp values for all individuals; bin edges are: [0.0, 200.0, 400.0, 600.0, 800.0,
+            1000.0, 1200.0, 1400.0, 1600.0, 1800.0, 2000.0]
+        dp_hist_alt_bin_freq:
+          type: array
+          items:
+            type: integer
+            format: int32
+          description: |-
+            Histogram of dp values for individuals with the alternative allele; bin edges are: [0.0,
+            200.0, 400.0, 600.0, 800.0, 1000.0, 1200.0, 1400.0, 1600.0, 1800.0, 2000.0]
+    Gnomad3EffectInfo:
+      type: object
+      description: Store details on variant effect predictions.
+      properties:
+        primate_ai_score:
+          type:
+          - number
+          - 'null'
+          format: float
+          description: PrimateAI's deleteriousness score from 0 (less deleterious) to 1 (more deleterious).
+        revel_score:
+          type:
+          - number
+          - 'null'
+          format: float
+          description: |-
+            dbNSFP's Revel score from 0 to 1. Variants with higher scores are predicted to be
+            more likely to be deleterious.
+        splice_ai_max_ds:
+          type:
+          - number
+          - 'null'
+          format: float
+          description: |-
+            Illumina's SpliceAI max delta score; interpreted as the probability of the variant
+            being splice-altering.
+        splice_ai_consequence:
+          type:
+          - string
+          - 'null'
+          description: The consequence term associated with the max delta score in 'splice_ai_max_ds'.
+        cadd_raw:
+          type:
+          - number
+          - 'null'
+          format: float
+          description: Raw CADD scores are interpretable as the extent to which the annotation profile for a given variant suggests that the variant is likely to be 'observed' (negative values) vs 'simulated' (positive values). Larger values are more deleterious.
+        cadd_phred:
+          type:
+          - number
+          - 'null'
+          format: float
+          description: Cadd Phred-like scores ('scaled C-scores') ranging from 1 to 99, based on the rank of each variant relative to all possible 8.6 billion substitutions in the human reference genome. Larger values are more deleterious.
+    Gnomad3Filter:
+      type: string
+      description: Protocol buffer enum for site-level filters.
+      enum:
+      - allele_count_is_zero
+      - as_vsqr
+      - inbreeding_coeff
+      - pass
+    Gnomad3PopulationAlleleCounts:
+      type: object
+      description: Store the allele counts for the given sub cohort in the given population.
+      required:
+      - population
+      properties:
+        population:
+          type: string
+          description: Name of the population.
+        counts:
+          oneOf:
+          - type: 'null'
+          - $ref: '#/components/schemas/Gnomad3AlleleCountsBySex'
+            description: The overall allele counts and the one by sex.
+        faf95:
+          type:
+          - number
+          - 'null'
+          format: float
+          description: The filtering allele frequency (using Poisson 95% CI).
+        faf99:
+          type:
+          - number
+          - 'null'
+          format: float
+          description: The filtering allele frequency (using Poisson 99% CI).
+        faf95_xx:
+          type:
+          - number
+          - 'null'
+          format: float
+          description: The filtering allele frequency for XX samples (using Poisson 95% CI).
+        faf99_xx:
+          type:
+          - number
+          - 'null'
+          format: float
+          description: The filtering allele frequency for XX samples (using Poisson 99% CI).
+        faf95_xy:
+          type:
+          - number
+          - 'null'
+          format: float
+          description: The filtering allele frequency for XY samples (using Poisson 95% CI).
+        faf99_xy:
+          type:
+          - number
+          - 'null'
+          format: float
+          description: The filtering allele frequency for XY samples (using Poisson 99% CI).
+    Gnomad3QualityInfo:
+      type: object
+      description: Encapsulate quality-related information.
+      required:
+      - positive_train_site
+      - negative_train_site
+      - segdup
+      - lcr
+      - transmitted_singleton
+      properties:
+        as_fs:
+          type:
+          - number
+          - 'null'
+          format: float
+          description: Allele-specific phred-scaled p-value of Fisher's exact test for strand bias.
+        inbreeding_coeff:
+          type:
+          - number
+          - 'null'
+          format: float
+          description: |-
+            Inbreeding coefficient as estimated from the genotype likelihoods per-sample when compared
+            against the Hardy-Weinberg expectation.
+        as_mq:
+          type:
+          - number
+          - 'null'
+          format: float
+          description: Allele-specific root mean square of the mapping quality of reads across all samples
+        mq_rank_sum:
+          type:
+          - number
+          - 'null'
+          format: float
+          description: Z-score from Wilcoxon rank sum test of alternate vs. reference read mapping qualities.
+        as_mq_rank_sum:
+          type:
+          - number
+          - 'null'
+          format: float
+          description: |-
+            Allele-specific z-score from Wilcoxon rank sum test of alternate vs. reference read
+            mapping qualities.
+        as_qd:
+          type:
+          - number
+          - 'null'
+          format: float
+          description: |-
+            Allele-specific variant call confidence normalized by depth of sample reads supporting a
+            variant.
+        read_pos_rank_sum:
+          type:
+          - number
+          - 'null'
+          format: float
+          description: Z-score from Wilcoxon rank sum test of alternate vs. reference read position bias.
+        as_read_pos_rank_sum:
+          type:
+          - number
+          - 'null'
+          format: float
+          description: Allele-specific z-score from Wilcoxon rank sum test of alternate vs. reference read position bias.
+        as_sor:
+          type:
+          - number
+          - 'null'
+          format: float
+          description: Allele-specific strand bias estimated by the symmetric odds ratio test.
+        positive_train_site:
+          type: boolean
+          description: Variant was used to build the positive training set of high-quality variants for VQSR.
+        negative_train_site:
+          type: boolean
+          description: Variant was used to build the negative training set of low-quality variants for VQSR.
+        as_vqslod:
+          type:
+          - number
+          - 'null'
+          format: float
+          description: Allele-specific log-odds ratio of being a true variant versus being a false positive under the trained VQSR Gaussian mixture model.
+        as_culprit:
+          type:
+          - string
+          - 'null'
+          description: Allele-specific worst-performing annotation in the VQSR Gaussian mixture model.
+        segdup:
+          type: boolean
+          description: Variant falls within a segmental duplication region.
+        lcr:
+          type: boolean
+          description: Variant falls within a low complexity region.
+        transmitted_singleton:
+          type: boolean
+          description: |-
+            Variant was a callset-wide doubleton that was transmitted within a family (i.e., a singleton
+            amongst unrelated sampes in cohort).
+        as_pab_max:
+          type:
+          - number
+          - 'null'
+          format: float
+          description: Maximum p-value over callset for binomial test of observed allele balance for a heterozygous genotype, given expectation of 0.5.
+        as_qual_approx:
+          type:
+          - integer
+          - 'null'
+          format: int32
+          description: Allele-specific sum of PL\[0\] values; used to approximate the QUAL score.
+        as_sb_table:
+          type:
+          - string
+          - 'null'
+          description: Allele-specific forward/reverse read counts for strand bias tests.
+        sor:
+          type:
+          - number
+          - 'null'
+          format: float
+          description: Strand bias estimated by the symmetric odds ratio test (v4 only).
+    Gnomad3Record:
+      type: object
+      description: |-
+        Protocol buffer for the gnomAD-nuclear VCF record.
+
+        The more specialized fields from the INFO column are stored in separate, optional fields such
+        that we don't end up with a humongous message.
+      required:
+      - chrom
+      - pos
+      - ref_allele
+      - alt_allele
+      - filters
+      - vep
+      - allele_counts
+      - nonpar
+      properties:
+        chrom:
+          type: string
+          description: Chromosome name.
+        pos:
+          type: integer
+          format: int32
+          description: 1-based start position.
+        ref_allele:
+          type: string
+          description: Reference allele.
+        alt_allele:
+          type: string
+          description: Alternate allele.
+        filters:
+          type: array
+          items:
+            $ref: '#/components/schemas/Gnomad3Filter'
+          description: Site-level filters.
+        vep:
+          type: array
+          items:
+            $ref: '#/components/schemas/Gnomad3Vep'
+          description: VEP annotation records.
+        allele_counts:
+          type: array
+          items:
+            $ref: '#/components/schemas/Gnomad3CohortAlleleCounts'
+          description: |-
+            Variant allele counts in the different cohorts and population.
+
+            The populations in gnomAD v2/3 are: empty for global, "controls", "non_cancer", "non_neuro",
+            and "non_topmed".
+        nonpar:
+          type: boolean
+          description: Variant (on sex chromosome) falls outside a pseudoautosomal region
+        effect_info:
+          oneOf:
+          - type: 'null'
+          - $ref: '#/components/schemas/Gnomad3EffectInfo'
+            description: Information on variant scores.
+        variant_info:
+          oneOf:
+          - type: 'null'
+          - $ref: '#/components/schemas/Gnomad3VariantInfo'
+            description: Variant-related information details.
+        quality_info:
+          oneOf:
+          - type: 'null'
+          - $ref: '#/components/schemas/Gnomad3QualityInfo'
+            description: Summary information for variant quality interpretation.
+        age_info:
+          oneOf:
+          - type: 'null'
+          - $ref: '#/components/schemas/Gnomad3AgeInfo'
+            description: Age-related information.
+        depth_info:
+          oneOf:
+          - type: 'null'
+          - $ref: '#/components/schemas/Gnomad3DepthInfo'
+            description: Depth of coverage-related information.
+    Gnomad3VariantInfo:
+      type: object
+      description: Variant type related information.
+      required:
+      - variant_type
+      - allele_type
+      - n_alt_alleles
+      - was_mixed
+      - monoallelic
+      - var_dp
+      properties:
+        variant_type:
+          type: string
+          description: Variant type (snv, indel, multi-snv, multi-indel, or mixed).
+        allele_type:
+          type: string
+          description: Allele type (snv, ins, del, or mixed).
+        n_alt_alleles:
+          type: integer
+          format: int32
+          description: Total number of alternate alleles observed at variant locus.
+        was_mixed:
+          type: boolean
+          description: Variant type was mixed.
+        monoallelic:
+          type: boolean
+          description: All samples are homozygous alternate for the variant.
+        var_dp:
+          type: integer
+          format: int32
+          description: Depth over variant genotypes (does not include depth of reference samples).
+        as_vardp:
+          type:
+          - integer
+          - 'null'
+          format: int32
+          description: Allele-specific depth over variant genotypes (does not include depth of reference samples) (v4 only).
     Gnomad3Vep:
       type: object
       description: Protocol buffer for the gnomAD-nuclear VEP predictions.
@@ -7015,6 +8416,521 @@ components:
           - string
           - 'null'
           description: Loss of function info.
+    Gnomad4AncestryGroupAlleleCounts:
+      type: object
+      description: Store the allele counts for the given sub cohort in the given ancestry group.
+      required:
+      - ancestry_group
+      properties:
+        ancestry_group:
+          type: string
+          description: Name of the ancestry group.
+        counts:
+          oneOf:
+          - type: 'null'
+          - $ref: '#/components/schemas/Gnomad3AlleleCountsBySex'
+            description: The overall allele counts and the one by sex.
+        faf95:
+          type:
+          - number
+          - 'null'
+          format: float
+          description: The filtering allele frequency (using Poisson 95% CI).
+        faf99:
+          type:
+          - number
+          - 'null'
+          format: float
+          description: The filtering allele frequency (using Poisson 99% CI).
+        faf95_xx:
+          type:
+          - number
+          - 'null'
+          format: float
+          description: The filtering allele frequency for XX samples (using Poisson 95% CI).
+        faf99_xx:
+          type:
+          - number
+          - 'null'
+          format: float
+          description: The filtering allele frequency for XX samples (using Poisson 99% CI).
+        faf95_xy:
+          type:
+          - number
+          - 'null'
+          format: float
+          description: The filtering allele frequency for XY samples (using Poisson 95% CI).
+        faf99_xy:
+          type:
+          - number
+          - 'null'
+          format: float
+          description: The filtering allele frequency for XY samples (using Poisson 99% CI).
+    Gnomad4CohortAlleleCounts:
+      type: object
+      description: Store the allele counts for the given cohort.
+      required:
+      - by_ancestry_group
+      properties:
+        cohort:
+          type:
+          - string
+          - 'null'
+          description: Name of the cohort.
+        by_ancestry_group:
+          type: array
+          items:
+            $ref: '#/components/schemas/Gnomad4AncestryGroupAlleleCounts'
+          description: Allele counts for each population.
+        by_sex:
+          oneOf:
+          - type: 'null'
+          - $ref: '#/components/schemas/Gnomad3AlleleCountsBySex'
+            description: Allele counts by sex.
+        raw:
+          oneOf:
+          - type: 'null'
+          - $ref: '#/components/schemas/Gnomad3AlleleCounts'
+            description: Raw allele counts.
+        grpmax:
+          type:
+          - string
+          - 'null'
+          description: The ancestry group with maximum AF.
+        af_grpmax:
+          type:
+          - number
+          - 'null'
+          format: float
+          description: Maximum allele frequency across ancestry groups.
+        ac_grpmax:
+          type:
+          - integer
+          - 'null'
+          format: int32
+          description: Allele count in ancestry group with maximum AF.
+        an_grpmax:
+          type:
+          - integer
+          - 'null'
+          format: int32
+          description: Total number of alleles in ancestry group with maximum AF.
+        nhomalt_grpmax:
+          type:
+          - integer
+          - 'null'
+          format: int32
+          description: Total number of homozygous individuals in ancestry group with maximum AF.
+    Gnomad4EffectInfo:
+      type: object
+      description: Store details on variant effect predictions.
+      properties:
+        pangolin_largest_ds:
+          type:
+          - number
+          - 'null'
+          format: float
+          description: Pangolin's largest delta score across 2 splicing consequences, which reflects the probability of the variant being splice-altering">
+        phylop:
+          type:
+          - number
+          - 'null'
+          format: float
+          description: Base-wise conservation score across the 241 placental mammals in the Zoonomia project. Score ranges from -20 to 9.28, and reflects acceleration (faster evolution than expected under neutral drift, assigned negative scores) as well as conservation (slower than expected evolution, assigned positive scores).">
+        polyphen_max:
+          type:
+          - number
+          - 'null'
+          format: float
+          description: Score that predicts the possible impact of an amino acid substitution on the structure and function of a human protein, ranging from 0.0 (tolerated) to 1.0 (deleterious).  We prioritize max scores for MANE Select transcripts where possible and otherwise report a score for the canonical transcript.">
+        revel_max:
+          type:
+          - number
+          - 'null'
+          format: float
+          description: The maximum REVEL score at a site's MANE Select or canonical transcript. It's an ensemble score for predicting the pathogenicity of missense variants (based on 13 other variant predictors). Scores ranges from 0 to 1. Variants with higher scores are predicted to be more likely to be deleterious.">
+        sift_max:
+          type:
+          - number
+          - 'null'
+          format: float
+          description: Score reflecting the scaled probability of the amino acid substitution being tolerated, ranging from 0 to 1. Scores below 0.05 are predicted to impact protein function. We prioritize max scores for MANE Select transcripts where possible and otherwise report a score for the canonical transcript.">
+        spliceai_ds_max:
+          type:
+          - number
+          - 'null'
+          format: float
+          description: Illumina's SpliceAI max delta score; interpreted as the probability of the variant being splice-altering.">
+        cadd_raw:
+          type:
+          - number
+          - 'null'
+          format: float
+          description: Raw CADD scores are interpretable as the extent to which the annotation profile for a given variant suggests that the variant is likely to be 'observed' (negative values) vs 'simulated' (positive values). Larger values are more deleterious.
+        cadd_phred:
+          type:
+          - number
+          - 'null'
+          format: float
+          description: Cadd Phred-like scores ('scaled C-scores') ranging from 1 to 99, based on the rank of each variant relative to all possible 8.6 billion substitutions in the human reference genome. Larger values are more deleterious.
+    Gnomad4Record:
+      type: object
+      description: |-
+        Protocol buffer for the gnomAD-nuclear VCF record.
+
+        The more specialized fields from the INFO column are stored in separate, optional fields such
+        that we don't end up with a humongous message.
+      required:
+      - chrom
+      - pos
+      - ref_allele
+      - alt_allele
+      - filters
+      - vep
+      - allele_counts
+      - nonpar
+      - only_het
+      - outside_broad_capture_region
+      - outside_ukb_capture_region
+      - sibling_singleton
+      properties:
+        chrom:
+          type: string
+          description: Chromosome name.
+        pos:
+          type: integer
+          format: int32
+          description: 1-based start position.
+        ref_allele:
+          type: string
+          description: Reference allele.
+        alt_allele:
+          type: string
+          description: Alternate allele.
+        filters:
+          type: array
+          items:
+            $ref: '#/components/schemas/Gnomad3Filter'
+          description: Site-level filters.
+        vep:
+          type: array
+          items:
+            $ref: '#/components/schemas/Gnomad4Vep'
+          description: VEP annotation records.
+        allele_counts:
+          type: array
+          items:
+            $ref: '#/components/schemas/Gnomad4CohortAlleleCounts'
+          description: |-
+            Variant allele counts in the different cohorts and population.
+
+            The populations in gnomAD v4 are: empty for global, "joint" for exome+genomes.
+        nonpar:
+          type: boolean
+          description: Variant (on sex chromosome) falls outside a pseudoautosomal region
+        only_het:
+          type: boolean
+          description: All samples are heterozygous for the variant
+        outside_broad_capture_region:
+          type: boolean
+          description: Variant falls outside of Broad exome capture regions (exomes only).
+        outside_ukb_capture_region:
+          type: boolean
+          description: Variant falls outside of UK Biobank exome capture regions(exomes only).
+        sibling_singleton:
+          type: boolean
+          description: Variant was a callset-wide doubleton that was present only in two siblings (i.e., a singleton amongst unrelated samples in cohort) (exomes only).
+        effect_info:
+          oneOf:
+          - type: 'null'
+          - $ref: '#/components/schemas/Gnomad4EffectInfo'
+            description: Information on variant scores.
+        variant_info:
+          oneOf:
+          - type: 'null'
+          - $ref: '#/components/schemas/Gnomad3VariantInfo'
+            description: Variant-related information details.
+        quality_info:
+          oneOf:
+          - type: 'null'
+          - $ref: '#/components/schemas/Gnomad3QualityInfo'
+            description: Summary information for variant quality interpretation.
+        age_info:
+          oneOf:
+          - type: 'null'
+          - $ref: '#/components/schemas/Gnomad3AgeInfo'
+            description: Age-related information.
+        depth_info:
+          oneOf:
+          - type: 'null'
+          - $ref: '#/components/schemas/Gnomad3DepthInfo'
+            description: Depth of coverage-related information.
+        vrs_info:
+          oneOf:
+          - type: 'null'
+          - $ref: '#/components/schemas/Gnomad4VrsInfo'
+            description: VRS infos.
+    Gnomad4Vep:
+      type: object
+      description: Protocol buffer for the gnomAD-nuclear VEP predictions.
+      required:
+      - allele
+      - consequence
+      - impact
+      - symbol
+      - gene
+      - feature_type
+      - feature
+      - feature_biotype
+      - domains
+      properties:
+        allele:
+          type: string
+          description: Allele of record.
+        consequence:
+          type: string
+          description: Consequence, e.g., `"missense_variant"`.
+        impact:
+          type: string
+          description: Impact, e.g., `"MODERATE"`.
+        symbol:
+          type: string
+          description: Gene symbol, e.g., `"PCSK9"`.
+        gene:
+          type: string
+          description: Gene ID, `e.g., "ENSG00000169174"`.
+        feature_type:
+          type: string
+          description: Feature type, e.g., `"Transcript"`.
+        feature:
+          type: string
+          description: Feature ID, e.g., `"ENST00000302118"`.
+        feature_biotype:
+          type: string
+          description: Feature biotype, e.g., `"protein_coding"`.
+        exon:
+          type:
+          - string
+          - 'null'
+          description: Ranked exon number, e.g., `"1/4"`.
+        intron:
+          type:
+          - string
+          - 'null'
+          description: Ranked intron number, e.g., `"1/4"`.
+        hgvsc:
+          type:
+          - string
+          - 'null'
+          description: cDNA position, e.g., `"ENST00000302118.5:c.89C>G"`.
+        hgvsp:
+          type:
+          - string
+          - 'null'
+          description: Protein position, e.g., `"ENSP00000302118.5:p.Thr30Arg"`.
+        cdna_position:
+          type:
+          - string
+          - 'null'
+          description: cDNA position, e.g., `"89/1863"`.
+        cds_position:
+          type:
+          - string
+          - 'null'
+          description: CDS position, e.g., `"89/1863"`.
+        protein_position:
+          type:
+          - string
+          - 'null'
+          description: Protein position, e.g., `"30/620"`.
+        amino_acids:
+          type:
+          - string
+          - 'null'
+          description: Amino acids, e.g., `"T/R"`.
+        codons:
+          type:
+          - string
+          - 'null'
+          description: Codons, e.g., `"gCg/gGg"`.
+        allele_num:
+          type:
+          - integer
+          - 'null'
+          format: int32
+          description: Allele count.
+        distance:
+          type:
+          - string
+          - 'null'
+          description: Distance output of VEP.
+        strand:
+          type:
+          - string
+          - 'null'
+          description: Strand, e.g., `"1"`.
+        flags:
+          type:
+          - string
+          - 'null'
+          description: Flags
+        variant_class:
+          type:
+          - string
+          - 'null'
+          description: Variant class, e.g., `"SNV"`.
+        symbol_source:
+          type:
+          - string
+          - 'null'
+          description: Symbol source, e.g., `"HGNC"`.
+        hgnc_id:
+          type:
+          - string
+          - 'null'
+          description: HGNC ID, e.g., `"HGNC:8706"`.
+        canonical:
+          type:
+          - boolean
+          - 'null'
+          description: Whether this is the canonical transcript.
+        mane_select:
+          type:
+          - boolean
+          - 'null'
+          description: Presence in MANE Select
+        mane_plus_clinical:
+          type:
+          - boolean
+          - 'null'
+          description: Presence in MANE Plus Clinical
+        tsl:
+          type:
+          - integer
+          - 'null'
+          format: int32
+          description: Transcript support level, e.g., `"1"`.
+        appris:
+          type:
+          - string
+          - 'null'
+          description: APPRIS annotation, e.g. `"P1"`.
+        ccds:
+          type:
+          - string
+          - 'null'
+          description: CCDS ID, e.g., `"CCDS30547.1"`.
+        ensp:
+          type:
+          - string
+          - 'null'
+          description: Ensembl protein ID, e.g., `"ENSP00000302118"`.
+        uniprot_isoform:
+          type:
+          - string
+          - 'null'
+          description: Uniprot isoform.
+        source:
+          type:
+          - string
+          - 'null'
+          description: Value of VEP "SOURCE" field.
+        domains:
+          type: array
+          items:
+            $ref: '#/components/schemas/VepCommonDomain'
+          description: Protein domains, e.g., `\[["2p4e", "ENSP_mappings"\], \["2qtw", "ENSP_mappings"]\]`.
+        mirna:
+          type:
+          - string
+          - 'null'
+          description: miRNA information.
+        hgvs_offset:
+          type:
+          - string
+          - 'null'
+          description: HGVS offset.
+        pubmed:
+          type:
+          - string
+          - 'null'
+          description: PubMed IDs
+        motif_name:
+          type:
+          - string
+          - 'null'
+          description: Motif name.
+        motif_pos:
+          type:
+          - string
+          - 'null'
+          description: Motif name.
+        high_inf_pos:
+          type:
+          - string
+          - 'null'
+          description: '"high inf pos" from VEP.'
+        motif_score_change:
+          type:
+          - string
+          - 'null'
+          description: Motif score change.
+        transcription_factors:
+          type:
+          - string
+          - 'null'
+          description: Transcription factors.
+        lof:
+          type:
+          - string
+          - 'null'
+          description: Loss of function prediction.
+        lof_filter:
+          type:
+          - string
+          - 'null'
+          description: Loss of function filter.
+        lof_flags:
+          type:
+          - string
+          - 'null'
+          description: Loss of function flags.
+        lof_info:
+          type:
+          - string
+          - 'null'
+          description: Loss of function info.
+    Gnomad4VrsInfo:
+      type: object
+      description: VRS information
+      required:
+      - allele_ids
+      - ends
+      - starts
+      - states
+      properties:
+        allele_ids:
+          type: array
+          items:
+            type: string
+          description: The computed identifiers for the GA4GH VRS Alleles corresponding to the values in the REF and ALT fields
+        ends:
+          type: array
+          items:
+            type: integer
+            format: int32
+          description: Interresidue coordinates used as the location ends for the GA4GH VRS Alleles corresponding to the values in the REF and ALT fields
+        starts:
+          type: array
+          items:
+            type: integer
+            format: int32
+          description: Interresidue coordinates used as the location starts for the GA4GH VRS Alleles corresponding to the values in the REF and ALT fields
+        states:
+          type: array
+          items:
+            type: string
+          description: The literal sequence states used for the GA4GH VRS Alleles corresponding to the values in the REF and ALT fields
     GnomadMtdnaAgeInfo:
       type: object
       description: Encapsulate VCF INFO fields related to age.
@@ -7520,6 +9436,33 @@ components:
           - type: 'null'
           - $ref: '#/components/schemas/GnomadMtdnaDepthInfo'
             description: Depth of coverage-related information.
+    GnomadRecord:
+      oneOf:
+      - type: object
+        description: gnomAD v2 record.
+        required:
+        - gnomad2
+        properties:
+          gnomad2:
+            $ref: '#/components/schemas/Gnomad2Record'
+            description: gnomAD v2 record.
+      - type: object
+        description: gnomAD v3 record.
+        required:
+        - gnomad3
+        properties:
+          gnomad3:
+            $ref: '#/components/schemas/Gnomad3Record'
+            description: gnomAD v3 record.
+      - type: object
+        description: gnomAD v4 record.
+        required:
+        - gnomad4
+        properties:
+          gnomad4:
+            $ref: '#/components/schemas/Gnomad4Record'
+            description: gnomAD v4 record.
+      description: Allow either a gnomAD v2/v3 or v4 record.
     HelixMtDbRecord:
       type: object
       description: A HelixMtDb record.
@@ -7618,15 +9561,15 @@ components:
           - $ref: '#/components/schemas/GnomadMtdnaRecord'
             description: Annotations from gnomAD-mtDNA.
         gnomad_exomes:
-          type:
-          - boolean
-          - 'null'
-          description: Annotations from gnomAD-exomes.
+          oneOf:
+          - type: 'null'
+          - $ref: '#/components/schemas/GnomadRecord'
+            description: Annotations from gnomAD-exomes.
         gnomad_genomes:
-          type:
-          - boolean
-          - 'null'
-          description: Annotations from gnomAD-genomes.
+          oneOf:
+          - type: 'null'
+          - $ref: '#/components/schemas/GnomadRecord'
+            description: Annotations from gnomAD-genomes.
         helixmtdb:
           oneOf:
           - type: 'null'
