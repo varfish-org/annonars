@@ -1,5 +1,17 @@
 # Changelog
 
+## [0.42.0](https://github.com/varfish-org/annonars/compare/v0.41.3...v0.42.0) (2024-11-19)
+
+
+### Features
+
+* add /api/v1/seqvars/annos/query with OpenAPI ([#577](https://github.com/varfish-org/annonars/issues/577)) ([#592](https://github.com/varfish-org/annonars/issues/592)) ([c69b328](https://github.com/varfish-org/annonars/commit/c69b328aaeeeca98b5ee72d1275320dbe6cfbabc))
+* endpoint /api/v1/genes/clinvar-info with OpenAPI ([#576](https://github.com/varfish-org/annonars/issues/576)) ([#590](https://github.com/varfish-org/annonars/issues/590)) ([728504e](https://github.com/varfish-org/annonars/commit/728504e9545c0bbd0d1ef2daae01fd0b757c4747))
+* endpoint /api/v1/genes/info with OpenAPI ([#574](https://github.com/varfish-org/annonars/issues/574)) ([#584](https://github.com/varfish-org/annonars/issues/584)) ([f09bdba](https://github.com/varfish-org/annonars/commit/f09bdbae4536cdd6470c65ab197eb2e65c0859a1))
+* endpoint /api/v1/genes/lookup with OpenAPI ([#587](https://github.com/varfish-org/annonars/issues/587)) ([#589](https://github.com/varfish-org/annonars/issues/589)) ([a71d62a](https://github.com/varfish-org/annonars/commit/a71d62a316f1eca09a55f32c260a35f0aefb09ea))
+* endpoint /api/v1/genes/search with OpenAPI ([#575](https://github.com/varfish-org/annonars/issues/575)) ([#588](https://github.com/varfish-org/annonars/issues/588)) ([c3e92ea](https://github.com/varfish-org/annonars/commit/c3e92ea97189ffccc01f428dde7ac5e6f7946000))
+* endpoint /api/v1/strucvars/clinvar-annos/query with OpenAPI ([#578](https://github.com/varfish-org/annonars/issues/578)) ([#591](https://github.com/varfish-org/annonars/issues/591)) ([b42ce28](https://github.com/varfish-org/annonars/commit/b42ce28ecc9eba2b1250612da7e13d9ef644aee5))
+
 ## [0.41.3](https://github.com/varfish-org/annonars/compare/v0.41.2...v0.41.3) (2024-10-16)
 
 
