@@ -2824,7 +2824,7 @@ use response::*;
 /// Query for annotations for a single variant.
 #[utoipa::path(
     get,
-    operation_id = "seqvarsAnosQuery",
+    operation_id = "seqvarsAnnosQuery",
     params(SeqvarsAnnosQuery),
     responses(
         (status = 200, description = "Annotation for a single variant.", body = SeqvarsAnnosResponse),
