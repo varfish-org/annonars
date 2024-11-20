@@ -2824,14 +2824,14 @@ use response::*;
 /// Query for annotations for a single variant.
 #[utoipa::path(
     get,
-    operation_id = "seqvarsAnosQuery",
+    operation_id = "seqvarsAnnosQuery",
     params(SeqvarsAnnosQuery),
     responses(
         (status = 200, description = "Annotation for a single variant.", body = SeqvarsAnnosResponse),
         (status = 500, description = "Internal server error.", body = CustomError)
     )
 )]
-#[get("/api/v1/genes/info")]
+#[get("/api/v1/seqvars/annos")]
 pub async fn handle_with_openapi(
     data: Data<crate::server::run::WebServerData>,
     _path: Path<()>,
