@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.42.2](https://github.com/varfish-org/annonars/compare/v0.42.1...v0.42.2) (2024-11-20)
+
+
+### Bug Fixes
+
+* use /api/v1/genes/clinvar in server ([#602](https://github.com/varfish-org/annonars/issues/602)) ([af965c0](https://github.com/varfish-org/annonars/commit/af965c03630baca69328bba499254b22fc6186df))
+
 ## [0.42.1](https://github.com/varfish-org/annonars/compare/v0.42.0...v0.42.1) (2024-11-20)
 
 
