@@ -299,6 +299,7 @@ pub async fn main(args: &Args, dbs: Data<WebServerData>) -> std::io::Result<()> 
             .service(clinvar_sv::handle)
             .service(clinvar_sv::handle_with_openapi)
             .service(genes_clinvar::handle)
+            .service(genes_clinvar::handle_with_openapi)
             .service(genes_info::handle)
             .service(genes_info::handle_with_openapi)
             .service(genes_search::handle)
