@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.42.1](https://github.com/varfish-org/annonars/compare/v0.42.0...v0.42.1) (2024-11-20)
+
+
+### Bug Fixes
+
+* seqvarsAnnosQuery missing in OpenAPI spec ([#600](https://github.com/varfish-org/annonars/issues/600)) ([73bdb1d](https://github.com/varfish-org/annonars/commit/73bdb1dabe2d4dbae72b00b24a92e59dbc407ed6))
+
 ## [0.42.0](https://github.com/varfish-org/annonars/compare/v0.41.3...v0.42.0) (2024-11-19)
 
 
