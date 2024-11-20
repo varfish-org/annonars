@@ -7,7 +7,7 @@ info:
     email: manuel.holtgrewe@bih-charite.de
   license:
     name: Apache-2.0
-  version: 0.41.3
+  version: 0.42.0
 paths:
   /api/v1/genes/clinvar:
     get:
@@ -42,49 +42,27 @@ paths:
   /api/v1/genes/info:
     get:
       tags:
-      - annos_variant
-      summary: Query for annotations for a single variant.
-      operationId: seqvarsAnosQuery
+      - genes_info
+      summary: Query for annotations for one or more genes.
+      operationId: genesInfo
       parameters:
-      - name: genome_release
+      - name: hgnc_id
         in: query
-        description: Genome release specification.
-        required: true
+        description: The HGNC IDs to search for.
+        required: false
         schema:
-          type: string
-      - name: chromosome
-        in: query
-        description: Chromosome name.
-        required: true
-        schema:
-          type: string
-      - name: pos
-        in: query
-        description: 1-based position for VCF-style variant.
-        required: true
-        schema:
-          type: integer
-          format: int32
-          minimum: 0
-      - name: reference
-        in: query
-        description: Reference allele bases.
-        required: true
-        schema:
-          type: string
-      - name: alternative
-        in: query
-        description: Alterantive allele bases.
-        required: true
-        schema:
-          type: string
+          type:
+          - array
+          - 'null'
+          items:
+            type: string
       responses:
         '200':
-          description: Annotation for a single variant.
+          description: Per-gene information.
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/SeqvarsAnnosResponse'
+                $ref: '#/components/schemas/GenesInfoResponse'
         '500':
           description: Internal server error.
           content:
@@ -157,6 +135,58 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/GenesSearchResponse'
+        '500':
+          description: Internal server error.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CustomError'
+  /api/v1/seqvars/annos:
+    get:
+      tags:
+      - annos_variant
+      summary: Query for annotations for a single variant.
+      operationId: seqvarsAnnosQuery
+      parameters:
+      - name: genome_release
+        in: query
+        description: Genome release specification.
+        required: true
+        schema:
+          type: string
+      - name: chromosome
+        in: query
+        description: Chromosome name.
+        required: true
+        schema:
+          type: string
+      - name: pos
+        in: query
+        description: 1-based position for VCF-style variant.
+        required: true
+        schema:
+          type: integer
+          format: int32
+          minimum: 0
+      - name: reference
+        in: query
+        description: Reference allele bases.
+        required: true
+        schema:
+          type: string
+      - name: alternative
+        in: query
+        description: Alterantive allele bases.
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Annotation for a single variant.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SeqvarsAnnosResponse'
         '500':
           description: Internal server error.
           content:

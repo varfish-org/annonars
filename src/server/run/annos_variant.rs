@@ -2831,7 +2831,7 @@ use response::*;
         (status = 500, description = "Internal server error.", body = CustomError)
     )
 )]
-#[get("/api/v1/genes/info")]
+#[get("/api/v1/seqvars/annos")]
 pub async fn handle_with_openapi(
     data: Data<crate::server::run::WebServerData>,
     _path: Path<()>,
