@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.42.3](https://github.com/varfish-org/annonars/compare/v0.42.2...v0.42.3) (2024-11-22)
+
+
+### Bug Fixes
+
+* re-enable gnomad output for server ([#604](https://github.com/varfish-org/annonars/issues/604)) ([5be7bd5](https://github.com/varfish-org/annonars/commit/5be7bd5759bc6e5e1e0382da5fd53b2a33c65052))
+
 ## [0.42.2](https://github.com/varfish-org/annonars/compare/v0.42.1...v0.42.2) (2024-11-20)
 
 
