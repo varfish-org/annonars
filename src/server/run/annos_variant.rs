@@ -3068,7 +3068,6 @@ pub async fn handle_with_openapi(
             })
             .transpose()?
             .flatten(),
-        ..Default::default()
     };
 
     Ok(Json(SeqvarsAnnosResponse { result }))
