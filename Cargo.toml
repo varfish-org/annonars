@@ -36,7 +36,7 @@ erased-serde = "0.4.2"
 flate2 = "1.0"
 indexmap = { version = "2.7", features = ["serde"] }
 indicatif = { version = "0.17", features = ["rayon"] }
-itertools = "0.13.0"
+itertools = "0.14.0"
 log = "0.4"
 pbjson = "0.7"
 pbjson-types = "0.7"
