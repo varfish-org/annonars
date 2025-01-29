@@ -6,7 +6,7 @@ use crate::pbs::clinvar_data::class_by_freq::GeneCoarseClinsigFrequencyCounts;
 use crate::pbs::clinvar_data::extracted_vars::ExtractedVcvRecord;
 use crate::pbs::clinvar_data::gene_impact::GeneImpactCounts;
 use clap::Parser;
-use extsort::{ExternalSorter, SortedIterator};
+use extsort::ExternalSorter;
 use itertools::Itertools;
 use prost::Message;
 use serde::{Deserialize, Serialize};
@@ -96,13 +96,14 @@ struct SortableVcvRecord {
 
 impl extsort::Sortable for SortableVcvRecord {
     fn encode<W: Write>(&self, writer: &mut W) -> std::io::Result<()> {
-        let buf = rmp_serde::to_vec(self)
+        rmp_serde::encode::write_named(writer, self)
             .map_err(|e| std::io::Error::new(std::io::ErrorKind::Other, e))?;
-        writer.write_all(&buf)
+        writer.flush()
     }
 
     fn decode<R: Read>(reader: &mut R) -> std::io::Result<Self> {
-        rmp_serde::from_read(reader).map_err(|e| std::io::Error::new(std::io::ErrorKind::Other, e))
+        rmp_serde::decode::from_read(reader)
+            .map_err(|e| std::io::Error::new(std::io::ErrorKind::Other, e))
     }
 }
 
@@ -134,9 +135,9 @@ impl ClinvarVariants {
             })
             .map(BufReader::new)
             .flat_map(|reader| reader.lines())
-            .filter_map(Result::ok)
+            .map(Result::unwrap)
             .map(|line| serde_json::from_str::<ExtractedVcvRecord>(&line))
-            .filter_map(Result::ok)
+            .map(Result::unwrap)
             .flat_map(|record| {
                 let hgnc_ids = record.hgnc_ids.clone();
                 hgnc_ids.into_iter().map(move |hgnc_id| SortableVcvRecord {
@@ -149,7 +150,7 @@ impl ClinvarVariants {
     fn sorted_records(&self) -> Result<impl Iterator<Item = SortableVcvRecord>, anyhow::Error> {
         // We sort all records by hgnc_id and assembly (external memory sort),
         // such that we can group them by hgnc_id and release later.
-        let sorter = ExternalSorter::new();
+        let sorter = ExternalSorter::new().with_segment_size(100_000);
         let sorted_records = sorter
             .sort_by(self._iter(), |a, b| {
                 a.hgnc_id.cmp(&b.hgnc_id).then_with(|| {
@@ -167,7 +168,7 @@ impl ClinvarVariants {
                         )
                 })
             })?
-            .flatten();
+            .map(Result::unwrap);
         Ok(sorted_records)
     }
 
@@ -204,7 +205,7 @@ fn jsonl_import(
     tracing::info!("... done loading hgnc ids in {:?}", &before_vars.elapsed());
 
     let before_vars = std::time::Instant::now();
-    let mut vars_per_gene_records = vars_per_gene.sorted_records()?;
+    let vars_per_gene_records = vars_per_gene.sorted_records()?;
     tracing::info!(
         "... done preparing reading variants per gene in {:?}",
         &before_vars.elapsed()
@@ -241,42 +242,52 @@ fn jsonl_import(
         hgnc_ids_not_in_vars_per_gene.len()
     );
 
-    dbg!(vars_per_gene_records.next());
-    let mut vars_per_gene_records_by_hgnc_id =
-        vars_per_gene_records.chunk_by(|r| r.hgnc_id.clone());
+    let vars_per_gene_records_by_hgnc_id = vars_per_gene_records.chunk_by(|r| r.hgnc_id.clone());
     let mut vars_per_gene_records_by_hgnc_id = vars_per_gene_records_by_hgnc_id.into_iter();
-    vars_per_gene_records_by_hgnc_id
-        .next()
-        .map(|(hgnc_id, records)| {
-            dbg!((hgnc_id, records.count()));
-        });
 
     // Read through all records and insert each into the database.
     for (i, hgnc_id) in hgnc_ids.iter().enumerate() {
-        eprint!("Processing gene {}/{}\r", i + 1, hgnc_ids.len());
-        dbg!(hgnc_id);
+        eprint!(
+            "Processing gene {:12}\t{:6}/{:6}\r",
+            hgnc_id,
+            i + 1,
+            hgnc_ids.len()
+        );
         let per_release_vars = if hgnc_ids_not_in_vars_per_gene.contains(hgnc_id) {
             tracing::warn!("No variants found for gene {}", hgnc_id);
             vec![]
         } else {
             if let Some((group_hgnc_id, records)) = vars_per_gene_records_by_hgnc_id.next() {
                 if *hgnc_id != group_hgnc_id {
-                    dbg!(hgnc_id, group_hgnc_id);
-                    todo!()
+                    tracing::warn!(
+                        "Iterators not in-lock step ({} vs {})",
+                        hgnc_id,
+                        &group_hgnc_id
+                    );
+                    vec![]
                 } else {
-                    dbg!(records.count());
-                    // let by_assembly = records.chunk_by(|r| {
-                    //     r.record
-                    //         .sequence_location
-                    //         .as_ref()
-                    //         .expect("Missing sequence location")
-                    //         .assembly
-                    //         .clone()
-                    // });
-                    vec![ExtractedVariantsPerRelease {
-                        release: None,
-                        variants: vec![],
-                    }]
+                    let mut records = records.collect::<Vec<_>>();
+                    let key = |r: &SortableVcvRecord| -> String {
+                        r.record
+                            .sequence_location
+                            .as_ref()
+                            .expect("Missing sequence location")
+                            .assembly
+                            .clone()
+                    };
+                    let sort_fn =
+                        |a: &SortableVcvRecord, b: &SortableVcvRecord| key(a).cmp(&key(b));
+                    records.sort_by(sort_fn);
+                    let by_assembly = records.into_iter().chunk_by(|a| key(a));
+                    by_assembly
+                        .into_iter()
+                        .map(
+                            |(release, records_by_release)| ExtractedVariantsPerRelease {
+                                release: Some(release),
+                                variants: records_by_release.map(move |r| r.record).collect(),
+                            },
+                        )
+                        .collect()
                 }
             } else {
                 panic!("No more records in vars_per_gene_records_by_hgnc_id");
