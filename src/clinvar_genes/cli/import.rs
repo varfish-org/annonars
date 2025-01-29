@@ -123,9 +123,9 @@ impl ClinvarVariants {
             .iter()
             .map(|path| {
                 let reader: Box<dyn Read> = if path.ends_with(".gz") {
-                    Box::new(flate2::read::GzDecoder::new(
+                    Box::new(flate2::bufread::MultiGzDecoder::new(BufReader::new(
                         std::fs::File::open(path).expect(&format!("failed to open file: {}", path)),
-                    ))
+                    )))
                 } else {
                     Box::new(
                         std::fs::File::open(path).expect(&format!("failed to open file: {}", path)),
@@ -259,11 +259,7 @@ fn jsonl_import(
         } else {
             if let Some((group_hgnc_id, records)) = vars_per_gene_records_by_hgnc_id.next() {
                 if *hgnc_id != group_hgnc_id {
-                    tracing::warn!(
-                        "Iterators out of sync ({} vs {})",
-                        hgnc_id,
-                        &group_hgnc_id
-                    );
+                    tracing::warn!("Iterators out of sync ({} vs {})", hgnc_id, &group_hgnc_id);
                     vec![]
                 } else {
                     let mut records = records.collect::<Vec<_>>();
