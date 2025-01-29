@@ -148,7 +148,6 @@ impl ClinvarVariants {
         let mut vars_per_gene_hgnc_ids = HashSet::new();
         let mut writers = HashMap::new();
         for (i, record) in self._iter().enumerate() {
-            eprint!("Distributing record {:12}\t{:6}\r", record.hgnc_id, i + 1);
             let hgnc_id = &record.hgnc_id;
             vars_per_gene_hgnc_ids.insert(hgnc_id.clone());
 
@@ -296,12 +295,6 @@ fn jsonl_import(
 
     // Read through all records and insert each into the database.
     for (i, hgnc_id) in hgnc_ids.iter().enumerate() {
-        eprint!(
-            "Processing gene {:12}\t{:6}/{:6}\r",
-            hgnc_id,
-            i + 1,
-            hgnc_ids.len()
-        );
         let per_release_vars = if hgnc_ids_not_in_vars_per_gene.contains(hgnc_id) {
             tracing::warn!("No variants found for gene {}", hgnc_id);
             vec![]
