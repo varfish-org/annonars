@@ -260,7 +260,7 @@ fn jsonl_import(
             if let Some((group_hgnc_id, records)) = vars_per_gene_records_by_hgnc_id.next() {
                 if *hgnc_id != group_hgnc_id {
                     tracing::warn!(
-                        "Iterators not in-lock step ({} vs {})",
+                        "Iterators out of sync ({} vs {})",
                         hgnc_id,
                         &group_hgnc_id
                     );
