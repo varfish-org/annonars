@@ -262,7 +262,6 @@ fn jsonl_import(
                     tracing::warn!("Iterators out of sync ({} vs {})", hgnc_id, &group_hgnc_id);
                     vec![]
                 } else {
-                    let mut records = records.collect::<Vec<_>>();
                     let key = |r: &SortableVcvRecord| -> String {
                         r.record
                             .sequence_location
@@ -271,10 +270,7 @@ fn jsonl_import(
                             .assembly
                             .clone()
                     };
-                    let sort_fn =
-                        |a: &SortableVcvRecord, b: &SortableVcvRecord| key(a).cmp(&key(b));
-                    records.sort_by(sort_fn);
-                    let by_assembly = records.into_iter().into_group_map_by(|a| key(a));
+                    let by_assembly = records.into_group_map_by(|a| key(a));
                     by_assembly
                         .into_iter()
                         .map(|(assembly, group)| ExtractedVariantsPerRelease {
