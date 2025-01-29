@@ -278,15 +278,13 @@ fn jsonl_import(
                     let sort_fn =
                         |a: &SortableVcvRecord, b: &SortableVcvRecord| key(a).cmp(&key(b));
                     records.sort_by(sort_fn);
-                    let by_assembly = records.into_iter().chunk_by(|a| key(a));
+                    let by_assembly = records.into_iter().into_group_map_by(|a| key(a));
                     by_assembly
                         .into_iter()
-                        .map(
-                            |(release, records_by_release)| ExtractedVariantsPerRelease {
-                                release: Some(release),
-                                variants: records_by_release.map(move |r| r.record).collect(),
-                            },
-                        )
+                        .map(|(assembly, group)| ExtractedVariantsPerRelease {
+                            release: Some(assembly),
+                            variants: group.into_iter().map(|r| r.record).collect(),
+                        })
                         .collect()
                 }
             } else {
