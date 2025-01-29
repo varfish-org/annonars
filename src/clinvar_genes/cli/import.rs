@@ -5,13 +5,12 @@ use crate::pbs::clinvar::per_gene::{ClinvarPerGeneRecord, ExtractedVariantsPerRe
 use crate::pbs::clinvar_data::class_by_freq::GeneCoarseClinsigFrequencyCounts;
 use crate::pbs::clinvar_data::extracted_vars::ExtractedVcvRecord;
 use crate::pbs::clinvar_data::gene_impact::GeneImpactCounts;
-use bincode::Options;
 use clap::Parser;
 use itertools::Itertools;
 use prost::Message;
 use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
-use std::io::{BufReader, Read, Seek, Write};
+use std::io::{BufReader, Read, Write};
 use std::iter::from_fn;
 use std::path::{Path, PathBuf};
 use std::{collections::HashSet, io::BufRead, sync::Arc};
