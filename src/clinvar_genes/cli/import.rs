@@ -5,12 +5,15 @@ use crate::pbs::clinvar::per_gene::{ClinvarPerGeneRecord, ExtractedVariantsPerRe
 use crate::pbs::clinvar_data::class_by_freq::GeneCoarseClinsigFrequencyCounts;
 use crate::pbs::clinvar_data::extracted_vars::ExtractedVcvRecord;
 use crate::pbs::clinvar_data::gene_impact::GeneImpactCounts;
+use bincode::Options;
 use clap::Parser;
-use extsort::ExternalSorter;
 use itertools::Itertools;
 use prost::Message;
 use serde::{Deserialize, Serialize};
-use std::io::{BufReader, Read, Write};
+use std::collections::HashMap;
+use std::io::{BufReader, Read, Seek, Write};
+use std::iter::from_fn;
+use std::path::{Path, PathBuf};
 use std::{collections::HashSet, io::BufRead, sync::Arc};
 
 /// Command line arguments for `tsv import` sub command.
@@ -94,28 +97,19 @@ struct SortableVcvRecord {
     record: ExtractedVcvRecord,
 }
 
-impl extsort::Sortable for SortableVcvRecord {
-    fn encode<W: Write>(&self, writer: &mut W) -> std::io::Result<()> {
-        rmp_serde::encode::write_named(writer, self)
-            .map_err(|e| std::io::Error::new(std::io::ErrorKind::Other, e))?;
-        writer.flush()
-    }
-
-    fn decode<R: Read>(reader: &mut R) -> std::io::Result<Self> {
-        rmp_serde::decode::from_read(reader)
-            .map_err(|e| std::io::Error::new(std::io::ErrorKind::Other, e))
-    }
-}
-
 struct ClinvarVariants {
     paths: Vec<String>,
+    tempdir: PathBuf,
+    hgnc_ids: Option<HashSet<String>>,
 }
 
 impl ClinvarVariants {
-    fn from_paths(variant_jsonls: &[String]) -> Self {
-        Self {
+    fn from_paths(variant_jsonls: &[String], directory: impl AsRef<Path>) -> anyhow::Result<Self> {
+        Ok(Self {
             paths: variant_jsonls.to_vec(),
-        }
+            tempdir: PathBuf::from(directory.as_ref()),
+            hgnc_ids: None,
+        })
     }
 
     fn _iter(&self) -> impl Iterator<Item = SortableVcvRecord> + use<'_> {
@@ -147,33 +141,90 @@ impl ClinvarVariants {
             })
     }
 
-    fn sorted_records(&self) -> Result<impl Iterator<Item = SortableVcvRecord>, anyhow::Error> {
-        // We sort all records by hgnc_id and assembly (external memory sort),
-        // such that we can group them by hgnc_id and release later.
-        let sorter = ExternalSorter::new().with_segment_size(100_000);
-        let sorted_records = sorter
-            .sort_by(self._iter(), |a, b| {
-                a.hgnc_id.cmp(&b.hgnc_id).then_with(|| {
-                    a.record
-                        .sequence_location
-                        .as_ref()
-                        .expect("Missing assembly in sequence_location")
-                        .assembly
-                        .cmp(
-                            &b.record
-                                .sequence_location
-                                .as_ref()
-                                .expect("Missing assembly in sequence_location")
-                                .assembly,
-                        )
-                })
-            })?
-            .map(Result::unwrap);
-        Ok(sorted_records)
+    /// Distribute the records to temporary files.
+    /// Returns the set of HGNC IDs for which records were distributed.
+    ///
+    /// Writes the records to temporary compressed jsonl files, one file per HGNC ID.
+    pub(crate) fn distribute_records(&mut self) -> anyhow::Result<&HashSet<String>> {
+        let mut vars_per_gene_hgnc_ids = HashSet::new();
+        let mut writers = HashMap::new();
+        for (i, record) in self._iter().enumerate() {
+            eprint!("Distributing record {:12}\t{:6}\r", record.hgnc_id, i + 1);
+            let hgnc_id = &record.hgnc_id;
+            vars_per_gene_hgnc_ids.insert(hgnc_id.clone());
+
+            // Open file in append mode and write the record, compressed.
+            // This will require usage of the MultiGzDecoder in subsequent steps.
+            let mut writer = writers.entry(hgnc_id.clone()).or_insert_with(|| {
+                let path = self.tempdir.join(&format!(
+                    "{}.tmp.jsonl.gz",
+                    hgnc_id.strip_prefix("HGNC:").unwrap_or(hgnc_id)
+                ));
+
+                std::fs::OpenOptions::new()
+                    .create(true)
+                    .append(true)
+                    .open(&path)
+                    .map(std::io::BufWriter::new)
+                    .map(|w| flate2::write::GzEncoder::new(w, flate2::Compression::fast()))
+                    .expect(&format!("failed to open file: {:?}", path))
+            });
+            serde_json::to_writer(&mut writer, &record.record)?;
+            writeln!(writer)?;
+        }
+        for (_, mut writer) in writers.drain() {
+            writer.flush()?;
+        }
+        drop(writers);
+        self.hgnc_ids = Some(vars_per_gene_hgnc_ids);
+        Ok(self.hgnc_ids.as_ref().unwrap())
     }
 
-    fn hgnc_ids(&self) -> HashSet<String> {
-        self._iter().map(|record| record.hgnc_id.clone()).collect()
+    /// Returns an iterator over records, sorted by HGNC ID.
+    ///
+    /// This method requires that `distribute_records` has been called before.
+    /// Records are read from the temporary files in sorted order.
+    pub(crate) fn sorted_records(
+        &mut self,
+    ) -> anyhow::Result<impl Iterator<Item = SortableVcvRecord> + use<'_>> {
+        if self.hgnc_ids.is_none() {
+            tracing::warn!("Records have not been distributed yet, doing so now.");
+            self.distribute_records()?;
+        }
+
+        let mut hgnc_ids = self.hgnc_ids.as_ref().unwrap().iter().collect_vec();
+        hgnc_ids.sort();
+
+        let records = hgnc_ids.into_iter().flat_map(|hgnc_id| {
+            let path = self.tempdir.join(&format!(
+                "{}.tmp.jsonl.gz",
+                hgnc_id.strip_prefix("HGNC:").unwrap_or(hgnc_id)
+            ));
+
+            let reader = std::fs::File::open(&path)
+                .map(BufReader::new)
+                .map(flate2::bufread::MultiGzDecoder::new)
+                .map(BufReader::new)
+                .expect(&format!("failed to open file: {:?}", path));
+            let mut lines = reader.lines();
+
+            from_fn(move || match lines.next() {
+                None => None,
+                Some(Ok(line)) => match serde_json::from_str::<ExtractedVcvRecord>(&line) {
+                    Ok(r) => Some(SortableVcvRecord {
+                        hgnc_id: hgnc_id.clone(),
+                        record: r,
+                    }),
+                    Err(e) => {
+                        panic!("failed to deserialize line: {:?} ({})", line, e)
+                    }
+                },
+                Some(Err(e)) => {
+                    panic!("failed to read line: {}", e);
+                }
+            })
+        });
+        Ok(records)
     }
 }
 
@@ -198,26 +249,22 @@ fn jsonl_import(
         "... done loading impact frequency per significance gene in {:?}",
         &before_per_freq.elapsed()
     );
+
     tracing::info!("Loading variants per gene ...");
     let before_vars = std::time::Instant::now();
-    let vars_per_gene = ClinvarVariants::from_paths(&args.paths_variant_jsonl);
-    let vars_per_gene_hgnc_ids = vars_per_gene.hgnc_ids();
-    tracing::info!("... done loading hgnc ids in {:?}", &before_vars.elapsed());
+    // Temporary directory for storing the distributed records.
+    let tempdir = tempfile::tempdir()?;
+    let mut vars_per_gene = ClinvarVariants::from_paths(&args.paths_variant_jsonl, &tempdir)?;
 
-    let before_vars = std::time::Instant::now();
-    let vars_per_gene_records = vars_per_gene.sorted_records()?;
+    // Distribute the records to files, such that we can later read them in sorted order.
+    let vars_per_gene_hgnc_ids = vars_per_gene.distribute_records()?;
     tracing::info!(
-        "... done preparing reading variants per gene in {:?}",
+        "... done preparing variants per gene in {:?}",
         &before_vars.elapsed()
     );
 
-    // tracing::info!(
-    //     "... done loading variants per gene in {:?}",
-    //     &before_vars.elapsed()
-    // );
-
-    tracing::info!("Writing to database ...");
-    let before_write_to_db = std::time::Instant::now();
+    tracing::info!("Merging gene lists ...");
+    let before_merge = std::time::Instant::now();
     let mut hgnc_ids = counts_per_impact
         .keys()
         .cloned()
@@ -227,6 +274,13 @@ fn jsonl_import(
         .into_iter()
         .collect::<Vec<_>>();
     hgnc_ids.sort();
+    tracing::info!(
+        "... done merging gene lists in {:?}",
+        &before_merge.elapsed()
+    );
+
+    tracing::info!("Writing to database ...");
+    let before_write_to_db = std::time::Instant::now();
 
     // We need to check if there are any genes in the impact and frequency data that are not in the variants data,
     // such that we can skip advancing the iterator for the variants data in those cases.
@@ -236,12 +290,8 @@ fn jsonl_import(
         .filter(|hgnc_id| !vars_per_gene_hgnc_ids.contains(*hgnc_id))
         .cloned()
         .collect();
-    dbg!(
-        hgnc_ids.len(),
-        vars_per_gene_hgnc_ids.len(),
-        hgnc_ids_not_in_vars_per_gene.len()
-    );
 
+    let vars_per_gene_records = vars_per_gene.sorted_records()?;
     let vars_per_gene_records_by_hgnc_id = vars_per_gene_records.chunk_by(|r| r.hgnc_id.clone());
     let mut vars_per_gene_records_by_hgnc_id = vars_per_gene_records_by_hgnc_id.into_iter();
 
@@ -280,7 +330,7 @@ fn jsonl_import(
                         .collect()
                 }
             } else {
-                panic!("No more records in vars_per_gene_records_by_hgnc_id");
+                panic!("No more records in vars_per_gene_records_by_hgnc_id, even though there should be.");
             }
         };
 
@@ -297,6 +347,9 @@ fn jsonl_import(
         "... done writing to database in {:?}",
         &before_write_to_db.elapsed()
     );
+
+    tracing::info!("Cleaning up temporary files ...");
+    drop(tempdir);
 
     Ok(())
 }
