@@ -7,11 +7,13 @@ use crate::pbs::clinvar_data::extracted_vars::ExtractedVcvRecord;
 use crate::pbs::clinvar_data::gene_impact::GeneImpactCounts;
 use clap::Parser;
 use itertools::Itertools;
+use lru::LruCache;
 use prost::Message;
 use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
 use std::io::{BufReader, Read, Write};
 use std::iter::from_fn;
+use std::num::NonZeroUsize;
 use std::path::{Path, PathBuf};
 use std::{collections::HashSet, io::BufRead, sync::Arc};
 
@@ -140,25 +142,38 @@ impl ClinvarVariants {
             })
     }
 
+    fn file_path(&self, hgnc_id: &str) -> PathBuf {
+        let hgnc_id = hgnc_id.strip_prefix("HGNC:").unwrap_or(hgnc_id);
+        // take the first two characters as a subdirectory prefix
+        let subdir_prefix = hgnc_id.get(..2).unwrap_or("0");
+
+        self.tempdir
+            .join(subdir_prefix)
+            .join(&format!("{}.tmp.jsonl.gz", hgnc_id,))
+    }
+
     /// Distribute the records to temporary files.
     /// Returns the set of HGNC IDs for which records were distributed.
     ///
     /// Writes the records to temporary compressed jsonl files, one file per HGNC ID.
     pub(crate) fn distribute_records(&mut self) -> anyhow::Result<&HashSet<String>> {
         let mut vars_per_gene_hgnc_ids = HashSet::new();
-        let mut writers = HashMap::new();
-        for (i, record) in self._iter().enumerate() {
+
+        // LRU cache for writers, to avoid opening too many files at once.
+        let mut writers = LruCache::new(NonZeroUsize::new(1000).unwrap());
+
+        for (_i, record) in self._iter().enumerate() {
             let hgnc_id = &record.hgnc_id;
             vars_per_gene_hgnc_ids.insert(hgnc_id.clone());
 
-            // Open file in append mode and write the record, compressed.
-            // This will require usage of the MultiGzDecoder in subsequent steps.
-            let mut writer = writers.entry(hgnc_id.clone()).or_insert_with(|| {
-                let path = self.tempdir.join(&format!(
-                    "{}.tmp.jsonl.gz",
-                    hgnc_id.strip_prefix("HGNC:").unwrap_or(hgnc_id)
-                ));
+            // Either get the writer from the cache, or create a new one.
+            let mut writer = writers.get_or_insert_mut(hgnc_id.clone(), || {
+                let path = self.file_path(hgnc_id);
+                std::fs::create_dir_all(path.parent().expect("failed to get parent path"))
+                    .expect("failed to create directory");
 
+                // Open file in append mode and write the record, compressed.
+                // This will require usage of the MultiGzDecoder in subsequent steps.
                 std::fs::OpenOptions::new()
                     .create(true)
                     .append(true)
@@ -170,10 +185,10 @@ impl ClinvarVariants {
             serde_json::to_writer(&mut writer, &record.record)?;
             writeln!(writer)?;
         }
-        for (_, mut writer) in writers.drain() {
+        // Flush all remaining writers
+        for (_, mut writer) in writers.into_iter() {
             writer.flush()?;
         }
-        drop(writers);
         self.hgnc_ids = Some(vars_per_gene_hgnc_ids);
         Ok(self.hgnc_ids.as_ref().unwrap())
     }
@@ -194,10 +209,7 @@ impl ClinvarVariants {
         hgnc_ids.sort();
 
         let records = hgnc_ids.into_iter().flat_map(|hgnc_id| {
-            let path = self.tempdir.join(&format!(
-                "{}.tmp.jsonl.gz",
-                hgnc_id.strip_prefix("HGNC:").unwrap_or(hgnc_id)
-            ));
+            let path = self.file_path(hgnc_id);
 
             let reader = std::fs::File::open(&path)
                 .map(BufReader::new)
