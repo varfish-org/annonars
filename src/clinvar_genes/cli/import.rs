@@ -10,12 +10,11 @@ use itertools::Itertools;
 use lru::LruCache;
 use prost::Message;
 use serde::{Deserialize, Serialize};
-use std::collections::HashMap;
 use std::io::{BufReader, Read, Write};
 use std::iter::from_fn;
 use std::num::NonZeroUsize;
 use std::path::{Path, PathBuf};
-use std::{collections::HashSet, io::BufRead, sync::Arc};
+use std::{collections::HashSet, env, io::BufRead, sync::Arc};
 
 /// Command line arguments for `tsv import` sub command.
 #[derive(Parser, Debug, Clone)]
@@ -159,8 +158,14 @@ impl ClinvarVariants {
     pub(crate) fn distribute_records(&mut self) -> anyhow::Result<&HashSet<String>> {
         let mut vars_per_gene_hgnc_ids = HashSet::new();
 
+        let cache_size = env::var("ANNONARS_CLINVAR_GENES_IMPORT_CACHE_SIZE")
+            .ok()
+            .and_then(|s| s.parse::<usize>().ok())
+            .and_then(NonZeroUsize::new)
+            .unwrap_or(NonZeroUsize::new(1000).unwrap());
+
         // LRU cache for writers, to avoid opening too many files at once.
-        let mut writers = LruCache::new(NonZeroUsize::new(1000).unwrap());
+        let mut writers = LruCache::new(cache_size);
 
         for (_i, record) in self._iter().enumerate() {
             let hgnc_id = &record.hgnc_id;
@@ -306,7 +311,7 @@ fn jsonl_import(
     let mut vars_per_gene_records_by_hgnc_id = vars_per_gene_records_by_hgnc_id.into_iter();
 
     // Read through all records and insert each into the database.
-    for (i, hgnc_id) in hgnc_ids.iter().enumerate() {
+    for (_i, hgnc_id) in hgnc_ids.iter().enumerate() {
         let per_release_vars = if hgnc_ids_not_in_vars_per_gene.contains(hgnc_id) {
             tracing::warn!("No variants found for gene {}", hgnc_id);
             vec![]
