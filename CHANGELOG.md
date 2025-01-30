@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.42.4](https://github.com/varfish-org/annonars/compare/v0.42.3...v0.42.4) (2025-01-30)
+
+
+### Bug Fixes
+
+* use external sort during `clinvar-genes import` ([#640](https://github.com/varfish-org/annonars/issues/640)) ([10889c7](https://github.com/varfish-org/annonars/commit/10889c7b26e18b5725504c6b52d5b61c4d643063))
+
 ## [0.42.3](https://github.com/varfish-org/annonars/compare/v0.42.2...v0.42.3) (2024-11-22)
 
 
