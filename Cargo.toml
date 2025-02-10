@@ -44,7 +44,7 @@ prost = "0.13"
 rayon = "1.8"
 rocksdb-utils-lookup = "0.4"
 rocksdb = { version = "0.22", features = ["multi-threaded-cf"] }
-rustc-hash = "2.1.0"
+rustc-hash = "2.1.1"
 serde_json = { version = "1.0", features = ["preserve_order"] }
 serde = { version = "1.0", features = ["derive"] }
 serde_with = { version = "3.12", features = ["alloc", "macros", "indexmap_2"], default-features = false }
