@@ -59,6 +59,7 @@ fn tsv_import(
         .reference_sequence_names()
         .iter()
         .filter_map(|chrom| {
+            let chrom = &chrom.to_string();
             let canon_chrom = chrom.strip_prefix("chr").unwrap_or(chrom);
             if common::cli::is_canonical(canon_chrom) {
                 Some((common::cli::canonicalize(canon_chrom), chrom.clone()))
