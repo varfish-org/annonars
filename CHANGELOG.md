@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.42.5](https://github.com/varfish-org/annonars/compare/v0.42.4...v0.42.5) (2025-04-14)
+
+
+### Bug Fixes
+
+* update noodles-group to 0.97 ([#678](https://github.com/varfish-org/annonars/issues/678)) ([7f5fb51](https://github.com/varfish-org/annonars/commit/7f5fb515d6fa6c94ec4142f0b28c44aa536abdc1))
+
 ## [0.42.4](https://github.com/varfish-org/annonars/compare/v0.42.3...v0.42.4) (2025-01-30)
 
 
