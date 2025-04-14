@@ -17,10 +17,7 @@ fn resolve_region(
 ) -> std::io::Result<usize> {
     header
         .reference_sequence_names()
-        .get_index_of(
-            std::str::from_utf8(region.name())
-                .map_err(|e| std::io::Error::new(std::io::ErrorKind::InvalidData, e))?,
-        )
+        .get_index_of(region.name())
         .ok_or_else(|| {
             std::io::Error::new(
                 std::io::ErrorKind::InvalidInput,
@@ -137,7 +134,7 @@ pub fn tsv_import(
             .filter(|(chrom, _, _)| {
                 header
                     .reference_sequence_names()
-                    .get_index_of(chrom)
+                    .get_index_of(chrom.as_bytes())
                     .is_some()
             })
             .map(|(chrom, begin, end)| {

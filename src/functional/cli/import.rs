@@ -106,11 +106,11 @@ fn gff_import(
     // Import of RefSeq GFF data.
     let contig_map = ContigMap::new(args.genome_release.into());
     let mut reader = gff::Reader::new(std::io::BufReader::new(reader));
-    for result in reader.records() {
+    for result in reader.record_bufs() {
         let record = result?;
 
         // Resolve reference sequence name to contig name (for canonical ones).
-        let seq_name = record.reference_sequence_name();
+        let seq_name = &record.reference_sequence_name().to_string();
         let chromosome = match contig_map.chrom_name_to_seq(seq_name) {
             Ok(sequence) => {
                 if is_canonical(&sequence.name) {
@@ -129,14 +129,15 @@ fn gff_import(
         };
 
         /// Helper function to extract a key from the attributes of a record.
-        fn extract(record: &gff::Record, key: &str) -> Result<String, anyhow::Error> {
+        fn extract(record: &gff::feature::RecordBuf, key: &str) -> Result<String, anyhow::Error> {
+            let key_ = key.as_bytes();
             let value = record
                 .attributes()
-                .get(key)
+                .get(key_)
                 .ok_or_else(|| anyhow::anyhow!("problem with {} attribute: {:?}", key, record))?;
             match value {
-                gff::record::attributes::field::Value::String(s) => Ok(s.clone()),
-                gff::record::attributes::field::Value::Array(arr) => {
+                gff::feature::record_buf::attributes::field::Value::String(s) => Ok(s.to_string()),
+                gff::feature::record_buf::attributes::field::Value::Array(arr) => {
                     if arr.is_empty() {
                         Err(anyhow::anyhow!(
                             "problem with {} attribute: {:?}",
@@ -147,7 +148,7 @@ fn gff_import(
                         if arr.len() > 1 {
                             tracing::warn!("multiple values for {} attribute: {:?}", key, record);
                         }
-                        Ok(arr[0].clone())
+                        Ok(arr[0].clone().to_string())
                     }
                 }
             }

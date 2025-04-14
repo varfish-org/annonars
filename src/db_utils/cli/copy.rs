@@ -5,6 +5,7 @@ use std::{fs::File, io::BufReader, path::PathBuf};
 use clap::Parser;
 
 use indicatif::ParallelProgressIterator;
+use noodles::core::Position;
 use rayon::prelude::*;
 
 use crate::common::{self, cli::extract_chrom, keys, spdi};
@@ -59,12 +60,14 @@ fn copy_cf_bed(
 ) -> Result<(), anyhow::Error> {
     let mut reader = File::open(path_bed)
         .map(BufReader::new)
-        .map(noodles::bed::Reader::new)?;
+        .map(noodles::bed::Reader::<3, _>::new)?;
 
     tracing::info!("  reading BED records...");
-    let bed_records = reader
-        .records::<3>()
-        .collect::<Result<Vec<noodles::bed::Record<3>>, _>>()?;
+    let mut bed_records = Vec::new();
+    let mut record = noodles::bed::Record::default();
+    while reader.read_record(&mut record)? != 0 {
+        bed_records.push(record.clone());
+    }
     tracing::info!(
         "  will process {} BED records in parallel...",
         bed_records.len()
@@ -75,9 +78,15 @@ fn copy_cf_bed(
         .progress_with(common::cli::progress_bar(bed_records.len()))
         .map(|record| {
             let chrom = record.reference_sequence_name();
-            let start: usize = record.start_position().into();
+            let start: usize = record
+                .feature_start()
+                .unwrap_or(Position::new(1).unwrap())
+                .into();
             let start = start + 1;
-            let stop: usize = record.end_position().into();
+            let stop: usize = record
+                .feature_end()
+                .unwrap_or(Ok(Position::new(1).unwrap()))?
+                .into();
 
             let start = spdi::Pos {
                 sequence: chrom.to_string(),

@@ -59,7 +59,7 @@ tempfile = "3.19.1"
 lru = "0.13.0"
 
 [dependencies.noodles]
-version = "0.77.0"
+version = "0.97.0"
 features = ["bed", "bgzf", "core", "csi", "gff", "tabix", "vcf"]
 
 [build-dependencies]
