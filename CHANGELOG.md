@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.44.0](https://github.com/varfish-org/annonars/compare/v0.43.0...v0.44.0) (2025-04-16)
+
+
+### Miscellaneous Chores
+
+* bump version for jemalloc default feature ([31b94eb](https://github.com/varfish-org/annonars/commit/31b94eb108b00e7c3e16f123ed3ea6ef120b4712))
+
 ## [0.43.0](https://github.com/varfish-org/annonars/compare/v0.42.5...v0.43.0) (2025-04-16)
 
 
