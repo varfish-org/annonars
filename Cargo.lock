@@ -247,7 +247,7 @@ dependencies = [
 
 [[package]]
 name = "annonars"
-version = "0.43.0"
+version = "0.44.0"
 dependencies = [
  "actix-web",
  "anyhow",
