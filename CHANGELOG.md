@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.43.0](https://github.com/varfish-org/annonars/compare/v0.42.5...v0.43.0) (2025-04-16)
+
+
+### Miscellaneous Chores
+
+* bump version for rocksdb-utils-lookup and rocksdb updates ([25a5b98](https://github.com/varfish-org/annonars/commit/25a5b98d9bc665fab8960a95f7a1f7078ca5132f))
+
 ## [0.42.5](https://github.com/varfish-org/annonars/compare/v0.42.4...v0.42.5) (2025-04-14)
 
 
