@@ -75,7 +75,7 @@ pbjson-build = "0.7"
 prost-build = "0.13"
 
 [dev-dependencies]
-insta = { version = "1.41", features = ["yaml"] }
+insta = { version = "1.43", features = ["yaml"] }
 log = "0.4"
 pretty_assertions = "1.4"
 rstest = "0.25.0"
