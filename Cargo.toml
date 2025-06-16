@@ -51,7 +51,7 @@ rocksdb = { version = "0.23", features = ["multi-threaded-cf"] }
 rustc-hash = "2.1.1"
 serde_json = { version = "1.0", features = ["preserve_order"] }
 serde = { version = "1.0", features = ["derive"] }
-serde_with = { version = "3.12", features = ["alloc", "macros", "indexmap_2"], default-features = false }
+serde_with = { version = "3.13", features = ["alloc", "macros", "indexmap_2"], default-features = false }
 serde_yaml = "0.9"
 strum = { version = "0.27", features = ["strum_macros", "derive"] }
 thiserror = "2.0"
