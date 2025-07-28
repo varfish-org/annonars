@@ -78,7 +78,7 @@ prost-build = "0.14"
 insta = { version = "1.43", features = ["yaml"] }
 log = "0.4"
 pretty_assertions = "1.4"
-rstest = "0.25.0"
+rstest = "0.26.1"
 temp_testdir = "0.2"
 test-log = "0.2"
 tracing-subscriber = "0.3"
