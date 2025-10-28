@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.44.1](https://github.com/varfish-org/annonars/compare/v0.44.0...v0.44.1) (2025-10-28)
+
+
+### Miscellaneous Chores
+
+* dependency updates ([35b2dab](https://github.com/varfish-org/annonars/commit/35b2dabcb50deb3e2dfd574ccec6850fa9ef66ed))
+
 ## [0.44.0](https://github.com/varfish-org/annonars/compare/v0.43.0...v0.44.0) (2025-04-16)
 
 
