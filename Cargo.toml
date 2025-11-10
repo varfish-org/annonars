@@ -36,7 +36,7 @@ clap = { version = "4.5", features = ["derive", "env"] }
 csv = "1.4"
 enum-map = { version = "2.7.3", features = ["serde"] }
 env_logger = "0.11"
-erased-serde = "0.4.8"
+erased-serde = "0.4.9"
 flate2 = "1.1"
 indexmap = { version = "2.12", features = ["serde"] }
 indicatif = { version = "0.18", features = ["rayon"] }
