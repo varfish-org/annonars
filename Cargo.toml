@@ -23,7 +23,7 @@ default = ["jemalloc"]
 jemalloc = ["dep:tikv-jemallocator", "rocksdb/jemalloc"]
 
 [dependencies]
-actix-web = "4.11.0"
+actix-web = "4.12.1"
 anyhow = "1.0"
 bgzip = "0.3"
 bio = "3.0.0"
