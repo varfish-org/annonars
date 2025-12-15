@@ -42,8 +42,8 @@ indexmap = { version = "2.12", features = ["serde"] }
 indicatif = { version = "0.18", features = ["rayon"] }
 itertools = "0.14.0"
 log = "0.4"
-pbjson = "0.8"
-pbjson-types = "0.8"
+pbjson = "0.9"
+pbjson-types = "0.9"
 prost = "0.14"
 rayon = "1.11"
 rocksdb-utils-lookup = "0.5.0"
@@ -71,7 +71,7 @@ features = ["bed", "bgzf", "core", "csi", "gff", "tabix", "vcf"]
 
 [build-dependencies]
 anyhow = "1.0"
-pbjson-build = "0.8"
+pbjson-build = "0.9"
 prost-build = "0.14"
 
 [dev-dependencies]
