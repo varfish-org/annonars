@@ -82,7 +82,7 @@ rstest = "0.26.1"
 temp_testdir = "0.2"
 test-log = "0.2"
 tracing-subscriber = "0.3"
-tracing-test = "0.2.4"
+tracing-test = "0.2.6"
 
 # Compile insta with full optimization.
 [profile.dev.package.insta]
