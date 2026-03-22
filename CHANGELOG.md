@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.44.2](https://github.com/varfish-org/annonars/compare/v0.44.1...v0.44.2) (2026-03-22)
+
+
+### Bug Fixes
+
+* update rocksdb ([#813](https://github.com/varfish-org/annonars/issues/813)) ([c9dc566](https://github.com/varfish-org/annonars/commit/c9dc56683d74f046bb3401a50f662f63cf881f61))
+
 ## [0.44.1](https://github.com/varfish-org/annonars/compare/v0.44.0...v0.44.1) (2025-10-28)
 
 
