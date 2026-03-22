@@ -35,8 +35,8 @@ pub enum OutputFormat {
     enum_map::Enum,
     serde::Serialize,
     serde::Deserialize,
-    utoipa::ToSchema,
 )]
+#[cfg_attr(feature = "server", derive(utoipa::ToSchema))]
 #[strum(serialize_all = "lowercase")]
 #[serde(rename_all = "lowercase")]
 pub enum GenomeRelease {

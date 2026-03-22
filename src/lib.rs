@@ -20,6 +20,7 @@ pub mod gnomad_sv;
 pub mod helixmtdb;
 pub mod pbs;
 pub mod regions;
+#[cfg(feature = "server")]
 pub mod server;
 pub mod tsv;
 

@@ -102,7 +102,7 @@ impl Context {
         // Create bit mask buffer initialized with all zeros.
         let mut mask = boolvec::BoolVec::filled_with(self.num_columns(), false);
         // Pre-allocate space for bitmask in result.
-        let mask_bytes = (self.num_columns() + 7) / 8;
+        let mask_bytes = self.num_columns().div_ceil(8);
         let mut res = vec![0; mask_bytes];
 
         for (i, val) in values.iter().enumerate() {
@@ -167,7 +167,7 @@ impl Context {
     /// Decode vector of bytes to a vector of `serde_json::Value`s.
     pub fn decode_values(&self, bytes: &[u8]) -> Result<Vec<serde_json::Value>, error::Error> {
         // Get bitmask bytes from input and update input slice.
-        let mask_bytes = (self.num_columns() + 7) / 8;
+        let mask_bytes = self.num_columns().div_ceil(8);
         let mask = boolvec::BoolVec::from_vec(bytes[..mask_bytes].to_vec());
         let bytes = &bytes[mask_bytes..];
 

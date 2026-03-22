@@ -19,11 +19,12 @@ name = "annonars"
 path = "src/main.rs"
 
 [features]
-default = ["jemalloc"]
+default = ["jemalloc", "server"]
+server = ["dep:actix-web", "dep:utoipa", "dep:utoipa-swagger-ui"]
 jemalloc = ["dep:tikv-jemallocator", "rocksdb/jemalloc"]
 
 [dependencies]
-actix-web = "4.13.0"
+actix-web = { version = "4.13.0", optional = true }
 anyhow = "1.0"
 bgzip = "0.3"
 bio = "3.0.0"
@@ -57,8 +58,8 @@ strum = { version = "0.28", features = ["strum_macros", "derive"] }
 thiserror = "2.0"
 tracing = "0.1"
 tracing-subscriber = "0.3"
-utoipa-swagger-ui = { version = "9.0", features = ["actix-web"] }
-utoipa = { version = "5.4", features = ["actix_extras", "chrono", "indexmap", "preserve_order", "yaml"] }
+utoipa-swagger-ui = { version = "9.0", features = ["actix-web"], optional = true }
+utoipa = { version = "5.4", features = ["actix_extras", "chrono", "indexmap", "preserve_order", "yaml"], optional = true }
 tempfile = "3.27.0"
 lru = "0.16.3"
 

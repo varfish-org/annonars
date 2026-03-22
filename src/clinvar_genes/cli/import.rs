@@ -118,11 +118,13 @@ impl ClinvarVariants {
             .map(|path| {
                 let reader: Box<dyn Read> = if path.ends_with(".gz") {
                     Box::new(flate2::bufread::MultiGzDecoder::new(BufReader::new(
-                        std::fs::File::open(path).expect(&format!("failed to open file: {}", path)),
+                        std::fs::File::open(path)
+                            .unwrap_or_else(|_| panic!("failed to open file: {}", path)),
                     )))
                 } else {
                     Box::new(
-                        std::fs::File::open(path).expect(&format!("failed to open file: {}", path)),
+                        std::fs::File::open(path)
+                            .unwrap_or_else(|_| panic!("failed to open file: {}", path)),
                     )
                 };
                 reader
@@ -148,7 +150,7 @@ impl ClinvarVariants {
 
         self.tempdir
             .join(subdir_prefix)
-            .join(&format!("{}.tmp.jsonl.gz", hgnc_id,))
+            .join(format!("{}.tmp.jsonl.gz", hgnc_id,))
     }
 
     /// Distribute the records to temporary files.
@@ -167,7 +169,7 @@ impl ClinvarVariants {
         // LRU cache for writers, to avoid opening too many files at once.
         let mut writers = LruCache::new(cache_size);
 
-        for (_i, record) in self._iter().enumerate() {
+        for record in self._iter() {
             let hgnc_id = &record.hgnc_id;
             vars_per_gene_hgnc_ids.insert(hgnc_id.clone());
 
@@ -185,7 +187,7 @@ impl ClinvarVariants {
                     .open(&path)
                     .map(std::io::BufWriter::new)
                     .map(|w| flate2::write::GzEncoder::new(w, flate2::Compression::fast()))
-                    .expect(&format!("failed to open file: {:?}", path))
+                    .unwrap_or_else(|_| panic!("failed to open file: {:?}", path))
             });
             serde_json::to_writer(&mut writer, &record.record)?;
             writeln!(writer)?;
@@ -220,7 +222,7 @@ impl ClinvarVariants {
                 .map(BufReader::new)
                 .map(flate2::bufread::MultiGzDecoder::new)
                 .map(BufReader::new)
-                .expect(&format!("failed to open file: {:?}", path));
+                .unwrap_or_else(|_| panic!("failed to open file: {:?}", path));
             let mut lines = reader.lines();
 
             from_fn(move || match lines.next() {
@@ -311,7 +313,7 @@ fn jsonl_import(
     let mut vars_per_gene_records_by_hgnc_id = vars_per_gene_records_by_hgnc_id.into_iter();
 
     // Read through all records and insert each into the database.
-    for (_i, hgnc_id) in hgnc_ids.iter().enumerate() {
+    for hgnc_id in hgnc_ids.iter() {
         let per_release_vars = if hgnc_ids_not_in_vars_per_gene.contains(hgnc_id) {
             tracing::warn!("No variants found for gene {}", hgnc_id);
             vec![]

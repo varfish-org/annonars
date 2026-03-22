@@ -2922,8 +2922,7 @@ pub async fn handle_with_openapi(
                 .map_err(CustomError::new)
             })
             .transpose()?
-            .flatten()
-            .map(Into::into),
+            .flatten(),
         gnomad_exomes: data.annos[genome_release][AnnoDb::GnomadExomes]
             .as_ref()
             .map(|db| {

@@ -51,6 +51,7 @@ impl Request {
     }
 }
 
+#[allow(dead_code)]
 /// Result for `handle`.
 #[derive(serde::Serialize, serde::Deserialize, Debug, Clone)]
 struct Result {

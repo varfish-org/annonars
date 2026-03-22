@@ -32,10 +32,10 @@ jobs:
   cargo-release:
     needs: release-please
     runs-on: ubuntu-24.04
-    if: ${{ needs.release-please.outputs.release_created }}
+    if: ${{ needs.release-please.outputs.release_created == 'true' }}
     steps:
       - uses: actions/checkout@v5
-        if: ${{ needs.release-please.outputs.release_created }}
+        if: ${{ needs.release-please.outputs.release_created == 'true' }}
 
       - name: Install dependencies
         run: |
@@ -43,11 +43,10 @@ jobs:
           sudo apt-get install -y librocksdb-dev libsnappy-dev libsqlite3-dev
 
       - name: Install stable toolchain
-        uses: actions-rs/toolchain@v1
-        if: ${{ needs.release-please.outputs.release_created }}
+        uses: dtolnay/rust-toolchain@stable
+        if: ${{ needs.release-please.outputs.release_created == 'true' }}
         with:
           toolchain: stable
-          override: true
 
       - name: Setup protoc
         uses: arduino/setup-protoc@v3.0.0
@@ -55,22 +54,21 @@ jobs:
           repo-token: ${{ secrets.GITHUB_TOKEN }}
 
       - uses: Swatinem/rust-cache@v2
-        if: ${{ needs.release-please.outputs.release_created }}
+        if: ${{ needs.release-please.outputs.release_created == 'true' }}
         with:
           cache-directories: |
             ~/.cargo/registry/src/**/librocksdb-sys-*
 
       - name: Publish crate
-        if: ${{ needs.release-please.outputs.release_created }}
-        uses: actions-rs/cargo@v1
-        with:
-          command: publish
-          args: --token ${{ secrets.CRATES_IO_TOKEN }}
+        if: ${{ needs.release-please.outputs.release_created == 'true' }}
+        env:
+          CARGO_REGISTRY_TOKEN: ${{ secrets.CRATES_IO_TOKEN }}
+        run: cargo publish
 
   container-release:
     needs: release-please
     runs-on: ubuntu-24.04
-    if: ${{ needs.release-please.outputs.release_created }}
+    if: ${{ needs.release-please.outputs.release_created == 'true' }}
     steps:
       - name: Checkout repository
         uses: actions/checkout@v5
