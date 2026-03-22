@@ -1,9 +1,11 @@
+#[cfg(feature = "server")]
+use annonars::server;
 use annonars::{
     clinvar_genes, clinvar_minimal, clinvar_sv, common, cons, db_utils, dbsnp, freqs, functional,
-    genes, gnomad_mtdna, gnomad_nuclear, gnomad_sv, helixmtdb, regions, server, tsv,
+    genes, gnomad_mtdna, gnomad_nuclear, gnomad_sv, helixmtdb, regions, tsv,
 };
 use anyhow::Error;
-use clap::{command, Args, Parser, Subcommand};
+use clap::{Args, Parser, Subcommand};
 
 #[cfg(all(feature = "jemalloc", not(target_env = "msvc")))]
 use tikv_jemallocator::Jemalloc;
@@ -63,6 +65,8 @@ enum Commands {
     Regions(Regions),
     /// "db-utils" sub commands
     DbUtils(DbUtils),
+
+    #[cfg(feature = "server")]
     /// "server" sub command.
     Server(Server),
 }
@@ -322,6 +326,7 @@ enum DbUtilsCommands {
     DumpMeta(db_utils::cli::dump_meta::Args),
 }
 
+#[cfg(feature = "server")]
 /// Parsing of "server" subcommands.
 #[derive(Debug, Args, Clone)]
 struct Server {
@@ -330,6 +335,7 @@ struct Server {
     command: ServerCommands,
 }
 
+#[cfg(feature = "server")]
 /// Enum supporting the parsing of "server *" subcommands.
 #[derive(Debug, Subcommand, Clone)]
 enum ServerCommands {
@@ -441,6 +447,7 @@ pub fn main() -> Result<(), anyhow::Error> {
                     db_utils::cli::dump_meta::run(&cli.common, args)?
                 }
             },
+            #[cfg(feature = "server")]
             Commands::Server(args) => match &args.command {
                 ServerCommands::Run(args) => server::run::run(&cli.common, args)?,
                 ServerCommands::Schema(args) => {
