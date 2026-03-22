@@ -65,8 +65,8 @@ impl FromStr for Vep {
             ensp: (!values[30].is_empty()).then(|| values[30].to_string()),
             uniprot_isoform: (!values[31].is_empty()).then(|| values[31].to_string()),
             source: (!values[32].is_empty()).then(|| values[32].to_string()),
-            domains: (!values[33].is_empty())
-                .then(|| {
+            domains: if !values[33].is_empty() {
+                {
                     let pairs = values[33].split('&').collect::<Vec<_>>();
                     pairs
                         .into_iter()
@@ -79,8 +79,10 @@ impl FromStr for Vep {
                             }
                         })
                         .collect::<Vec<_>>()
-                })
-                .unwrap_or_default(),
+                }
+            } else {
+                Default::default()
+            },
             mirna: (!values[34].is_empty()).then(|| values[34].to_string()),
             hgvs_offset: (!values[35].is_empty()).then(|| values[35].to_string()),
             pubmed: (!values[36].is_empty()).then(|| values[36].to_string()),

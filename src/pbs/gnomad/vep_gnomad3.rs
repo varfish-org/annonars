@@ -81,8 +81,8 @@ impl FromStr for Vep {
                 })
                 .transpose()?
                 .map(|val| val.into()),
-            domains: (!values[35].is_empty())
-                .then(|| {
+            domains: if !values[35].is_empty() {
+                {
                     let pairs = values[35].split('&').collect::<Vec<_>>();
                     pairs
                         .into_iter()
@@ -95,8 +95,10 @@ impl FromStr for Vep {
                             }
                         })
                         .collect::<Vec<_>>()
-                })
-                .unwrap_or_default(),
+                }
+            } else {
+                Default::default()
+            },
             hgvs_offset: (!values[36].is_empty()).then(|| values[36].to_string()),
             motif_name: (!values[37].is_empty()).then(|| values[37].to_string()),
             motif_pos: (!values[38].is_empty()).then(|| values[38].to_string()),

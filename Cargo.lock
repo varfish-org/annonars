@@ -272,7 +272,7 @@ dependencies = [
  "prost",
  "prost-build",
  "rayon",
- "rocksdb 0.24.0",
+ "rocksdb",
  "rocksdb-utils-lookup",
  "rstest",
  "rustc-hash",
@@ -2586,16 +2586,6 @@ checksum = "ba39f3699c378cd8970968dcbff9c43159ea4cfbd88d43c00b22f2ef10a435d2"
 
 [[package]]
 name = "rocksdb"
-version = "0.23.0"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "26ec73b20525cb235bad420f911473b69f9fe27cc856c5461bccd7e4af037f43"
-dependencies = [
- "libc",
- "librocksdb-sys",
-]
-
-[[package]]
-name = "rocksdb"
 version = "0.24.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "ddb7af00d2b17dbd07d82c0063e25411959748ff03e8d4f96134c2ff41fce34f"
@@ -2606,12 +2596,12 @@ dependencies = [
 
 [[package]]
 name = "rocksdb-utils-lookup"
-version = "0.5.0"
+version = "0.5.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "058bcb0f36c80d36c6b5a31ec8f16eb5613c2e39fde363f4929c3d660f447db8"
+checksum = "e03a8180cdfef47f2fc00cd2e7dd034021d7ac8632aab988d25013d7fe7ec420"
 dependencies = [
- "rocksdb 0.23.0",
- "thiserror 1.0.69",
+ "rocksdb",
+ "thiserror 2.0.18",
  "tracing",
 ]
 
