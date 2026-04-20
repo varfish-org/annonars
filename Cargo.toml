@@ -46,7 +46,7 @@ log = "0.4"
 pbjson = "0.9"
 pbjson-types = "0.9"
 prost = "0.14"
-rayon = "1.11"
+rayon = "1.12"
 rocksdb-utils-lookup = "0.5.1"
 rocksdb = { version = "0.24", features = ["multi-threaded-cf"] }
 rustc-hash = "2.1.2"
