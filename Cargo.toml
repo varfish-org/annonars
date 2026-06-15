@@ -27,7 +27,7 @@ jemalloc = ["dep:tikv-jemallocator", "rocksdb/jemalloc"]
 actix-web = { version = "4.13.0", optional = true }
 anyhow = "1.0"
 bgzip = "0.3"
-bio = "3.0.0"
+bio = "4.0.0"
 biocommons-bioutils = "0.2.0"
 boolvec = "0.2"
 byteorder = "1.4"
