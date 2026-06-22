@@ -34,7 +34,7 @@ jobs:
     runs-on: ubuntu-24.04
     if: ${{ needs.release-please.outputs.release_created == 'true' }}
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v7
         if: ${{ needs.release-please.outputs.release_created == 'true' }}
 
       - name: Install dependencies
@@ -71,7 +71,7 @@ jobs:
     if: ${{ needs.release-please.outputs.release_created == 'true' }}
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v5
+        uses: actions/checkout@v7
 
       - name: Log in to the Container registry
         uses: docker/login-action@v3
