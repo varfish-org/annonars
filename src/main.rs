@@ -2,7 +2,7 @@
 use annonars::server;
 use annonars::{
     clinvar_genes, clinvar_minimal, clinvar_sv, common, cons, db_utils, dbsnp, freqs, functional,
-    genes, gnomad_mtdna, gnomad_nuclear, gnomad_sv, helixmtdb, regions, tsv,
+    genes, gnomad_mtdna, gnomad_nuclear, gnomad_sv, helixmtdb, regions, seqvars, tsv,
 };
 use anyhow::Error;
 use clap::{Args, Parser, Subcommand};
@@ -63,6 +63,8 @@ enum Commands {
     GnomadSv(GnomadSv),
     /// "regions" sub commands
     Regions(Regions),
+    /// "seqvars" sub commands
+    Seqvars(Seqvars),
     /// "db-utils" sub commands
     DbUtils(DbUtils),
 
@@ -188,6 +190,27 @@ enum DbsnpCommands {
     Import(dbsnp::cli::import::Args),
     /// "query" sub command
     Query(dbsnp::cli::query::Args),
+}
+
+/// Parsing of "seqvars" subcommands.
+#[derive(Debug, Args, Clone)]
+struct Seqvars {
+    /// The sub command to run
+    #[command(subcommand)]
+    command: SeqvarsCommands,
+}
+
+/// Enum supporting the parsing of "seqvars *" subcommands.
+#[derive(Debug, Subcommand, Clone)]
+enum SeqvarsCommands {
+    /// "cadd" sub command
+    Cadd(seqvars::cli::cadd::Args),
+    /// "dbsnp" sub command
+    Dbsnp(seqvars::cli::dbsnp::Args),
+    /// "spliceai" sub command
+    Spliceai(seqvars::cli::spliceai::Args),
+    /// "unified" sub command
+    Unified(seqvars::cli::unified::Args),
 }
 
 /// Parsing of "freqs" subcommands.
@@ -402,6 +425,12 @@ pub fn main() -> Result<(), anyhow::Error> {
             Commands::Dbsnp(args) => match &args.command {
                 DbsnpCommands::Import(args) => dbsnp::cli::import::run(&cli.common, args)?,
                 DbsnpCommands::Query(args) => dbsnp::cli::query::run(&cli.common, args)?,
+            },
+            Commands::Seqvars(args) => match &args.command {
+                SeqvarsCommands::Cadd(args) => seqvars::cli::cadd::run(&cli.common, args)?,
+                SeqvarsCommands::Dbsnp(args) => seqvars::cli::dbsnp::run(&cli.common, args)?,
+                SeqvarsCommands::Spliceai(args) => seqvars::cli::spliceai::run(&cli.common, args)?,
+                SeqvarsCommands::Unified(args) => seqvars::cli::unified::run(&cli.common, args)?,
             },
             Commands::Freqs(args) => match &args.command {
                 FreqsCommands::Import(args) => freqs::cli::import::run(&cli.common, args)?,

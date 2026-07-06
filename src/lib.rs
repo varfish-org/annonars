@@ -22,6 +22,7 @@ pub mod helixmtdb;
 #[allow(clippy::all)]
 pub mod pbs;
 pub mod regions;
+pub mod seqvars;
 #[cfg(feature = "server")]
 pub mod server;
 pub mod tsv;
