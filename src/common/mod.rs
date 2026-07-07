@@ -3,6 +3,7 @@
 use std::path::{Path, PathBuf};
 
 pub mod cli;
+pub mod contig;
 pub mod keys;
 pub mod noodles;
 pub mod spdi;

@@ -70,6 +70,18 @@ pub struct Var {
     pub alternative: String,
 }
 
+/// Number of big-endian bytes of the interned contig id in a compact key
+/// (see [`Var::encode_with_id`]); 3 bytes ⇒ a 24-bit contig id space.
+pub const CONTIG_ID_LEN: usize = 3;
+/// Number of big-endian bytes of the position (`i32`) in a compact key.
+const POS_LEN: usize = 4;
+/// Separator byte between the reference and alternative allele in a compact key.
+const ALLELE_SEP: u8 = 0x00;
+/// Byte offset of the position field within a compact key.
+const POS_OFFSET: usize = CONTIG_ID_LEN;
+/// Byte offset of the allele block within a compact key.
+const ALLELES_OFFSET: usize = CONTIG_ID_LEN + POS_LEN;
+
 impl Var {
     /// Create new VCF-style variant.
     pub fn new(chrom: String, pos: i32, reference: String, alternative: String) -> Self {
@@ -105,6 +117,72 @@ impl Var {
             pos,
             reference,
             alternative: value.alternate_bases().as_ref()[allele_no].to_string(),
+        }
+    }
+
+    /// Serialize into a compact, assembly-agnostic binary key using an interned
+    /// 24-bit contig ID (rather than the fixed 2-byte chromosome key).
+    ///
+    /// Layout: 3 bytes contig ID (big-endian) + 4 bytes `pos` (big-endian) + REF
+    /// bytes + `0x00` separator + ALT bytes. Decode with [`Self::decode_with_ctx`].
+    pub fn encode_with_id(&self, chrom_id: u32) -> Vec<u8> {
+        assert!(
+            (chrom_id as usize) < (1 << (CONTIG_ID_LEN * 8)),
+            "Contig ID exceeds 24-bit limit"
+        );
+
+        let mut result =
+            Vec::with_capacity(ALLELES_OFFSET + self.reference.len() + 1 + self.alternative.len());
+
+        // Big-endian ID, dropping the leading byte(s) (value fits in 24 bits).
+        let id_bytes = chrom_id.to_be_bytes();
+        result.extend_from_slice(&id_bytes[id_bytes.len() - CONTIG_ID_LEN..]);
+        result.extend_from_slice(&self.pos.to_be_bytes());
+        result.extend_from_slice(self.reference.as_bytes());
+        result.push(ALLELE_SEP);
+        result.extend_from_slice(self.alternative.as_bytes());
+
+        result
+    }
+
+    /// Deserialize a compact key produced by [`Self::encode_with_id`], resolving
+    /// the contig ID to a name via the given id→name table (the contig dictionary).
+    pub fn decode_with_ctx(value: &[u8], id_to_chrom: &[String]) -> Self {
+        assert!(
+            value.len() > ALLELES_OFFSET,
+            "Corrupted database key: underlying byte array too short"
+        );
+
+        let mut id_bytes = [0u8; 4];
+        let id_start = id_bytes.len() - CONTIG_ID_LEN;
+        id_bytes[id_start..].copy_from_slice(&value[0..CONTIG_ID_LEN]);
+        let chrom_id = u32::from_be_bytes(id_bytes);
+
+        let chrom = id_to_chrom
+            .get(chrom_id as usize)
+            .cloned()
+            .expect("Corrupted database: contig ID missing from metadata context map");
+
+        let pos = i32::from_be_bytes(value[POS_OFFSET..POS_OFFSET + POS_LEN].try_into().unwrap());
+
+        let alleles_buf = &value[ALLELES_OFFSET..];
+        let null_idx = alleles_buf
+            .iter()
+            .position(|&b| b == 0x00)
+            .expect("Corrupted database key: missing allele null-terminator");
+
+        let reference = std::str::from_utf8(&alleles_buf[0..null_idx])
+            .expect("Invalid UTF-8 sequence in reference allele")
+            .to_string();
+        let alternative = std::str::from_utf8(&alleles_buf[null_idx + 1..])
+            .expect("Invalid UTF-8 sequence in alternative allele")
+            .to_string();
+
+        Self {
+            chrom,
+            pos,
+            reference,
+            alternative,
         }
     }
 }
@@ -222,5 +300,28 @@ mod test {
         assert_eq!(chrom_key_to_name(b" X"), "X");
         assert_eq!(chrom_key_to_name(b" Y"), "Y");
         assert_eq!(chrom_key_to_name(b"MT"), "MT");
+    }
+
+    #[test]
+    fn test_var_encode_decode_with_id_roundtrip() {
+        let id_to_chrom = vec!["1".to_string(), "X".to_string(), "MT".to_string()];
+
+        let var = Var::from("X", 12345, "AC", "T");
+        let key = var.encode_with_id(1);
+
+        // 3 (id) + 4 (pos) + 2 (ref) + 1 (sep) + 1 (alt) = 11 bytes.
+        assert_eq!(key.len(), 11);
+        assert_eq!(&key[0..3], &[0x00, 0x00, 0x01]);
+
+        let decoded = Var::decode_with_ctx(&key, &id_to_chrom);
+        assert_eq!(decoded, var);
+    }
+
+    #[test]
+    fn test_var_encode_with_id_is_position_sortable() {
+        // Same contig: byte order must follow position order.
+        let a = Var::from("1", 100, "A", "T").encode_with_id(0);
+        let b = Var::from("1", 101, "A", "T").encode_with_id(0);
+        assert!(a < b);
     }
 }

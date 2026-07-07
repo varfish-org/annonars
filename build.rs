@@ -32,6 +32,7 @@ fn main() -> Result<(), anyhow::Error> {
         "annonars/gnomad/vep_gnomad4.proto",
         "annonars/helixmtdb/base.proto",
         "annonars/regions/clingen.proto",
+        "annonars/seqvars/base.proto",
     ]
     .iter()
     .map(|f| root.join(f))
