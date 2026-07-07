@@ -136,7 +136,8 @@ pub fn run(_common: &common::cli::Args, args: &Args) -> Result<(), anyhow::Error
             let Some(local_id) = src.dict.id_of(&contig_name) else {
                 continue;
             };
-            let prefix = local_id.to_be_bytes()[1..4].to_vec();
+            let id_bytes = local_id.to_be_bytes();
+            let prefix = id_bytes[id_bytes.len() - crate::common::keys::CONTIG_ID_LEN..].to_vec();
             let cf = src
                 .db
                 .cf_handle(src.kind.cf())
@@ -335,5 +336,91 @@ mod test {
         // Exactly three unified records.
         let n = db.iterator_cf(&cf, IteratorMode::Start).count();
         assert_eq!(n, 3);
+    }
+
+    #[test]
+    fn merge_handles_chr_prefix_mismatch() {
+        // Tracks built against different naming conventions ("chr1" vs "1") must
+        // still merge onto the canonical dictionary via alias canonicalization.
+        let tmp = TempDir::default();
+        let canonical_fai = tmp.join("canonical.fai");
+        std::fs::write(&canonical_fai, "1\t249250621\n").unwrap();
+
+        // CADD track uses "chr1".
+        let cadd_fai = tmp.join("cadd.fai");
+        std::fs::write(&cadd_fai, "chr1\t249250621\n").unwrap();
+        let cadd_tsv = tmp.join("cadd.tsv");
+        std::fs::write(&cadd_tsv, "chr1\t100\tA\tT\t0.5\t10.2\n").unwrap();
+        let cadd_db = tmp.join("cadd-db");
+        super::super::cadd::run(
+            &common(),
+            &super::super::cadd::Args {
+                path_in_tsv: format!("{}", cadd_tsv.display()),
+                path_reference_fai: format!("{}", cadd_fai.display()),
+                assembly: "GRCh37".into(),
+                path_out_rocksdb: format!("{}", cadd_db.display()),
+                cf_name: "cadd".into(),
+                path_wal_dir: None,
+            },
+        )
+        .unwrap();
+
+        // dbSNP track uses "1" (no prefix) for the same variant.
+        let dbsnp_vcf = tmp.join("dbsnp.vcf");
+        std::fs::write(
+            &dbsnp_vcf,
+            "##fileformat=VCFv4.2\n##contig=<ID=1>\n\
+             #CHROM\tPOS\tID\tREF\tALT\tQUAL\tFILTER\tINFO\n\
+             1\t100\trs1\tA\tT\t.\t.\t.\n",
+        )
+        .unwrap();
+        let dbsnp_db = tmp.join("dbsnp-db");
+        super::super::dbsnp::run(
+            &common(),
+            &super::super::dbsnp::Args {
+                path_in_vcf: format!("{}", dbsnp_vcf.display()),
+                path_reference_fai: format!("{}", canonical_fai.display()),
+                assembly: "GRCh37".into(),
+                path_out_rocksdb: format!("{}", dbsnp_db.display()),
+                cf_name: "dbsnp".into(),
+                path_wal_dir: None,
+            },
+        )
+        .unwrap();
+
+        let out = tmp.join("unified-db");
+        run(
+            &common(),
+            &Args {
+                cadd: Some(format!("{}", cadd_db.display())),
+                spliceai: None,
+                dbsnp: Some(format!("{}", dbsnp_db.display())),
+                path_reference_fai: format!("{}", canonical_fai.display()),
+                assembly: "GRCh37".into(),
+                path_out_rocksdb: format!("{}", out.display()),
+                cf_name: "unified".into(),
+            },
+        )
+        .unwrap();
+
+        let db = rocksdb::DB::open_cf_for_read_only(
+            &rocksdb::Options::default(),
+            &out,
+            ["meta", "unified"],
+            false,
+        )
+        .unwrap();
+        let dict = crate::seqvars::read_contig_dict(&db).unwrap();
+        let cf = db.cf_handle("unified").unwrap();
+
+        // Despite the "chr1"/"1" mismatch, both tracks land on the same key.
+        let key = Var::from("1", 100, "A", "T").encode_with_id(dict.id_of("1").unwrap());
+        let rec = db
+            .get_cf(&cf, key)
+            .unwrap()
+            .map(|raw| IntegratedVariantRecord::decode(&raw[..]).unwrap())
+            .expect("merged record present");
+        assert!(rec.cadd.is_some() && rec.dbsnp.is_some());
+        assert_eq!(db.iterator_cf(&cf, IteratorMode::Start).count(), 1);
     }
 }

@@ -70,6 +70,18 @@ pub struct Var {
     pub alternative: String,
 }
 
+/// Number of big-endian bytes of the interned contig id in a compact key
+/// (see [`Var::encode_with_id`]); 3 bytes ⇒ a 24-bit contig id space.
+pub const CONTIG_ID_LEN: usize = 3;
+/// Number of big-endian bytes of the position (`i32`) in a compact key.
+const POS_LEN: usize = 4;
+/// Separator byte between the reference and alternative allele in a compact key.
+const ALLELE_SEP: u8 = 0x00;
+/// Byte offset of the position field within a compact key.
+const POS_OFFSET: usize = CONTIG_ID_LEN;
+/// Byte offset of the allele block within a compact key.
+const ALLELES_OFFSET: usize = CONTIG_ID_LEN + POS_LEN;
+
 impl Var {
     /// Create new VCF-style variant.
     pub fn new(chrom: String, pos: i32, reference: String, alternative: String) -> Self {
@@ -114,17 +126,20 @@ impl Var {
     /// Layout: 3 bytes contig ID (big-endian) + 4 bytes `pos` (big-endian) + REF
     /// bytes + `0x00` separator + ALT bytes. Decode with [`Self::decode_with_ctx`].
     pub fn encode_with_id(&self, chrom_id: u32) -> Vec<u8> {
-        assert!(chrom_id < (1 << 24), "Contig ID exceeds 24-bit limit");
+        assert!(
+            (chrom_id as usize) < (1 << (CONTIG_ID_LEN * 8)),
+            "Contig ID exceeds 24-bit limit"
+        );
 
         let mut result =
-            Vec::with_capacity(3 + 4 + self.reference.len() + 1 + self.alternative.len());
+            Vec::with_capacity(ALLELES_OFFSET + self.reference.len() + 1 + self.alternative.len());
 
-        // Big-endian ID, dropping the leading byte (value fits in 24 bits).
+        // Big-endian ID, dropping the leading byte(s) (value fits in 24 bits).
         let id_bytes = chrom_id.to_be_bytes();
-        result.extend_from_slice(&id_bytes[1..4]);
+        result.extend_from_slice(&id_bytes[id_bytes.len() - CONTIG_ID_LEN..]);
         result.extend_from_slice(&self.pos.to_be_bytes());
         result.extend_from_slice(self.reference.as_bytes());
-        result.push(0x00);
+        result.push(ALLELE_SEP);
         result.extend_from_slice(self.alternative.as_bytes());
 
         result
@@ -134,12 +149,13 @@ impl Var {
     /// the contig ID to a name via the given id→name table (the contig dictionary).
     pub fn decode_with_ctx(value: &[u8], id_to_chrom: &[String]) -> Self {
         assert!(
-            value.len() >= 8,
+            value.len() > ALLELES_OFFSET,
             "Corrupted database key: underlying byte array too short"
         );
 
         let mut id_bytes = [0u8; 4];
-        id_bytes[1..4].copy_from_slice(&value[0..3]);
+        let id_start = id_bytes.len() - CONTIG_ID_LEN;
+        id_bytes[id_start..].copy_from_slice(&value[0..CONTIG_ID_LEN]);
         let chrom_id = u32::from_be_bytes(id_bytes);
 
         let chrom = id_to_chrom
@@ -147,9 +163,9 @@ impl Var {
             .cloned()
             .expect("Corrupted database: contig ID missing from metadata context map");
 
-        let pos = i32::from_be_bytes(value[3..7].try_into().unwrap());
+        let pos = i32::from_be_bytes(value[POS_OFFSET..POS_OFFSET + POS_LEN].try_into().unwrap());
 
-        let alleles_buf = &value[7..];
+        let alleles_buf = &value[ALLELES_OFFSET..];
         let null_idx = alleles_buf
             .iter()
             .position(|&b| b == 0x00)

@@ -37,14 +37,16 @@ pub struct Args {
     pub path_wal_dir: Option<String>,
 }
 
-/// Extract an INFO field value as a string (joining array entries with `,`).
-fn info_string(val: &Value) -> Option<String> {
+/// Split an INFO field value into its comma-separated entries ("blocks").
+///
+/// A `String`-typed field carries the blocks comma-joined in one value; an
+/// array-typed field carries one block per element. Either way we want the
+/// individual blocks, without a round-trip through a joined string.
+fn info_blocks(val: &Value) -> Vec<String> {
     match val {
-        Value::String(s) => Some(s.to_string()),
-        Value::Array(Array::String(arr)) => {
-            Some(arr.iter().flatten().cloned().collect::<Vec<_>>().join(","))
-        }
-        _ => None,
+        Value::String(s) => s.split(',').map(str::to_string).collect(),
+        Value::Array(Array::String(arr)) => arr.iter().flatten().cloned().collect(),
+        _ => Vec::new(),
     }
 }
 
@@ -72,14 +74,15 @@ pub fn run(_common: &common::cli::Args, args: &Args) -> Result<(), anyhow::Error
     for result in reader.record_bufs(&header) {
         let record: RecordBuf = result?;
 
-        let Some(spliceai) = record
+        let blocks = record
             .info()
             .get("SpliceAI")
             .flatten()
-            .and_then(info_string)
-        else {
+            .map(info_blocks)
+            .unwrap_or_default();
+        if blocks.is_empty() {
             continue;
-        };
+        }
         let chrom = record.reference_sequence_name().to_string();
         let Some(chrom_id) = dict.id_of(&chrom) else {
             anyhow::bail!(
@@ -94,7 +97,7 @@ pub fn run(_common: &common::cli::Args, args: &Args) -> Result<(), anyhow::Error
         let reference = record.reference_bases().to_string();
 
         let mut by_allele: HashMap<String, Vec<SpliceAiPrediction>> = HashMap::new();
-        for block in spliceai.split(',') {
+        for block in &blocks {
             let f: Vec<&str> = block.split('|').collect();
             if f.len() < 10 {
                 anyhow::bail!(
@@ -104,10 +107,9 @@ pub fn run(_common: &common::cli::Args, args: &Args) -> Result<(), anyhow::Error
             }
             let allele = f[0].to_string();
             by_allele
-                .entry(allele.clone())
+                .entry(allele)
                 .or_default()
                 .push(SpliceAiPrediction {
-                    allele,
                     symbol: f[1].to_string(),
                     ds_ag: f[2].parse()?,
                     ds_al: f[3].parse()?,
