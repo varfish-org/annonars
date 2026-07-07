@@ -31,18 +31,49 @@ pub struct ContigDict {
 }
 
 impl ContigDict {
+    /// The maximum number of contigs supported by the compact 24-bit key format
+    /// (see [`crate::common::keys::Var::encode_with_id`]).
+    pub const MAX_CONTIGS: usize = 1 << 24;
+
     /// Build from an ordered list of `(name, length)` entries, assigning IDs in
     /// iteration order.
-    pub fn from_entries(entries: impl IntoIterator<Item = (String, u64)>) -> Self {
+    ///
+    /// Returns an error if two entries collide on a name/alias or if the number
+    /// of contigs exceeds [`Self::MAX_CONTIGS`].
+    pub fn from_entries(
+        entries: impl IntoIterator<Item = (String, u64)>,
+    ) -> Result<Self, anyhow::Error> {
         let mut dict = Self::default();
         for (name, length) in entries {
-            let id = u32::try_from(dict.names.len()).expect("contig count exceeds u32");
-            dict.alias_to_id.entry(name.clone()).or_insert(id);
-            dict.alias_to_id.entry(canonicalize(&name)).or_insert(id);
+            // Fail fast rather than panicking deep inside `encode_with_id`.
+            if dict.names.len() >= Self::MAX_CONTIGS {
+                anyhow::bail!(
+                    "too many contigs: the compact key format supports at most {}",
+                    Self::MAX_CONTIGS
+                );
+            }
+            let id = dict.names.len() as u32;
+            // A raw name and its canonicalized form may coincide; both must map
+            // to *this* contig. A collision with a *different* contig's id would
+            // silently misroute keys, so reject it.
+            for alias in [name.clone(), canonicalize(&name)] {
+                match dict.alias_to_id.get(&alias) {
+                    Some(&existing) if existing != id => anyhow::bail!(
+                        "contig alias {:?} for {:?} collides with existing contig id {}",
+                        alias,
+                        name,
+                        existing
+                    ),
+                    Some(_) => {}
+                    None => {
+                        dict.alias_to_id.insert(alias, id);
+                    }
+                }
+            }
             dict.names.push(name);
             dict.lengths.push(length);
         }
-        dict
+        Ok(dict)
     }
 
     /// Build from a FASTA index file (`.fai`), assigning IDs in file order.
@@ -73,7 +104,7 @@ impl ContigDict {
         if entries.is_empty() {
             anyhow::bail!("no contigs found in .fai {}", path.display());
         }
-        Ok(Self::from_entries(entries))
+        Self::from_entries(entries)
     }
 
     /// Number of contigs.
@@ -147,9 +178,7 @@ impl ContigDict {
                 anyhow::bail!("contig meta IDs are not contiguous from 0 (got {})", id);
             }
         }
-        Ok(Self::from_entries(
-            entries.into_iter().map(|(_, name, length)| (name, length)),
-        ))
+        Self::from_entries(entries.into_iter().map(|(_, name, length)| (name, length)))
     }
 }
 
@@ -164,6 +193,14 @@ mod test {
             ("X".to_string(), 155_270_560),
             ("MT".to_string(), 16_569),
         ])
+        .unwrap()
+    }
+
+    #[test]
+    fn colliding_alias_is_rejected() {
+        // "M" canonicalizes to "MT", so listing both as distinct contigs collides.
+        let err = ContigDict::from_entries([("MT".to_string(), 16_569), ("M".to_string(), 16_569)]);
+        assert!(err.is_err());
     }
 
     #[test]

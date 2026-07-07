@@ -18,6 +18,9 @@ pub fn open_track_db_for_write(
     data_cf: &str,
     wal_dir: Option<&str>,
 ) -> Result<(Arc<rocksdb::DB>, Vec<String>), anyhow::Error> {
+    if data_cf == "meta" {
+        anyhow::bail!("data column family name must not be \"meta\" (reserved)");
+    }
     let options = rocksdb_utils_lookup::tune_options(rocksdb::Options::default(), wal_dir);
     let cf_names = vec!["meta".to_string(), data_cf.to_string()];
     let db = Arc::new(rocksdb::DB::open_cf_with_opts(
