@@ -78,10 +78,9 @@ pub fn run(_common: &common::cli::Args, args: &Args) -> Result<(), anyhow::Error
 
         for allele_no in 0..record.alternate_bases().len() {
             let alt = record.alternate_bases().as_ref()[allele_no].to_string();
-            let var = Var::new(chrom.clone(), pos, reference.clone(), alt.clone());
+            let var = Var::new(chrom.clone(), pos, reference.clone(), alt);
             let key = var.encode_with_id(chrom_id);
             let value = DbsnpRecord {
-                allele: alt,
                 rs_id: rs_id.clone(),
             }
             .encode_to_vec();
@@ -149,7 +148,6 @@ mod test {
         let raw = db.get_cf(&cf_data, key).unwrap().expect("record present");
         let rec = DbsnpRecord::decode(&raw[..]).unwrap();
         assert_eq!(rec.rs_id, "rs123");
-        assert_eq!(rec.allele, "T");
 
         // ... the record without an RS id is skipped.
         let key_missing = Var::from("1", 200, "C", "G").encode_with_id(dict.id_of("1").unwrap());

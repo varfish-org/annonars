@@ -20,10 +20,11 @@ message CaddRecord {
   float phred = 2;
 }
 
-// SpliceAI prediction details for one alternative allele and symbol
+// SpliceAI prediction details for one symbol. The allele is implied by the
+// record's coordinate key, so it is not stored here.
 message SpliceAiPrediction {
-  // The alternative allele this prediction refers to.
-  string allele = 1;
+  // Field 1 previously stored the (redundant) alternative allele.
+  reserved 1;
   // The gene symbol this prediction refers to.
   string symbol = 2;
   // Delta score for acceptor gain.
@@ -50,10 +51,11 @@ message SpliceAiRecord {
   repeated SpliceAiPrediction predictions = 1;
 }
 
-// dbSNP record containing only the RS identifier for a variant
+// dbSNP record containing only the RS identifier for a variant. The allele is
+// implied by the record's coordinate key, so it is not stored here.
 message DbsnpRecord {
-  // The alternative allele this record represents
-  string allele = 1;
+  // Field 1 previously stored the (redundant) alternative allele.
+  reserved 1;
 
   // The RS identifier (e.g., "rs1570391677")
   string rs_id = 2;
