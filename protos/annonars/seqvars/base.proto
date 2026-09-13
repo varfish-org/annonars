@@ -1,6 +1,6 @@
-// Protobuf messages for sequence variant annotation tracks (CADD, SpliceAI,
-// dbSNP) and the consolidated per-coordinate record used by the unified
-// variant database.
+// Protobuf messages for sequence variant annotation tracks (CADD, SpliceAI)
+// and the consolidated per-coordinate record used by the unified variant
+// database.
 
 syntax = "proto3";
 
@@ -23,26 +23,24 @@ message CaddRecord {
 // SpliceAI prediction details for one symbol. The allele is implied by the
 // record's coordinate key, so it is not stored here.
 message SpliceAiPrediction {
-  // Field 1 previously stored the (redundant) alternative allele.
-  reserved 1;
   // The gene symbol this prediction refers to.
-  string symbol = 2;
+  string symbol = 1;
   // Delta score for acceptor gain.
-  float ds_ag = 3;
+  float ds_ag = 2;
   // Delta score for acceptor loss.
-  float ds_al = 4;
+  float ds_al = 3;
   // Delta score for donor gain.
-  float ds_dg = 5;
+  float ds_dg = 4;
   // Delta score for donor loss.
-  float ds_dl = 6;
+  float ds_dl = 5;
   // Delta position for acceptor gain.
-  int32 dp_ag = 7;
+  int32 dp_ag = 6;
   // Delta position for acceptor loss.
-  int32 dp_al = 8;
+  int32 dp_al = 7;
   // Delta position for donor gain.
-  int32 dp_dg = 9;
+  int32 dp_dg = 8;
   // Delta position for donor loss.
-  int32 dp_dl = 10;
+  int32 dp_dl = 9;
 }
 
 // SpliceAI record containing predictions for a variant (supports multiple transcripts/symbols)
@@ -51,24 +49,15 @@ message SpliceAiRecord {
   repeated SpliceAiPrediction predictions = 1;
 }
 
-// dbSNP record containing only the RS identifier for a variant. The allele is
-// implied by the record's coordinate key, so it is not stored here.
-message DbsnpRecord {
-  // Field 1 previously stored the (redundant) alternative allele.
-  reserved 1;
-
-  // The RS identifier (e.g., "rs1570391677")
-  string rs_id = 2;
-}
-
 // Container message holding all consolidated database tracks for a coordinate key
 message IntegratedVariantRecord {
   // Native CADD annotation track.
   optional CaddRecord cadd = 1;
   // Native SpliceAI annotation track.
   optional SpliceAiRecord splice_ai = 2;
-  // Native dbSNP annotation track.
-  optional DbsnpRecord dbsnp = 3;
+  // The dbSNP RS identifier, taken from an `annonars dbsnp` database. Only the
+  // identifier is kept; the coordinate of the dbSNP record is the key itself.
+  optional int32 dbsnp_rs_id = 3;
 
   // gnomAD v2 population frequencies.
   optional annonars.gnomad.gnomad2.Record gnomad_v2 = 4;

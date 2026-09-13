@@ -1,16 +1,21 @@
-//! Sequence-variant annotation tracks (CADD, SpliceAI, dbSNP) and the unified DB.
+//! The unified sequence-variant database plus the helpers shared by its inputs.
 //!
-//! These build RocksDB databases keyed with compact contig-ID keys (see
-//! [`crate::common::keys::Var::encode_with_id`]) using a contig dictionary
-//! derived from a reference FASTA index (see [`crate::common::contig::ContigDict`]),
-//! so they work for arbitrary assemblies. The dictionary is persisted in the
-//! `meta` column family so keys can be decoded again.
+//! The native tracks ([`crate::cadd`], [`crate::spliceai`]) use
+//! compact contig-ID keys (see [`crate::common::keys::Var::encode_with_id`])
+//! based on a contig dictionary derived from a reference FASTA index (see
+//! [`crate::common::contig::ContigDict`]), so they work for arbitrary
+//! assemblies. The dictionary is persisted in the `meta` column family so keys
+//! can be decoded again.
 
 pub mod cli;
 
 use std::sync::Arc;
 
 use crate::common::contig::ContigDict;
+
+/// Number of records buffered in a `rocksdb::WriteBatch` before flushing during
+/// import; per-record `put_cf` calls are too slow for genome-wide inputs.
+pub const WRITE_BATCH_SIZE: u64 = 50_000;
 
 /// Open a track RocksDB for writing with a `meta` and a single data column family.
 pub fn open_track_db_for_write(

@@ -1,6 +1,3 @@
-//! Command line interface for the sequence-variant annotation tracks.
+//! Command line interface for the unified sequence-variant database.
 
-pub mod cadd;
-pub mod dbsnp;
-pub mod spliceai;
 pub mod unified;

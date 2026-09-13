@@ -1,8 +1,9 @@
 #[cfg(feature = "server")]
 use annonars::server;
 use annonars::{
-    clinvar_genes, clinvar_minimal, clinvar_sv, common, cons, db_utils, dbsnp, freqs, functional,
-    genes, gnomad_mtdna, gnomad_nuclear, gnomad_sv, helixmtdb, regions, seqvars, tsv,
+    cadd, clinvar_genes, clinvar_minimal, clinvar_sv, common, cons, db_utils, dbsnp, freqs,
+    functional, genes, gnomad_mtdna, gnomad_nuclear, gnomad_sv, helixmtdb, regions, seqvars,
+    spliceai, tsv,
 };
 use anyhow::Error;
 use clap::{Args, Parser, Subcommand};
@@ -39,6 +40,8 @@ enum Commands {
     Gene(Gene),
     /// "tsv" sub commands
     Tsv(Tsv),
+    /// "cadd" sub commands
+    Cadd(Cadd),
     /// "cons" sub commands
     Cons(Cons),
     /// "clinvar-genes" sub commands
@@ -65,6 +68,8 @@ enum Commands {
     Regions(Regions),
     /// "seqvars" sub commands
     Seqvars(Seqvars),
+    /// "spliceai" sub commands
+    Spliceai(Spliceai),
     /// "db-utils" sub commands
     DbUtils(DbUtils),
 
@@ -158,6 +163,36 @@ enum ClinvarSvCommands {
     Query(clinvar_sv::cli::query::Args),
 }
 
+/// Parsing of "cadd" subcommand.
+#[derive(Debug, Args, Clone)]
+struct Cadd {
+    /// The sub command to run
+    #[command(subcommand)]
+    command: CaddCommands,
+}
+
+/// Enum supporting the parsing of "cadd *" subcommands.
+#[derive(Debug, Subcommand, Clone)]
+enum CaddCommands {
+    /// "import" sub command
+    Import(cadd::cli::import::Args),
+}
+
+/// Parsing of "spliceai" subcommand.
+#[derive(Debug, Args, Clone)]
+struct Spliceai {
+    /// The sub command to run
+    #[command(subcommand)]
+    command: SpliceaiCommands,
+}
+
+/// Enum supporting the parsing of "spliceai *" subcommands.
+#[derive(Debug, Subcommand, Clone)]
+enum SpliceaiCommands {
+    /// "import" sub command
+    Import(spliceai::cli::import::Args),
+}
+
 /// Parsing of "cons" subcommand.
 #[derive(Debug, Args, Clone)]
 struct Cons {
@@ -203,12 +238,6 @@ struct Seqvars {
 /// Enum supporting the parsing of "seqvars *" subcommands.
 #[derive(Debug, Subcommand, Clone)]
 enum SeqvarsCommands {
-    /// "cadd" sub command
-    Cadd(seqvars::cli::cadd::Args),
-    /// "dbsnp" sub command
-    Dbsnp(seqvars::cli::dbsnp::Args),
-    /// "spliceai" sub command
-    Spliceai(seqvars::cli::spliceai::Args),
     /// "unified" sub command
     Unified(seqvars::cli::unified::Args),
 }
@@ -418,6 +447,9 @@ pub fn main() -> Result<(), anyhow::Error> {
                 ClinvarSvCommands::Import(args) => clinvar_sv::cli::import::run(&cli.common, args)?,
                 ClinvarSvCommands::Query(args) => clinvar_sv::cli::query::run(&cli.common, args)?,
             },
+            Commands::Cadd(args) => match &args.command {
+                CaddCommands::Import(args) => cadd::cli::import::run(&cli.common, args)?,
+            },
             Commands::Cons(args) => match &args.command {
                 ConsCommands::Import(args) => cons::cli::import::run(&cli.common, args)?,
                 ConsCommands::Query(args) => cons::cli::query::run(&cli.common, args)?,
@@ -427,10 +459,10 @@ pub fn main() -> Result<(), anyhow::Error> {
                 DbsnpCommands::Query(args) => dbsnp::cli::query::run(&cli.common, args)?,
             },
             Commands::Seqvars(args) => match &args.command {
-                SeqvarsCommands::Cadd(args) => seqvars::cli::cadd::run(&cli.common, args)?,
-                SeqvarsCommands::Dbsnp(args) => seqvars::cli::dbsnp::run(&cli.common, args)?,
-                SeqvarsCommands::Spliceai(args) => seqvars::cli::spliceai::run(&cli.common, args)?,
                 SeqvarsCommands::Unified(args) => seqvars::cli::unified::run(&cli.common, args)?,
+            },
+            Commands::Spliceai(args) => match &args.command {
+                SpliceaiCommands::Import(args) => spliceai::cli::import::run(&cli.common, args)?,
             },
             Commands::Freqs(args) => match &args.command {
                 FreqsCommands::Import(args) => freqs::cli::import::run(&cli.common, args)?,

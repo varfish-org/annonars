@@ -1,4 +1,4 @@
-//! Import of CADD scores (TSV) into a RocksDB track database.
+//! Import of CADD scores (TSV) into a RocksDB database.
 
 use std::io::Read;
 
@@ -10,7 +10,7 @@ use crate::common::contig::ContigDict;
 use crate::common::keys::Var;
 use crate::pbs::seqvars::base::CaddRecord;
 
-/// Command line arguments for `seqvars cadd` (build a CADD track database).
+/// Command line arguments for `cadd import`.
 #[derive(Parser, Debug, Clone)]
 #[command(about = "Construct CADD score RocksDB database", long_about = None)]
 pub struct Args {
@@ -56,7 +56,7 @@ fn open_tsv(path: &str) -> Result<Box<dyn Read>, anyhow::Error> {
     }
 }
 
-/// Main entry point for `seqvars cadd`.
+/// Main entry point for `cadd import`.
 pub fn run(_common: &common::cli::Args, args: &Args) -> Result<(), anyhow::Error> {
     tracing::info!("Building CADD track database");
     tracing::info!(
@@ -84,6 +84,7 @@ pub fn run(_common: &common::cli::Args, args: &Args) -> Result<(), anyhow::Error
         .from_reader(open_tsv(&args.path_in_tsv)?);
 
     let mut count: u64 = 0;
+    let mut batch = rocksdb::WriteBatch::default();
     for result in reader.deserialize() {
         let row: CaddRow = result?;
         let chrom_id = dict.id_of(&row.chrom).ok_or_else(|| {
@@ -106,9 +107,13 @@ pub fn run(_common: &common::cli::Args, args: &Args) -> Result<(), anyhow::Error
         };
         let mut value = Vec::new();
         record.encode(&mut value)?;
-        db.put_cf(&cf_data, key, value)?;
+        batch.put_cf(&cf_data, key, value);
         count += 1;
+        if count % crate::seqvars::WRITE_BATCH_SIZE == 0 {
+            db.write(std::mem::take(&mut batch))?;
+        }
     }
+    db.write(batch)?;
     tracing::info!("  wrote {} CADD records", count);
 
     tracing::info!("  compacting");

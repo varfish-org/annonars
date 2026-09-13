@@ -1,4 +1,4 @@
-//! Import of SpliceAI predictions (VCF INFO/SpliceAI) into a RocksDB track database.
+//! Import of SpliceAI predictions (VCF INFO/SpliceAI) into a RocksDB database.
 
 use std::collections::HashMap;
 
@@ -13,7 +13,7 @@ use crate::common::contig::ContigDict;
 use crate::common::keys::Var;
 use crate::pbs::seqvars::base::{SpliceAiPrediction, SpliceAiRecord};
 
-/// Command line arguments for `seqvars spliceai` (build a SpliceAI track database).
+/// Command line arguments for `spliceai import`.
 #[derive(Parser, Debug, Clone)]
 #[command(about = "Construct SpliceAI score RocksDB database", long_about = None)]
 pub struct Args {
@@ -50,7 +50,7 @@ fn info_blocks(val: &Value) -> Vec<String> {
     }
 }
 
-/// Main entry point for `seqvars spliceai`.
+/// Main entry point for `spliceai import`.
 pub fn run(_common: &common::cli::Args, args: &Args) -> Result<(), anyhow::Error> {
     tracing::info!("Building SpliceAI track database");
     let dict = ContigDict::from_fai(&args.path_reference_fai)?;
@@ -71,6 +71,7 @@ pub fn run(_common: &common::cli::Args, args: &Args) -> Result<(), anyhow::Error
     let header = reader.read_header()?;
 
     let mut count: u64 = 0;
+    let mut batch = rocksdb::WriteBatch::default();
     for result in reader.record_bufs(&header) {
         let record: RecordBuf = result?;
 
@@ -133,10 +134,14 @@ pub fn run(_common: &common::cli::Args, args: &Args) -> Result<(), anyhow::Error
             let var = Var::new(chrom.clone(), pos, reference.clone(), allele);
             let key = var.encode_with_id(chrom_id);
             let value = SpliceAiRecord { predictions }.encode_to_vec();
-            db.put_cf(&cf_data, key, value)?;
+            batch.put_cf(&cf_data, key, value);
             count += 1;
+            if count % crate::seqvars::WRITE_BATCH_SIZE == 0 {
+                db.write(std::mem::take(&mut batch))?;
+            }
         }
     }
+    db.write(batch)?;
     tracing::info!("  wrote {} SpliceAI records", count);
 
     let cf_refs = cf_names.iter().map(String::as_str).collect::<Vec<_>>();
