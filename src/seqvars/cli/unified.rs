@@ -220,7 +220,7 @@ pub fn run(_common: &common::cli::Args, args: &Args) -> Result<(), anyhow::Error
     crate::seqvars::write_track_meta(&out_db, "unified", "1.0", &args.assembly, &canonical)?;
     let cf_out = out_db
         .cf_handle(&args.cf_name)
-        .ok_or_else(|| anyhow::anyhow!("output column family {} missing", &args.cf_name))?;
+        .ok_or_else(|| anyhow::anyhow!("output column family {} missing", args.cf_name))?;
 
     let mut count: u64 = 0;
     let mut batch = rocksdb::WriteBatch::default();
@@ -287,7 +287,7 @@ pub fn run(_common: &common::cli::Args, args: &Args) -> Result<(), anyhow::Error
                 record.encode_to_vec(),
             );
             count += 1;
-            if count % crate::seqvars::WRITE_BATCH_SIZE == 0 {
+            if count.is_multiple_of(crate::seqvars::WRITE_BATCH_SIZE) {
                 out_db.write(std::mem::take(&mut batch))?;
             }
         }

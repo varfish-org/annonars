@@ -74,7 +74,7 @@ pub fn run(_common: &common::cli::Args, args: &Args) -> Result<(), anyhow::Error
     crate::seqvars::write_track_meta(&db, "cadd", "1.0", &args.assembly, &dict)?;
     let cf_data = db
         .cf_handle(&args.cf_name)
-        .ok_or_else(|| anyhow::anyhow!("data column family {} missing", &args.cf_name))?;
+        .ok_or_else(|| anyhow::anyhow!("data column family {} missing", args.cf_name))?;
 
     tracing::info!("  importing CADD scores from {}", &args.path_in_tsv);
     let mut reader = csv::ReaderBuilder::new()
@@ -109,7 +109,7 @@ pub fn run(_common: &common::cli::Args, args: &Args) -> Result<(), anyhow::Error
         record.encode(&mut value)?;
         batch.put_cf(&cf_data, key, value);
         count += 1;
-        if count % crate::seqvars::WRITE_BATCH_SIZE == 0 {
+        if count.is_multiple_of(crate::seqvars::WRITE_BATCH_SIZE) {
             db.write(std::mem::take(&mut batch))?;
         }
     }

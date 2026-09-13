@@ -63,11 +63,11 @@ pub fn run(_common: &common::cli::Args, args: &Args) -> Result<(), anyhow::Error
     crate::seqvars::write_track_meta(&db, "spliceai", "1.0", &args.assembly, &dict)?;
     let cf_data = db
         .cf_handle(&args.cf_name)
-        .ok_or_else(|| anyhow::anyhow!("data column family {} missing", &args.cf_name))?;
+        .ok_or_else(|| anyhow::anyhow!("data column family {} missing", args.cf_name))?;
 
     let mut reader = noodles::vcf::io::reader::Builder::default()
         .build_from_path(&args.path_in_vcf)
-        .map_err(|e| anyhow::anyhow!("failed to open {}: {}", &args.path_in_vcf, e))?;
+        .map_err(|e| anyhow::anyhow!("failed to open {}: {}", args.path_in_vcf, e))?;
     let header = reader.read_header()?;
 
     let mut count: u64 = 0;
@@ -136,7 +136,7 @@ pub fn run(_common: &common::cli::Args, args: &Args) -> Result<(), anyhow::Error
             let value = SpliceAiRecord { predictions }.encode_to_vec();
             batch.put_cf(&cf_data, key, value);
             count += 1;
-            if count % crate::seqvars::WRITE_BATCH_SIZE == 0 {
+            if count.is_multiple_of(crate::seqvars::WRITE_BATCH_SIZE) {
                 db.write(std::mem::take(&mut batch))?;
             }
         }
