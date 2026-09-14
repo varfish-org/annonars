@@ -9,3 +9,4 @@ pub mod genes;
 pub mod gnomad;
 pub mod helixmtdb;
 pub mod regions;
+pub mod seqvars;

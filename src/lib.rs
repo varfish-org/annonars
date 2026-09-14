@@ -3,6 +3,7 @@
 #![allow(clippy::module_name_repetitions)]
 #![warn(missing_docs)]
 
+pub mod cadd;
 pub mod clinvar_genes;
 pub mod clinvar_minimal;
 pub mod clinvar_sv;
@@ -22,8 +23,10 @@ pub mod helixmtdb;
 #[allow(clippy::all)]
 pub mod pbs;
 pub mod regions;
+pub mod seqvars;
 #[cfg(feature = "server")]
 pub mod server;
+pub mod spliceai;
 pub mod tsv;
 
 pub use crate::error::*;

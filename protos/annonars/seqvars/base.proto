@@ -1,0 +1,73 @@
+// Protobuf messages for sequence variant annotation tracks (CADD, SpliceAI)
+// and the consolidated per-coordinate record used by the unified variant
+// database.
+
+syntax = "proto3";
+
+import "annonars/gnomad/gnomad2.proto";
+import "annonars/gnomad/gnomad3.proto";
+import "annonars/gnomad/gnomad4.proto";
+import "annonars/gnomad/mtdna.proto";
+import "annonars/clinvar/minimal.proto";
+
+package annonars.seqvars.base;
+
+// Cadd score record for a variant
+message CaddRecord {
+  // The raw CADD score.
+  float raw_score = 1;
+  // The PHRED-scaled CADD score.
+  float phred = 2;
+}
+
+// SpliceAI prediction details for one symbol. The allele is implied by the
+// record's coordinate key, so it is not stored here.
+message SpliceAiPrediction {
+  // The gene symbol this prediction refers to.
+  string symbol = 1;
+  // Delta score for acceptor gain.
+  float ds_ag = 2;
+  // Delta score for acceptor loss.
+  float ds_al = 3;
+  // Delta score for donor gain.
+  float ds_dg = 4;
+  // Delta score for donor loss.
+  float ds_dl = 5;
+  // Delta position for acceptor gain.
+  int32 dp_ag = 6;
+  // Delta position for acceptor loss.
+  int32 dp_al = 7;
+  // Delta position for donor gain.
+  int32 dp_dg = 8;
+  // Delta position for donor loss.
+  int32 dp_dl = 9;
+}
+
+// SpliceAI record containing predictions for a variant (supports multiple transcripts/symbols)
+message SpliceAiRecord {
+  // The per-allele/symbol SpliceAI predictions.
+  repeated SpliceAiPrediction predictions = 1;
+}
+
+// Container message holding all consolidated database tracks for a coordinate key
+message IntegratedVariantRecord {
+  // Native CADD annotation track.
+  optional CaddRecord cadd = 1;
+  // Native SpliceAI annotation track.
+  optional SpliceAiRecord splice_ai = 2;
+  // The dbSNP RS identifier, taken from an `annonars dbsnp` database. Only the
+  // identifier is kept; the coordinate of the dbSNP record is the key itself.
+  optional int32 dbsnp_rs_id = 3;
+
+  // gnomAD v2 population frequencies.
+  optional annonars.gnomad.gnomad2.Record gnomad_v2 = 4;
+  // gnomAD v3 population frequencies.
+  optional annonars.gnomad.gnomad3.Record gnomad_v3 = 5;
+  // gnomAD v4 population frequencies.
+  optional annonars.gnomad.gnomad4.Record gnomad_v4 = 6;
+  // gnomAD mtDNA population frequencies.
+  optional annonars.gnomad.mtdna.Record gnomad_mtdna = 7;
+
+  // ClinVar classification entries.
+  optional annonars.clinvar.minimal.ExtractedVcvRecordList clinvar = 8;
+}
