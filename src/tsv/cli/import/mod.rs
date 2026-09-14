@@ -206,7 +206,7 @@ pub fn run(common: &common::cli::Args, args: &Args) -> Result<(), anyhow::Error>
     let have_tbi = args
         .path_in_tsv
         .iter()
-        .all(|p| std::path::Path::new(&format!("{}.tbi", &p)).exists());
+        .all(|p| std::path::Path::new(&format!("{}.tbi", p)).exists());
     if have_tbi {
         tracing::info!(
             "  have TBI files, will import one after the other with parallel processing"

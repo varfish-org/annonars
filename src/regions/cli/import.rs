@@ -187,7 +187,7 @@ fn tsv_import(
             haploinsufficiency_disease_id,
             triplosensitivity_disease_id,
         };
-        let key = format!("clingen:{}", &region.isca_id);
+        let key = format!("clingen:{}", region.isca_id);
         db.put_cf(&cf_data, key.as_bytes(), region.encode_to_vec())?;
     }
 

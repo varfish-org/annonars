@@ -137,7 +137,7 @@ async fn handle_impl(
                     (outer_start, outer_stop)
                 } else {
                     let accession = record.accession.clone().expect("missing accession");
-                    let vcv = format!("{}.{}", &accession.accession, &accession.version);
+                    let vcv = format!("{}.{}", accession.accession, accession.version);
                     tracing::warn!("skipping record because no start/stop: {}", &vcv);
                     return None;
                 };

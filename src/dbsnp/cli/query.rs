@@ -178,7 +178,7 @@ pub fn query_for_accession(
     // Execute query for key.
     let raw_value = db
         .get_cf(cf_data, var_key.clone())
-        .map_err(|e| anyhow::anyhow!("error while querying for variant {:?}: {}", &var_key, e))?;
+        .map_err(|e| anyhow::anyhow!("error while querying for variant {:?}: {}", var_key, e))?;
     raw_value
         .map(|raw_value| {
             // Decode via prost.
