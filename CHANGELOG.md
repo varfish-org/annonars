@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.45.0](https://github.com/varfish-org/annonars/compare/v0.44.2...v0.45.0) (2026-09-14)
+
+
+### Features
+
+* variant DB creation and unified merge ([#852](https://github.com/varfish-org/annonars/issues/852)) ([#854](https://github.com/varfish-org/annonars/issues/854)) ([d036e77](https://github.com/varfish-org/annonars/commit/d036e772942f2f7ace148f2131b0370dcc83b2b4))
+
 ## [0.44.2](https://github.com/varfish-org/annonars/compare/v0.44.1...v0.44.2) (2026-03-22)
 
 
