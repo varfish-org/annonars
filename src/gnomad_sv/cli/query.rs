@@ -215,9 +215,9 @@ fn decode_record(data: &[u8], meta: &Meta) -> Result<Record, anyhow::Error> {
             _ => {
                 anyhow::bail!(
                     "cannot handle combination: {} / {} / {}",
-                    &meta.genome_release,
-                    &meta.gnomad_kind,
-                    &meta.gnomad_version
+                    meta.genome_release,
+                    meta.gnomad_kind,
+                    meta.gnomad_version
                 );
             }
         },
@@ -346,7 +346,7 @@ impl IntervalTrees {
         tracing::trace!("query for {:?}", &range);
         let contig = extract_chrom::from_range(range, Some(&self.meta.genome_release))?;
         let cf_data = self.db.cf_handle(&self.cf_data_name).ok_or_else(|| {
-            anyhow::anyhow!("no column family with name {:?} found", &self.cf_data_name)
+            anyhow::anyhow!("no column family with name {:?} found", self.cf_data_name)
         })?;
         let interval = (range.start as u64 - 1)..(range.end as u64);
         let mut result = Vec::new();

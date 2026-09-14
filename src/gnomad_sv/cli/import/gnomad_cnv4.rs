@@ -161,8 +161,8 @@ impl Record {
 
         Ok(CarrierCountsBySex {
             overall: Self::extract_carrier_counts(record, &pop_prefix).ok(),
-            xx: Self::extract_carrier_counts(record, &format!("{}FEMALE_", &pop_prefix)).ok(),
-            xy: Self::extract_carrier_counts(record, &format!("{}MALE_", &pop_prefix)).ok(),
+            xx: Self::extract_carrier_counts(record, &format!("{}FEMALE_", pop_prefix)).ok(),
+            xy: Self::extract_carrier_counts(record, &format!("{}MALE_", pop_prefix)).ok(),
         })
     }
 

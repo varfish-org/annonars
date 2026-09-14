@@ -80,7 +80,7 @@ pub mod schema {
                 anyhow::anyhow!("problem converting path to string: {:?}", p.as_ref())
             })?;
             let yaml_str = std::fs::read_to_string(full_path)
-                .map_err(|e| anyhow::anyhow!("problem reading file {}: {}", &full_path, e))?;
+                .map_err(|e| anyhow::anyhow!("problem reading file {}: {}", full_path, e))?;
             serde_yaml::from_str(&yaml_str)
                 .map_err(|e| anyhow::anyhow!("problem deserializing {}: {}", full_path, e))
         }

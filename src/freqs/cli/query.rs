@@ -165,17 +165,17 @@ pub fn run(common: &common::cli::Args, args: &Args) -> Result<(), anyhow::Error>
             Record::Autosomal(record) => {
                 let json_value = serde_json::to_value(record)?;
                 let json = serde_json::to_string(&json_value)?;
-                writeln!(out_writer, "{}", &json)?;
+                writeln!(out_writer, "{}", json)?;
             }
             Record::Gonosomal(record) => {
                 let json_value = serde_json::to_value(record)?;
                 let json = serde_json::to_string(&json_value)?;
-                writeln!(out_writer, "{}", &json)?;
+                writeln!(out_writer, "{}", json)?;
             }
             Record::Mitochondrial(record) => {
                 let json_value = serde_json::to_value(record)?;
                 let json = serde_json::to_string(&json_value)?;
-                writeln!(out_writer, "{}", &json)?;
+                writeln!(out_writer, "{}", json)?;
             }
         }
     } else {

@@ -148,13 +148,13 @@ pub fn query_for_accession(
     // First, lookup accession.
     let var_key = db
         .get_cf(cf_data_by_rsid, accession.clone())
-        .map_err(|e| anyhow::anyhow!("error while querying for accession {}: {}", &accession, e))?
-        .ok_or_else(|| anyhow::anyhow!("no record found for accession {}", &accession))?;
+        .map_err(|e| anyhow::anyhow!("error while querying for accession {}: {}", accession, e))?
+        .ok_or_else(|| anyhow::anyhow!("no record found for accession {}", accession))?;
 
     // Execute query for key.
     let raw_value = db
         .get_cf(cf_data, var_key.clone())
-        .map_err(|e| anyhow::anyhow!("error while querying for variant {:?}: {}", &var_key, e))?;
+        .map_err(|e| anyhow::anyhow!("error while querying for variant {:?}: {}", var_key, e))?;
     raw_value
         .map(|raw_value| {
             // Decode via prost.

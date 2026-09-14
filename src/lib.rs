@@ -18,6 +18,8 @@ pub mod gnomad_mtdna;
 pub mod gnomad_nuclear;
 pub mod gnomad_sv;
 pub mod helixmtdb;
+
+#[allow(clippy::all)]
 pub mod pbs;
 pub mod regions;
 #[cfg(feature = "server")]
