@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.45.1](https://github.com/varfish-org/annonars/compare/v0.45.0...v0.45.1) (2026-10-13)
+
+
+### Bug Fixes
+
+* **deps:** bump rocksdb to 0.25, jemalloc to 0.7 ([#865](https://github.com/varfish-org/annonars/issues/865)) ([3d14f2a](https://github.com/varfish-org/annonars/commit/3d14f2ad145d0ff8ecc7581788ffd898ac058ae1))
+
 ## [0.45.0](https://github.com/varfish-org/annonars/compare/v0.44.2...v0.45.0) (2026-09-14)
 
 
