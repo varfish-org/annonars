@@ -155,9 +155,11 @@ fn process_window(
                 let record = dbsnp::pbs::Record::from_vcf_allele(&vcf_record, allele_no)?;
                 let record_buf = record.encode_to_vec();
                 db.put_cf(&cf_dbsnp, &key_buf, &record_buf)?;
-                let mut buf = [0; 4];
-                byteorder::LittleEndian::write_u32(&mut buf[0..4], record.rs_id);
-                db.put_cf(&cf_dbsnp_by_rsid, buf, &key_buf)?;
+                // Key by rs ID and variant, as one rs ID can have several alleles.
+                let mut rsid_key = vec![0; 4];
+                byteorder::LittleEndian::write_u32(&mut rsid_key, record.rs_id);
+                rsid_key.extend_from_slice(&key_buf);
+                db.put_cf(&cf_dbsnp_by_rsid, rsid_key, b"")?;
             }
         }
     }
@@ -292,15 +294,19 @@ mod test {
         run(&common, &args).unwrap();
     }
 
-    /// Import the GRCh38 `path_in_vcf` and return the query output for `accession`.
-    fn import_and_query_accession(path_in_vcf: &str, accession: &str) -> String {
+    /// Import `path_in_vcf` and return the query output for `accession`.
+    fn import_and_query_accession(
+        genome_release: common::cli::GenomeRelease,
+        path_in_vcf: &str,
+        accession: &str,
+    ) -> String {
         let tmp_dir = TempDir::default();
         let common = common::cli::Args {
             verbose: Verbosity::new(1, 0),
         };
         let path_rocksdb = format!("{}", tmp_dir.join("out-rocksdb").display());
         let args = Args {
-            genome_release: common::cli::GenomeRelease::Grch38,
+            genome_release,
             path_in_vcf: String::from(path_in_vcf),
             path_out_rocksdb: path_rocksdb.clone(),
             cf_name: String::from("dbsnp_data"),
@@ -329,6 +335,7 @@ mod test {
     #[test]
     fn import_and_query_rs_id_above_i32_max() {
         let out_data = import_and_query_accession(
+            common::cli::GenomeRelease::Grch38,
             "tests/dbsnp/example/dbsnp.large-rs.vcf.bgz",
             "rs2148352434",
         );
@@ -338,8 +345,23 @@ mod test {
     /// Current dbSNP VCFs name contigs by RefSeq accession, e.g., `NC_000001.11`.
     #[test]
     fn import_and_query_refseq_contigs() {
-        let out_data =
-            import_and_query_accession("tests/dbsnp/example/dbsnp.refseq.vcf.bgz", "rs2148352434");
+        let out_data = import_and_query_accession(
+            common::cli::GenomeRelease::Grch38,
+            "tests/dbsnp/example/dbsnp.refseq.vcf.bgz",
+            "rs2148352434",
+        );
+        insta::assert_snapshot!(&out_data);
+    }
+
+    /// One accession can have several alleles, e.g., `rs80357327` (A>C, A>G, A>T).
+    #[test]
+    fn import_and_query_multi_allelic_accession() {
+        let out_data = import_and_query_accession(
+            common::cli::GenomeRelease::Grch37,
+            "tests/dbsnp/example/dbsnp.brca1.vcf.bgz",
+            "rs80357327",
+        );
+        assert_eq!(out_data.lines().count(), 3);
         insta::assert_snapshot!(&out_data);
     }
 }
