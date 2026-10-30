@@ -1,0 +1,6 @@
+##fileformat=VCFv4.2
+##dbSNP_BUILD_ID=156
+##reference=GRCh38.p14
+##INFO=<ID=RS,Number=1,Type=Integer,Description="dbSNP ID (i.e. rs number)">
+#CHROM	POS	ID	REF	ALT	QUAL	FILTER	INFO
+NC_000001.11	6259533	rs2148352434	C	T	.	.	RS=2148352434

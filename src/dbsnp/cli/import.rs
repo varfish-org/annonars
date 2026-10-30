@@ -12,7 +12,7 @@ use noodles::vcf::variant::RecordBuf;
 use prost::Message;
 use rayon::prelude::{IntoParallelRefIterator, ParallelIterator};
 
-use crate::{common, dbsnp};
+use crate::{common, dbsnp, freqs::cli::import::reading::ContigMap};
 
 /// Command line arguments for `dbsnp import` sub command.
 #[derive(Parser, Debug, Clone)]
@@ -54,13 +54,18 @@ fn tsv_import(
     let header = index.header().ok_or_else(|| {
         std::io::Error::new(std::io::ErrorKind::InvalidInput, "missing tabix header")
     })?;
-    // Build list of canonical chromosome names from header.
+    // Build list of canonical chromosome names from header.  Current dbSNP VCFs name
+    // contigs by RefSeq accession (e.g., `NC_000001.11`), so resolve these first.
+    let contig_map = ContigMap::new(args.genome_release.into());
     let canonical_header_chroms = header
         .reference_sequence_names()
         .iter()
         .filter_map(|chrom| {
             let chrom = &chrom.to_string();
-            let canon_chrom = chrom.strip_prefix("chr").unwrap_or(chrom);
+            let name = contig_map
+                .chrom_name_to_seq(chrom)
+                .map_or(chrom.as_str(), |seq| seq.name.as_str());
+            let canon_chrom = name.strip_prefix("chr").unwrap_or(name);
             if common::cli::is_canonical(canon_chrom) {
                 Some((common::cli::canonicalize(canon_chrom), chrom.clone()))
             } else {
@@ -77,7 +82,7 @@ fn tsv_import(
                 let canon_chrom = common::cli::canonicalize(&window_chrom);
                 canonical_header_chroms
                     .get(&canon_chrom)
-                    .map(|header_chrom| (header_chrom.clone(), begin, end))
+                    .map(|header_chrom| (header_chrom.clone(), canon_chrom, begin, end))
             })
             .collect::<Vec<_>>();
 
@@ -86,7 +91,9 @@ fn tsv_import(
     windows
         .par_iter()
         .progress_with(common::cli::progress_bar(windows.len()))
-        .map(|(chrom, begin, end)| process_window(db.clone(), chrom, *begin, *end, args))
+        .map(|(chrom, canon_chrom, begin, end)| {
+            process_window(db.clone(), chrom, canon_chrom, *begin, *end, args)
+        })
         .collect::<Result<Vec<_>, _>>()?;
     tracing::info!(
         "... done loading dbSNP VCF file into RocksDB in {:?}",
@@ -96,10 +103,11 @@ fn tsv_import(
     Ok(())
 }
 
-/// Process one window.
+/// Process one window of `chrom`, storing records under `canon_chrom`.
 fn process_window(
     db: Arc<rocksdb::DBWithThreadMode<rocksdb::MultiThreaded>>,
     chrom: &str,
+    canon_chrom: &str,
     begin: usize,
     end: usize,
     args: &Args,
@@ -137,7 +145,8 @@ fn process_window(
     // exist).
     if let Some(query) = query {
         for result in query {
-            let vcf_record = RecordBuf::try_from_variant_record(&header, &result?)?;
+            let mut vcf_record = RecordBuf::try_from_variant_record(&header, &result?)?;
+            *vcf_record.reference_sequence_name_mut() = canon_chrom.to_string();
 
             // Process each alternate allele into one record.
             for allele_no in 0..vcf_record.alternate_bases().as_ref().len() {
@@ -283,9 +292,8 @@ mod test {
         run(&common, &args).unwrap();
     }
 
-    /// dbSNP >= b156 has rs IDs above `i32::MAX`, e.g., `rs2148352434`.
-    #[test]
-    fn import_and_query_rs_id_above_i32_max() {
+    /// Import the GRCh38 `path_in_vcf` and return the query output for `accession`.
+    fn import_and_query_accession(path_in_vcf: &str, accession: &str) -> String {
         let tmp_dir = TempDir::default();
         let common = common::cli::Args {
             verbose: Verbosity::new(1, 0),
@@ -293,7 +301,7 @@ mod test {
         let path_rocksdb = format!("{}", tmp_dir.join("out-rocksdb").display());
         let args = Args {
             genome_release: common::cli::GenomeRelease::Grch38,
-            path_in_vcf: String::from("tests/dbsnp/example/dbsnp.large-rs.vcf.bgz"),
+            path_in_vcf: String::from(path_in_vcf),
             path_out_rocksdb: path_rocksdb.clone(),
             cf_name: String::from("dbsnp_data"),
             cf_name_by_rsid: String::from("dbsnp_by_rsid"),
@@ -309,12 +317,29 @@ mod test {
             out_file: format!("{}", tmp_dir.join("out").display()),
             out_format: common::cli::OutputFormat::Jsonl,
             query: crate::cons::cli::args::vars::ArgsQuery {
-                accession: Some(String::from("rs2148352434")),
+                accession: Some(String::from(accession)),
                 ..Default::default()
             },
         };
         dbsnp::cli::query::run(&common, &query_args).unwrap();
-        let out_data = std::fs::read_to_string(&query_args.out_file).unwrap();
+        std::fs::read_to_string(&query_args.out_file).unwrap()
+    }
+
+    /// dbSNP >= b156 has rs IDs above `i32::MAX`, e.g., `rs2148352434`.
+    #[test]
+    fn import_and_query_rs_id_above_i32_max() {
+        let out_data = import_and_query_accession(
+            "tests/dbsnp/example/dbsnp.large-rs.vcf.bgz",
+            "rs2148352434",
+        );
+        insta::assert_snapshot!(&out_data);
+    }
+
+    /// Current dbSNP VCFs name contigs by RefSeq accession, e.g., `NC_000001.11`.
+    #[test]
+    fn import_and_query_refseq_contigs() {
+        let out_data =
+            import_and_query_accession("tests/dbsnp/example/dbsnp.refseq.vcf.bgz", "rs2148352434");
         insta::assert_snapshot!(&out_data);
     }
 }

@@ -1,0 +1,5 @@
+---
+source: src/dbsnp/cli/import.rs
+expression: "&out_data"
+---
+{"chrom":"1","pos":6259533,"refAllele":"C","altAllele":"T","rsId":2148352434}
