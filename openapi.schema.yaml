@@ -4456,6 +4456,7 @@ components:
           type: integer
           format: int32
           description: The rs ID.
+          minimum: 0
     ExtractedVcvRecordList:
       type: object
       description: List of `ClinvarExtractedVcvRecord`s.

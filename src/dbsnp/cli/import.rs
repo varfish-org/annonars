@@ -108,7 +108,12 @@ fn process_window(
     let cf_dbsnp_by_rsid = db.cf_handle(&args.cf_name_by_rsid).unwrap();
     let mut reader =
         noodles::vcf::io::indexed_reader::Builder::default().build_from_path(&args.path_in_vcf)?;
-    let header = reader.read_header()?;
+    let mut header = reader.read_header()?;
+    // dbSNP declares `RS` as `Integer`, but rs IDs exceed `i32::MAX` since b156, which
+    // noodles rejects.  Read it as a string; `Record::from_vcf_allele` parses it.
+    if let Some(info) = header.infos_mut().get_mut("RS") {
+        *info.type_mut() = record::value::map::info::Type::String;
+    }
 
     let raw_region = format!("{}:{}-{}", chrom, begin + 1, end);
     let region = raw_region.parse()?;
@@ -142,7 +147,7 @@ fn process_window(
                 let record_buf = record.encode_to_vec();
                 db.put_cf(&cf_dbsnp, &key_buf, &record_buf)?;
                 let mut buf = [0; 4];
-                byteorder::LittleEndian::write_i32(&mut buf[0..4], record.rs_id);
+                byteorder::LittleEndian::write_u32(&mut buf[0..4], record.rs_id);
                 db.put_cf(&cf_dbsnp_by_rsid, buf, &key_buf)?;
             }
         }
@@ -276,5 +281,40 @@ mod test {
         };
 
         run(&common, &args).unwrap();
+    }
+
+    /// dbSNP >= b156 has rs IDs above `i32::MAX`, e.g., `rs2148352434`.
+    #[test]
+    fn import_and_query_rs_id_above_i32_max() {
+        let tmp_dir = TempDir::default();
+        let common = common::cli::Args {
+            verbose: Verbosity::new(1, 0),
+        };
+        let path_rocksdb = format!("{}", tmp_dir.join("out-rocksdb").display());
+        let args = Args {
+            genome_release: common::cli::GenomeRelease::Grch38,
+            path_in_vcf: String::from("tests/dbsnp/example/dbsnp.large-rs.vcf.bgz"),
+            path_out_rocksdb: path_rocksdb.clone(),
+            cf_name: String::from("dbsnp_data"),
+            cf_name_by_rsid: String::from("dbsnp_by_rsid"),
+            path_wal_dir: None,
+            tbi_window_size: 1_000_000,
+        };
+        run(&common, &args).unwrap();
+
+        let query_args = dbsnp::cli::query::Args {
+            path_rocksdb,
+            cf_name: String::from("dbsnp_data"),
+            cf_name_by_rsid: String::from("dbsnp_by_rsid"),
+            out_file: format!("{}", tmp_dir.join("out").display()),
+            out_format: common::cli::OutputFormat::Jsonl,
+            query: crate::cons::cli::args::vars::ArgsQuery {
+                accession: Some(String::from("rs2148352434")),
+                ..Default::default()
+            },
+        };
+        dbsnp::cli::query::run(&common, &query_args).unwrap();
+        let out_data = std::fs::read_to_string(&query_args.out_file).unwrap();
+        insta::assert_snapshot!(&out_data);
     }
 }

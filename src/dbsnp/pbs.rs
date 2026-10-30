@@ -7,6 +7,8 @@ pub use crate::pbs::dbsnp::Record;
 
 impl Record {
     /// Creates a new `Record` from a VCF record and allele number.
+    ///
+    /// The header must declare `INFO/RS` as `String`, see `dbsnp::cli::import`.
     pub fn from_vcf_allele(
         record: &noodles::vcf::variant::RecordBuf,
         allele_no: usize,
@@ -24,8 +26,8 @@ impl Record {
             .nth(allele_no)
             .ok_or_else(|| anyhow::anyhow!("no such allele: {}", allele_no))??
             .to_string();
-        let rs_id = if let Some(Some(field::Value::Integer(rs))) = record.info().get("RS") {
-            *rs
+        let rs_id = if let Some(Some(field::Value::String(rs))) = record.info().get("RS") {
+            rs.parse()?
         } else {
             anyhow::bail!("no rs id in dbSNP record")
         };

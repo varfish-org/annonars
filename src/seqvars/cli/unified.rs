@@ -71,7 +71,7 @@ impl From<Var> for Coord {
 enum TrackValue {
     Cadd(CaddRecord),
     Spliceai(SpliceAiRecord),
-    DbsnpRsId(i32),
+    DbsnpRsId(u32),
 }
 
 /// An opened source database and how to read its keys and values.

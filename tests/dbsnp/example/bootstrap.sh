@@ -10,6 +10,13 @@ if [[ tests/dbsnp/example/dbsnp.brca1.vcf \
     tabix -f tests/dbsnp/example/dbsnp.brca1.vcf.bgz
 fi
 
+if [[ tests/dbsnp/example/dbsnp.large-rs.vcf \
+        -nt tests/dbsnp/example/dbsnp.large-rs.vcf.bgz ]]; then
+    bgzip -c tests/dbsnp/example/dbsnp.large-rs.vcf \
+    > tests/dbsnp/example/dbsnp.large-rs.vcf.bgz
+    tabix -f tests/dbsnp/example/dbsnp.large-rs.vcf.bgz
+fi
+
 rm -rf tests/dbsnp/example/dbsnp.brca1.vcf.bgz.db
 cargo run --all-features -- \
     dbsnp import \

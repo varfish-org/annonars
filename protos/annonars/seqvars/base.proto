@@ -57,7 +57,7 @@ message IntegratedVariantRecord {
   optional SpliceAiRecord splice_ai = 2;
   // The dbSNP RS identifier, taken from an `annonars dbsnp` database. Only the
   // identifier is kept; the coordinate of the dbSNP record is the key itself.
-  optional int32 dbsnp_rs_id = 3;
+  optional uint32 dbsnp_rs_id = 3;
 
   // gnomAD v2 population frequencies.
   optional annonars.gnomad.gnomad2.Record gnomad_v2 = 4;
