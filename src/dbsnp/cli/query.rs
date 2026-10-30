@@ -150,13 +150,13 @@ pub fn query_for_variant(
         .transpose()
 }
 
-/// Query for a single variant by accession.
+/// Query for all variants by accession.
 pub fn query_for_accession(
     accession: &str,
     db: &rocksdb::DBWithThreadMode<rocksdb::MultiThreaded>,
     cf_data: &Arc<rocksdb::BoundColumnFamily>,
     cf_data_by_rsid: &Arc<rocksdb::BoundColumnFamily>,
-) -> Result<Option<dbsnp::pbs::Record>, anyhow::Error> {
+) -> Result<Vec<dbsnp::pbs::Record>, anyhow::Error> {
     // Convert accession into u32 number.
     let accession = accession.to_lowercase();
     let accession = accession
@@ -169,23 +169,41 @@ pub fn query_for_accession(
         buf.to_vec()
     };
 
-    // First, lookup accession.
-    let var_key = db
-        .get_cf(cf_data_by_rsid, ac_key)
-        .map_err(|e| anyhow::anyhow!("error while querying for accession {}: {}", ac_u32, e))?
-        .ok_or_else(|| anyhow::anyhow!("no record found for accession {}", ac_u32))?;
+    // First, lookup variant keys of accession.  These follow the accession in the key,
+    // except for older databases, which store a single variant key as the value.
+    let mut var_keys = Vec::new();
+    let mut iter = db.raw_iterator_cf(cf_data_by_rsid);
+    iter.seek(&ac_key);
+    while let Some(key) = iter.key().filter(|key| key.starts_with(&ac_key)) {
+        let var_key = if key.len() == ac_key.len() {
+            iter.value()
+        } else {
+            Some(&key[ac_key.len()..])
+        };
+        var_keys.extend(var_key.map(<[u8]>::to_vec));
+        iter.next();
+    }
+    iter.status()
+        .map_err(|e| anyhow::anyhow!("error while querying for accession {}: {}", ac_u32, e))?;
+    if var_keys.is_empty() {
+        anyhow::bail!("no record found for accession {}", ac_u32);
+    }
 
-    // Execute query for key.
-    let raw_value = db
-        .get_cf(cf_data, var_key.clone())
-        .map_err(|e| anyhow::anyhow!("error while querying for variant {:?}: {}", var_key, e))?;
-    raw_value
-        .map(|raw_value| {
+    // Execute query for keys.
+    let mut records = Vec::new();
+    for var_key in var_keys {
+        let raw_value = db.get_cf(cf_data, &var_key).map_err(|e| {
+            anyhow::anyhow!("error while querying for variant {:?}: {}", var_key, e)
+        })?;
+        if let Some(raw_value) = raw_value {
             // Decode via prost.
-            dbsnp::pbs::Record::decode(&mut std::io::Cursor::new(&raw_value))
-                .map_err(|e| anyhow::anyhow!("failed to decode record: {}", e))
-        })
-        .transpose()
+            records.push(
+                dbsnp::pbs::Record::decode(&mut std::io::Cursor::new(&raw_value))
+                    .map_err(|e| anyhow::anyhow!("failed to decode record: {}", e))?,
+            );
+        }
+    }
+    Ok(records)
 }
 
 /// Implementation of `tsv query` sub command.
@@ -210,10 +228,8 @@ pub fn run(common: &common::cli::Args, args: &Args) -> Result<(), anyhow::Error>
     tracing::info!("Running query...");
     let before_query = std::time::Instant::now();
     if let Some(accession) = args.query.accession.as_ref() {
-        if let Some(record) = query_for_accession(accession, &db, &cf_data, &cf_by_rsid)? {
+        for record in query_for_accession(accession, &db, &cf_data, &cf_by_rsid)? {
             print_record(&mut out_writer, args.out_format, &record)?;
-        } else {
-            tracing::info!("no record found for accession {}", accession);
         }
     } else if let Some(variant) = args.query.variant.as_ref() {
         if let Some(record) = query_for_variant(variant, &meta, &db, &cf_data)? {
