@@ -1,5 +1,14 @@
 # Changelog
 
+## [0.45.2](https://github.com/varfish-org/annonars/compare/v0.45.1...v0.45.2) (2026-10-30)
+
+
+### Bug Fixes
+
+* import dbSNP VCFs with RefSeq contig names ([#867](https://github.com/varfish-org/annonars/issues/867)) ([#869](https://github.com/varfish-org/annonars/issues/869)) ([19514e6](https://github.com/varfish-org/annonars/commit/19514e6a6fdd742cf8e47f40a6edbf925056a362))
+* return all alleles of a dbSNP rs ID ([#867](https://github.com/varfish-org/annonars/issues/867)) ([#870](https://github.com/varfish-org/annonars/issues/870)) ([6926b2c](https://github.com/varfish-org/annonars/commit/6926b2c04a8e58a0e3577a3156199e0acde8546e))
+* support dbSNP rs IDs above i32::MAX ([#867](https://github.com/varfish-org/annonars/issues/867)) ([#868](https://github.com/varfish-org/annonars/issues/868)) ([3362cd8](https://github.com/varfish-org/annonars/commit/3362cd8d2c21bd76a79e9e8389dbac543c2fe04b))
+
 ## [0.45.1](https://github.com/varfish-org/annonars/compare/v0.45.0...v0.45.1) (2026-10-13)
 
 
