@@ -46,6 +46,9 @@ jobs:
             type=ref,event=pr
             type=sha
 
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v4
+
       - name: Build and push Docker image
         uses: docker/build-push-action@v7
         with:
@@ -54,3 +57,8 @@ jobs:
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
           push: true
+          cache-from: type=gha
+          # All layers, incl. the builder's toolchain and dependencies, but only from main: PRs
+          # would evict main's layers. A failed export, e.g. of a layer that GitHub evicted
+          # meanwhile, only warns.
+          cache-to: ${{ github.ref == 'refs/heads/main' && 'type=gha,mode=max,ignore-error=true' || '' }}
