@@ -52,10 +52,17 @@ jobs:
         with:
           repo-token: ${{ secrets.GITHUB_TOKEN }}
 
+      # PRs restore main's caches but don't save their own, which would evict main's.
       - uses: Swatinem/rust-cache@v2
         with:
+          save-if: ${{ github.ref == 'refs/heads/main' }}
           cache-directories: |
             ~/.cargo/registry/src/**/librocksdb-sys-*
+
+      # Without --locked, cargo rewrites a Cargo.lock that does not match the manifests, e.g. after a
+      # dependency bump that did not update it.
+      - name: Check that Cargo.lock is up to date
+        run: cargo metadata --locked --format-version 1 > /dev/null
 
       - name: Lint with clippy
         run: cargo clippy --all-features --workspace -- -D warnings
@@ -87,6 +94,7 @@ jobs:
       - uses: Swatinem/rust-cache@v2
         with:
           key: "covtest"
+          save-if: ${{ github.ref == 'refs/heads/main' }}
           cache-directories: |
             ~/.cargo/registry/src/**/librocksdb-sys-*
 
@@ -122,6 +130,12 @@ jobs:
         uses: arduino/setup-protoc@v3.0.0
         with:
           repo-token: ${{ secrets.GITHUB_TOKEN }}
+
+      - uses: Swatinem/rust-cache@v2
+        with:
+          save-if: ${{ github.ref == 'refs/heads/main' }}
+          cache-directories: |
+            ~/.cargo/registry/src/**/librocksdb-sys-*
 
       - name: Write schema
         run: cargo run -- server schema --output-file /tmp/openapi.schema.yaml-gen

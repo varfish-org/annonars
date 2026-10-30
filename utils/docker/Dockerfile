@@ -29,11 +29,17 @@ RUN PREFIX=/usr/local bash /tmp/install-protoc.sh
 WORKDIR /usr/src
 # Create blank project.
 RUN USER=root /root/.cargo/bin/cargo new annonars
-# We want dependencies cached, so copy those first.
+# We want dependencies cached, so copy those first.  The cargo config points the
+# RocksDB build at the system library.
 COPY Cargo.toml Cargo.lock /usr/src/annonars/
+COPY .cargo /usr/src/annonars/.cargo/
 RUN touch /usr/src/annonars/src/lib.rs
 # Set the working directory.
 WORKDIR /usr/src/annonars
+# Build only the dependencies; the stub build script pulls in the build dependencies.
+# This layer is reused until Cargo.toml, Cargo.lock, or .cargo change.
+RUN echo 'fn main() {}' > build.rs && \
+    /root/.cargo/bin/cargo build --release
 
 # Copy in the rest of the sources.
 COPY build.rs Cargo.toml Cargo.lock /usr/src/annonars/
@@ -41,10 +47,9 @@ COPY src /usr/src/annonars/src/
 COPY protos /usr/src/annonars/protos/
 COPY utils/alpine-linker-script.sh /usr/src/annonars/utils/
 RUN chmod a+rx /usr/src/annonars/utils/alpine-linker-script.sh
-COPY .cargo /usr/src/annonars/.cargo/
 
-# Touch main.rs to prevent cached release build.
-RUN touch /usr/src/annonars/src/main.rs
+# Touch the sources to prevent a cached release build of the stubs.
+RUN touch /usr/src/annonars/build.rs /usr/src/annonars/src/lib.rs /usr/src/annonars/src/main.rs
 
 # Build the application
 RUN /root/.cargo/bin/cargo build --release
