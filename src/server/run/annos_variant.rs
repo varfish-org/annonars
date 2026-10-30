@@ -2651,7 +2651,7 @@ pub mod response {
         /// Alternate allele.
         pub alt_allele: String,
         /// The rs ID.
-        pub rs_id: i32,
+        pub rs_id: u32,
     }
 
     impl From<crate::pbs::dbsnp::Record> for DbsnpRecord {

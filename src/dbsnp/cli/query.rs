@@ -157,23 +157,23 @@ pub fn query_for_accession(
     cf_data: &Arc<rocksdb::BoundColumnFamily>,
     cf_data_by_rsid: &Arc<rocksdb::BoundColumnFamily>,
 ) -> Result<Option<dbsnp::pbs::Record>, anyhow::Error> {
-    // Convert accession into i32 number.
+    // Convert accession into u32 number.
     let accession = accession.to_lowercase();
     let accession = accession
         .strip_prefix("rs")
         .ok_or_else(|| anyhow::anyhow!("accession {} does not start with 'rs'", accession))?;
-    let ac_i32: i32 = accession.parse()?;
+    let ac_u32: u32 = accession.parse()?;
     let ac_key: Vec<u8> = {
         let mut buf = [0; 4];
-        byteorder::LittleEndian::write_i32(&mut buf[0..4], ac_i32);
+        byteorder::LittleEndian::write_u32(&mut buf[0..4], ac_u32);
         buf.to_vec()
     };
 
     // First, lookup accession.
     let var_key = db
         .get_cf(cf_data_by_rsid, ac_key)
-        .map_err(|e| anyhow::anyhow!("error while querying for accession {}: {}", ac_i32, e))?
-        .ok_or_else(|| anyhow::anyhow!("no record found for accession {}", ac_i32))?;
+        .map_err(|e| anyhow::anyhow!("error while querying for accession {}: {}", ac_u32, e))?
+        .ok_or_else(|| anyhow::anyhow!("no record found for accession {}", ac_u32))?;
 
     // Execute query for key.
     let raw_value = db
