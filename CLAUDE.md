@@ -8,7 +8,7 @@ Genome annotation on Rust + RocksDB: import curated datasets (ClinVar, gnomAD, d
 - CLI subcommands per dataset plus `tsv` and `server`.
 
 ## Build / test / lint (real commands)
-- Prereqs: `protoc`; system `librocksdb-dev libsnappy-dev libsqlite3-dev`. `.cargo/config.toml` points RocksDB/snappy at `/usr/lib/` — don't break it.
+- Prereqs: `protoc`, `clang`, system `libsqlite3-dev`. RocksDB/snappy are the versions bundled with `librocksdb-sys`, built from source — don't link a system RocksDB (Ubuntu's 8.9 can't read the `format_version` 7 the bundled one writes).
 - Build `cargo build` · test `cargo test --all-features` · format `cargo fmt -- --check` · lint `cargo clippy --all-features --workspace -- -D warnings` · coverage `cargo llvm-cov --all-features --workspace`.
 - Run: `cargo run -- <args>`.
 
