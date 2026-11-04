@@ -95,7 +95,8 @@ mod test {
             db.flush()?;
         }
 
-        let db = rocksdb::DB::open_for_read_only(&rocksdb::Options::default(), tmp.as_ref(), false)?;
+        let db =
+            rocksdb::DB::open_for_read_only(&rocksdb::Options::default(), tmp.as_ref(), false)?;
         assert_eq!(db.get(b"key")?, Some(b"value".to_vec()));
 
         Ok(())
