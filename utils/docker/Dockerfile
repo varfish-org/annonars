@@ -14,7 +14,7 @@ FROM ubuntu:noble AS builder
 
 # Install Rust toolchain and dependencies for compilation of C code (e.g., rocksdb)
 RUN apt-get update && \
-    apt-get install -y unzip wget curl build-essential clang librocksdb-dev libsqlite3-dev && \
+    apt-get install -y unzip wget curl build-essential clang libsqlite3-dev && \
     curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y && \
     . $HOME/.cargo/env && \
     rustup component add rustfmt
@@ -29,8 +29,8 @@ RUN PREFIX=/usr/local bash /tmp/install-protoc.sh
 WORKDIR /usr/src
 # Create blank project.
 RUN USER=root /root/.cargo/bin/cargo new annonars
-# We want dependencies cached, so copy those first.  The cargo config points the
-# RocksDB build at the system library.
+# We want dependencies cached, so copy those first.  RocksDB is the version bundled
+# with librocksdb-sys and built from source here.
 COPY Cargo.toml Cargo.lock /usr/src/annonars/
 COPY .cargo /usr/src/annonars/.cargo/
 RUN touch /usr/src/annonars/src/lib.rs
@@ -62,7 +62,7 @@ FROM ubuntu:noble AS runtime
 
 # Install dependencies (and cleanup afterward)
 RUN apt-get update && \
-    apt-get install -y librocksdb8.9 libsqlite3-0 && \
+    apt-get install -y libsqlite3-0 && \
     apt-get clean autoclean && \
     apt-get autoremove --yes && \
     rm -rf /var/lib/{apt,dpkg,cache,log}
@@ -71,6 +71,9 @@ RUN apt-get update && \
 COPY --from=builder \
     /usr/src/annonars/target/release/annonars \
     /usr/local/bin
+# Fail the build if the binary links a system RocksDB, which may be too old to read
+# databases written by the bundled one.
+RUN ! ldd /usr/local/bin/annonars | grep -q librocksdb
 
 # Copy the entrypoint script and make it executable.
 COPY utils/docker/entrypoint.sh /
