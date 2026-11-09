@@ -11,12 +11,12 @@ description: Apply for build/test/lint, dependency or feature changes, and editi
 ## Commands
 - Build `cargo build` · test `cargo test --all-features` · format `cargo fmt` (check `cargo fmt -- --check`) · lint `cargo clippy --all-features --workspace -- -D warnings` · coverage `cargo llvm-cov --all-features --workspace`.
 - Run the binary: `cargo run -- <args>`.
-- Requires `protoc` + system `librocksdb-dev libsnappy-dev libsqlite3-dev`.
+- Requires `protoc`, `clang` + system `libsqlite3-dev`.
 
 ## Features
 - `default = ["jemalloc", "server"]`. `server` gates actix/utoipa; `jemalloc` the allocator.
 
 ## Manifest (TOML) conventions
 - Keep `[dependencies]` alphabetically ordered (match existing).
-- `.cargo/config.toml` sets `ROCKSDB_LIB_DIR`/`SNAPPY_LIB_DIR=/usr/lib/` and a thumbv7em linker — don't remove/break these.
+- `.cargo/config.toml` sets a thumbv7em linker — don't remove/break it. Don't set `ROCKSDB_LIB_DIR`/`SNAPPY_LIB_DIR` there: builds use the bundled RocksDB.
 - release-please owns the `version` field (and the `version:` in `openapi.schema.yaml`) — don't bump by hand.
