@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.45.3](https://github.com/varfish-org/annonars/compare/v0.45.2...v0.45.3) (2026-11-09)
+
+
+### Bug Fixes
+
+* build with the bundled RocksDB instead of system 8.9 ([#877](https://github.com/varfish-org/annonars/issues/877)) ([#878](https://github.com/varfish-org/annonars/issues/878)) ([4c3f9f3](https://github.com/varfish-org/annonars/commit/4c3f9f3d9107e58a431d14a0e2b6551bd6a04266))
+
 ## [0.45.2](https://github.com/varfish-org/annonars/compare/v0.45.1...v0.45.2) (2026-10-30)
 
 
